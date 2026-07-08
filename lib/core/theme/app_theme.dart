@@ -364,7 +364,7 @@ class AppTheme {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: AppBorders.medium,
-            borderSide: BorderSide(color: Colors.grey.sh300),
+            borderSide: BorderSide(color: Colors.grey.shade300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: AppBorders.medium,
