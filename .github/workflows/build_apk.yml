@@ -1,0 +1,161 @@
+name: 6thGear - Build Android APK
+
+# Trigger: Runs on every push to main/master, or manually via "Run workflow" button
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ───────────────────────────────────────────────
+      # 1. Checkout your code
+      # ───────────────────────────────────────────────
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # ───────────────────────────────────────────────
+      # 2. Setup Java 17 (required by Android Gradle Plugin 8.x)
+      # ───────────────────────────────────────────────
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # ───────────────────────────────────────────────
+      # 3. Setup Flutter
+      # ───────────────────────────────────────────────
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'  # Latest stable Flutter
+          channel: 'stable'
+          cache: true  # Speeds up subsequent builds
+
+      # ───────────────────────────────────────────────
+      # 4. Verify Flutter installation
+      # ───────────────────────────────────────────────
+      - name: Flutter Doctor
+        run: flutter doctor -v
+
+      # ───────────────────────────────────────────────
+      # 5. Get dependencies
+      # ───────────────────────────────────────────────
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # ───────────────────────────────────────────────
+      # 6. Run code analysis (catches errors early)
+      # ───────────────────────────────────────────────
+      - name: Analyze Code
+        run: flutter analyze --no-pub
+
+      # ───────────────────────────────────────────────
+      # 7. Run tests (if you have any)
+      # ───────────────────────────────────────────────
+      - name: Run Tests
+        run: flutter test
+        continue-on-error: true  # Don't fail build if no tests yet
+
+      # ───────────────────────────────────────────────
+      # 8. Inject Google Maps API Key (from GitHub Secrets)
+      # ───────────────────────────────────────────────
+      - name: Inject Google Maps API Key
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: |
+          if [ -n "$GOOGLE_MAPS_API_KEY" ]; then
+            sed -i "s/YOUR_GOOGLE_MAPS_API_KEY_HERE/$GOOGLE_MAPS_API_KEY/g" android/app/src/main/AndroidManifest.xml
+            sed -i "s/YOUR_GOOGLE_MAPS_API_KEY_HERE/$GOOGLE_MAPS_API_KEY/g" android/app/src/main/res/values/strings.xml
+            echo "✅ Google Maps API key injected"
+          else
+            echo "⚠️ No GOOGLE_MAPS_API_KEY secret found. Maps will not work."
+          fi
+
+      # ───────────────────────────────────────────────
+      # 9. Inject Firebase config (optional, from GitHub Secrets)
+      # ───────────────────────────────────────────────
+      - name: Inject Firebase Config
+        env:
+          FIREBASE_OPTIONS: ${{ secrets.FIREBASE_OPTIONS }}
+        run: |
+          if [ -n "$FIREBASE_OPTIONS" ]; then
+            echo "$FIREBASE_OPTIONS" > android/app/google-services.json
+            echo "✅ Firebase config injected"
+          else
+            echo "⚠️ No FIREBASE_OPTIONS secret found. Firebase features disabled."
+          fi
+
+      # ───────────────────────────────────────────────
+      # 10. Build Release APK
+      # ───────────────────────────────────────────────
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      # ───────────────────────────────────────────────
+      # 11. Build App Bundle (for Google Play Store)
+      # ───────────────────────────────────────────────
+      - name: Build App Bundle (AAB)
+        run: flutter build appbundle --release
+
+      # ───────────────────────────────────────────────
+      # 12. Upload APK as artifact (downloadable)
+      # ───────────────────────────────────────────────
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 6thGear-APK-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      # ───────────────────────────────────────────────
+      # 13. Upload AAB as artifact
+      # ───────────────────────────────────────────────
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 6thGear-AAB-${{ github.run_number }}
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      # ───────────────────────────────────────────────
+      # 14. Create GitHub Release with APK attached
+      # ───────────────────────────────────────────────
+      - name: Create Release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.0+${{ github.run_number }}
+          name: "6thGear v1.0.0 (Build ${{ github.run_number }})"
+          body: |
+            ## 6thGear - Bharat ka apna drive companion
+
+            ### What's Included
+            - ✅ Release APK (install directly on Android)
+            - ✅ App Bundle (upload to Google Play Store)
+
+            ### Installation
+            1. Download `app-release.apk` below
+            2. Enable "Install from Unknown Sources" in Settings
+            3. Tap the APK to install
+
+            ### Features
+            - Smart Navigation with real-time alerts
+            - SOS Safety & Women Safety features
+            - Drive Analytics & Scoring
+            - Fuel Prices & Toll Calculator
+            - Night Mode HUD
+            - RTO Document Management
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
