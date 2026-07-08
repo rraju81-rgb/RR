@@ -44,83 +44,41 @@ class AppRouter {
   static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static final router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: true,
     routes: [
-      // Splash Screen
       GoRoute(
         path: AppRoutes.splash,
         builder: (context, state) => const SplashScreen(),
       ),
-
-      // Onboarding
       GoRoute(
         path: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
-
-      // Auth
       GoRoute(
         path: AppRoutes.auth,
         builder: (context, state) => const AuthScreen(),
       ),
-
-      // Main App Shell with Bottom Navigation
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return MainShell(navigationShell: navigationShell);
-        },
-        branches: [
-          // Home Branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoutes.home,
-                builder: (context, state) => const HomeScreen(),
-              ),
-            ],
-          ),
-          // Trips Branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoutes.trips,
-                builder: (context, state) => const TripsScreen(),
-              ),
-            ],
-          ),
-          // Safety Branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoutes.safety,
-                builder: (context, state) => const SafetyScreen(),
-              ),
-            ],
-          ),
-          // Analytics Branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoutes.analytics,
-                builder: (context, state) => const AnalyticsScreen(),
-              ),
-            ],
-          ),
-          // Profile Branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoutes.profile,
-                builder: (context, state) => const ProfileScreen(),
-              ),
-            ],
-          ),
-        ],
+      GoRoute(
+        path: AppRoutes.home,
+        builder: (context, state) => const HomeScreen(),
       ),
-
-      // Feature Screens (outside shell)
+      GoRoute(
+        path: AppRoutes.trips,
+        builder: (context, state) => const TripsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.safety,
+        builder: (context, state) => const SafetyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.analytics,
+        builder: (context, state) => const AnalyticsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        builder: (context, state) => const ProfileScreen(),
+      ),
       GoRoute(
         path: AppRoutes.womenSafety,
         builder: (context, state) => const WomenSafetyScreen(),
@@ -151,88 +109,4 @@ class AppRouter {
       ),
     ],
   );
-}
-
-class MainShell extends StatelessWidget {
-  final StatefulNavigationShell navigationShell;
-
-  const MainShell({
-    super.key,
-    required this.navigationShell,
-  });
-
-  void _onTap(BuildContext context, int index) {
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(Icons.explore_outlined, Icons.explore, 'Home', 0),
-                _buildNavItem(Icons.route_outlined, Icons.route, 'Trips', 1),
-                _buildNavItem(Icons.shield_outlined, Icons.shield, 'Safety', 2),
-                _buildNavItem(Icons.analytics_outlined, Icons.analytics, 'Stats', 3),
-                _buildNavItem(Icons.person_outline, Icons.person, 'Profile', 4),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, IconData activeIcon, String label, int index) {
-    final isSelected = navigationShell.currentIndex == index;
-    return GestureDetector(
-      onTap: () => _onTap(navigationShell.context, index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1E3A8A).withOpacity(0.15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isSelected ? activeIcon : icon,
-              color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF64748B),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF64748B),
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
