@@ -95,8 +95,6 @@ dependencies:
   syncfusion_flutter_gauges: ^24.1.41
 
   # ML & AI
-  tflite_flutter: ^0.10.4
-  tflite_flutter_helper: ^0.3.1
 
   # Security
   local_auth: ^2.1.8
