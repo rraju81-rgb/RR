@@ -2,6 +2,24 @@ apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply plugin: "com.google.gms.google-services"
 apply plugin: "com.google.firebase.crashlytics"
+
+def flutterRoot = { -> 
+    def properties = new Properties()
+    def propertiesFile = rootProject.file('local.properties')
+    if (propertiesFile.exists()) {
+        properties.load(propertiesFile.newDataInputStream())
+    }
+    def flutterSdkPath = properties.getProperty('flutter.sdk')
+    if (flutterSdkPath == null) {
+        // In CI, use FLUTTER_ROOT environment variable
+        flutterSdkPath = System.getenv('FLUTTER_ROOT')
+    }
+    if (flutterSdkPath == null) {
+        throw new RuntimeException("flutter.sdk not defined in local.properties or FLUTTER_ROOT env var")
+    }
+    return file(flutterSdkPath)
+}.call()
+
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 def localProperties = new Properties()
