@@ -1,28 +1,8 @@
 pluginManagement {
-    def flutterSdkPath = {
-        def properties = new Properties()
-        def propertiesFile = rootProject.file('local.properties')
-        if (propertiesFile.exists()) {
-            propertiesFile.withReader('UTF-8') { reader ->
-                properties.load(reader)
-            }
-        }
-        return properties.getProperty('flutter.sdk')
-    }()
-
-    if (flutterSdkPath == null) {
-        throw new RuntimeException("flutter.sdk not defined in local.properties")
-    }
-
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url "$flutterSdkPath/packages/flutter_tools/gradle" }
-    }
-
-    plugins {
-        id 'dev.flutter.flutter-gradle-plugin' version 'latest.release'
     }
 }
 
