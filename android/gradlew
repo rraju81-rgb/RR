@@ -19,11 +19,7 @@ while [ -h "$PRG" ] ; do
     fi
 done
 SAVED="$(cd "$(dirname "$PRG")" && pwd)"
-cd "$SAVED" || exit
-APP_HOME=$(dirname "$(pwd)")
-cd "$OLDPWD" || exit
+APP_HOME="$SAVED"
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
-APP_NAME="Gradle"
-APP_BASE_NAME=$(basename "$0")
-
-exec "$APP_HOME/gradle/bin/gradle" "$@"
+exec java -Xmx64m -Xms64m -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
