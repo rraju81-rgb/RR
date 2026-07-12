@@ -26,6 +26,25 @@
       --shadow:none;
     }
   }
+  /* explicit theme override (e.g. a host page's theme toggle) beats the OS setting */
+  :root[data-theme="dark"]{
+    --surface-1:#1a1a19; --page:#0d0d0d;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10);
+    --cf:#3987e5; --cf-soft:rgba(57,135,229,.14);
+    --p3d:#199e70; --p3d-soft:rgba(25,158,112,.16);
+    --ch-instagram:#d55181; --ch-whatsapp:#008300; --ch-website:#3987e5; --ch-organic:#c98500;
+    --shadow:none;
+  }
+  :root[data-theme="light"]{
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,.10);
+    --cf:#2a78d6; --cf-soft:rgba(42,120,214,.10);
+    --p3d:#1baf7a; --p3d-soft:rgba(27,175,122,.10);
+    --ch-instagram:#e87ba4; --ch-whatsapp:#008300; --ch-website:#2a78d6; --ch-organic:#eda100;
+    --shadow:0 1px 2px rgba(11,11,11,.05);
+  }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{
