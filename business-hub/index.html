@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RR Business Hub — Carbon Fibre × 3D Printing</title>
+<style>
+  :root{
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,.10);
+    --cf:#2a78d6; --cf-soft:rgba(42,120,214,.10);
+    --p3d:#1baf7a; --p3d-soft:rgba(27,175,122,.10);
+    --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+    --ch-instagram:#e87ba4; --ch-whatsapp:#008300; --ch-website:#2a78d6; --ch-organic:#eda100;
+    --shadow:0 1px 2px rgba(11,11,11,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --surface-1:#1a1a19; --page:#0d0d0d;
+      --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10);
+      --cf:#3987e5; --cf-soft:rgba(57,135,229,.14);
+      --p3d:#199e70; --p3d-soft:rgba(25,158,112,.16);
+      --ch-instagram:#d55181; --ch-whatsapp:#008300; --ch-website:#3987e5; --ch-organic:#c98500;
+      --shadow:none;
+    }
+  }
+  /* explicit theme override (e.g. a host page's theme toggle) beats the OS setting */
+  :root[data-theme="dark"]{
+    --surface-1:#1a1a19; --page:#0d0d0d;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,.10);
+    --cf:#3987e5; --cf-soft:rgba(57,135,229,.14);
+    --p3d:#199e70; --p3d-soft:rgba(25,158,112,.16);
+    --ch-instagram:#d55181; --ch-whatsapp:#008300; --ch-website:#3987e5; --ch-organic:#c98500;
+    --shadow:none;
+  }
+  :root[data-theme="light"]{
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,.10);
+    --cf:#2a78d6; --cf-soft:rgba(42,120,214,.10);
+    --p3d:#1baf7a; --p3d-soft:rgba(27,175,122,.10);
+    --ch-instagram:#e87ba4; --ch-whatsapp:#008300; --ch-website:#2a78d6; --ch-organic:#eda100;
+    --shadow:0 1px 2px rgba(11,11,11,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--page); color:var(--ink);
+    font-size:clamp(12.5px,1.1vw,14.5px); line-height:1.45;
+  }
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  input,select,textarea{font:inherit;color:var(--ink)}
+
+  /* ---------- header ---------- */
+  header.app{
+    position:sticky;top:0;z-index:30;background:var(--page);
+    border-bottom:1px solid var(--grid);padding:10px 14px 0;
+  }
+  .brandrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .logo{
+    width:30px;height:30px;border-radius:8px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--cf) 0 49%,var(--p3d) 51% 100%);
+  }
+  .brand h1{font-size:1.05rem;font-weight:800;letter-spacing:-.01em}
+  .brand p{font-size:.72rem;color:var(--muted);margin-top:-2px}
+  .datamenu{margin-left:auto;display:flex;gap:6px}
+  .databtn{
+    font-size:.72rem;color:var(--ink-2);border:1px solid var(--border);
+    border-radius:8px;padding:4px 9px;background:var(--surface-1);
+  }
+  .databtn:hover{border-color:var(--baseline)}
+  nav.tabs{display:flex;gap:2px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  .tab{
+    flex:0 0 auto;padding:8px 13px;font-size:.82rem;font-weight:600;color:var(--muted);
+    border-bottom:2.5px solid transparent;white-space:nowrap;border-radius:6px 6px 0 0;
+  }
+  .tab:hover{color:var(--ink-2);background:var(--surface-1)}
+  .tab.on{color:var(--ink);border-bottom-color:var(--ink)}
+  .tab .num{
+    display:inline-block;font-size:.64rem;font-weight:700;color:var(--muted);
+    border:1px solid var(--border);border-radius:5px;padding:0 4px;margin-right:5px;
+  }
+  .tab.on .num{color:var(--ink);border-color:var(--baseline)}
+
+  /* ---------- 50/50 split ---------- */
+  main{padding:12px 14px 40px;max-width:1500px;margin:0 auto}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .panel{
+    background:var(--surface-1);border:1px solid var(--border);border-radius:14px;
+    box-shadow:var(--shadow);overflow:hidden;min-width:0;
+  }
+  .panel-head{
+    display:flex;align-items:center;gap:8px;padding:11px 13px;
+    border-bottom:1px solid var(--grid);
+  }
+  .panel-head .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .panel[data-biz="cf"]  .dot{background:var(--cf)}
+  .panel[data-biz="p3d"] .dot{background:var(--p3d)}
+  .panel-head h2{font-size:.92rem;font-weight:800;letter-spacing:.01em}
+  .panel-head .sub{font-size:.7rem;color:var(--muted)}
+  .panel-head .quick{
+    margin-left:auto;font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:7px;
+    border:1px solid var(--border);color:var(--ink-2);white-space:nowrap;
+  }
+  .panel[data-biz="cf"]  .quick:hover{color:var(--cf);border-color:var(--cf)}
+  .panel[data-biz="p3d"] .quick:hover{color:var(--p3d);border-color:var(--p3d)}
+  .panel-body{padding:12px 13px;display:flex;flex-direction:column;gap:12px}
+
+  /* ---------- shared bits ---------- */
+  .sec-title{
+    font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);display:flex;align-items:center;gap:8px;
+  }
+  .sec-title .line{flex:1;height:1px;background:var(--grid)}
+  .card{border:1px solid var(--grid);border-radius:11px;padding:10px 11px;background:var(--surface-1)}
+  .btn{
+    display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;
+    padding:5px 11px;border-radius:8px;border:1px solid var(--border);color:var(--ink-2);
+  }
+  .btn:hover{border-color:var(--baseline);color:var(--ink)}
+  .btn.primary{background:var(--ink);color:var(--page);border-color:var(--ink)}
+  .btn.primary:hover{opacity:.85}
+  .btn.accent-cf{background:var(--cf);border-color:var(--cf);color:#fff}
+  .btn.accent-p3d{background:var(--p3d);border-color:var(--p3d);color:#fff}
+  .btn.tiny{font-size:.68rem;padding:3px 8px}
+  .btn.danger:hover{color:var(--critical);border-color:var(--critical)}
+  .chip{
+    display:inline-flex;align-items:center;gap:4px;font-size:.66rem;font-weight:600;
+    border-radius:99px;padding:1.5px 8px;border:1px solid var(--border);color:var(--ink-2);
+    white-space:nowrap;
+  }
+  .chip .cdot{width:6px;height:6px;border-radius:50%}
+  .badge-low{
+    font-size:.62rem;font-weight:700;color:var(--critical);
+    border:1px solid var(--critical);border-radius:6px;padding:0 5px;
+  }
+  .badge-warn{
+    font-size:.62rem;font-weight:700;color:var(--serious);
+    border:1px solid var(--serious);border-radius:6px;padding:0 5px;
+  }
+  .empty{
+    text-align:center;color:var(--muted);font-size:.78rem;padding:18px 10px;
+    border:1.5px dashed var(--grid);border-radius:11px;
+  }
+
+  /* ---------- dashboard ---------- */
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{border:1px solid var(--grid);border-radius:11px;padding:9px 10px}
+  .kpi .k-label{font-size:.66rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .kpi .k-value{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+  .kpi .k-note{font-size:.66rem;color:var(--ink-2);margin-top:1px}
+  .kpi .k-note.up{color:var(--good)}
+  .insight{display:flex;gap:8px;align-items:flex-start;padding:7px 2px;border-bottom:1px solid var(--grid);font-size:.78rem}
+  .insight:last-child{border-bottom:none}
+  .insight .ico{flex:0 0 auto;font-size:.85rem;line-height:1.3}
+  .insight b{font-weight:700}
+  .mini-list .row{display:flex;justify-content:space-between;gap:8px;padding:6px 2px;border-bottom:1px solid var(--grid);font-size:.76rem}
+  .mini-list .row:last-child{border-bottom:none}
+  .mini-list .l{color:var(--ink-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mini-list .r{font-weight:700;white-space:nowrap}
+
+  /* ---------- charts ---------- */
+  .mchart{display:flex;align-items:flex-end;gap:6%;height:92px;padding:4px 4px 0}
+  .mcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;height:100%;justify-content:flex-end}
+  .mcol .v{font-size:.6rem;font-weight:600;color:var(--ink-2);white-space:nowrap}
+  .mcol .bar{width:70%;max-width:26px;border-radius:4px 4px 0 0;min-height:2px}
+  .panel[data-biz="cf"]  .mcol .bar{background:var(--cf)}
+  .panel[data-biz="p3d"] .mcol .bar{background:var(--p3d)}
+  .mcol .m{font-size:.62rem;color:var(--muted);border-top:1px solid var(--baseline);width:100%;text-align:center;padding-top:3px}
+  .hbar-row{display:grid;grid-template-columns:minmax(72px,1fr) 2.2fr auto;gap:8px;align-items:center;padding:5px 0;font-size:.74rem}
+  .hbar-row .name{display:flex;align-items:center;gap:6px;color:var(--ink-2);min-width:0}
+  .hbar-row .name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hbar-track{height:12px;border-radius:4px;background:transparent;position:relative}
+  .hbar-fill{display:block;height:100%;border-radius:0 4px 4px 0;border-left:2px solid var(--baseline);min-width:2px}
+  .hbar-row .val{font-weight:700;white-space:nowrap;font-size:.72rem}
+  .hbar-row .val small{color:var(--muted);font-weight:500}
+
+  /* ---------- links ---------- */
+  .linkcard{border:1px solid var(--grid);border-radius:12px;padding:11px 12px}
+  .linkcard.hero{border-width:1.5px}
+  .panel[data-biz="cf"]  .linkcard.hero{border-color:var(--cf);background:var(--cf-soft)}
+  .panel[data-biz="p3d"] .linkcard.hero{border-color:var(--p3d);background:var(--p3d-soft)}
+  .linkcard .lc-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .linkcard .lc-ico{font-size:1rem}
+  .linkcard h3{font-size:.85rem;font-weight:800}
+  .linkcard .lc-desc{font-size:.7rem;color:var(--muted);margin-top:2px}
+  .linkcard .url{
+    display:block;font-size:.73rem;margin:8px 0;padding:6px 9px;border-radius:8px;
+    background:var(--page);border:1px solid var(--grid);color:var(--ink-2);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,Consolas,monospace;
+  }
+  .linkcard .url.none{color:var(--muted);font-style:italic;font-family:inherit}
+  .lc-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .preview-wrap{margin-top:9px}
+  .preview-wrap iframe{width:100%;height:300px;border:1px solid var(--grid);border-radius:9px;background:#fff}
+  .preview-note{font-size:.64rem;color:var(--muted);margin-top:4px}
+
+  /* ---------- status / pipeline ---------- */
+  .filters{display:flex;gap:5px;flex-wrap:wrap}
+  .fbtn{font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:99px;border:1px solid var(--border);color:var(--muted)}
+  .fbtn.on{color:var(--ink);border-color:var(--ink)}
+  .order{border:1px solid var(--grid);border-radius:12px;padding:10px 11px}
+  .order .o-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .order h3{font-size:.84rem;font-weight:800;min-width:0}
+  .order .o-client{font-size:.7rem;color:var(--muted)}
+  .order .o-val{margin-left:auto;font-weight:800;font-size:.84rem;white-space:nowrap}
+  .stagebar{display:flex;align-items:center;margin:11px 0 3px}
+  .snode{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;position:relative}
+  .snode .sdot{
+    width:11px;height:11px;border-radius:50%;background:var(--surface-1);
+    border:2px solid var(--baseline);z-index:1;
+  }
+  .snode .sline{position:absolute;top:5px;left:-50%;width:100%;height:2px;background:var(--baseline)}
+  .snode:first-child .sline{display:none}
+  .snode.done .sdot{border-color:var(--seg);background:var(--seg)}
+  .snode.done .sline{background:var(--seg)}
+  .snode.now .sdot{border-color:var(--seg);background:var(--surface-1);box-shadow:0 0 0 3px color-mix(in srgb,var(--seg) 25%,transparent)}
+  .snode.now .sline{background:var(--seg)}
+  .snode .slabel{
+    font-size:.56rem;color:var(--muted);margin-top:4px;text-align:center;line-height:1.15;
+    max-width:100%;overflow:hidden;
+  }
+  .snode.now .slabel{color:var(--ink);font-weight:700}
+  .panel[data-biz="cf"]  .snode{--seg:var(--cf)}
+  .panel[data-biz="p3d"] .snode{--seg:var(--p3d)}
+  .stagemeta{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+  .tchip{
+    font-size:.62rem;font-weight:600;color:var(--ink-2);
+    border:1px solid var(--grid);border-radius:6px;padding:1px 6px;white-space:nowrap;
+  }
+  .tchip.slow{color:var(--serious);border-color:var(--serious);font-weight:700}
+  .tchip.stuck{color:var(--critical);border-color:var(--critical);font-weight:700}
+  .o-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;align-items:center}
+  .o-actions .spacer{flex:1}
+
+  /* ---------- inventory ---------- */
+  .inv-summary{display:flex;gap:8px;flex-wrap:wrap;font-size:.74rem;color:var(--ink-2)}
+  .inv-summary b{font-weight:800;color:var(--ink)}
+  .inv-cat{border:1px solid var(--grid);border-radius:11px;overflow:hidden}
+  .inv-cat .ic-head{
+    display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--page);
+    border-bottom:1px solid var(--grid);font-size:.72rem;font-weight:700;
+  }
+  .inv-cat .ic-head .cnt{color:var(--muted);font-weight:500}
+  .inv-cat .ic-head .catval{margin-left:auto;color:var(--ink-2);font-weight:700;font-size:.7rem}
+  .item{
+    display:flex;align-items:center;gap:7px;padding:7px 10px;border-bottom:1px solid var(--grid);
+    font-size:.75rem;flex-wrap:wrap;
+  }
+  .item:last-child{border-bottom:none}
+  .item .i-name{font-weight:600;min-width:0;flex:1 1 90px}
+  .item .i-qty{white-space:nowrap;font-weight:700}
+  .item .i-qty small{color:var(--muted);font-weight:500}
+  .item .i-price{white-space:nowrap;color:var(--ink-2);font-size:.7rem}
+  .item.low .i-qty{color:var(--critical)}
+  .qbtn{
+    width:20px;height:20px;border:1px solid var(--border);border-radius:6px;
+    font-size:.75rem;line-height:1;color:var(--ink-2);flex:0 0 auto;
+  }
+  .qbtn:hover{border-color:var(--baseline);color:var(--ink)}
+  .iedit{font-size:.66rem;color:var(--muted);padding:2px 5px;border-radius:5px}
+  .iedit:hover{color:var(--ink)}
+
+  /* ---------- earnings ---------- */
+  .earn-hero{display:flex;gap:8px}
+  .earn-hero .kpi{flex:1}
+  .paylist .pay{
+    display:flex;align-items:center;gap:7px;padding:7px 2px;border-bottom:1px solid var(--grid);
+    font-size:.74rem;flex-wrap:wrap;
+  }
+  .paylist .pay:last-child{border-bottom:none}
+  .pay .p-note{min-width:0;flex:1 1 80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pay .p-date{color:var(--muted);font-size:.66rem;white-space:nowrap}
+  .pay .p-amt{font-weight:800;white-space:nowrap}
+
+  /* ---------- modal ---------- */
+  dialog{
+    border:1px solid var(--border);border-radius:14px;background:var(--surface-1);color:var(--ink);
+    width:min(440px,92vw);padding:0;
+  }
+  dialog::backdrop{background:rgba(0,0,0,.45)}
+  .m-head{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--grid)}
+  .m-head h3{font-size:.95rem;font-weight:800}
+  .m-head .x{margin-left:auto;font-size:1.1rem;color:var(--muted);padding:2px 8px}
+  .m-body{padding:14px 16px;display:flex;flex-direction:column;gap:11px;max-height:70vh;overflow-y:auto}
+  .f-row{display:flex;gap:9px}
+  .f-row>label{flex:1}
+  .m-body label{display:flex;flex-direction:column;gap:4px;font-size:.72rem;font-weight:600;color:var(--ink-2)}
+  .m-body input,.m-body select,.m-body textarea{
+    border:1px solid var(--baseline);border-radius:8px;padding:7px 9px;background:var(--page);
+    font-size:.82rem;width:100%;
+  }
+  .m-body input:focus,.m-body select:focus{outline:2px solid var(--cf);outline-offset:1px;border-color:transparent}
+  .m-foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid var(--grid)}
+
+  footer.app{
+    text-align:center;color:var(--muted);font-size:.68rem;padding:18px 14px 26px;
+  }
+
+  @media (max-width:640px){
+    .panel-head{flex-wrap:wrap;padding:9px 10px}
+    .kpis{grid-template-columns:1fr}
+    .hbar-row{grid-template-columns:minmax(58px,1fr) 1.6fr auto}
+    .snode .slabel{font-size:.5rem}
+    .earn-hero{flex-direction:column}
+    main{padding:8px 8px 32px}
+    .split{gap:7px}
+    .panel-body{padding:9px 8px}
+  }
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="brandrow">
+    <div class="logo" aria-hidden="true"></div>
+    <div class="brand">
+      <h1>RR Business Hub</h1>
+      <p>Carbon Fibre × 3D Printing — one screen, both businesses</p>
+    </div>
+    <div class="datamenu">
+      <button class="databtn" data-action="backup" title="Download all data as a JSON file">⭳ Backup</button>
+      <button class="databtn" data-action="restore" title="Load data from a backup file">⭱ Restore</button>
+      <button class="databtn" data-action="reset" title="Erase everything and reload sample data">↺ Reset</button>
+      <input type="file" id="restoreFile" accept="application/json" hidden>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-tab="dash"><span class="num">1</span>Dashboard</button>
+    <button class="tab" data-tab="links"><span class="num">2</span>Order Links</button>
+    <button class="tab" data-tab="status"><span class="num">3</span>Operations Status</button>
+    <button class="tab" data-tab="inventory"><span class="num">4</span>Inventory</button>
+    <button class="tab" data-tab="earnings"><span class="num">5</span>Earnings</button>
+  </nav>
+</header>
+
+<main>
+  <div class="split">
+    <section class="panel" data-biz="cf">
+      <div class="panel-head">
+        <span class="dot"></span>
+        <div><h2>CARBON FIBRE</h2><div class="sub">composites · custom parts</div></div>
+        <button class="quick" data-action="open-landing" data-biz="cf">Open page ↗</button>
+      </div>
+      <div class="panel-body" id="body-cf"></div>
+    </section>
+    <section class="panel" data-biz="p3d">
+      <div class="panel-head">
+        <span class="dot"></span>
+        <div><h2>3D PRINTING</h2><div class="sub">FDM prints · prototypes</div></div>
+        <button class="quick" data-action="open-landing" data-biz="p3d">Open page ↗</button>
+      </div>
+      <div class="panel-body" id="body-p3d"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="app">
+  Data is saved on this device (browser storage) — nothing leaves your phone/computer.
+  Use <b>Backup</b> regularly to keep a copy, and <b>Restore</b> to move data to another device.
+</footer>
+
+<dialog id="modal">
+  <form method="dialog" id="modalForm">
+    <div class="m-head"><h3 id="modalTitle">Edit</h3><button type="button" class="x" data-action="close-modal">✕</button></div>
+    <div class="m-body" id="modalBody"></div>
+    <div class="m-foot">
+      <button type="button" class="btn" data-action="close-modal">Cancel</button>
+      <button type="submit" class="btn primary" id="modalSave">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+'use strict';
+/* ================= constants ================= */
+const DAY = 86400000;
+const LS_KEY = 'rr-bizhub-v1';
+const BIZ = { cf:{name:'Carbon Fibre'}, p3d:{name:'3D Printing'} };
+const BIZ_KEYS = ['cf','p3d'];
+const STAGES = {
+  cf : ['Enquiry','Quoted','Material Prep','Layup','Vacuum & Cure','Trim & Finish','Quality Check','Delivered'],
+  p3d: ['Enquiry','Quoted','Design & Slice','Printing','Post-Process','Quality Check','Packed','Delivered']
+};
+const CHANNELS = ['Instagram','WhatsApp','Website','Organic'];
+const CH_COLOR = {
+  Instagram:'var(--ch-instagram)', WhatsApp:'var(--ch-whatsapp)',
+  Website:'var(--ch-website)', Organic:'var(--ch-organic)'
+};
+const SOURCES = ['Custom project','Quote order','Direct sale','Other'];
+const LINK_DEFS = [
+  {key:'landing', ico:'🏠', title:'Business landing page', desc:'Your main page — share this everywhere. Attach a URL or a hosted HTML page.'},
+  {key:'custom',  ico:'🛠️', title:'Custom project orders', desc:'Link customers use to place a custom project order.'},
+  {key:'quote',   ico:'📋', title:'Quote requests', desc:'Link customers use to ask for a quote.'}
+];
+const STUCK_DAYS = 3;   // a stage running longer than this is flagged
+
+/* ================= storage ================= */
+let memStore = null;
+function loadRaw(){ try{ return localStorage.getItem(LS_KEY); }catch(e){ return memStore; } }
+function saveRaw(s){ try{ localStorage.setItem(LS_KEY, s); }catch(e){ memStore = s; } }
+function save(){ saveRaw(JSON.stringify(state)); }
+
+let _uid = Date.now() % 100000;
+const uid = () => 'id' + (_uid++) + Math.random().toString(36).slice(2,6);
+
+/* ================= seed data ================= */
+function seedOrder(biz, name, client, value, channel, stage, stageDays, note){
+  // stageDays[i] = days spent in stage i (last entry = current stage so far)
+  const total = stageDays.reduce((a,b)=>a+b,0);
+  let t = Date.now() - total*DAY;
+  const history = stageDays.map((d,i)=>{ const e = {i:stage - (stageDays.length-1) + i, t:Math.round(t)}; t += d*DAY; return e; });
+  return { id:uid(), biz, name, client, value, channel, stage, history, note:note||'' };
+}
+function seedPay(biz, amount, daysAgo, channel, source, note){
+  return { id:uid(), biz, amount, date:new Date(Date.now()-daysAgo*DAY).toISOString().slice(0,10), channel, source, note };
+}
+function seedItem(cat, name, qty, unit, price, low){
+  return { id:uid(), cat, name, qty, unit, price, low };
+}
+function defaultState(){
+  return {
+    links:{
+      cf :{landing:'', custom:'', quote:''},
+      p3d:{landing:'', custom:'', quote:''}
+    },
+    orders:[
+      seedOrder('cf','Carbon bonnet scoop','Arjun M.',18500,'Instagram',4,[1,2,1,2,1.5],'Gloss finish, 2×2 twill'),
+      seedOrder('cf','Drone frame plates ×4','SkyWorks',7200,'Website',1,[2,1.2]),
+      seedOrder('cf','Bike fairing panel','Rahul V.',24000,'WhatsApp',3,[1,1,2,4.2],'Waiting on mould release'),
+      seedOrder('cf','Dash trim set','Auto studio',9800,'Organic',7,[1,1,1,2,1,1,0.5,3]),
+      seedOrder('p3d','Architectural model 1:100','Studio N',5400,'Website',3,[0.5,1,1.5,2.5],'White PLA, 0.2 mm'),
+      seedOrder('p3d','Drone mounts ×12','SkyWorks',2800,'WhatsApp',4,[0.5,0.5,1,1.5,0.8]),
+      seedOrder('p3d','Cosplay helmet','Priya K.',6500,'Instagram',1,[1.5,2.1],'Needs paint-ready surface'),
+      seedOrder('p3d','Spare gear set','Local shop',900,'Organic',7,[0.3,0.5,0.5,1,0.5,0.3,0.2,5])
+    ],
+    inventory:{
+      cf:[
+        seedItem('Fabric','2×2 Twill 3K · 200 gsm',8.5,'m',1450,3),
+        seedItem('Fabric','Plain weave 3K · 200 gsm',4.2,'m',1250,3),
+        seedItem('Fabric','Hexagonal weave',1.5,'m',2100,2),
+        seedItem('Fabric','Kevlar hybrid weave',3,'m',1900,2),
+        seedItem('Consumables','Peel-ply',6,'m',180,4),
+        seedItem('Consumables','Breather cloth',2.5,'m',150,3),
+        seedItem('Consumables','Vacuum bagging film',7,'m',160,4),
+        seedItem('Consumables','Sealant tape',4,'rolls',220,2),
+        seedItem('Resin system','Epoxy resin',2.4,'kg',950,1),
+        seedItem('Resin system','Hardener',0.8,'kg',1100,0.5),
+        seedItem('Resin system','Release wax',1,'tin',450,1)
+      ],
+      p3d:[
+        seedItem('PLA filament','PLA · Black',2.5,'kg',850,1),
+        seedItem('PLA filament','PLA · White',1.2,'kg',850,1),
+        seedItem('PLA filament','PLA · Red',0.4,'kg',900,1),
+        seedItem('PLA filament','PLA · Blue',1.8,'kg',900,1),
+        seedItem('PLA filament','PLA · Grey',3,'kg',850,1),
+        seedItem('PLA filament','PLA · Silk Gold',0.6,'kg',1150,0.5),
+        seedItem('Magnets','Neodymium 5×2 mm',180,'pcs',4,50),
+        seedItem('Magnets','Neodymium 10×3 mm',38,'pcs',9,40),
+        seedItem('Screws','M2 × 8 mm',220,'pcs',1.2,100),
+        seedItem('Screws','M3 × 10 mm',340,'pcs',1.5,100),
+        seedItem('Screws','M3 × 16 mm',85,'pcs',1.8,100),
+        seedItem('Screws','M4 × 12 mm',150,'pcs',2.2,80),
+        seedItem('Lights','LED strip · warm 5 V',6,'m',95,3),
+        seedItem('Lights','LED strip · WS2812B',3,'m',260,2),
+        seedItem('Lights','LED module 5 mm',45,'pcs',6,30)
+      ]
+    },
+    payments:[
+      seedPay('cf',24000,2,'WhatsApp','Custom project','Bike fairing — advance + final'),
+      seedPay('cf',9800,6,'Organic','Quote order','Dash trim set'),
+      seedPay('cf',6000,12,'Instagram','Custom project','Bonnet scoop — advance'),
+      seedPay('cf',15500,26,'Instagram','Custom project','Splitter lip'),
+      seedPay('cf',11200,41,'Website','Quote order','Panel repair job'),
+      seedPay('cf',19800,68,'Instagram','Custom project','Roof wrap panel'),
+      seedPay('cf',8400,95,'WhatsApp','Direct sale','Sheet offcuts sale'),
+      seedPay('cf',13100,128,'Website','Quote order','Aero mirror caps'),
+      seedPay('cf',7300,152,'Organic','Direct sale','Workshop walk-in'),
+      seedPay('p3d',900,1,'Organic','Direct sale','Spare gear set'),
+      seedPay('p3d',2800,4,'WhatsApp','Quote order','Drone mounts'),
+      seedPay('p3d',3200,9,'Instagram','Custom project','Lithophane lamps ×2'),
+      seedPay('p3d',5400,18,'Website','Custom project','Architecture model — advance'),
+      seedPay('p3d',1600,33,'WhatsApp','Direct sale','Cable clips bulk'),
+      seedPay('p3d',4700,55,'Instagram','Custom project','Cosplay armour set'),
+      seedPay('p3d',2100,84,'Website','Quote order','Enclosure boxes'),
+      seedPay('p3d',3600,110,'Instagram','Custom project','Name-plate batch'),
+      seedPay('p3d',1250,140,'Organic','Direct sale','School project prints')
+    ]
+  };
+}
+let state;
+(function init(){
+  const raw = loadRaw();
+  if(raw){ try{ state = JSON.parse(raw); }catch(e){ state = defaultState(); } }
+  else state = defaultState();
+  save();
+})();
+
+/* ================= helpers ================= */
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const INR = new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
+const money = n => INR.format(Math.round(n||0));
+const moneyK = n => n>=100000 ? '₹'+(n/100000).toFixed(1).replace(/\.0$/,'')+'L'
+                 : n>=1000   ? '₹'+(n/1000).toFixed(1).replace(/\.0$/,'')+'k'
+                 : '₹'+Math.round(n);
+const fmtDays = d => d < 1/24 ? 'now' : d < 1 ? Math.round(d*24)+'h' : d.toFixed(d<10?1:0).replace(/\.0$/,'')+'d';
+const fmtDate = iso => { const d = new Date(iso+'T00:00'); return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'}); };
+const monthKey = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const chDot = ch => `<span class="cdot" style="background:${CH_COLOR[ch]||'var(--muted)'}"></span>`;
+const accBtn = biz => biz==='cf' ? 'accent-cf' : 'accent-p3d';
+
+function payments(biz){ return state.payments.filter(p=>p.biz===biz); }
+function orders(biz){ return state.orders.filter(o=>o.biz===biz); }
+function activeOrders(biz){ return orders(biz).filter(o=>o.stage < STAGES[o.biz].length-1); }
+function lowItems(biz){ return state.inventory[biz].filter(i=>i.qty <= i.low); }
+function monthTotal(biz, offset){
+  const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-offset);
+  const k = monthKey(d);
+  return payments(biz).filter(p=>p.date.slice(0,7)===k).reduce((a,p)=>a+p.amount,0);
+}
+function stageDurations(o){
+  // returns [{i, days, current}] one per history entry
+  const out = [];
+  for(let j=0;j<o.history.length;j++){
+    const end = j+1 < o.history.length ? o.history[j+1].t : Date.now();
+    out.push({ i:o.history[j].i, days:(end - o.history[j].t)/DAY, current:j===o.history.length-1 });
+  }
+  return out;
+}
+
+/* ================= tab switching ================= */
+const VALID_TABS = ['dash','links','status','inventory','earnings'];
+let TAB = new URLSearchParams(location.search).get('tab');
+if(!VALID_TABS.includes(TAB)) TAB = 'dash';
+document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t.dataset.tab===TAB));
+document.getElementById('tabs').addEventListener('click', e=>{
+  const b = e.target.closest('.tab'); if(!b) return;
+  TAB = b.dataset.tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t===b));
+  render();
+});
+
+/* ================= render root ================= */
+function render(){
+  for(const biz of BIZ_KEYS){
+    const el = document.getElementById('body-'+biz);
+    if(TAB==='dash')      el.innerHTML = vDash(biz);
+    else if(TAB==='links')     el.innerHTML = vLinks(biz);
+    else if(TAB==='status')    el.innerHTML = vStatus(biz);
+    else if(TAB==='inventory') el.innerHTML = vInventory(biz);
+    else if(TAB==='earnings')  el.innerHTML = vEarnings(biz);
+  }
+}
+
+/* ================= 1 · dashboard ================= */
+function vDash(biz){
+  const act = activeOrders(biz);
+  const thisM = monthTotal(biz,0), lastM = monthTotal(biz,1);
+  const pipeline = act.reduce((a,o)=>a+(o.value||0),0);
+  const low = lowItems(biz);
+  const pend = act.filter(o=>o.stage<=1);
+  const delta = lastM>0 ? Math.round((thisM-lastM)/lastM*100) : null;
+
+  // slowest current stage across active orders
+  let slow = null;
+  for(const o of act){
+    const cur = stageDurations(o).at(-1);
+    if(cur && (!slow || cur.days > slow.days)) slow = {o, days:cur.days, stage:STAGES[biz][o.stage]};
+  }
+  // top channel (last 90 days)
+  const cut = new Date(Date.now()-90*DAY).toISOString().slice(0,10);
+  const chTot = {};
+  payments(biz).filter(p=>p.date>=cut).forEach(p=>chTot[p.channel]=(chTot[p.channel]||0)+p.amount);
+  const topCh = Object.entries(chTot).sort((a,b)=>b[1]-a[1])[0];
+
+  const insights = [];
+  if(topCh) insights.push(`<div class="insight"><span class="ico">📈</span><div>Most money is coming through <b>${esc(topCh[0])}</b> — ${money(topCh[1])} in the last 90 days.</div></div>`);
+  if(slow && slow.days>=STUCK_DAYS) insights.push(`<div class="insight"><span class="ico">🐢</span><div><b>${esc(slow.o.name)}</b> has been in <b>${esc(slow.stage)}</b> for ${fmtDays(slow.days)} — this is where time is going.</div></div>`);
+  else if(slow) insights.push(`<div class="insight"><span class="ico">✅</span><div>No stage is stuck — longest right now is <b>${esc(slow.stage)}</b> on ${esc(slow.o.name)} (${fmtDays(slow.days)}).</div></div>`);
+  if(pend.length) insights.push(`<div class="insight"><span class="ico">📝</span><div><b>${pend.length}</b> enquiry/quote${pend.length>1?'s':''} waiting worth ${money(pend.reduce((a,o)=>a+o.value,0))} — follow up to convert.</div></div>`);
+  if(low.length) insights.push(`<div class="insight"><span class="ico">⚠️</span><div>Low stock: <b>${esc(low.slice(0,3).map(i=>i.name).join(', '))}</b>${low.length>3?' +'+(low.length-3)+' more':''}. Reorder before it blocks a job.</div></div>`);
+  if(!insights.length) insights.push(`<div class="insight"><span class="ico">✨</span><div>All clear — add orders and payments to see insights here.</div></div>`);
+
+  const recent = payments(biz).slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);
+
+  return `
+    <div class="kpis">
+      <div class="kpi"><div class="k-label">Active orders</div><div class="k-value">${act.length}</div><div class="k-note">${act.filter(o=>o.stage>=2).length} in production</div></div>
+      <div class="kpi"><div class="k-label">Earned this month</div><div class="k-value">${moneyK(thisM)}</div>
+        <div class="k-note ${delta!=null&&delta>=0?'up':''}">${delta==null?'no data last month':(delta>=0?'▲ ':'▼ ')+Math.abs(delta)+'% vs last month'}</div></div>
+      <div class="kpi"><div class="k-label">Pipeline value</div><div class="k-value">${moneyK(pipeline)}</div><div class="k-note">across open orders</div></div>
+      <div class="kpi"><div class="k-label">Low-stock items</div><div class="k-value" ${low.length?'style="color:var(--critical)"':''}>${low.length}</div><div class="k-note">${low.length?'needs reorder':'stock healthy'}</div></div>
+    </div>
+
+    <div class="sec-title">Earnings · last 6 months<span class="line"></span></div>
+    ${monthChart(biz)}
+
+    <div class="sec-title">Insights<span class="line"></span></div>
+    <div class="card">${insights.join('')}</div>
+
+    <div class="sec-title">Recent payments<span class="line"></span></div>
+    <div class="card mini-list">${
+      recent.length ? recent.map(p=>`<div class="row"><span class="l">${chDot(p.channel)} ${esc(p.note||p.source)}</span><span class="r">${money(p.amount)}</span></div>`).join('')
+      : '<div class="empty">No payments yet</div>'}
+    </div>`;
+}
+
+function monthChart(biz){
+  const cols = [];
+  let max = 0;
+  for(let i=5;i>=0;i--){
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
+    const v = monthTotal(biz,i);
+    max = Math.max(max,v);
+    cols.push({label:d.toLocaleDateString('en-IN',{month:'short'}), v});
+  }
+  return `<div class="card"><div class="mchart">${cols.map(c=>`
+    <div class="mcol" title="${esc(c.label)}: ${money(c.v)}">
+      <span class="v">${c.v?moneyK(c.v):''}</span>
+      <div class="bar" style="height:${max?Math.max(2,Math.round(c.v/max*58)):2}px"></div>
+      <span class="m">${esc(c.label)}</span>
+    </div>`).join('')}</div></div>`;
+}
+
+/* ================= 2 · order links ================= */
+function vLinks(biz){
+  const L = state.links[biz];
+  return LINK_DEFS.map((d,idx)=>{
+    const url = L[d.key];
+    return `
+    <div class="linkcard ${d.key==='landing'?'hero':''}">
+      <div class="lc-top"><span class="lc-ico">${d.ico}</span><h3>${d.title}</h3></div>
+      <div class="lc-desc">${d.desc}</div>
+      ${url
+        ? `<span class="url" title="${esc(url)}">${esc(url)}</span>`
+        : `<span class="url none">No link attached yet — tap “Attach link”.</span>`}
+      <div class="lc-actions">
+        ${url?`<button class="btn tiny ${accBtn(biz)}" data-action="open-link" data-biz="${biz}" data-key="${d.key}">Open ↗</button>
+               <button class="btn tiny" data-action="copy-link" data-biz="${biz}" data-key="${d.key}">Copy</button>
+               <button class="btn tiny" data-action="preview-link" data-biz="${biz}" data-key="${d.key}" data-idx="${idx}">Preview</button>`:''}
+        <button class="btn tiny" data-action="edit-link" data-biz="${biz}" data-key="${d.key}">${url?'Edit':'Attach link'}</button>
+      </div>
+      <div class="preview-wrap" id="prev-${biz}-${idx}" hidden></div>
+    </div>`;
+  }).join('');
+}
+
+/* ================= 3 · operations status ================= */
+const FILTERS = { cf:'active', p3d:'active' };
+function vStatus(biz){
+  const all = orders(biz);
+  const f = FILTERS[biz];
+  const list = all.filter(o=>{
+    const done = o.stage >= STAGES[biz].length-1;
+    return f==='all' ? true : f==='done' ? done : !done;
+  }).sort((a,b)=> (a.stage>=STAGES[biz].length-1?1:0) - (b.stage>=STAGES[biz].length-1?1:0));
+
+  return `
+    <div class="o-actions" style="margin:0">
+      <div class="filters">
+        ${[['active','Active'],['done','Delivered'],['all','All']].map(([k,l])=>
+          `<button class="fbtn ${f===k?'on':''}" data-action="filter" data-biz="${biz}" data-f="${k}">${l}</button>`).join('')}
+      </div>
+      <span class="spacer"></span>
+      <button class="btn tiny ${accBtn(biz)}" data-action="add-order" data-biz="${biz}">+ New order</button>
+    </div>
+    ${list.length ? list.map(o=>orderCard(o)).join('') : `<div class="empty">No ${f==='done'?'delivered':f} orders yet.</div>`}`;
+}
+
+function orderCard(o){
+  const S = STAGES[o.biz];
+  const durs = stageDurations(o);
+  const done = o.stage >= S.length-1;
+  const maxDur = durs.length ? durs.reduce((a,d)=>d.days>a.days?d:a) : null;
+  const chips = durs.map(d=>{
+    const isMax = maxDur && d===maxDur && durs.length>1 && d.days>=0.5;
+    const stuck = d.current && !done && d.days>=STUCK_DAYS;
+    return `<span class="tchip ${stuck?'stuck':isMax?'slow':''}" title="Time spent in ${esc(S[d.i])}">
+      ${esc(S[d.i])} · ${fmtDays(d.days)}${d.current&&!done?' ⏳':''}${stuck?' — stuck!':isMax&&!stuck?' — longest':''}</span>`;
+  }).join('');
+
+  return `<div class="order">
+    <div class="o-top">
+      <h3>${esc(o.name)}</h3><span class="o-client">${esc(o.client||'')}</span>
+      <span class="o-val">${money(o.value)}</span>
+    </div>
+    <div class="o-top" style="margin-top:3px">
+      <span class="chip">${chDot(o.channel)}${esc(o.channel)}</span>
+      ${done?`<span class="chip" style="color:var(--good);border-color:var(--good)">✔ Delivered</span>`
+            :`<span class="chip">Now: <b>&nbsp;${esc(S[o.stage])}</b></span>`}
+      ${o.note?`<span class="chip" title="${esc(o.note)}">📝 note</span>`:''}
+    </div>
+    <div class="stagebar">${S.map((s,i)=>`
+      <div class="snode ${i<o.stage?'done':i===o.stage?'now':''}">
+        <div class="sline"></div><div class="sdot"></div>
+        <div class="slabel">${esc(s)}</div>
+      </div>`).join('')}
+    </div>
+    <div class="stagemeta">${chips}</div>
+    <div class="o-actions">
+      <button class="btn tiny" data-action="stage-prev" data-id="${o.id}" ${o.stage===0?'disabled style="opacity:.4"':''}>◀ Back</button>
+      <button class="btn tiny ${accBtn(o.biz)}" data-action="stage-next" data-id="${o.id}" ${done?'disabled style="opacity:.4"':''}>${o.stage===STAGES[o.biz].length-2?'Deliver ✔':'Advance ▶'}</button>
+      <span class="spacer"></span>
+      <button class="btn tiny" data-action="edit-order" data-id="${o.id}">Edit</button>
+      <button class="btn tiny danger" data-action="del-order" data-id="${o.id}">Delete</button>
+    </div>
+  </div>`;
+}
+
+/* ================= 4 · inventory ================= */
+function vInventory(biz){
+  const items = state.inventory[biz];
+  const cats = [...new Set(items.map(i=>i.cat))];
+  const totalVal = items.reduce((a,i)=>a+i.qty*i.price,0);
+  const low = lowItems(biz);
+
+  return `
+    <div class="o-actions" style="margin:0">
+      <div class="inv-summary">
+        <span>Stock value: <b>${money(totalVal)}</b></span>
+        <span>·</span>
+        <span>${items.length} items</span>
+        ${low.length?`<span>·</span><span style="color:var(--critical);font-weight:700">${low.length} low</span>`:''}
+      </div>
+      <span class="spacer"></span>
+      <button class="btn tiny ${accBtn(biz)}" data-action="add-item" data-biz="${biz}">+ Add item</button>
+    </div>
+    ${cats.map(cat=>{
+      const list = items.filter(i=>i.cat===cat);
+      const catVal = list.reduce((a,i)=>a+i.qty*i.price,0);
+      return `<div class="inv-cat">
+        <div class="ic-head">${esc(cat)} <span class="cnt">· ${list.length}</span><span class="catval">${money(catVal)}</span></div>
+        ${list.map(i=>{
+          const isLow = i.qty<=i.low;
+          return `<div class="item ${isLow?'low':''}">
+            <span class="i-name">${esc(i.name)} ${isLow?'<span class="badge-low">LOW</span>':''}</span>
+            <button class="qbtn" data-action="qty" data-id="${i.id}" data-biz="${biz}" data-d="-1" title="Reduce">−</button>
+            <span class="i-qty">${+i.qty.toFixed(2)} <small>${esc(i.unit)}</small></span>
+            <button class="qbtn" data-action="qty" data-id="${i.id}" data-biz="${biz}" data-d="1" title="Add">+</button>
+            <span class="i-price">${money(i.price)}/${esc(i.unit)} · worth ${money(i.qty*i.price)}</span>
+            <button class="iedit" data-action="edit-item" data-id="${i.id}" data-biz="${biz}">edit</button>
+            <button class="iedit" data-action="del-item" data-id="${i.id}" data-biz="${biz}">✕</button>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('')}
+    ${items.length?'':'<div class="empty">No inventory yet — add your first item.</div>'}`;
+}
+
+/* ================= 5 · earnings ================= */
+function vEarnings(biz){
+  const pays = payments(biz).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const total = pays.reduce((a,p)=>a+p.amount,0);
+  const thisM = monthTotal(biz,0);
+
+  // by source
+  const src = {}; SOURCES.forEach(s=>src[s]=0);
+  pays.forEach(p=>{ src[p.source]=(src[p.source]||0)+p.amount; });
+  const srcMax = Math.max(1,...Object.values(src));
+
+  // by channel — the "where is money coming from" section
+  const ch = {}; CHANNELS.forEach(c=>ch[c]={amt:0,n:0});
+  pays.forEach(p=>{ if(!ch[p.channel]) ch[p.channel]={amt:0,n:0}; ch[p.channel].amt+=p.amount; ch[p.channel].n++; });
+  const chMax = Math.max(1,...Object.values(ch).map(c=>c.amt));
+
+  return `
+    <div class="earn-hero">
+      <div class="kpi"><div class="k-label">Total earned</div><div class="k-value">${moneyK(total)}</div><div class="k-note">${pays.length} payments recorded</div></div>
+      <div class="kpi"><div class="k-label">This month</div><div class="k-value">${moneyK(thisM)}</div><div class="k-note">${new Date().toLocaleDateString('en-IN',{month:'long'})}</div></div>
+    </div>
+
+    <div class="sec-title">Monthly trend<span class="line"></span></div>
+    ${monthChart(biz)}
+
+    <div class="sec-title">Earnings by source<span class="line"></span></div>
+    <div class="card">${Object.entries(src).filter(([,v])=>v>0).map(([s,v])=>`
+      <div class="hbar-row">
+        <span class="name"><span>${esc(s)}</span></span>
+        <span class="hbar-track"><span class="hbar-fill" style="width:${Math.round(v/srcMax*100)}%;background:${biz==='cf'?'var(--cf)':'var(--p3d)'}"></span></span>
+        <span class="val">${money(v)} <small>(${total?Math.round(v/total*100):0}%)</small></span>
+      </div>`).join('') || '<div class="empty">No payments yet</div>'}
+    </div>
+
+    <div class="sec-title">💳 Where payments come from — by platform<span class="line"></span></div>
+    <div class="card">
+      ${CHANNELS.map(c=>{
+        const d = ch[c];
+        return `<div class="hbar-row">
+          <span class="name">${chDot(c)}<span>${esc(c)}</span></span>
+          <span class="hbar-track"><span class="hbar-fill" style="width:${Math.round(d.amt/chMax*100)}%;background:${CH_COLOR[c]}"></span></span>
+          <span class="val">${money(d.amt)} <small>(${total?Math.round(d.amt/total*100):0}% · ${d.n} pay)</small></span>
+        </div>`;
+      }).join('')}
+      <div class="preview-note" style="margin-top:6px">Tip: the platform with the tallest bar is where your buyers actually are — put your energy there.</div>
+    </div>
+
+    <div class="o-actions" style="margin:0">
+      <div class="sec-title" style="flex:1">Payment log<span class="line"></span></div>
+      <button class="btn tiny ${accBtn(biz)}" data-action="add-pay" data-biz="${biz}">+ Record payment</button>
+    </div>
+    <div class="card paylist">${
+      pays.slice(0,25).map(p=>`
+        <div class="pay">
+          <span class="chip">${chDot(p.channel)}${esc(p.channel)}</span>
+          <span class="p-note" title="${esc(p.note||'')}">${esc(p.note||p.source)}</span>
+          <span class="p-date">${fmtDate(p.date)} · ${esc(p.source)}</span>
+          <span class="p-amt">${money(p.amount)}</span>
+          <button class="iedit" data-action="del-pay" data-id="${p.id}">✕</button>
+        </div>`).join('') || '<div class="empty">No payments yet — record your first one.</div>'}
+    </div>`;
+}
+
+/* ================= modal machinery ================= */
+const modal = document.getElementById('modal');
+const modalForm = document.getElementById('modalForm');
+let onSaveFn = null;
+function openModal(title, bodyHtml, onSave){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  onSaveFn = onSave;
+  modal.showModal();
+}
+modalForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const data = {};
+  modalForm.querySelectorAll('input,select,textarea').forEach(el=>{ if(el.name) data[el.name]=el.value; });
+  if(onSaveFn) onSaveFn(data);
+  modal.close(); save(); render();
+});
+
+const sel = (name,opts,cur) => `<select name="${name}">${opts.map(o=>`<option ${o===cur?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+
+/* ---- forms ---- */
+function orderForm(biz, o){
+  const isNew = !o;
+  o = o || {name:'',client:'',value:'',channel:'Instagram',stage:0,note:''};
+  openModal(isNew?`New order — ${BIZ[biz].name}`:`Edit order`, `
+    <label>Order / project name<input name="name" required value="${esc(o.name)}" placeholder="e.g. Custom drone frame"></label>
+    <div class="f-row">
+      <label>Client<input name="client" value="${esc(o.client)}" placeholder="Who is it for?"></label>
+      <label>Value (₹)<input name="value" type="number" min="0" step="any" required value="${esc(o.value)}"></label>
+    </div>
+    <div class="f-row">
+      <label>Came via ${sel('channel',CHANNELS,o.channel)}</label>
+      <label>Stage <select name="stage">${STAGES[biz].map((s,i)=>`<option value="${i}" ${i===o.stage?'selected':''}>${esc(s)}</option>`).join('')}</select></label>
+    </div>
+    <label>Note<textarea name="note" rows="2" placeholder="Material, finish, deadline…">${esc(o.note)}</textarea></label>
+  `, d=>{
+    const stage = +d.stage;
+    if(isNew){
+      state.orders.push({id:uid(), biz, name:d.name, client:d.client, value:+d.value||0,
+        channel:d.channel, stage, history:[{i:stage,t:Date.now()}], note:d.note});
+    }else{
+      const ord = state.orders.find(x=>x.id===o.id);
+      Object.assign(ord,{name:d.name,client:d.client,value:+d.value||0,channel:d.channel,note:d.note});
+      if(stage!==ord.stage){ ord.stage=stage; ord.history.push({i:stage,t:Date.now()}); }
+    }
+  });
+}
+function itemForm(biz, it){
+  const isNew = !it;
+  it = it || {cat:'',name:'',qty:'',unit:biz==='cf'?'m':'pcs',price:'',low:1};
+  const cats = [...new Set(state.inventory[biz].map(i=>i.cat))];
+  openModal(isNew?`Add stock — ${BIZ[biz].name}`:'Edit stock item', `
+    <label>Category<input name="cat" required list="catlist" value="${esc(it.cat)}" placeholder="e.g. ${biz==='cf'?'Fabric':'PLA filament'}">
+      <datalist id="catlist">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></label>
+    <label>Item name<input name="name" required value="${esc(it.name)}" placeholder="e.g. ${biz==='cf'?'2×2 Twill 3K':'PLA · Orange'}"></label>
+    <div class="f-row">
+      <label>Quantity<input name="qty" type="number" min="0" step="any" required value="${esc(it.qty)}"></label>
+      <label>Unit ${sel('unit',['m','kg','pcs','rolls','tin','sets','g'],it.unit)}</label>
+    </div>
+    <div class="f-row">
+      <label>Price per unit (₹)<input name="price" type="number" min="0" step="any" required value="${esc(it.price)}"></label>
+      <label>Low-stock alert at<input name="low" type="number" min="0" step="any" value="${esc(it.low)}"></label>
+    </div>
+  `, d=>{
+    const obj = {cat:d.cat.trim(),name:d.name.trim(),qty:+d.qty||0,unit:d.unit,price:+d.price||0,low:+d.low||0};
+    if(isNew) state.inventory[biz].push({id:uid(),...obj});
+    else Object.assign(state.inventory[biz].find(x=>x.id===it.id), obj);
+  });
+}
+function payForm(biz){
+  openModal(`Record payment — ${BIZ[biz].name}`, `
+    <div class="f-row">
+      <label>Amount (₹)<input name="amount" type="number" min="0" step="any" required autofocus></label>
+      <label>Date<input name="date" type="date" required value="${new Date().toISOString().slice(0,10)}"></label>
+    </div>
+    <div class="f-row">
+      <label>Came via ${sel('channel',CHANNELS,'Instagram')}</label>
+      <label>Source ${sel('source',SOURCES,'Custom project')}</label>
+    </div>
+    <label>Note<input name="note" placeholder="What was this payment for?"></label>
+  `, d=>{
+    state.payments.push({id:uid(),biz,amount:+d.amount||0,date:d.date,channel:d.channel,source:d.source,note:d.note});
+  });
+}
+function linkForm(biz, key){
+  const def = LINK_DEFS.find(l=>l.key===key);
+  openModal(`${def.title} — ${BIZ[biz].name}`, `
+    <label>Link URL<input name="url" type="url" placeholder="https://…" value="${esc(state.links[biz][key])}"></label>
+    <div class="preview-note">Paste any link — your website, Linktree, Instagram page, Google Form for ${key==='quote'?'quotes':'orders'}, or a hosted HTML landing page. Leave empty to remove.</div>
+  `, d=>{ state.links[biz][key] = d.url.trim(); });
+}
+
+/* ================= actions ================= */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-action]'); if(!b) return;
+  const a = b.dataset.action, biz = b.dataset.biz, id = b.dataset.id;
+
+  if(a==='close-modal') return modal.close();
+
+  /* links */
+  if(a==='open-landing'){ const u = state.links[biz].landing; u ? window.open(u,'_blank') : (TAB==='links'||switchTab('links'), linkForm(biz,'landing')); return; }
+  if(a==='open-link'){ const u = state.links[biz][b.dataset.key]; if(u) window.open(u,'_blank'); return; }
+  if(a==='copy-link'){
+    const u = state.links[biz][b.dataset.key];
+    (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>flash(b,'Copied ✓')).catch(()=>prompt('Copy this link:',u));
+    return;
+  }
+  if(a==='edit-link'){ linkForm(biz, b.dataset.key); return; }
+  if(a==='preview-link'){
+    const wrap = document.getElementById(`prev-${biz}-${b.dataset.idx}`);
+    if(!wrap.hidden){ wrap.hidden = true; wrap.innerHTML=''; return; }
+    const u = state.links[biz][b.dataset.key];
+    wrap.innerHTML = `<iframe src="${esc(u)}" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <div class="preview-note">If the preview stays blank, that site blocks embedding — use <b>Open ↗</b> instead.</div>`;
+    wrap.hidden = false; return;
+  }
+
+  /* orders */
+  if(a==='add-order'){ orderForm(biz); return; }
+  if(a==='edit-order'){ orderForm(state.orders.find(o=>o.id===id).biz, state.orders.find(o=>o.id===id)); return; }
+  if(a==='del-order'){
+    const o = state.orders.find(x=>x.id===id);
+    if(confirm(`Delete order “${o.name}”?`)){ state.orders = state.orders.filter(x=>x.id!==id); save(); render(); }
+    return;
+  }
+  if(a==='stage-next'||a==='stage-prev'){
+    const o = state.orders.find(x=>x.id===id);
+    const n = o.stage + (a==='stage-next'?1:-1);
+    if(n<0||n>STAGES[o.biz].length-1) return;
+    o.stage = n; o.history.push({i:n,t:Date.now()});
+    save(); render(); return;
+  }
+  if(a==='filter'){ FILTERS[biz]=b.dataset.f; render(); return; }
+
+  /* inventory */
+  if(a==='add-item'){ itemForm(biz); return; }
+  if(a==='edit-item'){ itemForm(biz, state.inventory[biz].find(i=>i.id===id)); return; }
+  if(a==='del-item'){
+    const it = state.inventory[biz].find(i=>i.id===id);
+    if(confirm(`Remove “${it.name}” from inventory?`)){ state.inventory[biz]=state.inventory[biz].filter(i=>i.id!==id); save(); render(); }
+    return;
+  }
+  if(a==='qty'){
+    const it = state.inventory[biz].find(i=>i.id===id);
+    const step = it.unit==='pcs' ? 10 : it.unit==='m'||it.unit==='kg' ? 0.5 : 1;
+    it.qty = Math.max(0, +(it.qty + step*(+b.dataset.d)).toFixed(2));
+    save(); render(); return;
+  }
+
+  /* payments */
+  if(a==='add-pay'){ payForm(biz); return; }
+  if(a==='del-pay'){
+    if(confirm('Delete this payment entry?')){ state.payments = state.payments.filter(p=>p.id!==id); save(); render(); }
+    return;
+  }
+
+  /* data menu */
+  if(a==='backup'){
+    const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+    const aEl = document.createElement('a');
+    aEl.href = URL.createObjectURL(blob);
+    aEl.download = 'rr-business-hub-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    aEl.click(); URL.revokeObjectURL(aEl.href); return;
+  }
+  if(a==='restore'){ document.getElementById('restoreFile').click(); return; }
+  if(a==='reset'){
+    if(confirm('Erase ALL data and reload the sample data? Take a Backup first if unsure.')){
+      state = defaultState(); save(); render();
+    }
+    return;
+  }
+});
+document.getElementById('restoreFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const d = JSON.parse(r.result);
+      if(!d.links||!d.orders||!d.inventory||!d.payments) throw 0;
+      state = d; save(); render(); alert('Backup restored ✓');
+    }catch(err){ alert('That file is not a valid RR Business Hub backup.'); }
+    e.target.value='';
+  };
+  r.readAsText(f);
+});
+function switchTab(t){
+  TAB = t;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x.dataset.tab===t));
+  render();
+}
+function flash(btn, txt){
+  const old = btn.textContent; btn.textContent = txt;
+  setTimeout(()=>{ btn.textContent = old; }, 1200);
+}
+
+render();
+</script>
+</body>
+</html>
