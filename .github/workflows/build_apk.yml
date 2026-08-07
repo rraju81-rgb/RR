@@ -1,11 +1,18 @@
 name: 6thGear - Build Android APK
 
 # Trigger: Runs on every push to main/master, or manually via "Run workflow" button
+# Skipped for changes that don't affect the Flutter app (web app, docs)
 on:
   push:
     branches: [main, master]
+    paths-ignore:
+      - 'business-hub/**'
+      - '**.md'
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - 'business-hub/**'
+      - '**.md'
   workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
