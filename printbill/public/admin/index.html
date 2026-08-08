@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>PrintBill · Console</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <form class="card" id="key-form">
+    <h1>PrintBill</h1>
+    <p class="muted">Enter your admin API key to continue.</p>
+    <input type="password" id="api-key" placeholder="Admin API key" autocomplete="current-password" required>
+    <button type="submit" class="btn primary">Unlock</button>
+    <p class="error" id="gate-error" hidden></p>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header class="topbar">
+    <div class="brand">PrintBill</div>
+    <nav class="tabs">
+      <button class="tab active" data-view="dashboard">Dashboard</button>
+      <button class="tab" data-view="orders">Orders</button>
+      <button class="tab" data-view="products">Catalog</button>
+      <button class="tab" data-view="quotes">Quotes</button>
+      <button class="tab" data-view="pricing">Quote calculator</button>
+      <button class="tab" data-view="outbox">Outbox</button>
+    </nav>
+    <button class="btn ghost small" id="lock">Lock</button>
+  </header>
+
+  <main>
+    <!-- Dashboard -->
+    <section class="view active" id="view-dashboard">
+      <div class="stats" id="stats"></div>
+      <div class="panel">
+        <h2>System</h2>
+        <div class="checks" id="checks"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Recent orders</h2>
+          <button class="btn small" data-view-link="orders">View all</button>
+        </div>
+        <div id="recent-orders"></div>
+      </div>
+    </section>
+
+    <!-- Orders -->
+    <section class="view" id="view-orders">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Orders</h2>
+          <div class="row">
+            <select id="order-filter">
+              <option value="">All statuses</option>
+              <option value="pending_payment">Pending payment</option>
+              <option value="paid">Paid</option>
+              <option value="in_production">In production</option>
+              <option value="ready">Ready</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="btn small" id="new-order-btn">New order</button>
+          </div>
+        </div>
+        <div id="orders-list"></div>
+      </div>
+    </section>
+
+    <!-- Catalog -->
+    <section class="view" id="view-products">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Catalog</h2>
+          <div class="row">
+            <button class="btn small" id="sync-catalog">Sync to WhatsApp</button>
+            <button class="btn small primary" id="new-product-btn">Add product</button>
+          </div>
+        </div>
+        <p class="muted small">
+          These products appear in your WhatsApp storefront. Sync after any change.
+        </p>
+        <div id="products-list"></div>
+      </div>
+    </section>
+
+    <!-- Quotes -->
+    <section class="view" id="view-quotes">
+      <div class="panel">
+        <h2>Custom quotes</h2>
+        <div id="quotes-list"></div>
+      </div>
+    </section>
+
+    <!-- Quote calculator -->
+    <section class="view" id="view-pricing">
+      <div class="panel">
+        <h2>Quote calculator</h2>
+        <p class="muted small">
+          Price a job from real slicer numbers, then send it to the customer as an order.
+        </p>
+        <form id="pricing-form" class="grid">
+          <label>Material
+            <select name="materialKey" id="material-select"></select>
+          </label>
+          <label>Weight (g)<input type="number" name="weightGrams" step="0.1" min="0.1" value="100" required></label>
+          <label>Print time (h)<input type="number" name="printHours" step="0.1" min="0.1" value="4" required></label>
+          <label>Quantity<input type="number" name="quantity" min="1" value="1" required></label>
+          <label>Priority
+            <select name="rush">
+              <option value="standard">Standard</option>
+              <option value="priority">Priority (+25%)</option>
+              <option value="same_day">Same day (+60%)</option>
+            </select>
+          </label>
+          <label>Hardware cost (₹)<input type="number" name="hardwareCost" step="1" min="0" value="0"></label>
+          <fieldset class="span">
+            <legend>Finishing</legend>
+            <div class="chips" id="post-processing"></div>
+          </fieldset>
+          <button type="submit" class="btn primary span">Calculate</button>
+        </form>
+        <div id="pricing-result"></div>
+      </div>
+    </section>
+
+    <!-- Outbox -->
+    <section class="view" id="view-outbox">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>WhatsApp outbox</h2>
+          <div class="row">
+            <select id="outbox-filter">
+              <option value="pending">Pending</option>
+              <option value="sent">Sent</option>
+              <option value="abandoned">Abandoned</option>
+            </select>
+            <button class="btn small primary" id="flush-outbox">Send now</button>
+          </div>
+        </div>
+        <div id="outbox-list"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="modal-title"></h2>
+      <button class="btn ghost small" id="modal-close">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
