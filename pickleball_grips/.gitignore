@@ -1,3 +1,5 @@
 scripts/node_modules/
 __pycache__/
 *.pyc
+specs/assets/
+qa/

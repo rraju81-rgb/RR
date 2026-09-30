@@ -67,12 +67,14 @@ function place(cx, cy, cz, dist, tgtY) {
   camera.lookAt(cx, tgtY, cz);
 }
 
+let activeCam = camera;
 if (mode === 'hero') {
   const g = grip(); scene.add(g);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.28 }));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
   const fov = THREE.MathUtils.degToRad(camera.fov);
-  place(0, 0, 0, (height * 0.62) / Math.tan(fov / 2) / Math.cos(el) * 1.0, height * 0.5);
+  const fill = +(q.get('fill') ?? 0.62);
+  place(0, 0, 0, (height * fill) / Math.tan(fov / 2) / Math.cos(el) * 1.0, height * 0.5);
 } else if (mode === 'lineup') {
   const ped = new THREE.Mesh(new THREE.BoxGeometry(250, 26, 90), new THREE.MeshStandardMaterial({ color: 0xf3f1ed, roughness: 0.85 }));
   ped.position.y = -13; ped.receiveShadow = true; ped.castShadow = true; scene.add(ped);
@@ -83,6 +85,23 @@ if (mode === 'hero') {
   camera.fov = 16; camera.updateProjectionMatrix();
   const fov = THREE.MathUtils.degToRad(camera.fov);
   place(0, 0, 0, (Math.max(height * 0.66, 130 / camera.aspect * 0.5)) / Math.tan(fov / 2), height * 0.46);
+} else if (mode === 'ortho') { // exact-scale orthographic view for technical drawings (white background, headlight)
+  scene.background = new THREE.Color(0xffffff);
+  scene.remove(key); scene.remove(rim);
+  const g = grip(); g.castShadow = false; g.receiveShadow = false; scene.add(g);
+  const view = q.get('view') || 'front', s = +(q.get('scale') ?? 12);
+  const cxm = +q.get('cx'), cym = +q.get('cy'), czm = +q.get('cz');   // look-at point in STL mm
+  const xc = ctr.x, yc = -ctr.z;                                       // STL bbox centre (x, y)
+  const Xw = cxm - xc, Yw = czm, Zw = -(cym - yc);
+  const oc = new THREE.OrthographicCamera(-W / (2 * s), W / (2 * s), H / (2 * s), -H / (2 * s), 1, 3000);
+  if (view === 'front') { oc.position.set(Xw, Yw, 900); oc.up.set(0, 1, 0); oc.lookAt(Xw, Yw, 0); }
+  else if (view === 'side') { oc.position.set(900, Yw, Zw); oc.up.set(0, 1, 0); oc.lookAt(0, Yw, Zw); }
+  else { oc.position.set(Xw, 900, Zw); oc.up.set(0, 0, -1); oc.lookAt(Xw, 0, Zw); }
+  const head = new THREE.DirectionalLight(0xffffff, 2.6);
+  head.position.set(-1.4, 1.7, 2.4); oc.add(head);
+  head.target.position.set(0, 0, -5); oc.add(head.target);
+  scene.add(oc);
+  activeCam = oc;
 } else if (mode === 'macro') { // audit: tight crop, optional sideways offset + flat shading
   scene.add(grip());
   camera.fov = 10; camera.updateProjectionMatrix();
@@ -100,6 +119,6 @@ if (mode === 'hero') {
   const zc = +(q.get('zc') ?? 62);
   place(0, 0, 0, (58 * 0.62) / Math.tan(fov / 2) / camera.aspect * camera.aspect, zc);
 }
-renderer.render(scene, camera);
+renderer.render(scene, activeCam);
 window.__done = true;
 </script></body></html>

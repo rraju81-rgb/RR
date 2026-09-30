@@ -68,11 +68,33 @@ so the gripping surface is up to ~0.6 mm thinner per side on those (peak heights
 | 06 | **CARBON MATRIX** | `stl/06_carbon_matrix.stl` | Continuous 2/2 twill weave (2 mm tow pitch, every tow a rounded ridge that rises over / dives under) with smooth raised reinforcement patches. | 2.73 |
 | 07 | **VORONOI-CORE** | `stl/07_voronoi_core.stl` | Lloyd-relaxed Voronoi rib lattice (2.6 mm ribs, rounded tops); 54 windows cut clean through the wall for weight and airflow. | 3.50 |
 | 08 | **TOPO-FLOW** | `stl/08_topo_flow.stl` | Contour ridges of a terrain / wood-knot height field - continuous undulating lines flowing around four knots. | 3.11 |
-| 09 | **ERGO-CONTOUR** | `stl/09_ergo_contour.stl` | Smooth hour-glass swell, palm pad on the back (reaches the full 3.5 mm envelope), four finger flutes and a thumb dish on the front face. | 2.76 |
+| 09 | **ERGO-CONTOUR** | `stl/09_ergo_contour.stl` | Smooth hour-glass swell, palm pad on the back (about 1 mm proud; peak about 2.8 mm above the bore), four finger flutes and a thumb dish on the front face. | 2.76 |
 | 10 | **HEXA-MOD** | `stl/10_hexa_mod.stl` | 12-column hex pads (10.2 mm across flats), 1.7 mm gaps, four height levels (red = tallest, full 3.5 mm). | 3.50 |
 
 Close-ups: `renders/<id>_detail.png`; four-way turntable line-ups: `renders/<id>_lineup.png`;
 hero shots: `renders/<id>_hero.png`.  Colours in the renders are **preview only** - the STLs are single-material.
+
+## Specification sheets (`specs/`)
+
+One 4-page A4 sheet per grip plus a 45-page book with a comparison, the reference fitment and the notes:
+
+| Page | Content |
+|---|---|
+| 1 Overview | hero render, at-a-glance dimensions, weights (PLA/PETG/TPU/ABS), colourway, print profile, verification |
+| 2 Technical drawing | third-angle top / front / side views at true 1:1 with dimensions, section marks A-A, B-B, C-C, title block |
+| 3 Sections & profiles | dimensioned sections at z 10 / 60 / 128 mm, offset and area against height, dimension tables |
+| 4 Views & surface | four-way turntable, close-ups, unrolled height map, design parameters, print verification |
+
+`specs/01_vortex_grip_spec.pdf` ... `specs/10_hexa_mod_spec.pdf` and `specs/PickleballGrips_SpecBook.pdf` (bookmarked, clickable contents).
+Every number on the sheets is measured from the STL files (`scripts/spec_data.py`), not copied from design intent.  Page 2 of each sheet
+is true size when printed at 100 % (do not "fit to page").  Regenerate with:
+
+```
+cd scripts
+python3 render_spec_assets.py      # hero / line-up / ortho / close-up renders -> specs/assets/ (headless Chromium)
+python3 spec_data.py               # measurements -> specs/assets/<id>/data.json, relief.png
+python3 build_specs.py             # -> specs/*.pdf   (needs reportlab and the Liberation Sans fonts)
+```
 
 ## Print readiness (`scripts/verify_print.py`, data in `print_report.json`)
 
