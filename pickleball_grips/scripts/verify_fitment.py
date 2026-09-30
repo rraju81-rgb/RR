@@ -10,6 +10,7 @@ For each grip:
     the bore to confirm no material intrudes
   * FLOOR at z=5.0 and open top
   * OUTER envelope never exceeds the reference envelope (cavity offset E(z)) by more than 0.05 mm
+    - except the deliberate rim thickening (reference tapers to 0.36 mm; grips keep >= 0.8 mm), reported separately
   * FOOT (z<20) and TOP TAPER (z>112) outer profile equals the reference
 
 Writes ../fitment_report.json and prints a markdown table.
@@ -59,21 +60,36 @@ def main():
                  winding_ok=bool(m.is_winding_consistent), volume_cm3=round(m.volume / 1000, 2))
         r["z_min"], r["z_max"] = round(float(m.bounds[0][2]), 3), round(float(m.bounds[1][2]), 3)
         r["height_err_mm"] = round(abs(m.bounds[1][2] - rb[1][2]), 3)
-        # ---- outer envelope vs reference E(z); foot / taper profile match
-        over = foot_err = taper_err = 0.0
+        # ---- outer envelope vs the REFERENCE E(z); foot / taper profile match; wall + rim thickness
+        over = foot_err = taper_err = rim_add = 0.0
+        min_wall = rim_min = 9.0
+        peak = 0.0
         for z in list(np.arange(0.5, 20, 1.5)) + list(np.arange(21, 111, 6.0)) + list(np.arange(112, 132.8, 2.0)):
             solid, loops = section_solid(m, float(z))
             b = loops[0].exterior
             d = np.array([ring.distance(b.interpolate(t)) for t in np.linspace(0, b.length, 700, endpoint=False)])
-            E = float(F.E_foot(z)) if z < 20 else float(F.E_upper(z))
-            over = max(over, d.max() - E)
+            E_ref = float(F.E_foot(z)) if z < 20 else float(F.E_ref_upper(z))
+            E_des = float(F.E_foot(z)) if z < 20 else float(F.E_upper(z))
+            if E_ref >= F.min_rim - 1e-9:
+                over = max(over, d.max() - E_ref)                    # must never exceed the reference
+            else:
+                rim_add = max(rim_add, d.max() - E_ref)              # deliberate rim thickening (E_ref < min_rim)
+                rim_min = min(rim_min, d.min())
+            if 23 <= z <= 110:
+                peak = max(peak, d.max())
+            if 21 <= z <= 118 and not name.startswith("07"):      # VORONOI-CORE has through-windows by design
+                min_wall = min(min_wall, d.min())
             if z < 20:
-                foot_err = max(foot_err, abs(d.mean() - E))
-            if z > 112:
-                taper_err = max(taper_err, abs(d.mean() - E))
+                foot_err = max(foot_err, abs(d.mean() - E_des))
+            if z >= 122:                                            # smooth neck above the textured zone
+                taper_err = max(taper_err, abs(d.mean() - E_des))
         r["max_over_reference_envelope_mm"] = round(over, 3)
         r["foot_profile_err_mm"] = round(foot_err, 3)
         r["taper_profile_err_mm"] = round(taper_err, 3)
+        r["min_wall_textured_zone_mm"] = round(min_wall, 3) if min_wall < 9 else None
+        r["rim_min_wall_mm"] = round(rim_min, 3)
+        r["rim_added_vs_reference_mm"] = round(rim_add, 3)
+        r["peak_texture_height_above_bore_mm"] = round(peak, 2)
         # ---- bore: reference wall must lie on the grip's boundary (except deliberate windows)
         # and nothing may intrude into the bore (probe region = bore shrunk by 0.1 mm)
         probe = cav.buffer(-0.1)
@@ -95,12 +111,14 @@ def main():
         r["open_top"] = bool(not section_solid(m, 132.7)[0].contains(c))
         r["pass"] = bool(r["watertight"] and r["winding_ok"] and r["height_err_mm"] < 0.01 and
                          r["max_over_reference_envelope_mm"] < 0.05 and r["bore_intrusion_mm2"] < 0.01 and
+                         (r["min_wall_textured_zone_mm"] is None or r["min_wall_textured_zone_mm"] >= F.wall - 0.03) and r["rim_min_wall_mm"] >= F.min_rim - 0.03 and
                          r["floor_solid_z4.8"] and r["floor_empty_z5.2"] and r["open_top"] and
                          r["foot_profile_err_mm"] < 0.06 and r["taper_profile_err_mm"] < 0.06)
         rows.append(r)
         print(f"{name:18s} pass={r['pass']} watertight={r['watertight']} over_env={r['max_over_reference_envelope_mm']:+.3f} "
               f"bore_on_surface={r['bore_wall_on_surface_pct']}% intrusion={r['bore_intrusion_mm2']} "
-              f"foot_err={r['foot_profile_err_mm']} taper_err={r['taper_profile_err_mm']}", flush=True)
+              f"foot_err={r['foot_profile_err_mm']} taper_err={r['taper_profile_err_mm']} min_wall={r['min_wall_textured_zone_mm']} "
+              f"rim_min={r['rim_min_wall_mm']} rim_added={r['rim_added_vs_reference_mm']}", flush=True)
     (ROOT / "fitment_report.json").write_text(json.dumps(rows, indent=1))
     return rows
 

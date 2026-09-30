@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import trimesh
+from scipy.ndimage import gaussian_filter
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from grip_core import Frame, build_mesh_reduced, cut_windows, write_stl  # noqa: E402
@@ -21,21 +22,28 @@ warnings.filterwarnings("ignore")
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def evaluate(F, fn, res, ss=2):
-    """Evaluate a design on an ss x ss supersampled grid and box-filter down (anti-aliased
-    heights let feature edges sit between the 0.25 mm mesh nodes)."""
+SMOOTH_SIGMA = 0.25      # mm - Gaussian rounding of the texture height field (sub-nozzle, kills stair-steps)
+SUPERSAMPLE = 3          # 3 x 3 sub-samples per mesh node (anti-aliased feature edges)
+
+
+def evaluate(F, fn, res, ss=SUPERSAMPLE):
+    """Evaluate a design on an ss x ss supersampled grid, box-filter down, then round the height
+    field with a small Gaussian (sigma << nozzle) so steep edges become clean smooth ramps."""
     ctx = Ctx(F, res=res)
     S0, Z0, ds = ctx.S2.copy(), ctx.Z2.copy(), F.L / F.N
-    offs = [(a, b) for a in np.linspace(-.5, .5, ss + 2)[1:-1] for b in np.linspace(-.5, .5, ss + 2)[1:-1]]
+    offs = [((k + .5) / ss - .5) for k in range(ss)]
     t = rgb = 0
-    for a, b in offs:
-        ctx.S2, ctx.Z2 = S0 + a * ds, Z0 + b * res
-        d = fn(ctx)
-        t = t + d["t"] / len(offs)
-        rgb = rgb + np.asarray(d["rgb"], float) / len(offs)
+    for a in offs:
+        for b in offs:
+            ctx.S2, ctx.Z2 = S0 + a * ds, Z0 + b * res
+            d = fn(ctx)
+            t = t + d["t"] / ss ** 2
+            rgb = rgb + np.asarray(d["rgb"], float) / ss ** 2
     ctx.S2, ctx.Z2 = S0, Z0
     d0 = fn(ctx)                                  # unshifted pass: discrete colour classes for the 3MF export
-    return ctx, dict(d, t=t, rgb=rgb, cls=d0["cls"])
+    sig = d0.get("sigma", SMOOTH_SIGMA)
+    t = np.clip(gaussian_filter(t, (sig / res, sig / ds), mode=("nearest", "wrap")), 0, 1)
+    return ctx, dict(d0, t=t, rgb=rgb, cls=d0["cls"])
 
 
 def generate(F, name, label, fn, res):

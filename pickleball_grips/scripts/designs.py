@@ -15,7 +15,7 @@ from shapely import affinity
 from shapely.geometry import Point, Polygon, MultiPoint, box
 from shapely.ops import unary_union, voronoi_diagram
 
-Z_LO, Z_HI = 23.0, 108.0          # textured zone (smooth collars outside)
+from grip_core import ZONE_LO as Z_LO, ZONE_HI as Z_HI   # textured zone (smooth collars outside)
 
 
 def sm(e0, e1, x):
@@ -89,14 +89,14 @@ def vortex(c):
     par = (np.floor(a) + np.floor(b)) % 2
     wf = 0.40
     ua, ub = (a % 1 - .5) / (wf / 2), (b % 1 - .5) / (wf / 2)
-    mA, mB = 1 - sm(0.80, 1.0, np.abs(ua)), 1 - sm(0.80, 1.0, np.abs(ub))
-    lvA, lvB = 0.70 + 0.30 * (1 - np.abs(ua) ** 2), 0.70 + 0.30 * (1 - np.abs(ub) ** 2)
-    valley, drop = 0.10, 0.24
+    mA, mB = 1 - sm(0.55, 1.0, np.abs(ua)), 1 - sm(0.55, 1.0, np.abs(ub))
+    lvA, lvB = 0.50 + 0.22 * (1 - np.abs(ua) ** 2), 0.50 + 0.22 * (1 - np.abs(ub) ** 2)
+    valley, drop = 0.04, 0.16
     aover = (par == 0)
     tA = valley + (lvA - valley - drop * mB * (~aover)) * mA
     tB = valley + (lvB - valley - drop * mA * aover) * mB
     t = np.maximum(tA, tB)
-    w = sm(0.30, 0.65, t)
+    w = sm(0.22, 0.45, t)
     rgb = lerp((52, 30, 82), (156, 108, 222), w)
     rgb = rgb * (0.86 + 0.14 * t)[..., None]
     cls = (w > 0.5).astype(np.uint8)
@@ -108,7 +108,7 @@ def vortex(c):
 # ---------------------------------------------------------------------------------
 def cellular(c):
     rng = np.random.default_rng(21)
-    nr, nc = 9, 8
+    nr, nc = 10, 8
     pitch, cw = c.hz / nr, c.L / nc
     zz = np.clip(c.Z2 - c.z0, 0, c.hz - 1e-6)
     r = np.floor(zz / pitch).astype(int)
@@ -119,12 +119,12 @@ def cellular(c):
     dse = np.minimum(u, cw - u) - 0.7
     ci = np.floor((c.S2 - stag) / cw).astype(int) % nc
     d = np.minimum(dze, dse)
-    lv = rng.choice([0.80, 0.90, 1.0], size=(nr, nc), p=[.3, .4, .3])[r, ci]
+    lv = rng.choice([0.60, 0.70, 0.80], size=(nr, nc), p=[.3, .4, .3])[r, ci]
     ins = (rng.random((nr, nc)) < 0.22)[r, ci]
-    t = np.where(d < 0, 0.0, 0.12 + (lv - 0.12) * sm(0.0, 1.0, d))
+    t = np.where(d < 0, 0.0, 0.05 + (lv - 0.05) * sm(0.0, 1.0, d))
     pocket = sm(1.6, 2.2, d) * ins
-    t = t - (t - 0.42) * pocket
-    rgb = lerp((136, 136, 132), (168, 168, 162), lv - .8)
+    t = t - (t - 0.28) * pocket
+    rgb = lerp((136, 136, 132), (168, 168, 162), (lv - .6) * 5)
     rgb = np.where((d < 0)[..., None], np.array([70, 70, 72.]), rgb)
     rgb = lerp(rgb, (200, 30, 34), pocket > 0.5)
     cls = np.where(pocket > 0.5, 2, np.where(d < 0, 0, 1)).astype(np.uint8)
@@ -135,7 +135,7 @@ def cellular(c):
 # 03  TESSEL-BLOCK - faceted triangular pyramids in staggered rows
 # ---------------------------------------------------------------------------------
 def tessel(c):
-    nx, nr = 12, 10
+    nx, nr = 12, 11
     ell, hr = c.L / nx, c.hz / nr
     zz = np.clip(c.Z2 - c.z0, 0, c.hz - 1e-6)
     q = zz / hr
@@ -166,10 +166,12 @@ def tessel(c):
 # 04  LOGIC-GRIP - interlocking jigsaw pieces separated by fine grooves
 # ---------------------------------------------------------------------------------
 def _knob(ell):
-    neck = box(0.40 * ell, -0.02 * ell, 0.60 * ell, 0.22 * ell)
-    head = Point(0.5 * ell, 0.285 * ell).buffer(0.165 * ell, 40)
-    k = unary_union([neck, head])
-    return k.buffer(0.05 * ell, 24).buffer(-0.05 * ell, 24)
+    """Mushroom knob in edge-local coords (u along the edge, v out of it), sized in mm so the
+    neck survives the groove: neck 2.9 wide, head r 2.1, tip 5.1 mm out."""
+    mid = 0.5 * ell
+    neck = box(mid - 1.45, -0.05, mid + 1.45, 2.4)
+    head = Point(mid, 3.0).buffer(2.1, 40)
+    return unary_union([neck, head]).buffer(0.5, 24).buffer(-0.5, 24)
 
 
 def _place(k, origin, u, v):
@@ -182,7 +184,7 @@ def _place(k, origin, u, v):
 
 def logic(c):
     rng = np.random.default_rng(11)
-    nx, ny = 8, 6
+    nx, ny = 8, 7
     cw, ch = c.L / nx, c.hz / ny
     Vs = rng.choice([-1, 1], size=(ny, nx))          # vertical edge k (at S=k*cw), row r
     Hs = rng.choice([-1, 1], size=(ny + 1, nx))      # horizontal edge r (z=z0+r*ch), col k
@@ -231,15 +233,15 @@ def logic(c):
             cv.polygon(di, x, y, fill=1 + ((r + k) % 2))
     d = cv.sample(cv.edt(lines))
     ident = cv.sample(np.asarray(ids), order=0)
-    gw = 0.55
-    t = np.where(d < gw, 0.0, 0.85 * sm(gw, gw + 0.75, d))
+    gw = 0.42
+    t = np.where(d < gw, 0.0, 0.85 * sm(gw, gw + 0.5, d))
     t = t + 0.15 * sm(0.9, 3.6, d)
-    t = np.where(ident == 0, 0.0, t)
+    t = 0.70 * np.where(ident == 0, 0.0, t)
     rgb = np.where((ident == 1)[..., None], np.array([42, 60, 138.]), np.array([158, 164, 170.]))
     rgb = lerp(np.array([50, 50, 54.]), rgb, sm(0.0, 0.5, t) * 0 + np.clip(t * 4, 0, 1))
     rgb = rgb * (0.75 + 0.25 * t)[..., None]
     cls = np.where(t < 0.25, 0, np.where(ident == 1, 1, 2)).astype(np.uint8)
-    return dict(t=t, rgb=rgb, cls=cls, collar=2, palette=[(50, 50, 54), (42, 60, 138), (158, 164, 170)])
+    return dict(t=t, rgb=rgb, cls=cls, collar=2, palette=[(50, 50, 54), (42, 60, 138), (158, 164, 170)], sigma=0.18)
 
 
 # ---------------------------------------------------------------------------------
@@ -302,7 +304,7 @@ def neuro(c):
                 dso.ellipse([x - 1, y - 1, x + 1, y + 1], fill=255)
     d_ax = cv.sample(cv.edt(ax))
     d_so = cv.sample(cv.edt(soma))
-    ridge = np.maximum(1 - sm(0.55, 0.95, d_ax), 1 - sm(1.9, 2.4, d_so))
+    ridge = np.maximum(1 - sm(0.40, 1.15, d_ax), 1 - sm(1.7, 2.6, d_so))
     dnet = np.minimum(d_ax - 0.75, d_so - 2.1)
     dots = _lattice_dist(c.S2, c.Z2, c.L / 46)
     bump = 1 - sm(0.45, 0.95, dots)
@@ -320,25 +322,32 @@ def neuro(c):
 # 06  CARBON MATRIX - 2/2 twill weave with smooth reinforcement patches
 # ---------------------------------------------------------------------------------
 def carbon(c):
+    """2/2 twill built from continuous tow surfaces: every tow is a rounded ridge that rises over
+    and dives under its crossing tows, so there are no hard cell steps."""
     p = c.L / 60
     zz = c.Z2 - c.z0
-    i, j = np.floor(c.S2 / p).astype(int), np.floor(zz / p).astype(int)
-    fx, fy = c.S2 / p - i, zz / p - j
-    warp_over = ((i + j) % 4) < 2
-    crown = np.where(warp_over, 4 * fx * (1 - fx), 4 * fy * (1 - fy))
-    crown = np.sqrt(np.clip(crown, 0, 1))
-    tw = np.where(warp_over, 0.60, 0.53) + 0.13 * crown - 0.10 * (1 - np.where(warp_over, np.minimum(4 * fy * (1 - fy) * 3, 1), np.minimum(4 * fx * (1 - fx) * 3, 1)))
-    # reinforcement patches: thresholded smooth periodic noise
+    x, y = c.S2 / p, zz / p
+    fx, fy = x % 1.0, y % 1.0
+    i, j = np.floor(x), np.floor(y)
+    cross_x = np.clip(4 * fx * (1 - fx), 0, 1)                    # hump across a warp tow
+    cross_y = np.clip(4 * fy * (1 - fy), 0, 1)                    # hump across a weft tow
+    over_w = sm(-0.35, 0.35, np.sin(2 * np.pi * (y + i) / 4))     # warp rides over its 2 crossings, under the next 2
+    over_f = sm(-0.35, 0.35, -np.sin(2 * np.pi * (x + j) / 4))    # weft is the mirror image
+    W_BASE, LIFT, CROWN = 0.20, 0.13, 0.09
+    h_w = W_BASE + cross_x ** 0.6 * (LIFT * over_w + CROWN * np.sqrt(cross_x))
+    h_f = W_BASE + cross_y ** 0.6 * (LIFT * over_f + CROWN * np.sqrt(cross_y))
+    tw = np.maximum(h_w, h_f)
+    # reinforcement patches: thresholded smooth periodic noise, raised above the weave
     terms = [(2, 61, 0.0, 1.0), (3, -37, 1.7, 0.9), (5, 46, 3.1, 0.7), (4, -29, 5.0, 0.6), (1, -80, 2.2, 0.8)]
     q = sum(a * np.sin(2 * np.pi * (k * c.S2 / c.L + zz / lam) + ph) for k, lam, ph, a in terms)
     q = q / sum(a for *_, a in terms)
     mp = sm(0.18, 0.30, q)
-    patch_t = 0.94 + 0.05 * np.clip(q, 0, 1)
+    patch_t = 0.63 + 0.04 * np.clip(q, 0, 1)
     t = tw * (1 - mp) + patch_t * mp
-    wv = np.where(warp_over, 34, 22) + 10 * crown
-    rgb = lerp(np.stack([wv, wv, wv + 4], -1), (128, 132, 138), mp)
+    shade = 26 + 22 * np.clip((tw - W_BASE) / (LIFT + CROWN), 0, 1)
+    rgb = lerp(np.stack([shade, shade, shade + 4], -1), (128, 132, 138), mp)
     cls = (mp > 0.5).astype(np.uint8)
-    return dict(t=t, rgb=rgb, cls=cls, collar=0, palette=[(28, 28, 32), (128, 132, 138)])
+    return dict(t=t, rgb=rgb, cls=cls, collar=0, palette=[(28, 28, 32), (128, 132, 138)], sigma=0.18)
 
 
 # ---------------------------------------------------------------------------------
@@ -355,6 +364,66 @@ def _cells(sites, L, zlo, zhi):
     for s, z in sites:
         pt = Point(s, z)
         out.append(next(pg for pg in polys if pg.contains(pt)))
+    return out
+
+
+def _printable_roofs(c, wins, res=0.1, max_bridge=4.0, overhang_deg=60.0):
+    """Trim window roofs so the part prints without supports.  Working top -> bottom on a raster of
+    the unrolled surface, a window row may only extend beyond the row above it by tan(overhang) px per
+    row (60 deg overhang), and a flat top may bridge at most `max_bridge` mm.  Windows that already
+    satisfy this are untouched; only long/shallow roofs are cut back to a peaked roof."""
+    from scipy.ndimage import binary_dilation, gaussian_filter
+    from skimage import measure
+    cv = Canvas(c, res)
+    img = cv.image()
+    dr = ImageDraw.Draw(img)
+    for w in wins:
+        x, y = w.exterior.xy
+        cv.polygon(dr, x, y)
+    H = np.asarray(img) > 0                                        # (rows=z, cols=S), True = hole
+    nrow, ncol = H.shape
+    k = np.tan(np.radians(overhang_deg))
+    keep = np.zeros_like(H)
+    prev_orig = np.zeros(ncol, bool)
+    prev_keep = np.zeros(ncol, bool)
+    seed_w = int(round(max_bridge / res))
+    for j in range(nrow - 1, -1, -1):                              # top -> bottom
+        row = H[j]
+        # cone growth from the row above (fractional px per row -> alternate 1 and 2 px)
+        g = 2 if (j % 4) != 0 else 1                                # mean 1.75 px/row ~ tan(60 deg)
+        allowed = np.zeros(ncol, bool)
+        if prev_keep.any():
+            allowed = binary_dilation(np.r_[prev_keep, prev_keep, prev_keep], structure=np.ones(2 * g + 1))[ncol:2 * ncol] & row
+        # seeds: top boundary of the original hole, bridge limited to max_bridge (centred)
+        top = row & ~binary_dilation(np.r_[prev_orig, prev_orig, prev_orig], structure=np.ones(31))[ncol:2 * ncol]   # true tops only (nothing within 1.5 mm above)
+        if top.any():
+            t3 = np.r_[top, top, top]
+            edges = np.flatnonzero(np.diff(np.r_[0, t3.astype(int), 0]))
+            for s0, e0 in zip(edges[::2], edges[1::2]):
+                if e0 <= ncol or s0 >= 2 * ncol:
+                    continue
+                mid = (s0 + e0) // 2
+                lo, hi = max(mid - seed_w // 2, s0), min(mid + seed_w // 2, e0)
+                seg = np.zeros(3 * ncol, bool)
+                seg[lo:hi] = True
+                allowed |= (seg[ncol:2 * ncol] | seg[:ncol] | seg[2 * ncol:])
+        keep[j] = allowed
+        prev_orig, prev_keep = row, allowed
+    m = gaussian_filter(np.tile(keep.astype(float), (1, 3)), 1.0)
+    out = []
+    for cnt in measure.find_contours(m, 0.5):
+        S = (cnt[:, 1] + 0.5) * res - c.L                        # middle tile -> S in [0, L)
+        Z = (cnt[:, 0] + 0.5) * res + cv.zlo
+        if len(S) < 8:
+            continue
+        p = Polygon(np.c_[S, Z]).buffer(0)
+        if p.is_empty or p.area < 6:
+            continue
+        if not (0.0 <= p.centroid.x < c.L):
+            continue
+        p = p.buffer(-0.6).buffer(0.6, 16).simplify(0.02)        # round the new corners
+        if not p.is_empty and p.geom_type == "Polygon":
+            out.append(p)
     return out
 
 
@@ -378,6 +447,7 @@ def voronoi(c):
         w = cl.buffer(-(hw + r)).buffer(r, 16)
         if not w.is_empty and w.area > 8:
             wins.append(w.simplify(0.02))
+    wins = _printable_roofs(c, wins)
     cv = Canvas(c, 0.1)
     img = cv.image()
     dr = ImageDraw.Draw(img)
@@ -404,11 +474,11 @@ def topo(c):
     dH = 0.20
     ph = 2 * np.pi * H / dH
     cr = 0.5 + 0.5 * np.cos(ph)
-    t = 0.40 + 0.60 * cr ** 2.3
+    t = 0.20 + 0.64 * cr ** 2.3
     grain = 0.5 + 0.5 * np.sin(2 * np.pi * (S / L * 47) + 3.0 * np.sin(2 * np.pi * Z / 37))
-    rgb = lerp((214, 172, 128), (120, 72, 40), sm(0.35, 0.95, t))
+    rgb = lerp((214, 172, 128), (120, 72, 40), sm(0.25, 0.80, t))
     rgb = rgb * (0.94 + 0.06 * grain)[..., None]
-    cls = np.digitize(t, [0.55, 0.80]).astype(np.uint8)
+    cls = np.digitize(t, [0.40, 0.65]).astype(np.uint8)
     return dict(t=t, rgb=rgb, cls=cls, collar=1, palette=[(214, 172, 128), (168, 116, 78), (120, 72, 40)])
 
 
@@ -419,12 +489,12 @@ def ergo(c):
     S, Z, L = c.S2, c.Z2, c.L
     Sp = 0.0                                             # palm face (back)
     Sf = 0.50 * L                                        # finger face (toward the default camera)
-    base = 0.82 + 0.18 * np.cos(2 * np.pi * (Z - c.z0) / c.hz)          # hour-glass swell
-    t = base + 0.16 * gauss(pdiff(S, Sp, L), 0.16 * L) * gauss(Z - 60, 24)   # palm pad
+    base = 0.36 + 0.13 * np.cos(2 * np.pi * (Z - c.z0) / c.hz)          # hour-glass swell
+    t = base + 0.42 * gauss(pdiff(S, Sp, L), 0.16 * L) * gauss(Z - 62, 22)   # palm pad (reaches the full envelope)
     flutes = sum(gauss(Z - zk, 3.9) for zk in (44, 58, 72, 86))               # four finger flutes
-    t = t - 0.55 * gauss(pdiff(S, Sf, L), 0.15 * L) * flutes
-    t = t - 0.45 * gauss(pdiff(S, (Sf + 0.20 * L) % L, L), 6.0) * gauss(Z - 97, 8.0)   # thumb dish
-    t = np.clip(t, 0.12, 1.0)
+    t = t - 0.34 * gauss(pdiff(S, Sf, L), 0.15 * L) * flutes
+    t = t - 0.28 * gauss(pdiff(S, (Sf + 0.20 * L) % L, L), 6.0) * gauss(Z - 97, 8.0)   # thumb dish
+    t = np.clip(t, 0.04, 1.0)
     rgb = np.broadcast_to(np.array([66., 66., 72.]), t.shape + (3,)).copy()
     cls = np.zeros(t.shape, np.uint8)
     return dict(t=t, rgb=rgb, cls=cls, collar=0, palette=[(66, 66, 72)])

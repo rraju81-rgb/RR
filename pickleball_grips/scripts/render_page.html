@@ -47,7 +47,7 @@ geo.translate(-ctr.x, -bb.min.y, -ctr.z);
 const height = bb.max.y - bb.min.y;
 
 const mat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: rough, metalness: metal,
-  clearcoat: clear, clearcoatRoughness: 0.25 });
+  clearcoat: clear, clearcoatRoughness: 0.25, flatShading: q.get('flat') === '1' });
 const grip = () => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; };
 
 // ---- lights + floor
@@ -83,6 +83,14 @@ if (mode === 'hero') {
   camera.fov = 16; camera.updateProjectionMatrix();
   const fov = THREE.MathUtils.degToRad(camera.fov);
   place(0, 0, 0, (Math.max(height * 0.66, 130 / camera.aspect * 0.5)) / Math.tan(fov / 2), height * 0.46);
+} else if (mode === 'macro') { // audit: tight crop, optional sideways offset + flat shading
+  scene.add(grip());
+  camera.fov = 10; camera.updateProjectionMatrix();
+  const fov = THREE.MathUtils.degToRad(camera.fov);
+  const span = +(q.get('span') ?? 24), zc = +(q.get('zc') ?? 62), tx = +(q.get('tx') ?? 0);
+  const dist = (span / 2) / Math.tan(fov / 2);
+  camera.position.set(tx + dist * Math.sin(az) * Math.cos(el), zc + dist * Math.sin(el), dist * Math.cos(az) * Math.cos(el));
+  camera.lookAt(tx, zc, 0);
 } else { // detail: zoomed mid-section, slightly raked
   const g = grip(); scene.add(g);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.0 }));

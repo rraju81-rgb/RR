@@ -65,20 +65,73 @@ def color_vertices(F, V, name):
     return np.clip(c, 0, 255).astype(np.uint8)
 
 
-def pack_mesh(F, name, out):
-    m = trimesh.load(ROOT / "stl" / f"{name}.stl", process=True)
-    m.merge_vertices()
-    V = np.asarray(m.vertices)
-    n = np.asarray(m.vertex_normals, np.float32)
-    col = color_vertices(F, V, name)
-    idx = np.asarray(m.faces, np.uint32)
+def corner_normals(V, Fc, angle=42.0):
+    """Per-corner smooth normals with a crease angle: each triangle corner averages (angle-weighted)
+    only the neighbouring faces within `angle` degrees of its own face, so hard edges stay crisp and
+    curved surfaces stay smooth.  Returns (T*3, 3) float32 aligned with Fc.ravel()."""
+    tri = V[Fc]
+    e1, e2 = tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0]
+    fn = np.cross(e1, e2)
+    ln = np.linalg.norm(fn, axis=1, keepdims=True)
+    fn = fn / np.where(ln > 0, ln, 1)
+    ang = np.empty((len(Fc), 3))
+    for k in range(3):
+        a, b = tri[:, (k + 1) % 3] - tri[:, k], tri[:, (k + 2) % 3] - tri[:, k]
+        na, nb = np.linalg.norm(a, axis=1), np.linalg.norm(b, axis=1)
+        ang[:, k] = np.arccos(np.clip(np.einsum("ij,ij->i", a, b) / np.maximum(na * nb, 1e-12), -1, 1))
+    verts = Fc.ravel()
+    face = np.repeat(np.arange(len(Fc)), 3)
+    w = ang.ravel()
+    order = np.argsort(verts, kind="stable")
+    sv = verts[order]
+    starts = np.r_[0, np.flatnonzero(np.diff(sv)) + 1]
+    counts = np.diff(np.r_[starts, len(sv)])
+    out = fn[face].astype(np.float32)                             # default: flat face normal (fan centres etc.)
+    small = counts <= 24
+    keep = np.repeat(small, counts)                               # corners belonging to ordinary vertices
+    order_s = order[keep]
+    counts_s = counts[small]
+    starts_s = np.r_[0, np.cumsum(counts_s)[:-1]]
+    maxd = counts_s.max()
+    slot = np.arange(len(order_s)) - np.repeat(starts_s, counts_s)
+    grp = np.repeat(np.arange(len(starts_s)), counts_s)
+    idx = np.full((len(starts_s), maxd), -1, np.int64)
+    idx[grp, slot] = order_s                                      # corner ids per vertex
+    valid = idx >= 0
+    cf = np.where(valid, face[np.maximum(idx, 0)], 0)
+    cn = fn[cf]                                                   # (V, maxd, 3)
+    cw = np.where(valid, w[np.maximum(idx, 0)], 0.0)
+    cosT = np.cos(np.radians(angle))
+    B = 20000
+    for s0 in range(0, len(starts_s), B):
+        sl = slice(s0, s0 + B)
+        n, wt, vd = cn[sl], cw[sl], valid[sl]
+        dots = np.einsum("vid,vjd->vij", n, n)
+        mask = (dots > cosT) & vd[:, None, :] & vd[:, :, None]
+        acc = np.einsum("vij,vjd->vid", mask * wt[:, None, :], n)
+        acc /= np.maximum(np.linalg.norm(acc, axis=2, keepdims=True), 1e-12)
+        out[idx[sl][vd]] = acc[vd]
+    return out
+
+
+def _write_bin(out, pos, nor, col):
+    idx = np.arange(len(pos), dtype=np.uint32)
     with open(out, "wb") as f:
-        f.write(struct.pack("<II", len(V), len(idx)))
-        f.write(V.astype(np.float32).tobytes())
-        f.write(n.tobytes())
-        f.write(col.tobytes())
+        f.write(struct.pack("<II", len(pos), len(idx) // 3))
+        f.write(pos.astype(np.float32).tobytes())
+        f.write(nor.astype(np.float32).tobytes())
+        f.write(col.astype(np.uint8).tobytes())
         f.write(b"\0" * ((-f.tell()) % 4))
         f.write(idx.tobytes())
+
+
+def pack_mesh(F, name, out):
+    """STL -> render buffer: per-corner crease-aware normals, preview colours from the colour map."""
+    m = trimesh.load(ROOT / "stl" / f"{name}.stl", process=True)
+    m.merge_vertices()
+    V, Fc = np.asarray(m.vertices), np.asarray(m.faces)
+    col = color_vertices(F, V, name)
+    _write_bin(out, V[Fc].reshape(-1, 3), corner_normals(V, Fc), col[Fc.ravel()])
 
 
 def pack_mesh_3mf(name, out):
@@ -91,15 +144,7 @@ def pack_mesh_3mf(name, out):
     V = np.array(re.findall(r'<vertex x="([^"]+)" y="([^"]+)" z="([^"]+)"', xml), float)
     T = np.array(re.findall(r'<triangle v1="(\d+)" v2="(\d+)" v3="(\d+)" pid="2" p1="(\d+)"', xml), int)
     faces, k = T[:, :3], T[:, 3]
-    vn = np.asarray(trimesh.Trimesh(V, faces, process=False).vertex_normals, np.float32)
-    pos = V[faces].reshape(-1, 3).astype(np.float32)
-    nor = vn[faces].reshape(-1, 3)
-    col = np.repeat(pal[k], 3, axis=0)
-    idx = np.arange(len(pos), dtype=np.uint32)
-    with open(out, "wb") as f:
-        f.write(struct.pack("<II", len(pos), len(idx) // 3))
-        f.write(pos.tobytes()); f.write(nor.tobytes()); f.write(col.tobytes())
-        f.write(b"\0" * ((-f.tell()) % 4)); f.write(idx.tobytes())
+    _write_bin(out, V[faces].reshape(-1, 3), corner_normals(V, faces), np.repeat(pal[k], 3, axis=0))
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):

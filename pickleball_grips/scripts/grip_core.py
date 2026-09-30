@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from scipy.ndimage import gaussian_filter1d
+from scipy.ndimage import gaussian_filter, gaussian_filter1d
 from scipy.spatial import cKDTree
 
 DATA = Path(__file__).resolve().parent.parent / "data"
@@ -25,16 +25,24 @@ DATA = Path(__file__).resolve().parent.parent / "data"
 # height (45 deg overhang) so every design prints upright without supports.
 OVERHANG_SLOPE = 1.0
 
+# textured zone (smooth collars outside).  Extended up the neck like the reference's honeycomb.
+ZONE_LO, ZONE_HI = 21.5, 116.0
+# print rules for a solid 100 % infill part on a 0.4 mm nozzle
+BASE_WALL = 1.2     # 3 x 0.4 mm perimeters
+MIN_RIM = 0.8       # thinnest skin anywhere (2 x 0.4 mm); the reference tapers to 0.36 mm
+POST_SIGMA = 0.20   # mm - rounding applied after the overhang limiter
+
 
 class Frame:
-    def __init__(self, ds=0.25, dense=0.05):
+    def __init__(self, ds=0.25, dense=0.05, wall=BASE_WALL, rim=MIN_RIM):
         P = json.loads((DATA / "reference_profile.json").read_text())
         self.P = P
         self.z_top = P["z_top"]
         self.z_floor = P["z_floor"]
         self.z_foot = P["z_foot_top"]
         self.crest = P["crest_offset"]
-        self.wall = P["wall_offset"]
+        self.wall = wall                       # base wall of the textured zone (reference: 1.5)
+        self.min_rim = rim                     # minimum skin thickness (reference tapers to 0.36)
         self.foot_z, self.foot_e = np.array(P["foot_table"]).T
         self.taper_z, self.taper_e = np.array(P["taper_table"]).T
 
@@ -96,18 +104,23 @@ class Frame:
     def E_foot(self, z):
         return np.interp(z, self.foot_z, self.foot_e)
 
-    def E_upper(self, z):
+    def E_ref_upper(self, z):
+        """The reference's own outer offset above the foot (crest zone + taper)."""
         z = np.asarray(z, float)
         return np.where(z < self.taper_z[0], self.crest, np.interp(z, self.taper_z, self.taper_e))
+
+    def E_upper(self, z):
+        """Outer offset used by the grips: the reference curve, but never thinner than min_rim."""
+        return np.maximum(self.E_ref_upper(z), self.min_rim)
 
     def rows(self, res=0.25):
         """Ring heights.  Foot rows | pattern rows (from z=20) | taper rows."""
         foot = np.array([0, .05, .1, .2, .3, .45, .6, .8, 1.0, 1.25, 1.5, 1.8, 2.2, 3, 4.5, 7, 10, 13, 16, 18.5, 19.5])
-        pat = np.arange(20.0, 112.0 + 1e-9, res)
-        tap = np.r_[np.arange(112.5, 120.0, 0.5), np.arange(120.0, 132.0, 1.0), self.z_top]
+        pat = np.arange(20.0, 118.0 + 1e-9, res)
+        tap = np.r_[np.arange(118.5, 124.0, 0.5), np.arange(124.0, 132.0, 1.0), self.z_top]
         return foot, pat, tap
 
-    def zone_window(self, z, lo=23.0, hi=108.0, ramp=1.5):
+    def zone_window(self, z, lo=ZONE_LO, hi=ZONE_HI, ramp=1.5):
         """1 inside the textured zone, 0 in the smooth collars (t=1 there)."""
         s = lambda x: np.clip(x, 0, 1) ** 2 * (3 - 2 * np.clip(x, 0, 1))
         return s((z - lo) / ramp) * (1 - s((z - hi + ramp) / ramp))
@@ -126,6 +139,12 @@ class Frame:
         dz = np.diff(pat)[:, None]
         for j in range(1, len(pat)):
             Hp[j] = np.minimum(Hp[j], Hp[j - 1] + OVERHANG_SLOPE * dz[j - 1])
+        # The limiter runs per column on the row grid, so on diagonal edges each column's chamfer starts
+        # on a different row (0.25 mm teeth).  Averaging removes the teeth and cannot steepen a slope
+        # bound, so the 45 degree limit still holds; then re-clip to the wall/envelope limits.
+        ds = self.L / self.N
+        Hp = gaussian_filter(Hp, (POST_SIGMA / res, POST_SIGMA / ds), mode=("nearest", "wrap"))
+        Hp = np.clip(Hp, B, Eu)
         Hf = np.repeat(self.E_foot(foot)[:, None], self.N, 1)
         Ht = np.repeat(self.E_upper(tap)[:, None], self.N, 1)
         z = np.r_[foot, pat, tap]
