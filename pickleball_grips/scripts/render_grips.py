@@ -81,6 +81,27 @@ def pack_mesh(F, name, out):
         f.write(idx.tobytes())
 
 
+def pack_mesh_3mf(name, out):
+    """Pack the mesh straight from the exported 3MF (flat per-triangle print-palette colours)."""
+    import re
+    import zipfile
+    with zipfile.ZipFile(ROOT / "3mf" / f"{name}.3mf") as z:
+        xml = z.read("3D/3dmodel.model").decode()
+    pal = np.array([[int(h[i:i + 2], 16) for i in (0, 2, 4)] for h in re.findall(r'<m:color color="#([0-9A-F]{6})FF"/>', xml)], np.uint8)
+    V = np.array(re.findall(r'<vertex x="([^"]+)" y="([^"]+)" z="([^"]+)"', xml), float)
+    T = np.array(re.findall(r'<triangle v1="(\d+)" v2="(\d+)" v3="(\d+)" pid="2" p1="(\d+)"', xml), int)
+    faces, k = T[:, :3], T[:, 3]
+    vn = np.asarray(trimesh.Trimesh(V, faces, process=False).vertex_normals, np.float32)
+    pos = V[faces].reshape(-1, 3).astype(np.float32)
+    nor = vn[faces].reshape(-1, 3)
+    col = np.repeat(pal[k], 3, axis=0)
+    idx = np.arange(len(pos), dtype=np.uint32)
+    with open(out, "wb") as f:
+        f.write(struct.pack("<II", len(pos), len(idx) // 3))
+        f.write(pos.tobytes()); f.write(nor.tobytes()); f.write(col.tobytes())
+        f.write(b"\0" * ((-f.tell()) % 4)); f.write(idx.tobytes())
+
+
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -95,7 +116,7 @@ def serve(root):
     return srv
 
 
-def render(names, views, size):
+def render(names, views, size, source="stl"):
     from playwright.sync_api import sync_playwright
     three = HERE / "node_modules" / "three"
     if not three.exists():
@@ -111,7 +132,7 @@ def render(names, views, size):
         b = p.chromium.launch(executable_path=CHROMIUM, args=["--use-gl=angle", "--use-angle=swiftshader",
                                                                 "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"])
         for name in names:
-            pack_mesh(F, name, tmp / f"{name}.bin")
+            (pack_mesh if source == "stl" else (lambda F_, n, o: pack_mesh_3mf(n, o)))(F, name, tmp / f"{name}.bin")
             r, mt, cc = LOOK[name]["mat"]
             for v in views:
                 w, h = {"hero": size, "lineup": (1400, 760), "detail": (1000, 1000)}[v]
@@ -123,7 +144,7 @@ def render(names, views, size):
                 pg.goto(f"http://127.0.0.1:{port}/index.html?mesh={name}.bin&mode={v}&w={w}&h={h}"
                         f"&rough={r}&metal={mt}&clear={cc}{extra}")
                 pg.wait_for_function("window.__done === true", timeout=240000)
-                out = ROOT / "renders" / f"{name}_{v}.png"
+                out = ROOT / "renders" / (f"{name}_{v}.png" if source == "stl" else f"{name}_3mf.png")
                 pg.locator("canvas").screenshot(path=str(out))
                 pg.close()
                 print("rendered", out.name, flush=True)
@@ -153,7 +174,7 @@ BLURB = {
 }
 
 
-def catalog(names):
+def catalog(names, suffix="hero", out_name="catalog.png", subtitle=None):
     """Two rows of five: hero renders + captions (echoes the layout of the request image)."""
     cw, ch = 560, 900
     W, Hh = cw * 5, 150 + 2 * (ch + 250)
@@ -161,19 +182,19 @@ def catalog(names):
     d = ImageDraw.Draw(sheet)
     title = "PICKLEBALL PADDLE GRIPS - ONE FITMENT, TEN SURFACES"
     d.text((W // 2, 62), title, fill=(20, 20, 20), font=font(58), anchor="mm")
-    d.text((W // 2, 118), "All ten share the reference cavity (32.06 x 26.04 mm bore, 5 mm floor, 132.82 mm tall), foot flare and top taper",
+    d.text((W // 2, 118), subtitle or "All ten share the reference cavity (32.06 x 26.04 mm bore, 5 mm floor, 132.82 mm tall), foot flare and top taper",
            fill=(70, 70, 70), font=font(26, False), anchor="mm")
     label = {n: l for n, l, _ in DESIGNS}
     for k, name in enumerate(names):
         r, c = divmod(k, 5)
         x0, y0 = c * cw, 150 + r * (ch + 250)
-        im = Image.open(ROOT / "renders" / f"{name}_hero.png").convert("RGB")
+        im = Image.open(ROOT / "renders" / f"{name}_{suffix}.png").convert("RGB")
         im.thumbnail((cw - 20, ch))
         sheet.paste(im, (x0 + (cw - im.width) // 2, y0))
         d.text((x0 + cw // 2, y0 + ch + 34), label[name], fill=(15, 15, 15), font=font(44), anchor="mm")
         for li, line in enumerate(BLURB[name].split("\n")):
             d.text((x0 + cw // 2, y0 + ch + 92 + li * 34), line, fill=(60, 60, 60), font=font(25, False), anchor="mm")
-    out = ROOT / "renders" / "catalog.png"
+    out = ROOT / "renders" / out_name
     sheet.save(out)
     print("wrote", out)
 
@@ -184,9 +205,16 @@ if __name__ == "__main__":
     ap.add_argument("--views", nargs="*", default=["hero", "lineup", "detail"])
     ap.add_argument("--size", nargs=2, type=int, default=[700, 1200])
     ap.add_argument("--catalog", action="store_true")
+    ap.add_argument("--source", choices=["stl", "3mf"], default="stl", help="3mf: render the exported 3MF's own colours (hero only)")
     a = ap.parse_args()
     names = [n for n, _, _ in DESIGNS if not a.only or any(n.startswith(o) for o in a.only)]
-    if a.views:
-        render(names, a.views, tuple(a.size))
-    if a.catalog:
-        catalog([n for n, _, _ in DESIGNS])
+    if a.source == "3mf":
+        if a.views:
+            render(names, ["hero"], tuple(a.size), source="3mf")
+        if a.catalog:
+            catalog([n for n, _, _ in DESIGNS], "3mf", "catalog_3mf.png", "Rendered from the exported .3mf files - per-triangle print-palette colours")
+    else:
+        if a.views:
+            render(names, a.views, tuple(a.size))
+        if a.catalog:
+            catalog([n for n, _, _ in DESIGNS])

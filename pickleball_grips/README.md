@@ -36,6 +36,31 @@ Reference bounding box 42.64 x 36.62 x 132.823 mm; all ten grips: 42.63 x 36.61 
 Close-ups: `renders/<id>_detail.png`; four-way turntable line-ups: `renders/<id>_lineup.png`;
 hero shots: `renders/<id>_hero.png`.  Colours in the renders are **preview only** - the STLs are single-material.
 
+## Colored 3MF (`3mf/`)
+
+Each grip is also exported as a colored 3MF, `3mf/<id>.3mf`, using the 3MF Materials extension (`<m:colorgroup>` with a colour
+on every triangle - the same mechanism your reference file uses).  Geometry is identical to the matching STL: same coordinates,
+millimetres, z up, and the same triangle count.  Colours are a small print palette (not the shaded preview colours), and the
+bore/floor/butt take the design's collar colour so no colour change is buried inside the part.  A thumbnail is embedded.
+
+| Design | File | Size | Colours | Palette |
+|---|---|---|---|---|
+| VORTEX GRIP | `3mf/01_vortex_grip.3mf` | 4.1 MB | 2 | `#3A225C` `#9C6CDE` |
+| CELLULAR MOD | `3mf/02_cellular_mod.3mf` | 2.0 MB | 3 | `#464648` `#969692` `#C81E22` |
+| TESSEL-BLOCK | `3mf/03_tessel_block.3mf` | 4.3 MB | 3 | `#848482` `#E8742A` `#387AC4` |
+| LOGIC-GRIP | `3mf/04_logic_grip.3mf` | 4.1 MB | 3 | `#323236` `#2A3C8A` `#9EA4AA` |
+| NEURO-TREAD | `3mf/05_neuro_tread.3mf` | 4.2 MB | 2 | `#18181A` `#CE1820` |
+| CARBON MATRIX | `3mf/06_carbon_matrix.3mf` | 4.1 MB | 2 | `#1C1C20` `#80848A` |
+| VORONOI-CORE | `3mf/07_voronoi_core.3mf` | 2.0 MB | 1 | `#8A54E4` |
+| TOPO-FLOW | `3mf/08_topo_flow.3mf` | 4.4 MB | 3 | `#D6AC80` `#A8744E` `#784828` |
+| ERGO-CONTOUR | `3mf/09_ergo_contour.3mf` | 0.8 MB | 1 | `#424248` |
+| HEXA-MOD | `3mf/10_hexa_mod.3mf` | 2.9 MB | 5 | `#1C1C1E` `#464A4E` `#74787E` `#B0B4BA` `#D63A28` |
+
+Checked with the official `lib3mf` reader (`scripts/verify_3mf.py`): parses with zero warnings, triangle and vertex counts equal the STL,
+every sampled triangle has a colour property, volume matches the STL, closed manifold.  `renders/catalog_3mf.png` is rendered from the
+3MF files themselves.  Not tested in any slicer: viewers that support the materials extension show the colours; multi-extruder slicers
+differ in how they import per-triangle colour, so expect to assign or paint filaments in the slicer.  The STLs stay single-material.
+
 ## Fitment verification (`scripts/verify_fitment.py`, full data in `fitment_report.json`)
 
 Every STL is cross-sectioned at 40 heights against the reference profile.
@@ -76,11 +101,12 @@ Every STL is cross-sectioned at 40 heights against the reference profile.
 ## Regenerating
 
 ```
-pip install numpy scipy trimesh shapely manifold3d pillow mapbox_earcut matplotlib playwright
+pip install numpy scipy trimesh shapely manifold3d pillow mapbox_earcut matplotlib playwright lib3mf
 cd scripts
 python3 extract_reference_profile.py          # reference 3MF -> data/reference_profile.json
 python3 generate_grips.py                     # -> stl/*.stl   (~15 s)
 python3 verify_fitment.py                     # -> fitment_report.json
+python3 export_3mf.py && python3 verify_3mf.py   # -> 3mf/*.3mf (colored), validated with lib3mf
 npm install && python3 render_grips.py --catalog   # -> renders/*.png (headless Chromium + three.js)
 python3 make_fit_overlay.py
 ```

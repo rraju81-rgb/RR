@@ -34,7 +34,8 @@ def evaluate(F, fn, res, ss=2):
         t = t + d["t"] / len(offs)
         rgb = rgb + np.asarray(d["rgb"], float) / len(offs)
     ctx.S2, ctx.Z2 = S0, Z0
-    return ctx, dict(d, t=t, rgb=rgb)
+    d0 = fn(ctx)                                  # unshifted pass: discrete colour classes for the 3MF export
+    return ctx, dict(d, t=t, rgb=rgb, cls=d0["cls"])
 
 
 def generate(F, name, label, fn, res):
@@ -47,7 +48,8 @@ def generate(F, name, label, fn, res):
     m = trimesh.Trimesh(V, Fc, process=False)
     (ROOT / "stl").mkdir(exist_ok=True)
     write_stl(ROOT / "stl" / f"{name}.stl", V, Fc)
-    np.savez_compressed(ROOT / "data" / f"{name}_colors.npz", rgb=np.clip(d["rgb"], 0, 255).astype(np.uint8), z=ctx.Z)
+    np.savez_compressed(ROOT / "data" / f"{name}_colors.npz", rgb=np.clip(d["rgb"], 0, 255).astype(np.uint8), z=ctx.Z,
+                        cls=d["cls"].astype(np.uint8), palette=np.array(d["palette"], np.uint8), collar=d["collar"])
     print(f"{name:18s} tris={len(Fc):7d} watertight={m.is_watertight} vol={m.volume/1000:6.2f} cm3 "
           f"bbox={np.round(m.extents, 2).tolist()} {time.time() - t0:5.1f}s", flush=True)
     return m

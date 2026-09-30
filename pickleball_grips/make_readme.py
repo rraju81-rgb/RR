@@ -3,6 +3,9 @@
 import json
 from pathlib import Path
 
+import re
+import zipfile
+
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
@@ -33,6 +36,16 @@ for n, (lab, _, _) in DESC.items():
     vrows.append(f"| {lab} | {'PASS' if r['pass'] else 'FAIL'} | {'yes' if r['watertight'] else 'NO'} | {r['z_max']:.3f} | "
                  f"{r['max_over_reference_envelope_mm']:+.3f} | {r['foot_profile_err_mm']:.3f} / {r['taper_profile_err_mm']:.3f} | "
                  f"{r['bore_wall_on_surface_pct']:.0f}% | {r['bore_intrusion_mm2']:.3f} |")
+
+def pal3mf(n):
+    with zipfile.ZipFile(ROOT / "3mf" / f"{n}.3mf") as z:
+        return re.findall(r'<m:color color="#([0-9A-F]{6})FF"/>', z.read("3D/3dmodel.model").decode())
+
+
+c3 = []
+for n, (lab, _, _) in DESC.items():
+    p = pal3mf(n)
+    c3.append(f"| {lab} | `3mf/{n}.3mf` | {(ROOT / '3mf' / f'{n}.3mf').stat().st_size / 1e6:.1f} MB | {len(p)} | " + " ".join(f"`#{h}`" for h in p) + " |")
 
 b = P["cavity_bounds"]
 fz, fe = np.array(P["foot_table"]).T
@@ -66,6 +79,22 @@ Reference bounding box 42.64 x 36.62 x 132.823 mm; all ten grips: 42.63 x 36.61 
 Close-ups: `renders/<id>_detail.png`; four-way turntable line-ups: `renders/<id>_lineup.png`;
 hero shots: `renders/<id>_hero.png`.  Colours in the renders are **preview only** - the STLs are single-material.
 
+## Colored 3MF (`3mf/`)
+
+Each grip is also exported as a colored 3MF, `3mf/<id>.3mf`, using the 3MF Materials extension (`<m:colorgroup>` with a colour
+on every triangle - the same mechanism your reference file uses).  Geometry is identical to the matching STL: same coordinates,
+millimetres, z up, and the same triangle count.  Colours are a small print palette (not the shaded preview colours), and the
+bore/floor/butt take the design's collar colour so no colour change is buried inside the part.  A thumbnail is embedded.
+
+| Design | File | Size | Colours | Palette |
+|---|---|---|---|---|
+{chr(10).join(c3)}
+
+Checked with the official `lib3mf` reader (`scripts/verify_3mf.py`): parses with zero warnings, triangle and vertex counts equal the STL,
+every sampled triangle has a colour property, volume matches the STL, closed manifold.  `renders/catalog_3mf.png` is rendered from the
+3MF files themselves.  Not tested in any slicer: viewers that support the materials extension show the colours; multi-extruder slicers
+differ in how they import per-triangle colour, so expect to assign or paint filaments in the slicer.  The STLs stay single-material.
+
 ## Fitment verification (`scripts/verify_fitment.py`, full data in `fitment_report.json`)
 
 Every STL is cross-sectioned at 40 heights against the reference profile.
@@ -97,11 +126,12 @@ Every STL is cross-sectioned at 40 heights against the reference profile.
 ## Regenerating
 
 ```
-pip install numpy scipy trimesh shapely manifold3d pillow mapbox_earcut matplotlib playwright
+pip install numpy scipy trimesh shapely manifold3d pillow mapbox_earcut matplotlib playwright lib3mf
 cd scripts
 python3 extract_reference_profile.py          # reference 3MF -> data/reference_profile.json
 python3 generate_grips.py                     # -> stl/*.stl   (~15 s)
 python3 verify_fitment.py                     # -> fitment_report.json
+python3 export_3mf.py && python3 verify_3mf.py   # -> 3mf/*.3mf (colored), validated with lib3mf
 npm install && python3 render_grips.py --catalog   # -> renders/*.png (headless Chromium + three.js)
 python3 make_fit_overlay.py
 ```

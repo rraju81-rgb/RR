@@ -99,7 +99,8 @@ def vortex(c):
     w = sm(0.30, 0.65, t)
     rgb = lerp((52, 30, 82), (156, 108, 222), w)
     rgb = rgb * (0.86 + 0.14 * t)[..., None]
-    return dict(t=t, rgb=rgb)
+    cls = (w > 0.5).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=1, palette=[(58, 34, 92), (156, 108, 222)])
 
 
 # ---------------------------------------------------------------------------------
@@ -126,7 +127,8 @@ def cellular(c):
     rgb = lerp((136, 136, 132), (168, 168, 162), lv - .8)
     rgb = np.where((d < 0)[..., None], np.array([70, 70, 72.]), rgb)
     rgb = lerp(rgb, (200, 30, 34), pocket > 0.5)
-    return dict(t=t, rgb=rgb)
+    cls = np.where(pocket > 0.5, 2, np.where(d < 0, 0, 1)).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=1, palette=[(70, 70, 72), (150, 150, 146), (200, 30, 34)])
 
 
 # ---------------------------------------------------------------------------------
@@ -156,7 +158,8 @@ def tessel(c):
     base = np.where(ident[..., None] == 0, np.array([232, 116, 42.]), np.array([56, 122, 196.]))
     base = np.where(rim[..., None], np.array([132, 132, 130.]), base)
     rgb = base * (0.45 + 0.55 * np.clip(g / 0.9, 0, 1))[..., None]
-    return dict(t=t, rgb=rgb)
+    cls = np.where(rim, 0, np.where(ident == 0, 1, 2)).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=0, palette=[(132, 132, 130), (232, 116, 42), (56, 122, 196)])
 
 
 # ---------------------------------------------------------------------------------
@@ -235,7 +238,8 @@ def logic(c):
     rgb = np.where((ident == 1)[..., None], np.array([42, 60, 138.]), np.array([158, 164, 170.]))
     rgb = lerp(np.array([50, 50, 54.]), rgb, sm(0.0, 0.5, t) * 0 + np.clip(t * 4, 0, 1))
     rgb = rgb * (0.75 + 0.25 * t)[..., None]
-    return dict(t=t, rgb=rgb)
+    cls = np.where(t < 0.25, 0, np.where(ident == 1, 1, 2)).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=2, palette=[(50, 50, 54), (42, 60, 138), (158, 164, 170)])
 
 
 # ---------------------------------------------------------------------------------
@@ -308,7 +312,8 @@ def neuro(c):
     red = np.clip(ridge * 1.5, 0, 1)
     rgb = lerp((22, 22, 24), (44, 44, 48), bump * (1 - red))
     rgb = lerp(rgb, (206, 24, 32), red)
-    return dict(t=t, rgb=rgb)
+    cls = (red > 0.5).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=0, palette=[(24, 24, 26), (206, 24, 32)])
 
 
 # ---------------------------------------------------------------------------------
@@ -332,7 +337,8 @@ def carbon(c):
     t = tw * (1 - mp) + patch_t * mp
     wv = np.where(warp_over, 34, 22) + 10 * crown
     rgb = lerp(np.stack([wv, wv, wv + 4], -1), (128, 132, 138), mp)
-    return dict(t=t, rgb=rgb)
+    cls = (mp > 0.5).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=0, palette=[(28, 28, 32), (128, 132, 138)])
 
 
 # ---------------------------------------------------------------------------------
@@ -381,7 +387,8 @@ def voronoi(c):
     d = cv.sample(cv.edt(img))
     t = 0.55 + 0.45 * sm(0.0, 1.35, d)
     rgb = lerp((104, 52, 190), (150, 96, 236), sm(0.55, 1.0, t))
-    return dict(t=t, rgb=rgb, holes=wins)
+    cls = np.zeros(t.shape, np.uint8)
+    return dict(t=t, rgb=rgb, holes=wins, cls=cls, collar=0, palette=[(138, 84, 228)])
 
 
 # ---------------------------------------------------------------------------------
@@ -401,7 +408,8 @@ def topo(c):
     grain = 0.5 + 0.5 * np.sin(2 * np.pi * (S / L * 47) + 3.0 * np.sin(2 * np.pi * Z / 37))
     rgb = lerp((214, 172, 128), (120, 72, 40), sm(0.35, 0.95, t))
     rgb = rgb * (0.94 + 0.06 * grain)[..., None]
-    return dict(t=t, rgb=rgb)
+    cls = np.digitize(t, [0.55, 0.80]).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=1, palette=[(214, 172, 128), (168, 116, 78), (120, 72, 40)])
 
 
 # ---------------------------------------------------------------------------------
@@ -418,7 +426,8 @@ def ergo(c):
     t = t - 0.45 * gauss(pdiff(S, (Sf + 0.20 * L) % L, L), 6.0) * gauss(Z - 97, 8.0)   # thumb dish
     t = np.clip(t, 0.12, 1.0)
     rgb = np.broadcast_to(np.array([66., 66., 72.]), t.shape + (3,)).copy()
-    return dict(t=t, rgb=rgb)
+    cls = np.zeros(t.shape, np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=0, palette=[(66, 66, 72)])
 
 
 # ---------------------------------------------------------------------------------
@@ -464,7 +473,8 @@ def hexa(c):
     palette = np.array([[70, 74, 78.], [116, 120, 126.], [176, 180, 186.], [214, 58, 40.]])
     rgb = palette[level] * (0.8 + 0.2 * sm(gap, gap + .9, dedge))[..., None]
     rgb = np.where((dedge < gap)[..., None], np.array([28, 28, 30.]), rgb)
-    return dict(t=t, rgb=rgb)
+    cls = np.where(dedge < gap, 0, level + 1).astype(np.uint8)
+    return dict(t=t, rgb=rgb, cls=cls, collar=2, palette=[(28, 28, 30), (70, 74, 78), (116, 120, 126), (176, 180, 186), (214, 58, 40)])
 
 
 DESIGNS = [
