@@ -11,14 +11,16 @@ const W = +q.get('w') || 800, H = +q.get('h') || 1400;
 const mode = q.get('mode') || 'hero';
 const rough = +(q.get('rough') ?? 0.5), metal = +(q.get('metal') ?? 0), clear = +(q.get('clear') ?? 0);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: true });
 renderer.setPixelRatio(1); renderer.setSize(W, H);
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.toneMapping = q.get('tm') === 'neutral' ? THREE.NeutralToneMapping : THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = +(q.get('exp') ?? 1.05);
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xe9e6e1);
+const bgq = q.get('bg');                          // bg=none -> transparent PNG; bg=RRGGBB -> solid; default warm grey
+if (bgq === 'none') { scene.background = null; renderer.setClearColor(0x000000, 0); document.body.style.background = 'transparent'; document.documentElement.style.background = 'transparent'; }
+else scene.background = new THREE.Color(bgq ? '#' + bgq : 0xe9e6e1);
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.75;
 
@@ -48,6 +50,7 @@ const height = bb.max.y - bb.min.y;
 
 const mat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: rough, metalness: metal,
   clearcoat: clear, clearcoatRoughness: 0.25, flatShading: q.get('flat') === '1' });
+if (q.get('tint')) mat.color.set('#' + q.get('tint'));   // single-colour print preview: white vertex colours x tint
 const grip = () => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; };
 
 // ---- lights + floor
@@ -70,7 +73,7 @@ function place(cx, cy, cz, dist, tgtY) {
 let activeCam = camera;
 if (mode === 'hero') {
   const g = grip(); scene.add(g);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.28 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: +(q.get('sh') ?? 0.28) }));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
   const fov = THREE.MathUtils.degToRad(camera.fov);
   const fill = +(q.get('fill') ?? 0.62);

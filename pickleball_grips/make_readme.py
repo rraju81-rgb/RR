@@ -131,6 +131,18 @@ python3 spec_data.py               # measurements -> specs/assets/<id>/data.json
 python3 build_specs.py             # -> specs/*.pdf   (needs reportlab and the Liberation Sans fonts)
 ```
 
+## Brochure (`brochure/PickleballGrips_Brochure.pdf`)
+
+A 2-page A4 pitch brochure / poster for single-colour PLA printing: page 1 is a dark poster (the ten grips as a hero, a short note on
+the handle, ten PLA colour options), page 2 is a catalogue (two views, a surface close-up and a line of design inspiration for every
+design).  All renders are one colour each (white vertex colours x one PLA tint), so they show what a one-colour print looks like.
+
+```
+cd scripts
+python3 render_brochure_assets.py   # tinted renders -> brochure/assets/   (headless Chromium)
+python3 build_brochure.py           # artwork + layout -> brochure/PickleballGrips_Brochure.pdf
+```
+
 ## Print readiness (`scripts/verify_print.py`, data in `print_report.json`)
 
 Each STL is sliced at the mid-plane of every 0.20 mm layer (664 layers).
