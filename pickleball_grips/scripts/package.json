@@ -1,0 +1,6 @@
+{
+  "name": "pickleball-grips-render",
+  "private": true,
+  "description": "three.js dependency for render_grips.py (headless Chromium via Playwright)",
+  "dependencies": { "three": "^0.170.0" }
+}

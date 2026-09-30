@@ -1,0 +1,97 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="icon" href="data:,"><style>html,body{margin:0;background:#e9e6e1;overflow:hidden}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 800, H = +q.get('h') || 1400;
+const mode = q.get('mode') || 'hero';
+const rough = +(q.get('rough') ?? 0.5), metal = +(q.get('metal') ?? 0), clear = +(q.get('clear') ?? 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xe9e6e1);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.75;
+
+// ---- mesh (binary: nv, nt, pos f32*3, nrm f32*3, rgb u8*3, pad4, idx u32*3)
+const buf = await (await fetch(q.get('mesh'))).arrayBuffer();
+const dv = new DataView(buf);
+const nv = dv.getUint32(0, true), nt = dv.getUint32(4, true);
+let o = 8;
+const pos = new Float32Array(buf, o, nv * 3); o += nv * 12;
+const nor = new Float32Array(buf, o, nv * 3); o += nv * 12;
+const rgb = new Uint8Array(buf, o, nv * 3); o += nv * 3; o = (o + 3) & ~3;
+const idx = new Uint32Array(buf, o, nt * 3);
+const col = new Float32Array(nv * 3);
+const lin = new Float32Array(256);
+for (let i = 0; i < 256; i++) { const c = i / 255; lin[i] = c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+for (let i = 0; i < nv * 3; i++) col[i] = lin[rgb[i]];
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+geo.setIndex(new THREE.BufferAttribute(idx, 1));
+geo.rotateX(-Math.PI / 2);                       // STL z-up -> three y-up
+geo.computeBoundingBox();
+const bb = geo.boundingBox, ctr = new THREE.Vector3(); bb.getCenter(ctr);
+geo.translate(-ctr.x, -bb.min.y, -ctr.z);
+const height = bb.max.y - bb.min.y;
+
+const mat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: rough, metalness: metal,
+  clearcoat: clear, clearcoatRoughness: 0.25 });
+const grip = () => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; };
+
+// ---- lights + floor
+const key = new THREE.DirectionalLight(0xffffff, 2.3);
+key.position.set(-40, 380, 70); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -140, right: 140, top: 140, bottom: -140, near: 10, far: 700 });
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xdfe8ff, 0.9); rim.position.set(160, 120, -180); scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xcfc8be, 0.35));
+
+const camera = new THREE.PerspectiveCamera(20, W / H, 5, 3000);
+const az = THREE.MathUtils.degToRad(+(q.get('az') ?? 32)), el = THREE.MathUtils.degToRad(+(q.get('el') ?? 16));
+
+function place(cx, cy, cz, dist, tgtY) {
+  camera.position.set(cx + dist * Math.sin(az) * Math.cos(el), tgtY + dist * Math.sin(el), cz + dist * Math.cos(az) * Math.cos(el));
+  camera.lookAt(cx, tgtY, cz);
+}
+
+if (mode === 'hero') {
+  const g = grip(); scene.add(g);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.28 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  const fov = THREE.MathUtils.degToRad(camera.fov);
+  place(0, 0, 0, (height * 0.62) / Math.tan(fov / 2) / Math.cos(el) * 1.0, height * 0.5);
+} else if (mode === 'lineup') {
+  const ped = new THREE.Mesh(new THREE.BoxGeometry(250, 26, 90), new THREE.MeshStandardMaterial({ color: 0xf3f1ed, roughness: 0.85 }));
+  ped.position.y = -13; ped.receiveShadow = true; ped.castShadow = true; scene.add(ped);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.ShadowMaterial({ opacity: 0.2 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -26; floor.receiveShadow = true; scene.add(floor);
+  const xs = [-90, -30, 30, 90];
+  xs.forEach((x, i) => { const g = grip(); g.position.x = x; g.rotation.y = i * Math.PI / 2 + 0.4; scene.add(g); });
+  camera.fov = 16; camera.updateProjectionMatrix();
+  const fov = THREE.MathUtils.degToRad(camera.fov);
+  place(0, 0, 0, (Math.max(height * 0.66, 130 / camera.aspect * 0.5)) / Math.tan(fov / 2), height * 0.46);
+} else { // detail: zoomed mid-section, slightly raked
+  const g = grip(); scene.add(g);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.0 }));
+  scene.add(floor);
+  camera.fov = 14; camera.updateProjectionMatrix();
+  const fov = THREE.MathUtils.degToRad(camera.fov);
+  const zc = +(q.get('zc') ?? 62);
+  place(0, 0, 0, (58 * 0.62) / Math.tan(fov / 2) / camera.aspect * camera.aspect, zc);
+}
+renderer.render(scene, camera);
+window.__done = true;
+</script></body></html>
