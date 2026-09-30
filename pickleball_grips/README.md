@@ -108,6 +108,19 @@ python3 render_brochure_assets.py   # tinted renders -> brochure/assets/   (head
 python3 build_brochure.py           # artwork + layout -> brochure/PickleballGrips_Brochure.pdf
 ```
 
+## Design brochures (`brochure/designs/`)
+
+Ten 2-page A4 brochures, one per design, for single-colour PLA printing - page 1 is a dark poster (hero, the design story, a close-up,
+the handle note, the whole grip in ten PLA colours), page 2 is a light catalogue (two views, a half-section cutaway, the grip on an
+illustrative generic paddle, four surface images, the inspiration behind the design, and all ten designs).
+
+```
+cd scripts
+python3 render_brochure_assets.py   # tinted hero / close-up renders
+python3 render_design_assets.py     # cutaway, rim view, unrolled relief, colour row, paddle mock-up, four turns
+python3 build_design_brochures.py   # -> brochure/designs/<id>_brochure.pdf
+```
+
 ## Print readiness (`scripts/verify_print.py`, data in `print_report.json`)
 
 Each STL is sliced at the mid-plane of every 0.20 mm layer (664 layers).

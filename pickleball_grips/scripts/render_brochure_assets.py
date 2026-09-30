@@ -46,6 +46,7 @@ PLA = (0.42, 0.0, 0.22)                              # roughness, metalness, cle
 SURF = {"09_ergo_contour": dict(zc=66, az=0, el=2, span=38, exp=1.3, look=(0.36, 0.0, 0.3)),    # smooth design: graze the light to show the flutes
         "06_carbon_matrix": dict(zc=62, az=18, el=8, exp=1.7, look=(0.30, 0.0, 0.5))}     # black PLA: lift the exposure, glossier
 BG_TILE = "E9E6E1"
+DARK_EXP = {"06_carbon_matrix": 1.4}             # black PLA: lift the exposure so the texture reads
 
 
 def pack_white(name, out):
@@ -89,7 +90,7 @@ def main(only=None, skip=()):
             tint = COLOUR[ASSIGN[name]]
             if "hero" not in skip:
                 for tag, az in (("a", 32), ("b", 125)):
-                    shot(name, f"mode=hero&fill=0.56&el=13&az={az}&tint={tint}&bg=none&sh=0", 1100, 1900, d / f"hero_{tag}.png", True)
+                    shot(name, f"mode=hero&fill=0.56&el=13&az={az}&tint={tint}&bg=none&sh=0", 1100, 1900, d / f"hero_{tag}.png", True, exp=DARK_EXP.get(name, 1.0))
             if "surface" not in skip:
                 s = SURF.get(name, dict(zc=62, az=18, el=8))
                 shot(name, f"mode=macro&zc={s['zc']}&span={s.get('span', 34)}&az={s['az']}&el={s['el']}&tx=0&tint={tint}&bg={BG_TILE}",

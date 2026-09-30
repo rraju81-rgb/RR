@@ -45,9 +45,30 @@ geo.setIndex(new THREE.BufferAttribute(idx, 1));
 geo.rotateX(-Math.PI / 2);                       // STL z-up -> three y-up
 geo.computeBoundingBox();
 const bb = geo.boundingBox, ctr = new THREE.Vector3(); bb.getCenter(ctr);
+const bbMinY = bb.min.y;
 geo.translate(-ctr.x, -bb.min.y, -ctr.z);
 const height = bb.max.y - bb.min.y;
 
+let geo2 = null;
+if (q.get('mesh2')) {
+  const b2 = await (await fetch(q.get('mesh2'))).arrayBuffer();
+  const d2 = new DataView(b2); const nv2 = d2.getUint32(0, true), nt2 = d2.getUint32(4, true);
+  let p = 8;
+  const pos2 = new Float32Array(b2, p, nv2 * 3); p += nv2 * 12;
+  const nor2 = new Float32Array(b2, p, nv2 * 3); p += nv2 * 12;
+  const rgb2 = new Uint8Array(b2, p, nv2 * 3); p += nv2 * 3; p = (p + 3) & ~3;
+  const idx2 = new Uint32Array(b2, p, nt2 * 3);
+  const col2 = new Float32Array(nv2 * 3);
+  for (let i = 0; i < nv2 * 3; i++) col2[i] = lin[rgb2[i]];
+  geo2 = new THREE.BufferGeometry();
+  geo2.setAttribute('position', new THREE.BufferAttribute(pos2, 3));
+  geo2.setAttribute('normal', new THREE.BufferAttribute(nor2, 3));
+  geo2.setAttribute('color', new THREE.BufferAttribute(col2, 3));
+  geo2.setIndex(new THREE.BufferAttribute(idx2, 1));
+  geo2.rotateX(-Math.PI / 2);
+  geo2.translate(-ctr.x, -bbMinY, -ctr.z);
+}
+const mat2 = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: +(q.get('rough2') ?? 0.4), metalness: 0, clearcoat: +(q.get('clear2') ?? 0.5), clearcoatRoughness: 0.2 });
 const mat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: rough, metalness: metal,
   clearcoat: clear, clearcoatRoughness: 0.25, flatShading: q.get('flat') === '1' });
 if (q.get('tint')) mat.color.set('#' + q.get('tint'));   // single-colour print preview: white vertex colours x tint
@@ -88,6 +109,19 @@ if (mode === 'hero') {
   camera.fov = 16; camera.updateProjectionMatrix();
   const fov = THREE.MathUtils.degToRad(camera.fov);
   place(0, 0, 0, (Math.max(height * 0.66, 130 / camera.aspect * 0.5)) / Math.tan(fov / 2), height * 0.46);
+} else if (mode === 'row') { // the same grip in several tints, orthographic, evenly spaced, for colour-option strips
+  const tints = (q.get('tints') || 'ffffff').split(','), gap = +(q.get('gap') ?? 48), s = +(q.get('scale') ?? 8);
+  tints.forEach((t, i) => {
+    const m2 = mat.clone(); m2.color.set('#' + t);
+    const g = new THREE.Mesh(geo, m2); g.castShadow = false; g.receiveShadow = false;
+    g.position.x = (i - (tints.length - 1) / 2) * gap; g.rotation.y = az; scene.add(g);
+  });
+  scene.remove(key);
+  const k2 = new THREE.DirectionalLight(0xffffff, 2.3); k2.position.set(-40, 380, 160); scene.add(k2);
+  const oc = new THREE.OrthographicCamera(-W / (2 * s), W / (2 * s), H / (2 * s), -H / (2 * s), 1, 3000);
+  const cy = height * 0.5;
+  oc.position.set(0, cy + 900 * Math.sin(el), 900 * Math.cos(el)); oc.lookAt(0, cy, 0);
+  activeCam = oc;
 } else if (mode === 'ortho') { // exact-scale orthographic view for technical drawings (white background, headlight)
   scene.background = new THREE.Color(0xffffff);
   scene.remove(key); scene.remove(rim);
@@ -105,9 +139,15 @@ if (mode === 'hero') {
   head.target.position.set(0, 0, -5); oc.add(head.target);
   scene.add(oc);
   activeCam = oc;
-} else if (mode === 'macro') { // audit: tight crop, optional sideways offset + flat shading
+} else if (mode === 'macro') { // tight crop (optional paddle mesh2, fov, soft floor shadow)
   scene.add(grip());
-  camera.fov = 10; camera.updateProjectionMatrix();
+  if (geo2) {
+    const pm = new THREE.Mesh(geo2, mat2); pm.castShadow = true; pm.receiveShadow = true; scene.add(pm);
+    key.position.set(-90, 900, 260); Object.assign(key.shadow.camera, { left: -300, right: 300, top: 300, bottom: -300, far: 1600 });
+    key.shadow.camera.updateProjectionMatrix(); key.shadow.mapSize.set(4096, 4096);
+  }
+  if (q.get('sh')) { const fl = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), new THREE.ShadowMaterial({ opacity: +q.get('sh') })); fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; scene.add(fl); }
+  camera.fov = +(q.get('fov') ?? 10); camera.updateProjectionMatrix();
   const fov = THREE.MathUtils.degToRad(camera.fov);
   const span = +(q.get('span') ?? 24), zc = +(q.get('zc') ?? 62), tx = +(q.get('tx') ?? 0);
   const dist = (span / 2) / Math.tan(fov / 2);
