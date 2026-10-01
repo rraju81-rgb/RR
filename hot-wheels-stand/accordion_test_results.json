@@ -1,0 +1,668 @@
+{
+ "1": {
+  "N": 1,
+  "K": 0,
+  "links": 0,
+  "pivot_pins": 0,
+  "hook_pins": 1,
+  "open_spacing": 114.49489570056758,
+  "closed_spacing": 40.35837691242892,
+  "rack_width_open": 105.0,
+  "rack_width_closed": 30.0,
+  "height_open": 40.5467836807608,
+  "height_closed": 122.88372925273718,
+  "closure_err_mm": 0.0,
+  "poses": 29,
+  "poses_with_cards": 6,
+  "interference_bad": [],
+  "interference_max_vol": 0.0,
+  "tightest": [
+   [
+    0.2,
+    "hook0",
+    "plate",
+    14
+   ],
+   [
+    0.4,
+    "card0",
+    "hook0",
+    14
+   ],
+   [
+    3.0,
+    "hook0",
+    "screw0",
+    14
+   ],
+   [
+    3.0,
+    "hook0",
+    "screw1",
+    14
+   ]
+  ],
+  "statics_open": {
+   "max_pin_N": 0,
+   "hook_load_N": 0.4
+  },
+  "droop_mm": {},
+  "printability": {
+   "link": {
+    "size_mm": [
+     130.0,
+     12.0,
+     5.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "pivot_pin": {
+    "size_mm": [
+     8.0,
+     8.0,
+     18.5
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "hook_pin": {
+    "size_mm": [
+     14.0,
+     14.0,
+     28.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "wall_plate": {
+    "size_mm": [
+     32.0,
+     44.0,
+     6.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "min_features_mm": {
+    "link_hole_wall": 3.8,
+    "pin_barb_arm": 1.5,
+    "plate_front_after_groove": 2.8000000000000003,
+    "hook_peg_diameter": 5.0,
+    "card_hole_diameter": 7.0,
+    "pin_to_hole_clearance": 0.20000000000000018
+   },
+   "overhangs": "none beyond 45 degrees: links flat; pins and hooks lie on their side; plate rear face down (8 mm groove bridges)"
+  }
+ },
+ "2": {
+  "N": 2,
+  "K": 1,
+  "links": 2,
+  "pivot_pins": 2,
+  "hook_pins": 2,
+  "open_spacing": 114.49489570056758,
+  "closed_spacing": 40.35837691242892,
+  "rack_width_open": 219.49489570056758,
+  "rack_width_closed": 70.35837691242892,
+  "height_open": 40.5467836807608,
+  "height_closed": 122.88372925273718,
+  "closure_err_mm": 0.0,
+  "poses": 29,
+  "poses_with_cards": 6,
+  "interference_bad": [],
+  "interference_max_vol": 0.0,
+  "tightest": [
+   [
+    0.19,
+    "linkB1",
+    "pivU0",
+    58
+   ],
+   [
+    0.19,
+    "hook1",
+    "linkB1",
+    32
+   ],
+   [
+    0.19,
+    "linkB1",
+    "pivC1",
+    32
+   ],
+   [
+    0.19,
+    "linkA1",
+    "pivC1",
+    32
+   ],
+   [
+    0.19,
+    "hook0",
+    "linkA1",
+    32
+   ],
+   [
+    0.2,
+    "hook0",
+    "plate",
+    14
+   ]
+  ],
+  "statics_open": {
+   "max_pin_N": 2.033,
+   "wall_H0_N": 2.186,
+   "slot_U0_N": 1.996,
+   "residual": 0.0,
+   "hook_load_N": 0.4
+  },
+  "droop_mm": {
+   "slack_0.4": 6.42,
+   "slack_0.2": 3.61
+  },
+  "printability": {
+   "link": {
+    "size_mm": [
+     130.0,
+     12.0,
+     5.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "pivot_pin": {
+    "size_mm": [
+     8.0,
+     8.0,
+     18.5
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "hook_pin": {
+    "size_mm": [
+     14.0,
+     14.0,
+     28.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "wall_plate": {
+    "size_mm": [
+     32.0,
+     154.9,
+     6.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "min_features_mm": {
+    "link_hole_wall": 3.8,
+    "pin_barb_arm": 1.5,
+    "plate_front_after_groove": 2.8000000000000003,
+    "hook_peg_diameter": 5.0,
+    "card_hole_diameter": 7.0,
+    "pin_to_hole_clearance": 0.20000000000000018
+   },
+   "overhangs": "none beyond 45 degrees: links flat; pins and hooks lie on their side; plate rear face down (8 mm groove bridges)"
+  }
+ },
+ "3": {
+  "N": 3,
+  "K": 2,
+  "links": 4,
+  "pivot_pins": 4,
+  "hook_pins": 3,
+  "open_spacing": 114.49489570056758,
+  "closed_spacing": 40.35837691242892,
+  "rack_width_open": 333.98979140113516,
+  "rack_width_closed": 110.71675382485785,
+  "height_open": 40.5467836807608,
+  "height_closed": 122.88372925273718,
+  "closure_err_mm": 1.4210854715202004e-14,
+  "poses": 29,
+  "poses_with_cards": 6,
+  "interference_bad": [],
+  "interference_max_vol": 0.0,
+  "tightest": [
+   [
+    0.19,
+    "hook2",
+    "linkB2",
+    32
+   ],
+   [
+    0.19,
+    "linkB2",
+    "pivC2",
+    32
+   ],
+   [
+    0.19,
+    "linkA2",
+    "pivC2",
+    32
+   ],
+   [
+    0.19,
+    "linkB2",
+    "pivU1",
+    32
+   ],
+   [
+    0.19,
+    "linkB1",
+    "pivU0",
+    58
+   ],
+   [
+    0.19,
+    "hook1",
+    "linkB1",
+    32
+   ]
+  ],
+  "statics_open": {
+   "max_pin_N": 8.401,
+   "wall_H0_N": 6.52,
+   "slot_U0_N": 6.372,
+   "residual": 0.0,
+   "hook_load_N": 0.4
+  },
+  "droop_mm": {
+   "slack_0.4": 9.87,
+   "slack_0.2": 8.27
+  },
+  "printability": {
+   "link": {
+    "size_mm": [
+     130.0,
+     12.0,
+     5.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "pivot_pin": {
+    "size_mm": [
+     8.0,
+     8.0,
+     18.5
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "hook_pin": {
+    "size_mm": [
+     14.0,
+     14.0,
+     28.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "wall_plate": {
+    "size_mm": [
+     32.0,
+     154.9,
+     6.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "min_features_mm": {
+    "link_hole_wall": 3.8,
+    "pin_barb_arm": 1.5,
+    "plate_front_after_groove": 2.8000000000000003,
+    "hook_peg_diameter": 5.0,
+    "card_hole_diameter": 7.0,
+    "pin_to_hole_clearance": 0.20000000000000018
+   },
+   "overhangs": "none beyond 45 degrees: links flat; pins and hooks lie on their side; plate rear face down (8 mm groove bridges)"
+  }
+ },
+ "4": {
+  "N": 4,
+  "K": 3,
+  "links": 6,
+  "pivot_pins": 6,
+  "hook_pins": 4,
+  "open_spacing": 114.49489570056758,
+  "closed_spacing": 40.35837691242892,
+  "rack_width_open": 448.4846871017028,
+  "rack_width_closed": 151.07513073728677,
+  "height_open": 40.5467836807608,
+  "height_closed": 122.88372925273718,
+  "closure_err_mm": 5.684341886080802e-14,
+  "poses": 29,
+  "poses_with_cards": 6,
+  "interference_bad": [],
+  "interference_max_vol": 0.0,
+  "tightest": [
+   [
+    0.19,
+    "hook3",
+    "linkB3",
+    32
+   ],
+   [
+    0.19,
+    "linkB3",
+    "pivU2",
+    32
+   ],
+   [
+    0.19,
+    "hook2",
+    "linkB2",
+    32
+   ],
+   [
+    0.19,
+    "hook2",
+    "linkA3",
+    32
+   ],
+   [
+    0.19,
+    "linkA2",
+    "pivU2",
+    32
+   ],
+   [
+    0.19,
+    "linkB2",
+    "pivC2",
+    32
+   ]
+  ],
+  "statics_open": {
+   "max_pin_N": 19.533,
+   "wall_H0_N": 13.263,
+   "slot_U0_N": 13.131,
+   "residual": 0.0,
+   "hook_load_N": 0.4
+  },
+  "droop_mm": {
+   "slack_0.4": 11.66,
+   "slack_0.2": 8.89
+  },
+  "printability": {
+   "link": {
+    "size_mm": [
+     130.0,
+     12.0,
+     5.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "pivot_pin": {
+    "size_mm": [
+     8.0,
+     8.0,
+     18.5
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "hook_pin": {
+    "size_mm": [
+     14.0,
+     14.0,
+     28.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "wall_plate": {
+    "size_mm": [
+     32.0,
+     154.9,
+     6.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "min_features_mm": {
+    "link_hole_wall": 3.8,
+    "pin_barb_arm": 1.5,
+    "plate_front_after_groove": 2.8000000000000003,
+    "hook_peg_diameter": 5.0,
+    "card_hole_diameter": 7.0,
+    "pin_to_hole_clearance": 0.20000000000000018
+   },
+   "overhangs": "none beyond 45 degrees: links flat; pins and hooks lie on their side; plate rear face down (8 mm groove bridges)"
+  }
+ },
+ "5": {
+  "N": 5,
+  "K": 4,
+  "links": 8,
+  "pivot_pins": 8,
+  "hook_pins": 5,
+  "open_spacing": 114.49489570056758,
+  "closed_spacing": 40.35837691242892,
+  "rack_width_open": 562.9795828022703,
+  "rack_width_closed": 191.4335076497157,
+  "height_open": 40.5467836807608,
+  "height_closed": 122.88372925273718,
+  "closure_err_mm": 1.1368683772161603e-13,
+  "poses": 29,
+  "poses_with_cards": 6,
+  "interference_bad": [],
+  "interference_max_vol": 0.0,
+  "tightest": [
+   [
+    0.19,
+    "hook4",
+    "linkB4",
+    32
+   ],
+   [
+    0.19,
+    "linkA3",
+    "pivU3",
+    32
+   ],
+   [
+    0.19,
+    "linkB4",
+    "pivU3",
+    32
+   ],
+   [
+    0.19,
+    "linkB4",
+    "pivC4",
+    32
+   ],
+   [
+    0.19,
+    "hook3",
+    "linkB3",
+    32
+   ],
+   [
+    0.19,
+    "hook3",
+    "linkA4",
+    32
+   ]
+  ],
+  "statics_open": {
+   "max_pin_N": 35.431,
+   "wall_H0_N": 22.396,
+   "slot_U0_N": 22.271,
+   "residual": 0.0,
+   "hook_load_N": 0.4
+  },
+  "droop_mm": {
+   "slack_0.4": 13.41,
+   "slack_0.2": 9.74
+  },
+  "printability": {
+   "link": {
+    "size_mm": [
+     130.0,
+     12.0,
+     5.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "pivot_pin": {
+    "size_mm": [
+     8.0,
+     8.0,
+     18.5
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "hook_pin": {
+    "size_mm": [
+     14.0,
+     14.0,
+     28.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "wall_plate": {
+    "size_mm": [
+     32.0,
+     154.9,
+     6.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "min_features_mm": {
+    "link_hole_wall": 3.8,
+    "pin_barb_arm": 1.5,
+    "plate_front_after_groove": 2.8000000000000003,
+    "hook_peg_diameter": 5.0,
+    "card_hole_diameter": 7.0,
+    "pin_to_hole_clearance": 0.20000000000000018
+   },
+   "overhangs": "none beyond 45 degrees: links flat; pins and hooks lie on their side; plate rear face down (8 mm groove bridges)"
+  }
+ },
+ "6": {
+  "N": 6,
+  "K": 5,
+  "links": 10,
+  "pivot_pins": 10,
+  "hook_pins": 6,
+  "open_spacing": 114.49489570056758,
+  "closed_spacing": 40.35837691242892,
+  "rack_width_open": 677.4744785028379,
+  "rack_width_closed": 231.79188456214462,
+  "height_open": 40.5467836807608,
+  "height_closed": 122.88372925273718,
+  "closure_err_mm": 1.1368683772161603e-13,
+  "poses": 29,
+  "poses_with_cards": 6,
+  "interference_bad": [],
+  "interference_max_vol": 0.0,
+  "tightest": [
+   [
+    0.19,
+    "linkB5",
+    "pivU4",
+    32
+   ],
+   [
+    0.19,
+    "hook4",
+    "linkB4",
+    32
+   ],
+   [
+    0.19,
+    "hook4",
+    "linkA5",
+    32
+   ],
+   [
+    0.19,
+    "linkA4",
+    "pivU4",
+    32
+   ],
+   [
+    0.19,
+    "linkA3",
+    "pivU3",
+    32
+   ],
+   [
+    0.19,
+    "linkB4",
+    "pivU3",
+    32
+   ]
+  ],
+  "statics_open": {
+   "max_pin_N": 56.094,
+   "wall_H0_N": 33.914,
+   "slot_U0_N": 33.794,
+   "residual": 0.0,
+   "hook_load_N": 0.4
+  },
+  "droop_mm": {
+   "slack_0.4": 14.21,
+   "slack_0.2": 10.69
+  },
+  "printability": {
+   "link": {
+    "size_mm": [
+     130.0,
+     12.0,
+     5.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "pivot_pin": {
+    "size_mm": [
+     8.0,
+     8.0,
+     18.5
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "hook_pin": {
+    "size_mm": [
+     14.0,
+     14.0,
+     28.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "wall_plate": {
+    "size_mm": [
+     32.0,
+     154.9,
+     6.0
+    ],
+    "fits_300_bed": true,
+    "watertight": true
+   },
+   "min_features_mm": {
+    "link_hole_wall": 3.8,
+    "pin_barb_arm": 1.5,
+    "plate_front_after_groove": 2.8000000000000003,
+    "hook_peg_diameter": 5.0,
+    "card_hole_diameter": 7.0,
+    "pin_to_hole_clearance": 0.20000000000000018
+   },
+   "overhangs": "none beyond 45 degrees: links flat; pins and hooks lie on their side; plate rear face down (8 mm groove bridges)"
+  }
+ }
+}

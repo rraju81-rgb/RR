@@ -239,3 +239,37 @@ preview with `python3 side_render.py <N> [--gif]`. Code: `side_cad.py`.
 **Limits:** print a 1-stall module first to check that the print-in-place pins move freely on your printer.
 Printed pins give almost no friction, so the spring has to be tuned (about 10%), or the panel drifts.
 The 5 and 6 stall modules need a large bed or diagonal placement.
+
+
+## Accordion hook rack (simple, printable; replaces the earlier linkage designs)
+You said the earlier mechanisms had too many parts that fail and cannot be printed. This one is a
+scissor (lazy-tongs) frame on the wall. The frame is the whole mechanism, the cards hang from printed
+round pegs, and every part is flat or lies on its side with no supports.
+
+* **Open:** the pegs sit 114.5 mm apart, so every card hangs in a row, fully visible, and lifts straight off.
+* **Folded:** the frame collapses to a 40 mm peg pitch for storage, with the cards off.
+* **Gravity opens it** and holds it open against a stop at the bottom of the plate's slot.
+* **Four printed designs and nothing else but wall screws:** `link`, `pivot_pin`, `hook_pin`, `wall_plate`.
+  No springs, no magnets, no joint bolts, no print-in-place gaps. Pins are snap pins: push them in from the front until the barb clicks.
+* The cards hang in one plane. A staggered stack of cards on the rack is not possible with hooks, so remove the cards before folding.
+
+| Stalls | Links | Pivot pins | Hook pins | Plate | Width open / folded (mm) |
+|---|---|---|---|---|---|
+| 1 | 0 | 0 | 1 | 1 | 105 / 30 |
+| 2 | 2 | 2 | 2 | 1 | 219 / 70 |
+| 3 | 4 | 4 | 3 | 1 | 334 / 111 |
+| 4 | 6 | 6 | 4 | 1 | 448 / 151 |
+| 5 | 8 | 8 | 5 | 1 | 563 / 191 |
+| 6 | 10 | 10 | 6 | 1 | 677 / 232 |
+
+**Tests** (`accordion/TEST_REPORT.md`): every size closes exactly (1e-13 mm), has zero intersections at every
+2 degrees from 14 to 70 (cards on whenever the pegs are 107 mm or more apart), and passes six card-size and
+hang-hole variants. The tests found four design faults, all fixed (see the report). The main limit is droop: pin clearance adds up
+along the frame, so the last hook can sit 4 to 14 mm lower than the first.
+
+Files: `accordion/parts/` (link, pivot_pin, hook_pin: same for every size), `accordion/N<n>/` (wall_plate.stl,
+BOM.md, assembly/ for viewing), previews `accordion/preview_N<n>_open.png`, `_folded.png`, `_front.png`,
+`accordion/accordion_N4.gif`. Regenerate with `python3 accordion_export.py`, test with `python3 accordion_test.py`
+and `python3 accordion_stress.py`, preview with `python3 accordion_render.py <N> [--gif]`. Code: `accordion_cad.py`.
+
+Assumed, not measured: the card's hang hole (7 mm, 12 mm below the top edge). Check one real card first.
