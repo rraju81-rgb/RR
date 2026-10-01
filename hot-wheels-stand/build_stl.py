@@ -1,5 +1,5 @@
 """Builds STL files for the Side-Slide Shingle Rack (same parameters as side_slide_rack.scad).
-Usage: python3 build_stl.py            -> rack_8slot.stl, rack_2slot_test.stl
+Usage: python3 build_stl.py            -> rack_{3,4,5,6,8}slot.stl, rack_2slot_test.stl
 Needs: pip install trimesh manifold3d numpy
 Orientation: plate face on the print bed (z up = out of the wall), units mm."""
 import numpy as np
@@ -59,7 +59,7 @@ def build(N):
     rack.apply_translation([0, 0, back_t])   # plate underside on z = 0
     return rack
 
-for N, name in [(8, "rack_8slot.stl"), (2, "rack_2slot_test.stl")]:
+for N, name in [(n, f"rack_{n}slot.stl") for n in (3, 4, 5, 6, 8)] + [(2, "rack_2slot_test.stl")]:
     m = build(N)
     m.export(name)
     print(name, "watertight:", m.is_watertight, "bbox:", np.round(m.extents, 1),

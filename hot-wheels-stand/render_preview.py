@@ -1,4 +1,5 @@
 """Renders preview.png of the rack using the same parameters as side_slide_rack.scad."""
+import sys
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -6,7 +7,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 card_w, card_h, card_t, blister_h = 105, 165, 1.2, 42
-N, pitch, step = 8, 55, 4.6
+N = int(sys.argv[1]) if len(sys.argv) > 1 else 8
+pitch, step = 55, 4.6
 back_t, spine_w, ledge_h, gutter_d, slop = 3, 14, 10, 6, 0.3
 rear_wall, front_wall, thumb_out = 2.4, 2.4, 8
 gw = card_t + 2 * slop
@@ -59,7 +61,7 @@ def render(fname, size, elev, azim, xl, yl, zl, aspect, title):
     fig.suptitle(title, fontsize=11, y=0.985)
     fig.savefig(fname, facecolor="white", bbox_inches="tight", pad_inches=0.15)
 
-render("preview.png", (5, 13), 6, -62, (-10, 130), (-10, 60), (0, H),
-       (140, 70, H), "Side-Slide Shingle Rack: 8 cards, top card frontmost\nEach card slides out to the right")
-render("preview_closeup.png", (9, 9), 18, -50, (-10, 130), (-10, 60), (0, 190),
+render("preview.png" if N == 8 else f"preview_{N}slot.png", (5, 13) if N == 8 else (5, 2 + 1.4 * N), 6, -62, (-10, 130), (-10, 60), (0, H),
+       (140, 70, H), f"Side-Slide Shingle Rack: {N} cards, top card frontmost\nEach card slides out to the right")
+if N == 8: render("preview_closeup.png", (9, 9), 18, -50, (-10, 130), (-10, 60), (0, 190),
        (140, 70, 190), "Close-up: ledges, gutters and shingled cards (bottom 3)")

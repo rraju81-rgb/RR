@@ -90,3 +90,21 @@ would need a larger pitch.
 
 Both meshes are watertight. They are laid with the wall plate on the bed. Neither
 has been sliced or printed yet.
+
+## Rack sizes
+The design is parametric in `N`. Pitch (55 mm) and depth step (4.6 mm) don't
+change, so every size uses the same ledge, gutter and keyholes. Only the spine
+height and the number of ledges change.
+
+| Cards | File | Size (W x H x D, mm) | Fits a 256 mm bed? |
+|---|---|---|---|
+| 2 (test) | `rack_2slot_test.stl` | 111 x 229 x 12.5 | yes |
+| 3 | `rack_3slot.stl` | 111 x 284 x 17 | no |
+| 4 | `rack_4slot.stl` | 111 x 339 x 22 | no |
+| 5 | `rack_5slot.stl` | 111 x 394 x 26 | no |
+| 6 | `rack_6slot.stl` | 111 x 449 x 31 | no |
+| 8 | `rack_8slot.stl` | 111 x 559 x 40 | no |
+
+Previews: `preview_3_4_5_6.png`, plus `preview_<N>slot.png` per size. To make
+another size, change `N` in `side_slide_rack.scad`, or add it to the list in
+`build_stl.py`.
