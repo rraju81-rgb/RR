@@ -1,0 +1,289 @@
+{
+ "N": 3,
+ "theta_deg": [
+  41.7,
+  70.0
+ ],
+ "bolts": {
+  "M4x16 button-head bolt": 5,
+  "M4x20 button-head bolt (rail)": 4,
+  "M4 nylon-lock nut": 9,
+  "M4 washer (front)": 6,
+  "M4 washer (rear)": 5,
+  "M4 countersunk wall screw": 8
+ },
+ "T1_integrity": {
+  "link_A": {
+   "watertight": true,
+   "volume_cm3": 9.34,
+   "extents": [
+    162.0,
+    12.0,
+    5.0
+   ],
+   "fits_300_bed": true
+  },
+  "link_B": {
+   "watertight": true,
+   "volume_cm3": 11.91,
+   "extents": [
+    179.0,
+    14.0,
+    22.0
+   ],
+   "fits_300_bed": true
+  },
+  "rail_0": {
+   "watertight": true,
+   "volume_cm3": 39.95,
+   "extents": [
+    196.0,
+    28.0,
+    9.2
+   ],
+   "fits_300_bed": true
+  },
+  "rail_1": {
+   "watertight": true,
+   "volume_cm3": 32.96,
+   "extents": [
+    182.0,
+    28.0,
+    9.2
+   ],
+   "fits_300_bed": true
+  }
+ },
+ "T2_interference": {
+  "poses": 10,
+  "theta_range": [
+   41.69754660316251,
+   68.69754660316251
+  ],
+  "non_card_overlaps": [
+   [
+    68.7,
+    "B1",
+    "card2",
+    1.214
+   ],
+   [
+    68.7,
+    "card1",
+    "B2",
+    0.551
+   ],
+   [
+    68.7,
+    "B2",
+    "card3",
+    1.214
+   ],
+   [
+    68.7,
+    "card2",
+    "B3",
+    0.551
+   ]
+  ],
+  "n_non_card_overlaps": 4,
+  "first_card_contact_deg": 47.7,
+  "tightest_note": "gap 0 = rigid/mating pairs",
+  "tightest_nonzero": [
+   [
+    0.19,
+    "A1",
+    "bolt_pivot",
+    68.69754660316251
+   ],
+   [
+    0.19,
+    "A2",
+    "bolt_H1",
+    53.69754660316251
+   ],
+   [
+    0.19,
+    "A3",
+    "bolt_H2",
+    68.69754660316251
+   ],
+   [
+    0.19,
+    "B1",
+    "bolt_1c",
+    53.69754660316251
+   ],
+   [
+    0.19,
+    "B1",
+    "bolt_H1",
+    53.69754660316251
+   ],
+   [
+    0.19,
+    "B2",
+    "bolt_2c",
+    53.69754660316251
+   ],
+   [
+    0.19,
+    "B2",
+    "bolt_H2",
+    68.69754660316251
+   ],
+   [
+    0.19,
+    "B3",
+    "bolt_3c",
+    68.69754660316251
+   ]
+  ],
+  "tightest": [
+   [
+    0.0,
+    "A1",
+    "B1",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "A1",
+    "B2",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "A1",
+    "washer_pivot",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "A2",
+    "B2",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "A2",
+    "B3",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "A3",
+    "B3",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "B1",
+    "A2",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "B1",
+    "washer_1c",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "B1",
+    "washer_H1",
+    41.69754660316251
+   ],
+   [
+    0.0,
+    "B2",
+    "A3",
+    41.69754660316251
+   ]
+  ]
+ },
+ "T3_printability": {
+  "link_A": {
+   "unsupported_mm2": 0.0,
+   "min_wall_ok": true
+  },
+  "link_B": {
+   "unsupported_mm2": 0.0,
+   "min_wall_ok": true
+  },
+  "rail_front_down": {
+   "unsupported_mm2": 0.0,
+   "at_z": 0.0
+  }
+ },
+ "T4_tolerance": {
+  "p_hole_binds": 0.006199999999999983,
+  "p_slot_binds": 0.0,
+  "p_link_len_mismatch_gt_slot_margin": 0.00135,
+  "nominal_hole_clearance_radial": 0.20000000000000018,
+  "slot_margin": 0.5
+ },
+ "T5_structural": {
+  "link_net_section_stress_MPa": 0.05,
+  "link_SF_net_section": 472.4,
+  "hole_bearing_MPa": 0.09,
+  "hole_bearing_SF": 248.6,
+  "bolt_shear_MPa": 0.07,
+  "bolt_shear_SF": 3834.0,
+  "peg_stress_worst_MPa(card at tip)": 0.47,
+  "peg_SF_across_layers": 21.3,
+  "tab_bending_MPa": 0.052,
+  "total_hang_load_N": 1.63,
+  "wall_screws": 8,
+  "rail_moment_arm_mm": 168.0,
+  "screw_pullout_N_per_screw(top row)": 0.453
+ },
+ "T6_droop": {
+  "clearance_radial": 0.20000000000000018,
+  "worst_hook_droop_mm": 0.29,
+  "note": "bottom row held level by the rail; no accumulation with N"
+ },
+ "T7_cards": {
+  "open_pitch": 112.0,
+  "card_w": 105.0,
+  "side_gap_open": 7.0,
+  "card_clear_of_peg_tip": 12.6,
+  "hang_hole_vs_peg_clear": 1.1,
+  "hole_variants_fit": {
+   "hole_6.0": true,
+   "hole_7.0": true,
+   "hole_8.0": true
+  },
+  "folded_pitch": 51.3,
+  "card_lift_to_remove_mm": 13.8
+ },
+ "T8_dynamics": {
+  "frame_mass_g": 108.1,
+  "total_mass_g": 228.1,
+  "free_fall_speed_at_stop_m_s_upper_bound": 0.64,
+  "note": "cards ride the bottom row (no vertical motion); stop impact only from the lattice's own mass; friction of M4 nylock pivots damps further"
+ },
+ "T9_wall": {
+  "rail_length": 364.0,
+  "segments": 2,
+  "screws": 8,
+  "needs_studs": false,
+  "note": "2 screws per 180 mm segment min; use wall anchors rated >= 5 kg"
+ },
+ "T10_assembly": {
+  "nut_in_groove_depth": 6.8,
+  "nut_h": 4.0,
+  "groove_ok": true,
+  "pocket_ok": true,
+  "bolt_len_check": {
+   "lattice M4x16": [
+    "stack A5+B5+washer0.8+rear washer .8 + nut 4 = 15.6",
+    true
+   ],
+   "rail M4x20": [
+    "B5+A... washer .8 + link 5(+5 over H_k) + rail 6.8 + nut 4",
+    true
+   ]
+  }
+ }
+}
