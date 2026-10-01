@@ -145,45 +145,58 @@ The frame is bigger than most print beds, so print it in sections or have it mad
 elsewhere. A hinged variant would only work with the cards on the inside of a
 door, with a see-through cover.
 
-## Fold-down stand-up rack (from the photos and sketches)
-Photo 1 shows the closed layout: cards overlapped in a column. Photo 2 shows the
-open layout: cards stand upright, one behind another. This is the design for it.
+## Fold-down stand-up rack (CAD for 1 to 6 stalls)
+The design from your photos and sketches. Closed, the cards overlap in a column behind a
+frame (photo 1). The frame hinges down at the bottom and the cards stand upright, one behind
+another (photo 2). Closing folds them back into the column.
 
-* **Panel:** the frame is a window frame hinged at the bottom. It swings down 90 degrees.
-* **Cards on the inner side:** the cards sit between the panel and the wall, not on the
-  outside of the panel. A panel that drops open turns its outside face down, so cards
-  on the outside would end up under the panel. On the inside they end up on top.
-* **Cards stay upright:** each card is carried so that it keeps its direction in space
-  while the panel swings. Its base rides along with the panel. Closed, the bases are
-  45 mm apart up the panel, so the cards overlap like photo 1. Open, the same bases are
-  45 mm apart along the panel, so the cards stand in a row like photo 2. The top card
-  ends up in front.
-* **Depth step:** each card sits 4.6 mm deeper than the one in front when closed, so
-  they never touch. Opened, that step becomes height: cards at the back stand a few
-  millimetres higher, so each card shows above the one in front (up to 22 mm higher
-  for 6 cards).
-* **Closing:** the panel swings back up and the cards fold back into the column.
+**Mechanism: a parallelogram linkage, no gears.** The panel (B1) is hinged on the wall frame at H.
+A second pair of bars (B2) is hinged behind it at F, which sits 18 mm above and D mm behind H.
+B2 is a copy of B1 shifted by that offset, so H, B1, B2 and F form a parallelogram at every
+joint. One cross arm per card per side joins B1 to B2 and always stays parallel to F-H. The arms
+only translate while the panel turns 90 degrees, so each card sitting in its cradle stays upright.
+Closed, the card bases are 45 mm apart up the panel. Open, they are 45 mm apart along it. Gears
+were rejected because backlash would add up along the chain and tilt the far cards.
 
-`foldout_kinematics.py` checks this motion in side view for every degree from 0 to 90.
-For 6 cards the gap between neighbouring cards never drops below 3.4 mm, so no card
-touches another. The cards always stay at least 22 mm from the wall. Output:
-`foldout_poses.png` (4 poses) and `foldout_open.gif` (full open and close).
+* **Cards on the inner side:** between the panel and the wall. A panel that drops open turns its
+  outside face down, so cards on the outside would end up under it.
+* **Depth step 6.5 mm:** each card sits that much deeper than the one in front. Open, the step
+  becomes height, so the back cards stand a little higher and show above the front ones.
+* **Cradles:** each card edge slides into a slot in the arm's cradle and rests on a floor. When
+  the panel is open any card lifts straight out of its slot with nothing above it.
+* **Wall frame:** two posts with hinge cheeks, a top crossbar with magnets that holds the panel
+  closed, a bottom crossbar, an open stop at 90 degrees, and two spring anchors.
+* **Counterbalance:** an unbraked panel falls open and hits the stop at 2.8 to 4.4 m/s at its free
+  end. Two extension springs (one per side) cancel the gravity torque almost exactly, because both
+  follow sin(angle). Spring rates and the hinge friction needed are in the test report.
 
-**How to keep the cards upright (proposal, not built):** a train of 22.5 mm gears on each
-side rail of the panel. The first gear is fixed to the frame at the hinge and the
-rest are chained along the panel. Every second gear keeps its angle in space as the
-panel rotates, because the fixed gear and equal-size gears behave like a parallelogram.
-The cards sit on those gears, one per 45 mm, which is exactly the card spacing. Each
-card is held on the gear by a short pin whose length sets the depth step. A simpler but
-less robust alternative is a parallel link bar per card.
+**Testing:** every size passes closure, interference (zero intersections at every 2 degrees),
+tolerance, stress variants and a 1 degree sweep. The tests also found four design faults that were fixed. See
+`foldout/TEST_REPORT.md`. Nothing has been printed or assembled yet.
 
-**Measured from your photo 1** (taking the card as 105 mm wide): the visible strip per
-card is about 45 mm, and the car blister about 35 mm tall. The earlier models in this
-folder assume 55 mm and 42 mm, so those would need updating before printing.
+**Files** (`foldout/N<n>/` for n = 1 to 6): wall posts, crossbars, panel, b2, spacers, arms
+(`arm_<card>_<L|R>.stl`, laid flat for printing), `assembly_closed.stl`, `assembly_open.stl` and a
+`BOM.md`. Previews: `foldout/preview_N<n>_closed.png`, `_open.png`, `_poses.png`,
+`foldout/foldout_N4_open.gif`.
 
-**Not done yet:**
-* There is no CAD or STL for this version. Only the motion has been checked, in 2D.
-* The gear train hasn't been designed or tested. Make a cardboard and pin mock-up of one
-  panel with 2 cards first.
-* While the panel is open, a leaning-back stop or magnet is needed to keep the cards from
-  tipping.
+| Stalls | Panel length (mm) | Depth behind panel (mm) |
+|---|---|---|
+| 1 | 232 | 32 |
+| 2 | 280 | 32 |
+| 3 | 329 | 33 |
+| 4 | 375 | 39 |
+| 5 | 421 | 46 |
+| 6 | 466 | 52 |
+
+Regenerate with `python3 foldout_export.py`, test with `python3 foldout_test.py` and
+`python3 foldout_stress.py`, preview with `python3 foldout_render.py <N> [--gif]`
+(code: `foldout_cad.py`, `foldout_test.py`, `foldout_stress.py`, `foldout_report.py`).
+
+**Limits:**
+* The panel and wall posts are longer than most print beds. Print them in sections, or cut the
+  bars from 6 mm plywood or acrylic.
+* Card mass (40 g) and printed hinge friction are assumptions. The ±10% spring tolerance needs
+  adjustable hinge friction.
+* Each joint has 0.4 mm of clearance, so a card can tilt about 0.6 degrees.
+* The 55 mm and 42 mm card numbers in the earlier side-slide and lift-off models were never
+  updated to the 45 mm and 35 mm measured from your photo. This design uses the measured values.

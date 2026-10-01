@@ -1,0 +1,1010 @@
+{
+ "1": {
+  "N": 1,
+  "D": 32.0,
+  "La": 36.71511950137164,
+  "L": 231.78125,
+  "parts": 23,
+  "closure_pin_err": 1.4210854715202004e-14,
+  "closure_dir_err": 0.0,
+  "interference_max_vol": 0.0,
+  "interference_bad": [],
+  "poses_tested": 46,
+  "tightest": [
+   [
+    0.4,
+    "panel",
+    "top_crossbar",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "b2",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "b2",
+    0
+   ],
+   [
+    1.0,
+    "b2",
+    "post_R",
+    36
+   ],
+   [
+    1.0,
+    "b2",
+    "post_L",
+    36
+   ],
+   [
+    1.12,
+    "arm0_R",
+    "post_R",
+    90
+   ]
+  ],
+  "contacts_at_stops": [
+   [
+    "arm0_R",
+    "card0",
+    0
+   ],
+   [
+    "arm0_L",
+    "card0",
+    0
+   ],
+   [
+    "panel",
+    "post_R",
+    90
+   ],
+   [
+    "panel",
+    "post_L",
+    90
+   ]
+  ],
+  "tol_fail_rate": 0.0,
+  "tol_p95_offset": 0.0,
+  "pin_clearance": 0.3999999999999999,
+  "tau_max_Nm": 0.15290819244263212,
+  "tau_at_5deg_Nm": 0.0133364882597416,
+  "tau_at_90deg_Nm": 0.1529024124994844,
+  "mass_moving_g": 175.12961539359247,
+  "opening_by_friction_Nmm": {
+   "0": {
+    "hold_deg": 0.0,
+    "impact_m_s": 2.84,
+    "time_s": 0.69
+   },
+   "50": {
+    "hold_deg": 19.5,
+    "impact_m_s": 2.07,
+    "time_s": 0.61
+   },
+   "100": {
+    "hold_deg": 41.0,
+    "impact_m_s": 1.25,
+    "time_s": 0.69
+   },
+   "150": {
+    "hold_deg": 79.0,
+    "impact_m_s": 0.14,
+    "time_s": 0.97
+   },
+   "200": {
+    "hold_deg": 90.0,
+    "impact_m_s": 0.0,
+    "time_s": 0.0
+   },
+   "300": {
+    "hold_deg": 90.0,
+    "impact_m_s": 0.0,
+    "time_s": 0.0
+   }
+  },
+  "spring": {
+   "c0_N": 0.0003,
+   "k_N_per_mm": 0.008,
+   "l_min": 86.0,
+   "l_max": 163.0828,
+   "force_closed_N_each": 0.685,
+   "force_open_N_each": 1.2988,
+   "resid_max_Nm": 0.0007
+  },
+  "friction_needed_Nmm": 0.8,
+  "with_spring": {
+   "released_at_10deg": {
+    "rests_at_deg": 10.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_45deg": {
+    "rests_at_deg": 45.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_80deg": {
+    "rests_at_deg": 80.0,
+    "max_free_end_speed_m_s": 0.0
+   }
+  },
+  "spring_tolerance_friction_Nmm": {
+   "+-10%": 15.3,
+   "+-20%": 30.6
+  },
+  "hand_force_at_free_end_N": 0.01,
+  "lift_force_N_at_free_end": 0.6597090681089697
+ },
+ "2": {
+  "N": 2,
+  "D": 32.0,
+  "La": 36.71511950137164,
+  "L": 280.4375,
+  "parts": 30,
+  "closure_pin_err": 2.0097183471152322e-14,
+  "closure_dir_err": 0.0,
+  "interference_max_vol": 0.0,
+  "interference_bad": [],
+  "poses_tested": 46,
+  "tightest": [
+   [
+    0.4,
+    "panel",
+    "top_crossbar",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "b2",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "b2",
+    0
+   ],
+   [
+    0.5,
+    "arm1_R",
+    "b2",
+    0
+   ]
+  ],
+  "contacts_at_stops": [
+   [
+    "arm0_R",
+    "card0",
+    0
+   ],
+   [
+    "arm0_L",
+    "card0",
+    0
+   ],
+   [
+    "arm1_R",
+    "card1",
+    0
+   ],
+   [
+    "arm1_L",
+    "card1",
+    0
+   ],
+   [
+    "panel",
+    "post_R",
+    90
+   ],
+   [
+    "panel",
+    "post_L",
+    90
+   ]
+  ],
+  "tol_fail_rate": 0.0,
+  "tol_p95_offset": 0.16933201202175246,
+  "pin_clearance": 0.3999999999999999,
+  "tau_max_Nm": 0.24982369248881112,
+  "tau_at_5deg_Nm": 0.021783230607143197,
+  "tau_at_90deg_Nm": 0.24981422230019917,
+  "mass_moving_g": 251.59090307908443,
+  "opening_by_friction_Nmm": {
+   "0": {
+    "hold_deg": 0.0,
+    "impact_m_s": 3.29,
+    "time_s": 0.72
+   },
+   "50": {
+    "hold_deg": 12.0,
+    "impact_m_s": 2.77,
+    "time_s": 0.63
+   },
+   "100": {
+    "hold_deg": 24.0,
+    "impact_m_s": 2.21,
+    "time_s": 0.64
+   },
+   "150": {
+    "hold_deg": 37.0,
+    "impact_m_s": 1.62,
+    "time_s": 0.72
+   },
+   "200": {
+    "hold_deg": 53.5,
+    "impact_m_s": 0.96,
+    "time_s": 0.73
+   },
+   "300": {
+    "hold_deg": 90.0,
+    "impact_m_s": 0.0,
+    "time_s": 0.0
+   }
+  },
+  "spring": {
+   "c0_N": 0.0003,
+   "k_N_per_mm": 0.013,
+   "l_min": 86.0,
+   "l_max": 163.0828,
+   "force_closed_N_each": 1.1191,
+   "force_open_N_each": 2.122,
+   "resid_max_Nm": 0.0011
+  },
+  "friction_needed_Nmm": 1.4,
+  "with_spring": {
+   "released_at_10deg": {
+    "rests_at_deg": 10.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_45deg": {
+    "rests_at_deg": 45.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_80deg": {
+    "rests_at_deg": 80.0,
+    "max_free_end_speed_m_s": 0.0
+   }
+  },
+  "spring_tolerance_friction_Nmm": {
+   "+-10%": 25.0,
+   "+-20%": 50.0
+  },
+  "hand_force_at_free_end_N": 0.01,
+  "lift_force_N_at_free_end": 0.890835542638952
+ },
+ "3": {
+  "N": 3,
+  "D": 32.5,
+  "La": 37.151715976519846,
+  "L": 328.9076923076923,
+  "parts": 37,
+  "closure_pin_err": 3.1776437161565096e-14,
+  "closure_dir_err": 0.0,
+  "interference_max_vol": 0.0,
+  "interference_bad": [],
+  "poses_tested": 46,
+  "tightest": [
+   [
+    0.4,
+    "panel",
+    "top_crossbar",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "b2",
+    0
+   ]
+  ],
+  "contacts_at_stops": [
+   [
+    "arm0_R",
+    "card0",
+    0
+   ],
+   [
+    "arm0_L",
+    "card0",
+    0
+   ],
+   [
+    "arm1_R",
+    "card1",
+    0
+   ],
+   [
+    "arm1_L",
+    "card1",
+    0
+   ],
+   [
+    "arm2_R",
+    "card2",
+    0
+   ],
+   [
+    "arm2_L",
+    "card2",
+    0
+   ],
+   [
+    "panel",
+    "post_R",
+    90
+   ],
+   [
+    "panel",
+    "post_L",
+    90
+   ]
+  ],
+  "tol_fail_rate": 0.00785,
+  "tol_p95_offset": 0.3063438091069294,
+  "pin_clearance": 0.3999999999999999,
+  "tau_max_Nm": 0.3831217212137926,
+  "tau_at_5deg_Nm": 0.03340091935009332,
+  "tau_at_90deg_Nm": 0.38310717544487943,
+  "mass_moving_g": 328.2159875793602,
+  "opening_by_friction_Nmm": {
+   "0": {
+    "hold_deg": 0.0,
+    "impact_m_s": 3.66,
+    "time_s": 0.76
+   },
+   "50": {
+    "hold_deg": 7.5,
+    "impact_m_s": 3.28,
+    "time_s": 0.75
+   },
+   "100": {
+    "hold_deg": 15.5,
+    "impact_m_s": 2.88,
+    "time_s": 0.68
+   },
+   "150": {
+    "hold_deg": 23.5,
+    "impact_m_s": 2.49,
+    "time_s": 0.67
+   },
+   "200": {
+    "hold_deg": 31.5,
+    "impact_m_s": 2.07,
+    "time_s": 0.76
+   },
+   "300": {
+    "hold_deg": 52.0,
+    "impact_m_s": 1.14,
+    "time_s": 0.74
+   }
+  },
+  "spring": {
+   "c0_N": 0.0003,
+   "k_N_per_mm": 0.0181,
+   "l_min": 101.0,
+   "l_max": 176.9774,
+   "force_closed_N_each": 1.8323,
+   "force_open_N_each": 3.2104,
+   "resid_max_Nm": 0.0017
+  },
+  "friction_needed_Nmm": 2.1,
+  "with_spring": {
+   "released_at_10deg": {
+    "rests_at_deg": 10.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_45deg": {
+    "rests_at_deg": 45.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_80deg": {
+    "rests_at_deg": 80.0,
+    "max_free_end_speed_m_s": 0.0
+   }
+  },
+  "spring_tolerance_friction_Nmm": {
+   "+-10%": 38.3,
+   "+-20%": 76.6
+  },
+  "hand_force_at_free_end_N": 0.01,
+  "lift_force_N_at_free_end": 1.1648305289721934
+ },
+ "4": {
+  "N": 4,
+  "D": 39.0,
+  "La": 42.95346318982906,
+  "L": 374.9230769230769,
+  "parts": 44,
+  "closure_pin_err": 4.263256414560601e-14,
+  "closure_dir_err": 0.0,
+  "interference_max_vol": 0.0,
+  "interference_bad": [],
+  "poses_tested": 46,
+  "tightest": [
+   [
+    0.4,
+    "panel",
+    "top_crossbar",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm3_R",
+    "panel",
+    0
+   ]
+  ],
+  "contacts_at_stops": [
+   [
+    "arm0_R",
+    "card0",
+    0
+   ],
+   [
+    "arm0_L",
+    "card0",
+    0
+   ],
+   [
+    "arm1_R",
+    "card1",
+    0
+   ],
+   [
+    "arm1_L",
+    "card1",
+    0
+   ],
+   [
+    "arm2_R",
+    "card2",
+    0
+   ],
+   [
+    "arm2_L",
+    "card2",
+    0
+   ],
+   [
+    "arm3_R",
+    "card3",
+    0
+   ],
+   [
+    "arm3_L",
+    "card3",
+    0
+   ]
+  ],
+  "tol_fail_rate": 0.0069,
+  "tol_p95_offset": 0.3085774656807237,
+  "pin_clearance": 0.3999999999999999,
+  "tau_max_Nm": 0.55217264338784,
+  "tau_at_5deg_Nm": 0.04813467803037929,
+  "tau_at_90deg_Nm": 0.5521516606777914,
+  "mass_moving_g": 408.10113451410615,
+  "opening_by_friction_Nmm": {
+   "0": {
+    "hold_deg": 0.0,
+    "impact_m_s": 3.94,
+    "time_s": 0.8
+   },
+   "50": {
+    "hold_deg": 5.5,
+    "impact_m_s": 3.66,
+    "time_s": 0.73
+   },
+   "100": {
+    "hold_deg": 10.5,
+    "impact_m_s": 3.37,
+    "time_s": 0.78
+   },
+   "150": {
+    "hold_deg": 16.0,
+    "impact_m_s": 3.08,
+    "time_s": 0.74
+   },
+   "200": {
+    "hold_deg": 21.5,
+    "impact_m_s": 2.78,
+    "time_s": 0.74
+   },
+   "300": {
+    "hold_deg": 33.0,
+    "impact_m_s": 2.15,
+    "time_s": 0.79
+   }
+  },
+  "spring": {
+   "c0_N": 0.0003,
+   "k_N_per_mm": 0.0233,
+   "l_min": 121.0,
+   "l_max": 195.7575,
+   "force_closed_N_each": 2.8216,
+   "force_open_N_each": 4.5647,
+   "resid_max_Nm": 0.0024
+  },
+  "friction_needed_Nmm": 3.0,
+  "with_spring": {
+   "released_at_10deg": {
+    "rests_at_deg": 10.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_45deg": {
+    "rests_at_deg": 45.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_80deg": {
+    "rests_at_deg": 80.0,
+    "max_free_end_speed_m_s": 0.0
+   }
+  },
+  "spring_tolerance_friction_Nmm": {
+   "+-10%": 55.2,
+   "+-20%": 110.4
+  },
+  "hand_force_at_free_end_N": 0.01,
+  "lift_force_N_at_free_end": 1.472762487493213
+ },
+ "5": {
+  "N": 5,
+  "D": 45.5,
+  "La": 48.93107397145499,
+  "L": 420.64835164835165,
+  "parts": 51,
+  "closure_pin_err": 4.0194366942304644e-14,
+  "closure_dir_err": 0.0,
+  "interference_max_vol": 0.0,
+  "interference_bad": [],
+  "poses_tested": 46,
+  "tightest": [
+   [
+    0.4,
+    "panel",
+    "top_crossbar",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm3_R",
+    "panel",
+    0
+   ]
+  ],
+  "contacts_at_stops": [
+   [
+    "arm0_R",
+    "card0",
+    0
+   ],
+   [
+    "arm0_L",
+    "card0",
+    0
+   ],
+   [
+    "arm1_R",
+    "card1",
+    0
+   ],
+   [
+    "arm1_L",
+    "card1",
+    0
+   ],
+   [
+    "arm2_R",
+    "card2",
+    0
+   ],
+   [
+    "arm2_L",
+    "card2",
+    0
+   ],
+   [
+    "arm3_R",
+    "card3",
+    0
+   ],
+   [
+    "arm3_L",
+    "card3",
+    0
+   ]
+  ],
+  "tol_fail_rate": 0.01105,
+  "tol_p95_offset": 0.3284097584065265,
+  "pin_clearance": 0.3999999999999999,
+  "tau_max_Nm": 0.7594842490470938,
+  "tau_at_5deg_Nm": 0.06620307499660703,
+  "tau_at_90deg_Nm": 0.7594553725463175,
+  "mass_moving_g": 490.07051870263115,
+  "opening_by_friction_Nmm": {
+   "0": {
+    "hold_deg": 0.0,
+    "impact_m_s": 4.19,
+    "time_s": 0.85
+   },
+   "50": {
+    "hold_deg": 4.0,
+    "impact_m_s": 3.96,
+    "time_s": 0.79
+   },
+   "100": {
+    "hold_deg": 8.0,
+    "impact_m_s": 3.74,
+    "time_s": 0.75
+   },
+   "150": {
+    "hold_deg": 11.5,
+    "impact_m_s": 3.53,
+    "time_s": 0.81
+   },
+   "200": {
+    "hold_deg": 15.5,
+    "impact_m_s": 3.3,
+    "time_s": 0.79
+   },
+   "300": {
+    "hold_deg": 23.5,
+    "impact_m_s": 2.83,
+    "time_s": 0.79
+   }
+  },
+  "spring": {
+   "c0_N": 0.0004,
+   "k_N_per_mm": 0.0283,
+   "l_min": 146.0,
+   "l_max": 219.5359,
+   "force_closed_N_each": 4.1253,
+   "force_open_N_each": 6.2029,
+   "resid_max_Nm": 0.0033
+  },
+  "friction_needed_Nmm": 4.2,
+  "with_spring": {
+   "released_at_10deg": {
+    "rests_at_deg": 10.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_45deg": {
+    "rests_at_deg": 45.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_80deg": {
+    "rests_at_deg": 80.0,
+    "max_free_end_speed_m_s": 0.0
+   }
+  },
+  "spring_tolerance_friction_Nmm": {
+   "+-10%": 75.9,
+   "+-20%": 151.9
+  },
+  "hand_force_at_free_end_N": 0.02,
+  "lift_force_N_at_free_end": 1.8055086774284994
+ },
+ "6": {
+  "N": 6,
+  "D": 52.0,
+  "La": 55.02726596879042,
+  "L": 466.1923076923077,
+  "parts": 58,
+  "closure_pin_err": 5.859285502108464e-14,
+  "closure_dir_err": 0.0,
+  "interference_max_vol": 0.0,
+  "interference_bad": [],
+  "poses_tested": 46,
+  "tightest": [
+   [
+    0.4,
+    "panel",
+    "top_crossbar",
+    0
+   ],
+   [
+    0.5,
+    "arm0_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm0_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm1_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_R",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm2_L",
+    "panel",
+    0
+   ],
+   [
+    0.5,
+    "arm3_R",
+    "panel",
+    0
+   ]
+  ],
+  "contacts_at_stops": [
+   [
+    "arm0_R",
+    "card0",
+    0
+   ],
+   [
+    "arm0_L",
+    "card0",
+    0
+   ],
+   [
+    "arm1_R",
+    "card1",
+    0
+   ],
+   [
+    "arm1_L",
+    "card1",
+    0
+   ],
+   [
+    "arm2_R",
+    "card2",
+    0
+   ],
+   [
+    "arm2_L",
+    "card2",
+    0
+   ],
+   [
+    "arm3_R",
+    "card3",
+    0
+   ],
+   [
+    "arm3_L",
+    "card3",
+    0
+   ]
+  ],
+  "tol_fail_rate": 0.0101,
+  "tol_p95_offset": 0.3331500451219178,
+  "pin_clearance": 0.3999999999999999,
+  "tau_max_Nm": 1.0063861726797363,
+  "tau_at_5deg_Nm": 0.08772199553016981,
+  "tau_at_90deg_Nm": 1.0063478949102447,
+  "mass_moving_g": 574.128583466887,
+  "opening_by_friction_Nmm": {
+   "0": {
+    "hold_deg": 0.0,
+    "impact_m_s": 4.38,
+    "time_s": 0.89
+   },
+   "50": {
+    "hold_deg": 3.0,
+    "impact_m_s": 4.22,
+    "time_s": 0.85
+   },
+   "100": {
+    "hold_deg": 6.0,
+    "impact_m_s": 4.05,
+    "time_s": 0.82
+   },
+   "150": {
+    "hold_deg": 9.0,
+    "impact_m_s": 3.86,
+    "time_s": 0.79
+   },
+   "200": {
+    "hold_deg": 11.5,
+    "impact_m_s": 3.7,
+    "time_s": 0.88
+   },
+   "300": {
+    "hold_deg": 17.5,
+    "impact_m_s": 3.33,
+    "time_s": 0.85
+   }
+  },
+  "spring": {
+   "c0_N": 0.0005,
+   "k_N_per_mm": 0.0335,
+   "l_min": 171.0,
+   "l_max": 243.559,
+   "force_closed_N_each": 5.7213,
+   "force_open_N_each": 8.1487,
+   "resid_max_Nm": 0.0044
+  },
+  "friction_needed_Nmm": 5.5,
+  "with_spring": {
+   "released_at_10deg": {
+    "rests_at_deg": 10.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_45deg": {
+    "rests_at_deg": 45.0,
+    "max_free_end_speed_m_s": 0.0
+   },
+   "released_at_80deg": {
+    "rests_at_deg": 80.0,
+    "max_free_end_speed_m_s": 0.0
+   }
+  },
+  "spring_tolerance_friction_Nmm": {
+   "+-10%": 100.6,
+   "+-20%": 201.3
+  },
+  "hand_force_at_free_end_N": 0.02,
+  "lift_force_N_at_free_end": 2.158736118280104
+ }
+}
