@@ -53,7 +53,7 @@ This design takes option 2.
 | Card | 105 x 165 x 1.2 mm (measure yours) |
 | Visible strip per card (pitch) | 55 mm |
 | Depth step between cards | 4.6 mm |
-| Overall size (8 cards) | about 119 x 550 x 45 mm |
+| Overall size (8 cards) | about 111 x 559 x 40 mm |
 | Gutter | 1.8 mm wide (card plus 0.3 mm clearance each side), 6 mm deep |
 
 The script asserts that the ledge wall does not hit the card behind it and that
@@ -80,3 +80,13 @@ would need a larger pitch.
 * **Alternatives.** A flip-up hinged version or a removal-by-tilt version would
   keep the stack closer to the wall, but each disturbs the neighbouring cards,
   which is the original complaint.
+
+## STL files
+`python3 build_stl.py` writes the models (needs `pip install trimesh manifold3d numpy`):
+* `rack_8slot.stl`: full rack, 111 x 559 x 40 mm. It is taller than most printers
+  can take, so split it or have it made in sections.
+* `rack_2slot_test.stl`: two slots, 111 x 229 x 12.5 mm. Print this first to check
+  card fit, gutter clearance and the slide-out feel.
+
+Both meshes are watertight. They are laid with the wall plate on the bed. Neither
+has been sliced or printed yet.

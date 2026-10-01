@@ -82,7 +82,7 @@ module rack() {
             for (j = [0 : N-1]) ledge(j);
         }
         keyhole(ledge_h + 18);
-        keyhole((N/2)*pitch + ledge_h + 18 - pitch/2);
+        keyhole((N/2 - 1)*pitch + ledge_h + 18);
         keyhole((N-1)*pitch + ledge_h + 18);
     }
 }
