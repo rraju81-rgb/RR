@@ -200,3 +200,42 @@ Regenerate with `python3 foldout_export.py`, test with `python3 foldout_test.py`
 * Each joint has 0.4 mm of clearance, so a card can tilt about 0.6 degrees.
 * The 55 mm and 42 mm card numbers in the earlier side-slide and lift-off models were never
   updated to the 45 mm and 35 mm measured from your photo. This design uses the measured values.
+
+
+## Side-mechanism rack: 4 printed parts (replaces the fold-down rack above)
+Requested changes: at most 4 parts, and the base should not stick out; the moving mechanism should
+sit only in the sides. This version does that.
+
+* **4 printed parts per rack:** `module_R`, `module_L` (a mirror image), `wall_frame`, `tie_bar`.
+* **Each side module is a single print.** Cheek, two bars, one cross arm per card and all pins print
+  in place with 0.4 mm clearances, so there are no joint bolts or nuts. The pins print on the lower
+  layer and rise through the hole above, with 45 degree cone heads, so no supports are needed.
+* **Only the sides move.** There is no full-width panel any more. The bars end just above the last
+  card, so the open reach drops from 232 to 466 mm (old) to 66 to 302 mm (new), 35 to 72% less.
+  The tie bar (a 6 mm square bar through both bars, below the hinge) keeps the two sides moving together.
+* **Wall frame:** a thin U-frame behind the modules. It carries the magnet fingers that hold the
+  panel closed, the two spring anchors and the screw holes. The magnets self-centre the panel at 0 degrees.
+* **Hardware:** 2 extension springs, 4 magnets (6 x 2 mm), wall screws, 1 M3 screw and washer.
+
+**Tests** (see `side/TEST_REPORT.md`): every size passes closure (3e-14 mm), zero intersections at every
+2 degrees from 0 to 90, and the stress variants and a 1 degree sweep. The smallest gap between separate bodies
+in a module is 0.38 mm, which is the pin-to-hole gap, so the pins should not fuse in the print. The tests
+also found five faults while developing this version, all fixed. Nothing has been printed yet.
+
+| Stalls | Open reach (mm) | Frame height (mm) | Module print size (mm) |
+|---|---|---|---|
+| 1 | 66 | 222 | 71 x 94 x 44 |
+| 2 | 115 | 270 | 71 x 143 x 44 |
+| 3 | 163 | 319 | 72 x 191 x 44 |
+| 4 | 210 | 365 | 78 x 238 x 44 |
+| 5 | 256 | 411 | 84 x 284 x 44 |
+| 6 | 302 | 456 | 91 x 330 x 44 |
+
+Files: `side/N<n>/` (the 4 STLs, `BOM.md`, and `assembly/` closed and open views for looking only),
+previews `side/preview_N<n>_closed.png`, `_open.png`, `_poses.png`, and `side/side_N4_open.gif`.
+Regenerate with `python3 side_export.py`, test with `python3 side_test.py` and `python3 side_stress.py`,
+preview with `python3 side_render.py <N> [--gif]`. Code: `side_cad.py`.
+
+**Limits:** print a 1-stall module first to check that the print-in-place pins move freely on your printer.
+Printed pins give almost no friction, so the spring has to be tuned (about 10%), or the panel drifts.
+The 5 and 6 stall modules need a large bed or diagonal placement.
