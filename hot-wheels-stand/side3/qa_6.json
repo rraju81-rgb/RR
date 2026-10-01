@@ -1,0 +1,232 @@
+{
+ "N": 6,
+ "open_reach": 306.1,
+ "post_height": 313.1,
+ "printed_parts": 3,
+ "designs": 2,
+ "closure_err_mm": 5.728578676879116e-14,
+ "poses_tested": 31,
+ "overlaps": [],
+ "n_overlaps": 0,
+ "tightest_pairs": [
+  [
+   0.15,
+   "b1_R",
+   "dowel",
+   0
+  ],
+  [
+   0.15,
+   "b1_L",
+   "dowel",
+   0
+  ],
+  [
+   0.3,
+   "b2_R",
+   "card0",
+   6
+  ],
+  [
+   0.3,
+   "b2_R",
+   "card1",
+   6
+  ],
+  [
+   0.3,
+   "b2_L",
+   "card0",
+   6
+  ],
+  [
+   0.3,
+   "b2_L",
+   "card1",
+   6
+  ],
+  [
+   0.3,
+   "b2_R",
+   "card2",
+   9
+  ],
+  [
+   0.3,
+   "b2_L",
+   "card2",
+   9
+  ],
+  [
+   0.3,
+   "b2_R",
+   "card3",
+   18
+  ],
+  [
+   0.3,
+   "b2_L",
+   "card3",
+   18
+  ]
+ ],
+ "touching_pairs_at_some_pose": [
+  [
+   "b1_R",
+   "hbolt_R",
+   0
+  ],
+  [
+   "b1_R",
+   "stud_R",
+   0
+  ],
+  [
+   "b2_R",
+   "fbolt_R",
+   0
+  ],
+  [
+   "arm0_R",
+   "card0",
+   0
+  ],
+  [
+   "arm1_R",
+   "card1",
+   0
+  ],
+  [
+   "arm2_R",
+   "card2",
+   0
+  ],
+  [
+   "arm3_R",
+   "card3",
+   0
+  ],
+  [
+   "arm4_R",
+   "card4",
+   0
+  ],
+  [
+   "arm5_R",
+   "card5",
+   0
+  ],
+  [
+   "b1_L",
+   "hbolt_L",
+   0
+  ],
+  [
+   "b1_L",
+   "stud_L",
+   0
+  ],
+  [
+   "b2_L",
+   "fbolt_L",
+   0
+  ]
+ ],
+ "print": {
+  "frame": {
+   "true_overhang_mm2": 15.5,
+   "at_z": 14.2,
+   "gap_bridged_mm2": 0.0,
+   "gap_at_z": 0.0,
+   "max_unsupported_span_mm": 0.7,
+   "span_at_z": 14.2,
+   "span_area": 15.5,
+   "height": 94.0,
+   "layers": 235
+  },
+  "swing": {
+   "true_overhang_mm2": 2798.9,
+   "at_z": 6.6,
+   "gap_bridged_mm2": 1576.9,
+   "gap_at_z": 6.6,
+   "max_unsupported_span_mm": 12.0,
+   "span_at_z": 6.6,
+   "span_area": 2798.9,
+   "height": 19.5,
+   "layers": 49
+  }
+ },
+ "mass_moving_g": 464.7,
+ "tau_max_Nm": 0.6693,
+ "unbraked": {
+  "0": {
+   "hold_deg": 0.0,
+   "impact_m_s": 3.2
+  },
+  "50": {
+   "hold_deg": 4.5,
+   "impact_m_s": 3.01
+  },
+  "100": {
+   "hold_deg": 9.0,
+   "impact_m_s": 2.82
+  }
+ },
+ "spring": {
+  "c0_N": -0.0001,
+  "k_N_per_mm": 0.0253,
+  "l_min": 172.575,
+  "l_max": 238.0308,
+  "force_closed_N_each": 4.3726,
+  "force_open_N_each": 6.0311,
+  "resid_max_Nm": 0.0029
+ },
+ "with_spring": {
+  "released_at_10deg": {
+   "rests_at_deg": 10.0,
+   "max_free_end_speed_m_s": 0.0
+  },
+  "released_at_45deg": {
+   "rests_at_deg": 45.0,
+   "max_free_end_speed_m_s": 0.0
+  },
+  "released_at_80deg": {
+   "rests_at_deg": 80.0,
+   "max_free_end_speed_m_s": 0.0
+  }
+ },
+ "spring_post_height": 57.4,
+ "spring_anchor_height": 230.0,
+ "structural": {
+  "arm_pin_bending_MPa_at_10N_handling": 2.79,
+  "arm_pin_SF_across_layers": 3.59,
+  "arm_hole_bearing_MPa": 0.21,
+  "arm_hole_bearing_SF": 105.6,
+  "moving_weight_N": 4.56,
+  "hinge_bearing_MPa_at_max(weight,10N per card)": 1.25,
+  "hinge_bearing_SF": 17.6,
+  "hinge_bolt_shear_SF(A2-70)": 226.0,
+  "cheek_wall_bending_MPa": 2.315
+ },
+ "tolerance": {
+  "p_bind_pin_in_arm": 0.0022,
+  "min_play_p1_mm": 0.02988537808956636,
+  "radial_clearance": 0.3999999999999999
+ },
+ "filament_g": {
+  "frame": 182.0,
+  "swing_each": 106.0
+ },
+ "print_sizes_mm": {
+  "frame": [
+   184.0,
+   341.0,
+   94.0
+  ],
+  "swing": [
+   66.0,
+   322.0,
+   19.5
+  ]
+ }
+}

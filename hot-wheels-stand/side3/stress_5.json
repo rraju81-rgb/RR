@@ -1,0 +1,27 @@
+{
+ "base_1deg_sweep": {
+  "poses": 91,
+  "overlaps": 0,
+  "first": []
+ },
+ "thick_card_2.0mm": {
+  "poses": 31,
+  "overlaps": 0,
+  "first": []
+ },
+ "deep_blister_22mm": {
+  "poses": 31,
+  "overlaps": 0,
+  "first": []
+ },
+ "tall_card_180mm": {
+  "poses": 31,
+  "overlaps": 0,
+  "first": []
+ },
+ "wide_blister_90mm": {
+  "poses": 31,
+  "overlaps": 0,
+  "first": []
+ }
+}

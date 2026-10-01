@@ -273,3 +273,16 @@ BOM.md, assembly/ for viewing), previews `accordion/preview_N<n>_open.png`, `_fo
 and `python3 accordion_stress.py`, preview with `python3 accordion_render.py <N> [--gif]`. Code: `accordion_cad.py`.
 
 Assumed, not measured: the card's hang hole (7 mm, 12 mm below the top edge). Check one real card first.
+
+
+## Side rack v3: one frame + one swing design (3 printed parts, bolted hinges)
+
+The earlier "4 print-in-place parts" side rack could not be printed without supports (slicing showed a floating cheek), so it is superseded by `side3/`.
+
+* **Frame** (1 print): wall plate with both hinge cheeks, magnet fingers, spring tabs and the 90 degree stop. Prints back face down.
+* **Swing** (2 prints, mirrored): both bars and one cross arm per card. Prints with the bar face on the bed; the arm pins are print-in-place (0.4 mm radial clearance).
+* **Hinges:** four M4 bolts with nylock nuts. A 6 mm dowel ties the two swings; two M4 stud bolts carry the counterbalance springs.
+* Sizes 1 to 6 stalls; 1 to 5 fit a 300 mm bed. 0 overlaps over 0 to 90 degrees at every size, plus stress variants.
+
+Files: `side3/N<n>/` (`frame.stl`, `swing_R.stl`, `swing_L.stl`, `BOM.md`, `assembly/`), previews, `side3/TEST_REPORT.md`.
+Code: `side3_cad.py`, `side3_test.py`, `side3_stress.py`, `side3_print.py`, `side3_export.py`.
