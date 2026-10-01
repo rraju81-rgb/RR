@@ -1,0 +1,85 @@
+{
+ "sizes": {
+  "tile": [
+   115.0,
+   24.0,
+   8.0
+  ],
+  "print": [
+   115.0,
+   24.0,
+   8.0
+  ]
+ },
+ "watertight": {
+  "tile": true,
+  "arm": true
+ },
+ "T2_stop": {
+  "free_to_deg": null,
+  "stop_deg": null,
+  "gaps": {},
+  "first_contact_deg": 90.0,
+  "min_gap_0_to_85_deg_mm": 0.33
+ },
+ "T3_hang": {
+  "arm_section_diagonal_mm": 6.02,
+  "fits_hole_6.0": false,
+  "fits_hole_6.5": true,
+  "fits_hole_7.0": true,
+  "fits_hole_7.5": true,
+  "fits_hole_8.0": true,
+  "card_positions": {
+   "z_back_8.5": {
+    "card_vs_tile": 0.0,
+    "card_vs_arm": 0.0
+   },
+   "z_back_18.0": {
+    "card_vs_tile": 0.0,
+    "card_vs_arm": 0.0
+   },
+   "z_back_28.0": {
+    "card_vs_tile": 0.0,
+    "card_vs_arm": 0.0
+   },
+   "z_back_34.0": {
+    "card_vs_tile": 0.0,
+    "card_vs_arm": 0.0
+   }
+  },
+  "card_to_card_gap_mm": 7.0,
+  "arm_vs_next_tile_mm": 5.0,
+  "tiles_overlap_when_joined_mm3": 0.0
+ },
+ "T4_print": {
+  "true_overhang_mm2": 10.4,
+  "at_z": 7.0,
+  "gap_bridged_mm2": 102.4,
+  "gap_at_z": 4.6,
+  "max_unsupported_span_mm": 1.3,
+  "span_at_z": 6.2,
+  "span_area": 5.4,
+  "height": 8.0,
+  "layers": 20
+ },
+ "T5_structural": {
+  "arm_bending_MPa_card_weight": 0.64,
+  "arm_SF_in_layer_card_weight": 34.4,
+  "arm_bending_MPa_pull_10N": 16.3,
+  "arm_SF_in_layer_pull_10N": 1.3,
+  "pin_shear_MPa_pull_10N": 1.41,
+  "pin_shear_SF": 9.9,
+  "pocket_contact_force_N_at_10N": 27.5,
+  "pocket_contact_MPa": 0.43,
+  "screw_shear_N_each_at_10N_card_pull": 5.0,
+  "screw_pullout_N_each_card_weight_plus_8mm_lever": 0.037
+ },
+ "T6_tolerance": {
+  "p_pin_binds": 0.02725,
+  "p_pocket_binds": 0.0166,
+  "p_arm_does_not_fit_7mm_hole": 0.0,
+  "p_arm_does_not_fit_6p5_hole": 0.0,
+  "pin_play_p1_mm": -0.041
+ },
+ "filament_g_per_tile": 26.4
+}

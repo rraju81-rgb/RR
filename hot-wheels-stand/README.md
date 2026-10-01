@@ -286,3 +286,9 @@ The earlier "4 print-in-place parts" side rack could not be printed without supp
 
 Files: `side3/N<n>/` (`frame.stl`, `swing_R.stl`, `swing_L.stl`, `BOM.md`, `assembly/`), previews, `side3/TEST_REPORT.md`.
 Code: `side3_cad.py`, `side3_test.py`, `side3_stress.py`, `side3_print.py`, `side3_export.py`.
+
+## Flat-fold hook tile rack (latest design)
+
+Based on the flat print-in-place folding phone stand idea. **One printed part per card**: a thin 8 mm tile screwed to the wall with a flat hook arm that lies flush when folded and swings out 90 degrees to hold a card through its hang hole. No hardware except wall screws. 3-car = 3 tiles, 5-car = 5 tiles, grids by stacking rows.
+
+Files: `foldtile/` (`stl/hook_tile_print.stl`, `assembly_*`, previews, `arm_fold_animation.gif`, `BOM.md`, `TEST_REPORT.md`). Code: `foldtile_cad.py`, `foldtile_test.py`, `foldtile_render.py`. The earlier `side3/` design is superseded.
