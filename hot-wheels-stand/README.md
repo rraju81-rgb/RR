@@ -108,3 +108,39 @@ height and the number of ledges change.
 Previews: `preview_3_4_5_6.png`, plus `preview_<N>slot.png` per size. To make
 another size, change `N` in `side_slide_rack.scad`, or add it to the list in
 `build_stl.py`.
+
+## Lift-off tray version (from the hand sketches)
+The sketches show a wall frame with a rack that hinges down at the bottom. A
+hinge can't do this. A panel hinged at its bottom edge and dropped to horizontal
+ends up with its front face pointing at the floor, so you would see the backs of
+the cards. This version keeps the frame and the open-flat idea but replaces the
+hinge with a lift-off tray:
+
+* **Frame** (`frame_<N>slot.stl`): U-shaped wall frame with a back plate, two side
+  posts, a top bar and two countersunk screw holes in the top bar. Three printed
+  pegs on the back plate carry the tray.
+* **Tray** (`tray_<N>slot.stl`): the side-slide rack from above, now with a full-width
+  back plate. Its three keyholes hang on the pegs.
+* **Hanging:** push the tray onto the pegs through the big keyholes, then let it
+  drop 12 mm. The top bar leaves 14 mm of headroom for this.
+* **Opening:** lift the tray 12 mm and pull it toward you. Lay it flat on a table: the
+  cards face up in their rows, and any card slides out sideways.
+* **While hung:** the right frame post stops cards sliding out. Cards are removed
+  with the tray off the wall.
+
+| Cards | Tray (mm) | Frame (mm) |
+|---|---|---|
+| 3 | 120 x 284 x 17 | 145 x 316 x 22 |
+| 4 | 120 x 339 x 22 | 145 x 371 x 27 |
+| 5 | 120 x 394 x 26 | 145 x 426 x 31 |
+| 6 | 120 x 449 x 31 | 145 x 481 x 36 |
+
+`python3 build_liftoff.py` makes the files, `python3 render_liftoff.py 4` makes the
+preview (`preview_liftoff_4slot.png`). The generator also checks that tray and
+frame don't overlap in either the hung or the insertion pose (0 mm3 overlap for
+3 to 6 cards).
+
+Not tested: peg and keyhole fit, how firmly the tray hangs, and any printing.
+The frame is bigger than most print beds, so print it in sections or have it made
+elsewhere. A hinged variant would only work with the cards on the inside of a
+door, with a see-through cover.

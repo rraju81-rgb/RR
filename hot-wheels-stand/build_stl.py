@@ -27,9 +27,10 @@ def cyl(x, y, z0, z1, d, sections=48):
 def union(meshes):
     return trimesh.boolean.union(meshes, engine="manifold")
 
-def build(N):
+def build(N, plate_w=None):
+    """plate_w: width of the wall plate (default: spine only)."""
     H = (N - 1) * pitch + ledge_h - gutter_d + card_h + 5
-    parts = [box(0, spine_w, 0, H, -back_t, 0)]
+    parts = [box(0, plate_w or spine_w, 0, H, -back_t, 0)]
     for j in range(N):
         y0 = j * pitch
         z0 = zc(j) - slop - rear_wall
@@ -59,8 +60,9 @@ def build(N):
     rack.apply_translation([0, 0, back_t])   # plate underside on z = 0
     return rack
 
-for N, name in [(n, f"rack_{n}slot.stl") for n in (3, 4, 5, 6, 8)] + [(2, "rack_2slot_test.stl")]:
-    m = build(N)
-    m.export(name)
-    print(name, "watertight:", m.is_watertight, "bbox:", np.round(m.extents, 1),
-          "volume cm3:", round(m.volume / 1000, 1))
+if __name__ == "__main__":
+  for N, name in [(n, f"rack_{n}slot.stl") for n in (3, 4, 5, 6, 8)] + [(2, "rack_2slot_test.stl")]:
+      m = build(N)
+      m.export(name)
+      print(name, "watertight:", m.is_watertight, "bbox:", np.round(m.extents, 1),
+            "volume cm3:", round(m.volume / 1000, 1))
