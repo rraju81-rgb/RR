@@ -144,3 +144,46 @@ Not tested: peg and keyhole fit, how firmly the tray hangs, and any printing.
 The frame is bigger than most print beds, so print it in sections or have it made
 elsewhere. A hinged variant would only work with the cards on the inside of a
 door, with a see-through cover.
+
+## Fold-down stand-up rack (from the photos and sketches)
+Photo 1 shows the closed layout: cards overlapped in a column. Photo 2 shows the
+open layout: cards stand upright, one behind another. This is the design for it.
+
+* **Panel:** the frame is a window frame hinged at the bottom. It swings down 90 degrees.
+* **Cards on the inner side:** the cards sit between the panel and the wall, not on the
+  outside of the panel. A panel that drops open turns its outside face down, so cards
+  on the outside would end up under the panel. On the inside they end up on top.
+* **Cards stay upright:** each card is carried so that it keeps its direction in space
+  while the panel swings. Its base rides along with the panel. Closed, the bases are
+  45 mm apart up the panel, so the cards overlap like photo 1. Open, the same bases are
+  45 mm apart along the panel, so the cards stand in a row like photo 2. The top card
+  ends up in front.
+* **Depth step:** each card sits 4.6 mm deeper than the one in front when closed, so
+  they never touch. Opened, that step becomes height: cards at the back stand a few
+  millimetres higher, so each card shows above the one in front (up to 22 mm higher
+  for 6 cards).
+* **Closing:** the panel swings back up and the cards fold back into the column.
+
+`foldout_kinematics.py` checks this motion in side view for every degree from 0 to 90.
+For 6 cards the gap between neighbouring cards never drops below 3.4 mm, so no card
+touches another. The cards always stay at least 22 mm from the wall. Output:
+`foldout_poses.png` (4 poses) and `foldout_open.gif` (full open and close).
+
+**How to keep the cards upright (proposal, not built):** a train of 22.5 mm gears on each
+side rail of the panel. The first gear is fixed to the frame at the hinge and the
+rest are chained along the panel. Every second gear keeps its angle in space as the
+panel rotates, because the fixed gear and equal-size gears behave like a parallelogram.
+The cards sit on those gears, one per 45 mm, which is exactly the card spacing. Each
+card is held on the gear by a short pin whose length sets the depth step. A simpler but
+less robust alternative is a parallel link bar per card.
+
+**Measured from your photo 1** (taking the card as 105 mm wide): the visible strip per
+card is about 45 mm, and the car blister about 35 mm tall. The earlier models in this
+folder assume 55 mm and 42 mm, so those would need updating before printing.
+
+**Not done yet:**
+* There is no CAD or STL for this version. Only the motion has been checked, in 2D.
+* The gear train hasn't been designed or tested. Make a cardboard and pin mock-up of one
+  panel with 2 cards first.
+* While the panel is open, a leaning-back stop or magnet is needed to keep the cards from
+  tipping.
