@@ -61,3 +61,16 @@ for mm, col in ((fixed, "k"), (l, "C1")):
     for e in sc.entities: c.plot(sc.vertices[e.points][:, 0], sc.vertices[e.points][:, 1], col, lw=1)
 c.set_aspect("equal"); c.set_xlim(-5, 50); c.set_ylim(-2, 40); c.set_title("hinge section on the pin axis: black = fixed lugs/pin, orange = ledge", fontsize=9)
 fig.savefig("v2/preview_detail.png", bbox_inches="tight"); plt.close(fig)
+
+# latch preview: closed/latched vs bars up
+fx, lg, bars = build_hinged(3, parts_out='latch', latch=True)
+fig = plt.figure(figsize=(12, 6), dpi=100)
+for i, (ang, title) in enumerate([(0, "latched (bar down)"), (180, "unlatched (bar up)")]):
+    bm = []
+    for b, (px, yp) in bars:
+        m = b.copy(); m.apply_transform(trimesh.transformations.rotation_matrix(np.radians(ang), [0, 0, 1], [px, yp, 0])); bm.append(m)
+    ax = fig.add_subplot(1, 2, i + 1, projection="3d")
+    draw(ax, [fx] + [l[0] for l in lg] + bm, [dark] + [light_] * 3 + [(0.2, 0.7, 0.9)] * 3, 20, -50)
+    ax.set_xlim(-5, 60); ax.set_title(title, fontsize=10)
+    ax.set_zlim(0, 150); ax.set_box_aspect((65, 40, 150))
+fig.savefig("v2/preview_latch.png", bbox_inches="tight"); plt.close(fig)

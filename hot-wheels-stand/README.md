@@ -319,3 +319,12 @@ Test swing 0-90 degrees outward in software: no interference between ledges, lug
 **Limitation:** a ledge can only swing with its card loaded if no card sits in front of it. Cards are stacked in
 shingled planes, so a loaded lower ledge would hit the cards in front of it. In practice, slide the card out first or swing
 the top ledge. Nothing holds a ledge closed yet apart from the card in the gutter; a latch or magnet pocket could be added.
+
+### Latch (`v2/rack_<N>slot_hinged_latch.stl`)
+Each ledge gets a swivel bar: a 3 mm post on the plate (x = 16 mm, 6 mm above the ledge) carries a 3.4 x 1.8 mm bar
+held by a cap. Hanging down, the bar sits 0.6 mm in front of the ledge's end stop and blocks the swing (it hangs
+down by gravity, so the default state is latched). Flip it up 180 degrees to open the ledge. The post is at x < 18 mm, so
+it never touches the card or its blister. Print-in-place: 2N+1 separate bodies (plate with posts, N ledges, N bars),
+0.3 mm clearance on the post. Checked in software: bars rotate freely 0-180 degrees, a latched ledge is blocked,
+an unlatched ledge swings 0-90 degrees without interference. Not printed yet; the 2-card test piece
+`rack_2slot_test_hinged_latch.stl` is the one to try first. A 1.5 mm post is thin; use PETG or print it solid.

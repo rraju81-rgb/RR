@@ -33,6 +33,18 @@ bar_r     = 4.4            # barrel / lug outer radius
 lug_h     = 3.5            # height (y) of each fixed lug
 lug_gap   = 0.4            # vertical clearance barrel <-> lug
 
+# ---- latch: swivel bar per ledge. A post on the plate carries a bar that hangs down in front of the
+# ledge's end stop (blocks the swing). Flip it up to open. Sits at x < spine_w so the card never touches it.
+lat_x      = spine_w - 2.0  # post x
+lat_up     = 6.0            # post height above the ledge top
+lat_len    = 11.0           # bar length below the pivot (reaches 5 mm onto the ledge front)
+lat_tail   = 4.0            # grip tail above the pivot
+lat_w      = 3.4            # bar width
+lat_t      = 1.8            # bar thickness
+lat_clr    = 0.6            # air gap between ledge front face and bar
+post_r     = 1.5
+lat_hole_r = post_r + 0.3
+
 gw = card_t + 2 * slop
 ledge_w = spine_w + card_w - thumb_out
 assert step >= rear_wall + slop + card_t + 0.4
@@ -116,7 +128,7 @@ def screw_holes(ys):
         cuts.append(cylz(hx, y, 0, 1, csk_d / 2, 32))
     return cuts
 
-def build_hinged(N, parts_out=False):
+def build_hinged(N, parts_out=False, latch=False):
     """Plate + fixed lugs + pins (one body) and N free-swinging ledges. Each ledge swings out
     (+z) around a vertical pin at x = hx, like a door."""
     ybase = lug_h + lug_gap + 0.5      # room under ledge 0 for its lower lug
@@ -124,6 +136,7 @@ def build_hinged(N, parts_out=False):
     ys, H = hole_ys(N, ybase)
     fixed = [box(0, spine_w, 0, H, -back_t, 0)]
     ledges = []
+    bars = []
     for j in range(N):
         y0 = ybase + j * pitch
         z0, z1, zg0, zg1 = ledge_body(j, y0, base)
@@ -144,11 +157,23 @@ def build_hinged(N, parts_out=False):
         body.append(bump)
         ledge = diff(union(body), [cyly(hx, hz, y0 - 1, y0 + ledge_h + 1, pin_d / 2 + pin_clr, 48)])
         ledges.append((ledge, hz, y0))
+        if latch:
+            yp = y0 + ledge_h + lat_up
+            zb0 = z1 + lat_clr; zb1 = zb0 + lat_t
+            fixed.append(cylz(lat_x, yp, -0.01, zb1 + 0.3 + 1.2, post_r, 32))      # post
+            fixed.append(cylz(lat_x, yp, zb1 + 0.3, zb1 + 1.5, post_r + 1.2, 32))  # retaining cap
+            bar = union([box(lat_x - lat_w / 2, lat_x + lat_w / 2, yp - lat_len, yp + lat_tail, zb0, zb1),
+                         cylz(lat_x, yp, zb0, zb1, lat_w / 2 + 0.6, 32)])
+            bar = diff(bar, [cylz(lat_x, yp, zb0 - 1, zb1 + 1, lat_hole_r, 32)])
+            bars.append((bar, (lat_x, yp)))
     fixed = diff(union(fixed), screw_holes(ys))
     fixed.apply_translation([0, 0, back_t]); [l[0].apply_translation([0, 0, back_t]) for l in ledges]
+    [b[0].apply_translation([0, 0, back_t]) for b in bars]
+    if parts_out == 'latch':
+        return fixed, [(l, hz + back_t, y0) for l, hz, y0 in ledges], bars
     if parts_out:
         return fixed, [(l, hz + back_t, y0) for l, hz, y0 in ledges]
-    return trimesh.util.concatenate([fixed] + [l[0] for l in ledges])
+    return trimesh.util.concatenate([fixed] + [l[0] for l in ledges] + [b[0] for b in bars])
 
 if __name__ == "__main__":
     os.makedirs("v2", exist_ok=True)
@@ -159,6 +184,8 @@ if __name__ == "__main__":
         t.export(f"v2/rack_{tag}_thick.stl")
         h = build_hinged(N)
         h.export(f"v2/rack_{tag}_hinged.stl")
+        hl = build_hinged(N, latch=True); hl.export(f"v2/rack_{tag}_hinged_latch.stl")
+        print(tag, "latch:", hl.is_watertight, "bodies:", len(hl.split(only_watertight=False)))
         print(tag, "thick:", t.is_watertight, np.round(t.extents, 1), "| hinged:",
               h.is_watertight, np.round(h.extents, 1), "bodies:", len(h.split(only_watertight=False)),
               "holes y:", np.round(hole_ys(N, lug_h + lug_gap + 0.5)[0], 1))
