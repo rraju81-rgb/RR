@@ -18,20 +18,20 @@ import trimesh
 card_w, card_h, card_t, blister_h = 105, 165, 1.2, 42
 
 # ---- wall strip (<= 1 inch wide) ----
-strip_w, strip_h, strip_t = 25.0, 240.0, 4.0      # front width, length, thickness (rear width = strip_w - 2*strip_t: 45 degree sides)
+strip_w, strip_h, strip_t = 18.0, 240.0, 4.0      # front width, length, thickness (rear width = strip_w - 2*strip_t: 45 degree sides)
 hole_d, csk_d = 3.5, 7.0
 hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
 dimple_ys = [10.0 + 20 * k for k in range(12)]      # clip nub clicks into these (20 mm pitch)
 dimple_r, dimple_depth = 1.0, 0.6
 # press-fit stacking: two flat tabs stick out of the top end and push into two pockets in the bottom end of the next strip
-tab_x, tab_w, tab_len, tab_t = 6.0, 5.0, 8.0, 2.0   # tab centre (+-x), width, length, thickness (flush with the front face)
+tab_x, tab_w, tab_len, tab_t = 3.5, 3.0, 8.0, 2.0   # tab centre (+-x), width, length, thickness (flush with the front face)
 press = 0.10                                         # tab is this much wider than its pocket (total), pocket is 0.4 deeper
 
 # ---- clip ----
-clr = 0.25                                          # clearance between clip and rail
-plate_z0, plate_t, arm_t = 0.3, 3.0, 2.6
+clr = 0.45                                          # clearance between clip and rail
+plate_z0, plate_t, arm_t = 0.5, 3.0, 2.6
 clip_y0, clip_y1 = -10.0, 20.0                      # clip plate length (gusset below the foot runs down to clip_y0)
-nub_r, nub_h = 0.9, 0.45
+nub_r, nub_h = 0.9, 0.65
 
 # ---- ledge / hinge ----
 ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
@@ -46,7 +46,7 @@ ledge_len = end_stop + card_w - thumb_out
 pin_d, pin_clr = 4.0, 0.3
 bar_r = 4.4
 foot_h = 3.5
-pin_x = -7.0                                         # pin axis (clip coordinates, x=0 is the strip centre)
+pin_x = -5.0                                         # pin axis (clip coordinates, x=0 is the strip centre)
 ly0 = foot_h + 0.4                                   # ledge sits on the foot flange
 ly1 = ly0 + ledge_h
 

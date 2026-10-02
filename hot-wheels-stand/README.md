@@ -357,7 +357,7 @@ Every STL is exported in **print orientation** (z up).
 
 | File | Print orientation | Notes |
 |---|---|---|
-| `clip/wall_strip.stl` | front (wide) face down | 25 mm wide x 240 mm dovetail rail, 4 mm thick, 3 countersunk 3.5 mm screw holes mirrored about the middle (20/120/220 mm). Dimples every 20 mm |
+| `clip/wall_strip.stl` | front (wide) face down | 18 mm wide x 240 mm dovetail rail, 4 mm thick, 3 countersunk 3.5 mm screw holes mirrored about the middle (20/120/220 mm). Dimples every 20 mm |
 | `clip/hinge_clip.stl` | standing | slides on the rail from the top, cannot be pulled off forward (45 degree jaws). Carries the pin and the snap tongue. One part for every rack |
 | `clip/ledge_j0.stl` ... `ledge_j5.stl` | standing | drops onto the pin. j sets the depth step (5.4 mm per step) so cards shingle. 80 mm of swing past the detent |
 
@@ -393,3 +393,12 @@ The strip is 248 mm long including the tabs. The pocket roof is a 5 mm bridge wh
 
 Checked in software for every stack: clips slide over the strips, closed ledges clear everything, neighbouring ledges open to 60 degrees do not touch.
 Not printed yet; if the tabs are too tight or loose change `press` in `build_clip.py`.
+
+
+### Update: narrower clip, easier fit
+The first clip was 31.5 mm wide and fit too tightly. Changes: the rail is now 18 mm wide (4 mm thick, 45 degree sides) and the whole clip is 24.9 mm wide, so
+the clip is also inside 1 inch. Clearances were opened up: 0.55 mm each side on the dovetail (was 0.35), 0.5 mm in front of the rail (was 0.3), so the clip slides on by hand with about
+0.4 mm of play and still cannot be pulled forward more than 0.5 mm. The nub on the clip now just touches the rail (0.15 mm) and clicks into the dimples, so it holds a position without binding.
+The pin moved 2 mm toward the middle so the snap tongue stays inside the narrower clip; the snap lock itself is unchanged (closed ledge clicks into the barrel groove, free after about 25 degrees).
+The press-fit tabs on the strip are now two 3 mm wide tabs. If it is still too tight on your printer, raise `clr` in `build_clip.py` (0.45 -> 0.6) and reprint only the clip.
+Print the clip standing with a brim (its footprint is small).
