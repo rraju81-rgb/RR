@@ -24,7 +24,7 @@ hole_d, csk_d = 5.0, 10.0                          # 5 mm screw hole, 45 degree 
 hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
 # ratchet teeth (zip-tie style): sawtooth steps every 6 mm along the front face, vertical wall on the low side (locks against sliding down), 14 degree ramp on the high side
 tooth_p, tooth_d = 6.0, 1.5                           # pitch, depth
-tooth_x0, tooth_x1 = 5.6, 10.8                       # tooth lane
+tooth_x0, tooth_x1 = 5.3, 10.9                       # tooth lane
 tooth_y0, tooth_y1 = 18.0, 240.0                      # first wall at y = 15 (clear of the female Z), last ramp ends at the strip end
 # stacking: dovetail joint - male dovetail on the top end, matching female dovetail in the bottom end of the next strip
 dt_root, dt_tip, dt_len = 4.0, 7.5, 7.0            # dovetail joint: half width at the root and at the tip, length (27 degree flanks)
@@ -32,11 +32,11 @@ z_fit = 0.12                                       # clearance of the female dov
 
 
 # ---- clip ----
-clr = 0.45                                          # clearance between clip and rail
-plate_z0, plate_t, arm_t = 0.5, 3.0, 2.4
+clr = 1.0                                          # clearance between clip and rail
+plate_z0, plate_t, arm_t = 0.9, 3.0, 2.4
 clip_y0, clip_y1 = -10.0, 28.0                      # clip plate length (gusset below the foot runs down to clip_y0)
 leaf_t, leaf_x0, leaf_x1, slit = 2.0, 5.0, 11.4, 1.6     # pawl leaf cut into the plate: thickness, x range, slit width (root at the bottom, free end on top)
-pawl_y, pawl_h, pawl_out, pawl_w = 16.0, 1.9, 1.2, 4.6  # pawl tip: lower (locking) face at y = 15 above the foot, height, how far it reaches into the teeth, width
+pawl_y, pawl_h, pawl_out, pawl_w = 16.0, 1.9, 1.6, 3.6  # pawl tip: lower (locking) face at y = 15 above the foot, height, how far it reaches into the teeth, width
 leaf_len = 24.0                                         # pawl leaf runs from the plate's lower part up to y = 22 above the foot; the plate frame closes around its top (no free-standing parts)
 tab_h, tab_out = 6.0, 4.0                               # release tab: a thumb ridge on the leaf's front face (height, how far it sticks out of the leaf), 45 degree underside
 
@@ -119,11 +119,12 @@ def to_print(m, kind):
     m = m.copy(); m.apply_transform(T); m.apply_translation(-m.bounds[0]); return m
 
 # ---------------------------------------------------------------- wall strip
-def build_strip():
+def build_strip(grow=0.0):
     """25 mm dovetail rail (front 25 wide, rear 17 wide, 4 thick) with a male dovetail on the top end and the matching female dovetail in the bottom end,
     three 5 mm countersunk screw holes (mirrored about the middle) and a ratchet lane (6 mm sawtooth steps) for the clip's spring pawl."""
     r = strip_w / 2; rr = r - strip_t
-    s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)
+    g = grow                                                         # grow>0 simulates over-extrusion (test only)
+    s = prism_y([(-r - g, g), (r + g, g), (rr + g, -strip_t), (-rr - g, -strip_t)], 0, strip_h)
     r2 = strip_w / 2
     zpoly = [(-dt_root, 0.0), (dt_root, 0.0), (dt_tip, dt_len), (-dt_tip, dt_len)]         # dovetail: narrow at the strip end, wide at the tip (undercut)
     male = intersection_([prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], strip_h - 0.01, strip_h + dt_len),
@@ -150,7 +151,7 @@ def build_clip(k=1, j=0):
     y1 = pitch * (k - 1) + clip_y1
     r = strip_w / 2 + clr + 0.1; ax = r + 0.3 + arm_t              # jaw inner face runs parallel to the rail's 45 degree side, 0.25 mm off it
     parts = [box(-ax, ax, cy0, y1, plate_z0, plate_z0 + plate_t)]
-    zt = -strip_t + 0.4                                              # jaw tip height (stays clear of the wall)
+    zt = -strip_t + 0.8                                              # jaw tip height (stays clear of the wall)
     for sgn in (1, -1):
         x1 = r + plate_z0; x2 = r + zt
         poly = [(sgn * x1, plate_z0), (sgn * x2, zt), (sgn * (x2 + arm_t), zt), (sgn * ax, -0.3), (sgn * ax, plate_z0 + 0.1)]

@@ -498,3 +498,10 @@ interference, blister (starts 8 mm above the card bottom, 12 mm in from the side
 - **Barrel:** radius 5.4 mm (was 4.4) so the ledge keeps a 2 mm wall around the 6.6 mm pin hole; its hole is countersunk at the bottom to clear the collar. Relief and detent groove moved with it.
 - Pin stand-off from the strip grew by 1 mm for every rack (clip j is still 38 mm tall and 31.5 mm wide, only deeper). Checked again: ledge clears the clip and strip, ratchet lock unchanged, detent and swing unchanged, cards and blisters clear, kits rebuilt.
 - Tip: print the clip with 4+ walls and 40% infill (or more) and a brim; the pin is vertical on the bed, so layer lines run across it.
+
+### Update: roomier clip so it slides on the strip smoothly
+The clip did not slide on the printed strip (printed edges are usually 0.1-0.3 mm fatter than the model). Clearances were opened up:
+- Dovetail jaw clearance 1.0 mm per side (was 0.45), clearance in front of the rail 0.9 mm (was 0.5), jaw tips stop 0.8 mm short of the wall (was 0.4). Clip width is now 32.6 mm (was 31.5).
+- The pawl tip is narrower (3.6 mm) and the tooth lane wider (5.6 mm), so the pawl still finds its teeth with up to 1 mm of sideways play; pawl depth adjusted so it still engages the full 1.5 mm.
+- Checked in software against a strip that is 0.2 mm fatter per side than the model (typical over-extrusion): the clip slides with up to 0.8 mm sideways play and no interference; at 0.4 mm fatter it only touches when pushed hard to one side. Forward play is still limited to about 1 mm. Pawl lock, ledge, card and kit checks unchanged. Kits rebuilt.
+If it is still tight, raise `clr` in `build_clip.py` (1.0 -> 1.3) and reprint only the clips.
