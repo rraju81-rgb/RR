@@ -444,3 +444,13 @@ Checked: tongue/pocket press fit, strips cannot be pulled apart along the rail, 
 - **Clip width:** the clip wraps the 25 mm rail, so it is 31.5 mm wide again (same height 30 mm for every depth).
 - 5 and 6 car kits use two identical strips (second strip pushed down over the first strip's tabs). All kits regenerated (`build_kits.py`).
 Checked: nub sits in a stop hole with no interference, flexes between holes, clip cannot be pulled forward more than 0.5 mm, ledges clear, tabs press into the pockets of the next strip. Not printed yet.
+
+### Update: zip-tie style ratchet lock (replaces the spring nub and stop holes)
+- **Strip:** a lane of 5 mm sawtooth steps runs along the front face (x = 6 .. 10.8 mm, from y = 15 to the top end). Each step has a vertical wall on its low side and a 13 degree ramp on its high side, like a zip tie.
+  The two press-fit tabs are now full strip thickness (two 5 x 8 x 4 mm tabs, pockets go all the way through), so the strip prints flat with its REAR face down, teeth facing up, with no overhangs.
+- **Clip:** the spring leaf is now a pawl: a 1.4 mm leaf with a small tooth at its tip that sits in the step lane. The clip clicks upward one step (5 mm) at a time and the pawl's vertical face stops it sliding down.
+  Pull the release tab (above the top of the clip plate, sticks out to the front) toward you to lift the pawl; then the clip slides down freely. Push the tab back and it locks at the next step.
+- **Fitting:** slide the clips on from the BOTTOM end of the strip and push them up (sliding on from the top needs the release tab held). Foot of clip j at y = 20 + 60 j mm (the tip then sits at a tooth wall).
+- Clips are now 36 mm tall (30 mm plate plus the release tab); same for every depth. Kits rebuilt. The old multi-station clips and stepped ledges were removed.
+Checked: pushing a seated clip down is blocked (tip hits the wall), pushing it up rides the ramp and drops into the next step at 5 mm, with the tip removed the clip slides down freely, ledges still clear.
+Not printed yet; if the pawl is too stiff or too loose change `leaf_t` (1.4) or `tooth_d` (1.2) in `build_clip.py`.

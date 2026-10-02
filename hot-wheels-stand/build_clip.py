@@ -4,9 +4,10 @@ Design rules (after the user's feedback that the hook version could not be print
   * every part is a straight extrusion in its print direction (pillars, plates, a 45 degree dovetail), so no supports
   * wall strip: 25 mm wide dovetail rail, printed front face down. The clip slides on from the top and cannot be pulled
     off forwards (45 degree jaws behind the rail head). No separate hooks, no slots.
-  * lock: no extra part. A flexible tongue on the clip has a bump that snaps into a groove in the ledge barrel when
-    the ledge is closed; opening pushes the tongue aside. A small nub on the clip also clicks into dimples in the strip,
-    so the clip stays at the height you put it.
+  * hinge lock: no extra part. A flexible tongue on the clip has a bump that snaps into a groove in the ledge barrel when
+    the ledge is closed; opening pushes the tongue aside.
+  * height lock (zip-tie style ratchet): the strip has 5 mm sawtooth steps, the clip has a spring pawl. The clip clicks upward one step at a time
+    and cannot slide down; pull the release tab on the clip to let it slide down.
   * the ledge just drops onto the clip's pin (also removable). Rack depth step j is built into the ledge, so the clip is one part.
 Needs: pip install trimesh manifold3d numpy.  Units mm.
 Assembly frame: x right, y up, z out of the wall; strip front face is z = 0, strip centre x = 0."""
@@ -21,18 +22,21 @@ card_w, card_h, card_t, blister_h = 105, 165, 1.2, 42
 strip_w, strip_h, strip_t = 25.0, 240.0, 4.0      # front width, length, thickness (rear width = strip_w - 2*strip_t: 45 degree sides)
 hole_d, csk_d = 5.0, 10.0                          # 5 mm screw hole, 45 degree countersink
 hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
-dimple_ys = [10.0 + 20 * k for k in range(12)]      # stop holes: the clip's spring nub snaps into these (20 mm pitch)
-stop_r, stop_depth, stop_x = 1.5, 1.6, 6.0          # stop hole radius / depth / x position (= the clip's nub)
+# ratchet teeth (zip-tie style): sawtooth steps every 5 mm along the front face, vertical wall on the low side (locks against sliding down), 13 degree ramp on the high side
+tooth_p, tooth_d = 5.0, 1.2                           # pitch, depth
+tooth_x0, tooth_x1 = 6.0, 10.8                       # tooth lane
+tooth_y0, tooth_y1 = 15.0, 240.0                      # first wall at y = 15 (clear of the bottom pockets), last ramp ends at the strip end
 # press-fit stacking: two flat tabs stick out of the top end and push into two pockets in the bottom end of the next strip
-tab_x, tab_w, tab_len, tab_t = 6.0, 5.0, 8.0, 2.0   # two press-fit tabs (as in wall_strip2.stl): centre +-x, width, length, thickness (front side)
+tab_x, tab_w, tab_len, tab_t = 5.0, 5.0, 8.0, 4.0   # two press-fit tabs: centre +-x, width, length, thickness (full strip thickness, so they print flat on the bed)
 press = 0.10                                         # tab is this much wider than its pocket (total), pocket is 0.4 deeper
 
 # ---- clip ----
 clr = 0.45                                          # clearance between clip and rail
 plate_z0, plate_t, arm_t = 0.5, 3.0, 2.4
 clip_y0, clip_y1 = -10.0, 20.0                      # clip plate length (gusset below the foot runs down to clip_y0)
-nub_r, nub_out = 1.2, 0.9                           # spring nub radius / how far it sticks out of the plate
-leaf_t, leaf_x0, leaf_x1, leaf_y0, leaf_y1, slit = 1.4, 3.0, 9.0, 0.0, 18.0, 1.0   # spring leaf cut into the plate (root at the bottom)
+leaf_t, leaf_x0, leaf_x1, slit = 1.4, 6.2, 10.6, 1.0     # pawl leaf cut into the plate: thickness, x range, slit width (root at the bottom, free end on top)
+pawl_y, pawl_h, pawl_out, pawl_w = 15.0, 1.6, 1.0, 4.0  # pawl tip: lower (locking) face at y = 15 above the foot, height, how far it reaches into the teeth, width
+tab_up, tab_out = 6.0, 5.0                              # release tab: extends this far above the plate top and sticks out this far to the front
 
 # ---- ledge / hinge ----
 ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
@@ -88,27 +92,26 @@ def prism_y(poly_xz, y0, y1):
 def to_print(m, kind):
     R = trimesh.transformations.rotation_matrix
     T = {"clip": R(np.pi / 2, [1, 0, 0]), "ledge": R(np.pi / 2, [1, 0, 0]), "pin": np.eye(4),
-         "strip": R(np.pi, [1, 0, 0]), "strip_up": np.eye(4)}[kind]       # clip: +y up. ledge: gutter opens upward. strip: front face down
+         "strip": np.eye(4), "strip_up": np.eye(4)}[kind]       # clip: +y up. ledge: gutter opens upward. strip: rear face down (ratchet teeth face up, 45 degree rail sides)
     m = m.copy(); m.apply_transform(T); m.apply_translation(-m.bounds[0]); return m
 
 # ---------------------------------------------------------------- wall strip
 def build_strip():
     """25 mm dovetail rail (front 25 wide, rear 17 wide, 4 thick) with two press-fit tabs on the top end and two matching pockets in the bottom end,
-    three 5 mm countersunk screw holes (mirrored about the middle) and stop holes every 20 mm for the clip's spring nub."""
+    three 5 mm countersunk screw holes (mirrored about the middle) and a ratchet lane (5 mm sawtooth steps) for the clip's spring pawl."""
     r = strip_w / 2; rr = r - strip_t
     s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)
     tabs = [box(sg * tab_x - tab_w / 2, sg * tab_x + tab_w / 2, strip_h - 0.01, strip_h + tab_len, -tab_t, 0) for sg in (1, -1)]
     s = union([s] + tabs); cuts = []
     for sg in (1, -1):    # pockets in the bottom end (open to the end face and to the front), 0.1 mm narrower than the tab
-        cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -tab_t - 0.05, 1))
+        cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -strip_t - 1, 1))
     for y in hole_ys:
         cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 48))
         zc0 = -(csk_d - hole_d) / 2
         pts = [(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, zc0), (csk_d / 2, 0.0)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]
         cuts += [hull(pts), cylz(0, y, 0, 1, csk_d / 2, 48)]
-    for y in dimple_ys[1:]:   # stop holes with a 45 degree lead-in, at the nub's x (the first one would hit the pockets)
-        pts = [(stop_x + r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((stop_r, -stop_depth + 0.6), (stop_r + 0.6, 0.0)) for a in np.linspace(0, 2 * np.pi, 24, endpoint=False)]
-        cuts += [cylz(stop_x, y, -stop_depth, -stop_depth + 0.7, stop_r, 24), hull(pts), cylz(stop_x, y, 0, 0.5, stop_r + 0.6, 24)]
+    teeth = [prism_x([(0.5, y), (-tooth_d, y), (0.0, y + tooth_p), (0.5, y + tooth_p)], tooth_x0, tooth_x1) for y in np.arange(tooth_y0, tooth_y1 - 1e-6, tooth_p)]
+    cuts.append(union(teeth))
     return diff(s, cuts)
 
 # ---------------------------------------------------------------- clip (origin: strip centre x=0, y=0 = bottom of the foot flange)
@@ -142,12 +145,17 @@ def build_clip(k=1, j=0):
         if hz - 6.0 > pe: parts.append(box(tg_x, tg_x + tg_t + 1.6, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), pe - 0.1, hz - 6.0 + 0.1))
         parts += [box(tg_x, tg_x + tg_t, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), tz0, hz + 1.0),   # tongue
                   cyly(tg_x + tg_t, hz, o + ly0 + 1.0, o + ly1 - 1.0, bump_r, 32)]
-        nub = trimesh.creation.icosphere(subdivisions=2, radius=nub_r); nub.apply_translation([(leaf_x0 + leaf_x1) / 2, o + 10.0, plate_z0 + nub_r - nub_out]); parts.append(nub)
-        lx0, lx1 = leaf_x0, leaf_x1                                  # spring leaf: three slits and a recess from the front leave a 1.4 mm flexible tongue
-        cuts += [box(lx0 - slit, lx0, o + leaf_y0, o + leaf_y1 + slit, plate_z0 - 1.0, pe + 0.1),
-                 box(lx1, lx1 + slit, o + leaf_y0, o + leaf_y1 + slit, plate_z0 - 1.0, pe + 0.1),
-                 box(lx0 - slit, lx1 + slit, o + leaf_y1, o + leaf_y1 + slit, plate_z0 - 1.0, pe + 0.1),
-                 box(lx0, lx1, o + leaf_y0, o + leaf_y1, plate_z0 + leaf_t, pe + 0.1)]
+        lx0, lx1 = leaf_x0, leaf_x1
+        ltop = o + clip_y1 if m == k - 1 else o + 60.0 - 2.0         # leaf runs to the plate top (top station: on up into the release tab)
+        yb = o + pawl_y
+        parts.append(prism_x([(plate_z0 + 0.05, yb), (plate_z0 - pawl_out - 0.5, yb), (plate_z0 + 0.05, yb + pawl_h)], (lx0 + lx1) / 2 - pawl_w / 2, (lx0 + lx1) / 2 + pawl_w / 2))   # pawl tip: vertical face below, ramp above
+        if m == k - 1:
+            parts.append(box(lx0, lx1, ltop - 0.01, ltop + tab_up, plate_z0, plate_z0 + leaf_t))        # leaf continues above the plate
+            zt0 = plate_z0 + leaf_t
+            parts.append(prism_x([(zt0 - 0.05, ltop), (zt0 + tab_out, ltop + tab_out), (zt0 + tab_out, ltop + tab_up), (zt0 - 0.05, ltop + tab_up)], lx0, lx1))   # thumb tab, 45 degree underside
+        cuts += [box(lx0 - slit, lx0, o, ltop + 0.01, plate_z0 - 1.0, pe + 0.1),
+                 box(lx1, lx1 + slit, o, ltop + 0.01, plate_z0 - 1.0, pe + 0.1),
+                 box(lx0, lx1, o, min(ltop, o + clip_y1) + 0.01, plate_z0 + leaf_t, pe + 0.1)]
     return diff(union(parts), cuts) if cuts else union(parts)
 
 # ---------------------------------------------------------------- ledge for rack position j (pin axis at x=0,z=0 ; body stepped back by j*step)
@@ -191,11 +199,10 @@ def stack_assembly(N, strips, clips, y0=20.0):
 
 if __name__ == "__main__":
     os.makedirs("clip", exist_ok=True)
-    strip_m = build_strip(); clips = {1: build_clip(1), 2: build_clip(2), 3: build_clip(3)}
+    strip_m = build_strip(); clips = {1: build_clip(1), 2: build_clip(2), 3: build_clip(3)}   # x2/x3 (legacy multi-station) are built for the demos only
     ledges = [build_ledge(j) for j in range(6)]
     out = {"wall_strip": to_print(strip_m, "strip")}
-    for k, c in clips.items(): out[f"hinge_clip_x{k}"] = to_print(c, "clip")
-    for j, l in enumerate(ledges): out[f"ledge_j{j}"] = to_print(l, "ledge")
+    out["ledge"] = to_print(ledges[0], "ledge")
     for j in range(6): out[f"hinge_clip_j{j}"] = to_print(build_clip(1, j), "clip")
     for n, m in out.items():
         m.export(f"clip/{n}.stl"); oa, lv = overhang_report(m)
@@ -207,6 +214,3 @@ if __name__ == "__main__":
             y = 20.0 + 60.0 * jj
             asm += [place(build_clip(1, jj), 0, y), place(ledge_at(jj, 0, True), 0, y)]
         trimesh.util.concatenate(asm).export(f"clip/separate_{N}_cars_demo.stl")
-    for N in STACKS:
-        strips = 1 if N <= 4 else 2
-        trimesh.util.concatenate(stack_assembly(N, strips, clips)).export(f"clip/stack_{N}_cars_demo.stl")
