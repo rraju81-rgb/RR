@@ -328,3 +328,24 @@ it never touches the card or its blister. Print-in-place: 2N+1 separate bodies (
 0.3 mm clearance on the post. Checked in software: bars rotate freely 0-180 degrees, a latched ledge is blocked,
 an unlatched ledge swings 0-90 degrees without interference. Not printed yet; the 2-card test piece
 `rack_2slot_test_hinged_latch.stl` is the one to try first. A 1.5 mm post is thin; use PETG or print it solid.
+
+## Modular system (`build_modular.py`, `modular/`)
+A SKADIS-style slotted wall board plus separate, hook-in hinge modules, so you can add as many racks as you like.
+Run `python3 build_modular.py` to regenerate all STLs; `python3 render_modular.py` for the previews.
+
+| File | What it is |
+|---|---|
+| `board_tile.stl` | 140 x 240 x 5 mm board, 5 x 15 mm slots on a 20 mm grid, 3 mm rear standoff (room for the hook prongs). 6 countersunk 3.5 mm screw holes, mirrored top/bottom and left/right. Fits a 256 mm bed. Stack tiles for more height |
+| `hinge_module_j<N>.stl` | **hinge + latch in one unit.** Two hooks go into slots 40 mm apart in one column; it carries the hinge lugs and the latch post. N = 0..5 sets how far the pin stands out, so each rack sits one card step (5.4 mm) in front of the last |
+| `ledge.stl` | the card ledge, one design for every position |
+| `hinge_pin.stl` | 4 mm pin: drops through the top lug, the ledge barrel and into the bottom lug |
+| `latch_bar.stl` | swivel bar, pushes onto the module's latch post (snap ring holds it). Hangs down = latched, flip up = open |
+| `demo_assembly.stl` | board plus three assembled racks, for viewing only |
+
+**Mounting a rack:** push the module's hooks into two slots in the same column with the module 7 mm higher, then slide it down.
+Racks sit 80 mm apart (every second slot pair). Rack i uses module `j = i`, so the bottom rack is j0, the next j1, and so on.
+Fit the ledge between the lugs, drop in the pin from the top, then press the bar onto the post.
+Each tile holds 3 racks at that pitch (slot pairs 20/60, 100/140, 180/220). Racks above the third go on a second tile.
+
+Checked in software (no collisions): hooks insert and slide down into the slots, pin/ledge/lugs fit, a ledge swings 0-90 degrees with the bar up,
+the bar blocks it when down. Not printed yet. Print orientation: hooks and plate on the bed (rear face down), ledge flat, pin standing.
