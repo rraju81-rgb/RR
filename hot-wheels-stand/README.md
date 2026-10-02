@@ -505,3 +505,24 @@ The clip did not slide on the printed strip (printed edges are usually 0.1-0.3 m
 - The pawl tip is narrower (3.6 mm) and the tooth lane wider (5.6 mm), so the pawl still finds its teeth with up to 1 mm of sideways play; pawl depth adjusted so it still engages the full 1.5 mm.
 - Checked in software against a strip that is 0.2 mm fatter per side than the model (typical over-extrusion): the clip slides with up to 0.8 mm sideways play and no interference; at 0.4 mm fatter it only touches when pushed hard to one side. Forward play is still limited to about 1 mm. Pawl lock, ledge, card and kit checks unchanged. Kits rebuilt.
 If it is still tight, raise `clr` in `build_clip.py` (1.0 -> 1.3) and reprint only the clips.
+
+## SIMPLE system (`build_simple.py`, `simple/`) - current, supersedes everything above for printing
+The hinge clip with the pawl leaf, slits, pull block, tongue fin and fillet was not printable, and the ledge barrel (slit, groove, relief) was too fiddly.
+Everything was redone with nothing thin and nothing that has to flex. The older generators are in `legacy/` for reference only (their STL folder `clip/` was removed).
+
+| Part | What it is |
+|---|---|
+| `wall_strip.stl` | 25 mm dovetail rail, 5 mm countersunk screw holes (20/120/220 mm), dovetail joint on both ends, 4.6 mm peg holes every 20 mm. Print rear face down, no supports |
+| `hinge_clip_j0..j5.stl` | plain 3 mm plate with two dovetail jaws (1 mm clearance per side), solid footing block, 6 mm pin, a lock hole through the plate and a small bump on the footing. 38 mm tall, 32.6 mm wide, same for every depth. Print standing, no supports (0.1 mm2 of overhang) |
+| `lock_peg.stl` | 4 mm peg with a 7 mm head. Push it through the clip's hole into the strip's peg hole: the clip cannot slide. Pull it out to move the clip (20 mm steps). Print head down |
+| `ledge.stl` | plain barrel with a 6.8 mm hole (0.4 mm clearance, turns freely, no slit), floor, tall 16 mm back wall, low 3 mm front lip, two 7 mm front corner supports, and a small dimple on the underside. Print standing |
+
+**Locking:** the clip is locked in place by the peg (sheared peg = very strong, nothing flexes). The ledge door clicks into the closed position because the bump on the clip's footing sits in the dimple under the ledge;
+lift the ledge about 1 mm (it just sits on the pin) and swing it open up to 75 degrees.
+**Mounting:** screw the strip to the wall; slide each clip onto the strip from the top with its foot at y = 30 + 60 j mm (its lock hole then lines up with a strip hole), push a peg through, drop the ledge on the pin.
+Stacks over 240 mm use a second identical strip that presses on the first strip's dovetail from the front (it locks both along and across the rail).
+`simple/kit_<N>_cars/` (N = 2..6): strip(s), clips, ledge, pegs, three print plates, an assembled demo, a preview and a BOM.
+
+Checked in software (all pass): the clip slides on a strip that is 0.2 mm too fat per side with 0.8 mm of sideways play; the peg fits through the clip and strip and blocks 1 mm of sliding both ways; peg holes keep 0.7 mm of wall from the screw holes;
+the ledge fits on the pin, the card slides in from the right, 4 racks with cards and blisters have no collisions, ledges open 60 degrees do not touch, the strip joint locks. Overhang check in print orientation: strip 0, clip 0.1 mm2, peg 0, ledge 2.8 mm2.
+Not printed yet. If the clip is still tight raise `clr` (1.0) in `build_simple.py`; if the ledge is too loose lower `hole_clr` (0.4).
