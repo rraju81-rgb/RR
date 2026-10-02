@@ -43,6 +43,7 @@ tab_h, tab_out = 6.0, 4.0                               # release tab: a thumb r
 # ---- ledge / hinge ----
 ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
 rear_wall, front_wall = 4.0, 3.5                      # thicker slot walls (was 3.2)
+corner_h, corner_len, corner_gap = 7.0, 9.0, 0.15         # front corner supports (both ends of the front lip): height above the gutter bottom, length, slot clearance for the card
 rear_h, front_h = 16.0, 3.0                          # tall back wall and a low front lip, measured above the gutter bottom (the card's printed name stays visible)
 thumb_out = 8.0
 step = 6.0                                           # depth step between neighbouring racks (thicker walls need more room)
@@ -183,14 +184,17 @@ def build_clip(k=1, j=0):
 
 # ---------------------------------------------------------------- ledge for rack position j (pin axis at x=0,z=0 ; body stepped back by j*step)
 def build_ledge(j=0):
-    """ledge: barrel + end stop, 6 mm floor, TALL rear wall (card rests on it) and a LOW front lip (card name stays visible), snap slit in the barrel"""
+    """ledge: barrel + end stop, 6 mm floor, TALL rear wall (card rests on it), LOW front lip (card name stays visible) with taller snug supports at the two front corners, snap slit in the barrel"""
     oz = j * step if False else 0.0
     gb = ly1 - gutter_d                                           # gutter bottom
+    z_snug = -gw / 2 + card_t + corner_gap                        # inner face of the corner supports (card pushed against the rear wall has 0.15 mm play)
     body = [cyly(0, 0, ly0, ly1, bar_r),
             box(0, end_stop, ly0, ly1, -rext, fext),
             box(0, ledge_len, ly0, gb, -rext, fext),                         # floor
             box(wall_x0, ledge_len, gb - 0.01, gb + rear_h, -rext, -gw / 2),             # tall rear wall (starts past the clip's pull block)
-            box(end_stop - 0.01, ledge_len, gb - 0.01, gb + front_h, gw / 2, fext)]    # low front lip
+            box(end_stop - 0.01, ledge_len, gb - 0.01, gb + front_h, gw / 2, fext),     # low front lip
+            box(end_stop - 0.01, end_stop + corner_len, gb - 0.01, gb + corner_h, z_snug, fext),            # front corner support, hinge end
+            box(ledge_len - corner_len, ledge_len, gb - 0.01, gb + corner_h, z_snug, fext)]                  # front corner support, free end
     cuts = [cyly(0, 0, ly0 - 1, ly1 + 1, pin_d / 2 + pin_clr, 48),
             cyly(-(bar_r + 0.8), 0, ly0 - 1, ly1 + 1, groove_r, 32)]
     for a in np.arange(relief_a0, relief_a1, 5.0):                  # relief: tongue relaxes once the ledge is a little open

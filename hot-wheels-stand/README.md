@@ -487,3 +487,8 @@ Changes made from the printed photos:
 - **Slit in the barrel:** a 1.2 mm slit through the barrel wall (front-left, 125 degrees) lets the barrel flex, so it clips onto the pin and turns freely even if the printed hole came out tight. The detent groove and relief are unchanged.
 - The ledge is now 22 mm tall when printed standing (110 x 9.3 mm footprint). Checked with cards and blisters on racks j0-j3: no collisions with any ledge, clip or other card; neighbouring ledges open to 60 degrees do not touch. All kits rebuilt.
 If the card still rides too low or high on the lip, change `front_h` (3) and `rear_h` (16) in `build_clip.py`.
+
+### Update: front corner supports on the ledge
+Both ends of the low front lip now have a 9 mm long, 7 mm tall support (only at the corners, so the middle of the lip stays 3 mm low and the car name stays visible). The supports narrow the slot to 1.35 mm
+(card 1.2 mm + 0.15 mm play) with the card pushed against the tall rear wall, so the card is held firmly at its bottom corners but still slides in from the right end. Checked: card slides in from 60 mm out to fully home with no
+interference, blister (starts 8 mm above the card bottom, 12 mm in from the sides) clears the supports, stacks of 4 with cards have no collisions. Change `corner_h`, `corner_len`, `corner_gap` in `build_clip.py` to tune. Kits rebuilt.
