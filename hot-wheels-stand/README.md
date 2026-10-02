@@ -429,3 +429,9 @@ Checked in software: all six clips slide on the strip from the top, stop on the 
 Each kit folder has the base strip with stopper, the N same-height hinge clips (`hinge_clip_j0..`), the ledge (`ledge_x<N>.stl`, print N), two print plates
 (`plate_clips.stl`, `plate_ledges.stl`, laid out for a 256 mm bed), `assembled_demo.stl`, `preview.png` and a `BOM.md`. The 4-car stack is 230 mm tall and fits one 240 mm strip.
 Checked: clips slide on and rest on the stopper, closed ledges clear everything, neighbouring ledges open to 60 degrees do not touch.
+
+### Update: dovetail strip joint, 5 and 6 car kits
+The two thin press-fit tabs on the strip ends were replaced by one full-thickness **dovetail tongue** (5 mm wide at the root, 7 mm at the tip, 8 mm long) that fits a matching dovetail pocket in the next strip.
+Push the upper strip onto the tongue from the front (the pocket goes right through, 0.1 mm press fit); the undercut stops the strips from sliding apart, and the tongue prints flat on the bed.
+`build_kits.py` now also writes `clip/kit_5_cars/` and `clip/kit_6_cars/` (350 mm stack: base strip with stopper + `wall_strip_top.stl`, 6 clips j0..j5, 6 ledges, print plates, demo, BOM).
+Checked: tongue/pocket press fit, strips cannot be pulled apart along the rail, all clips slide on and rest correctly across the joint, closed ledges clear, open ledges do not touch.

@@ -25,7 +25,7 @@ dimple_ys = [10.0 + 20 * k for k in range(12)]      # clip nub clicks into these
 dimple_r, dimple_depth = 1.0, 0.6
 stopper_h, stopper_z = 10.0, 3.6                       # bottom stopper block on the base strip (clip foot ends up at y = 20)
 # press-fit stacking: two flat tabs stick out of the top end and push into two pockets in the bottom end of the next strip
-tab_x, tab_w, tab_len, tab_t = 2.6, 2.6, 8.0, 4.0   # tab centre (+-x), width, length, thickness (flush with the front face)
+tab_hw0, tab_hw1, tab_len = 2.5, 3.5, 8.0           # dovetail tongue: half width at the root and at the tip, length (full strip thickness)
 press = 0.10                                         # tab is this much wider than its pocket (total), pocket is 0.4 deeper
 
 # ---- clip ----
@@ -77,6 +77,10 @@ def prism_x(poly_zy, x0, x1):
     """prism with polygon given in (z, y), extruded along x"""
     return hull([(x, y, z) for x in (x0, x1) for z, y in poly_zy])
 
+def prism_z(poly_xy, z0, z1):
+    """convex polygon in (x, y) extruded along z"""
+    return hull([(x, y, z) for z in (z0, z1) for x, y in poly_xy])
+
 def prism_y(poly_xz, y0, y1):
     """prism with convex polygon given in (x, z), extruded along y"""
     return hull([(x, y, z) for y in (y0, y1) for x, z in poly_xz])
@@ -92,12 +96,13 @@ def build_strip(base=False):
     """base=True: bottom strip of a stack. A stopper block closes the bottom end so a clip slides down onto it and stops with its foot at y = 20."""
     r = strip_w / 2; rr = r - strip_t
     s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)      # dovetail: wide at the front
-    tabs = [box(sg * tab_x - tab_w / 2, sg * tab_x + tab_w / 2, strip_h - 0.01, strip_h + tab_len, -tab_t, 0) for sg in (1, -1)]
+    tabs = [prism_z([(-tab_hw0, strip_h - 0.01), (tab_hw0, strip_h - 0.01), (tab_hw1, strip_h + tab_len), (-tab_hw1, strip_h + tab_len)], -strip_t, 0)]   # dovetail tongue, wider at the tip
     stop = [box(-strip_w / 2, strip_w / 2, 0, stopper_h, 0, stopper_z)] if base else []     # self stopper
     s = union([s] + tabs + stop)
     cuts = []
-    for sg in (1, -1) if not base else ():    # pockets in the bottom end (open to the end face and to the front)
-        cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -strip_t - 1, 1))
+    if not base:        # dovetail pocket in the bottom end, through the whole thickness, 0.05 mm narrower per side than the tongue (press fit)
+        h = lambda y: tab_hw0 + (tab_hw1 - tab_hw0) * y / tab_len - press / 2
+        cuts.append(prism_z([(-h(-1.0), -1.0), (h(-1.0), -1.0), (h(tab_len + 0.4), tab_len + 0.4), (-h(tab_len + 0.4), tab_len + 0.4)], -strip_t - 1, 1))
     for y in hole_ys:
         cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 48))
         zc0 = -(csk_d - hole_d) / 2                                   # countersink: clean frustum, 45 degrees
