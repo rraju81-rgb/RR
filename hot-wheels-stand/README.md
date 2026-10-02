@@ -349,3 +349,24 @@ Each tile holds 3 racks at that pitch (slot pairs 20/60, 100/140, 180/220). Rack
 
 Checked in software (no collisions): hooks insert and slide down into the slots, pin/ledge/lugs fit, a ledge swings 0-90 degrees with the bar up,
 the bar blocks it when down. Not printed yet. Print orientation: hooks and plate on the bed (rear face down), ledge flat, pin standing.
+
+## Printable clip system (`build_clip.py`, `clip/`) - replaces the hook version for printing
+The hook/latch-bar modules were too fiddly to print. This version needs no supports and no extra parts.
+Run `python3 build_clip.py` (needs `trimesh manifold3d numpy`); `python3 render_clip.py` for previews.
+Every STL is exported in **print orientation** (z up).
+
+| File | Print orientation | Notes |
+|---|---|---|
+| `clip/wall_strip.stl` | front (wide) face down | 25 mm wide x 240 mm dovetail rail, 4 mm thick, 3 countersunk 3.5 mm screw holes mirrored about the middle (20/120/220 mm). Dimples every 20 mm |
+| `clip/hinge_clip.stl` | standing | slides on the rail from the top, cannot be pulled off forward (45 degree jaws). Carries the pin and the snap tongue. One part for every rack |
+| `clip/ledge_j0.stl` ... `ledge_j5.stl` | standing | drops onto the pin. j sets the depth step (5.4 mm per step) so cards shingle. 80 mm of swing past the detent |
+
+**Self-locking hinge (no extra part):** a thin tongue on the clip has a bump that snaps into a groove in the ledge barrel when the
+ledge is closed. A firm pull opens it (tongue flexes 0.6 mm), and after about 25 degrees the barrel is cut back so the tongue relaxes
+and the ledge swings freely to about 75-80 degrees. Closing it clicks back into the groove. The clip also has a small nub that clicks into the
+strip's dimples so it holds its height; place racks at any dimple (60 mm pitch recommended).
+
+Checked in software: clip slides over the strip with no collisions and cannot be pulled forward; the ledge clears the clip and strip from
+closed to 75 degrees; neighbouring open ledges at 60 mm pitch do not touch; overhang analysis in print orientation shows nothing steeper than 45 degrees
+except the countersinks/dimples (cones) and a few mm2 on the snap bump. Not printed yet. If the tongue is too stiff or too loose, change `tg_t` (tongue thickness) or `bump_r` in `build_clip.py`.
+The strip stays within 1 inch wide; the clip is 31 mm because it wraps around the strip.
