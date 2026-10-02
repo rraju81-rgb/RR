@@ -465,3 +465,12 @@ The plate is 36 mm tall (same as before). Checked again: lock blocks sliding dow
 - **Pull block:** a solid 6.4 x 6 x 4 mm block with a 45 degree underside at the top of the leaf, standing 3 mm proud of the plate front. Grab it with two fingers and pull toward you to lift the pawl; the clip then slides down.
 - **Teeth:** bigger: 6 mm pitch, 1.5 mm deep, pawl tip 4.6 mm wide and 1.9 mm high. Foot of clip j stays at y = 20 + 60 j mm (60 is a multiple of 6, so the tip always lands on a wall).
 - If it is still too stiff, thin the leaf (`leaf_t` 2.0 -> 1.8); too soft, thicken it. Kits rebuilt. Checked: lock blocks sliding down, ramp rides up and drops at 6 mm, ledges clear.
+
+### Update: Z-lock (zig-zag joint) at the top and bottom of every wall strip
+The tabs and pockets were replaced by a zig-zag "Z" interlock like the reference drawing. The top end of each strip carries the male Z (an 8 mm high quadrilateral: bottom bar, a 45 degree diagonal and a top bar,
+extruded through the full strip thickness), and the bottom end has the matching female Z with 0.12 mm clearance. Strip length stays 248 mm (240 mm pitch).
+- **Assembly:** hold the next strip in front of the first one and press it straight toward the wall (along z); the joint closes with no force. Then screw it up.
+- **Locking:** the diagonal is an undercut, so the strips cannot be pulled apart along the rail (checked: any upward move of 0.3-4 mm collides) and cannot be slid down either; they separate only by pulling forward (z) again.
+  The joint does not hold sideways to the left, which the wall screws and the clip take.
+- It prints flat (rear face down) with no overhangs, no thin parts. The bottom end of the lowest strip also has the female Z, so any strip can sit on any other. Kits rebuilt (5 and 6 cars use two identical strips).
+Change `z_h` (8), `z_x0`/`z_x1` (2/-6) or `z_fit` (0.12) in `build_clip.py` to size or tighten the joint.

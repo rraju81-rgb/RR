@@ -25,10 +25,11 @@ hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
 # ratchet teeth (zip-tie style): sawtooth steps every 6 mm along the front face, vertical wall on the low side (locks against sliding down), 14 degree ramp on the high side
 tooth_p, tooth_d = 6.0, 1.5                           # pitch, depth
 tooth_x0, tooth_x1 = 5.6, 10.8                       # tooth lane
-tooth_y0, tooth_y1 = 18.0, 240.0                      # first wall at y = 15 (clear of the bottom pockets), last ramp ends at the strip end
-# press-fit stacking: two flat tabs stick out of the top end and push into two pockets in the bottom end of the next strip
-tab_x, tab_w, tab_len, tab_t = 5.0, 5.0, 8.0, 4.0   # two press-fit tabs: centre +-x, width, length, thickness (full strip thickness, so they print flat on the bed)
-press = 0.10                                         # tab is this much wider than its pocket (total), pocket is 0.4 deeper
+tooth_y0, tooth_y1 = 18.0, 240.0                      # first wall at y = 15 (clear of the female Z), last ramp ends at the strip end
+# stacking: Z-lock (zig-zag joint) - male Z on the top end, matching female Z in the bottom end of the next strip
+z_h, z_x0, z_x1 = 8.0, 2.0, -6.0                    # Z-lock (zig-zag joint): height, x where the diagonal starts at the bottom / ends at the top (45 degrees)
+z_fit = 0.12                                       # clearance of the female Z around the male Z
+
 
 # ---- clip ----
 clr = 0.45                                          # clearance between clip and rail
@@ -76,6 +77,21 @@ def union(ms): return trimesh.boolean.union(ms, engine="manifold")
 def diff(a, bs): return trimesh.boolean.difference([a, union(bs)], engine="manifold")
 def hz_j(j): return hz + j * step
 
+def intersection_(ms): return trimesh.boolean.intersection(ms, engine="manifold")
+
+def offset_convex(poly, d):
+    """grow a convex polygon outward by d (line-offset / intersect)"""
+    P = np.array(poly, float); c = P.mean(0); n = len(P); lines = []
+    for i in range(n):
+        a, b = P[i], P[(i + 1) % n]; t = (b - a) / np.linalg.norm(b - a); nrm = np.array([t[1], -t[0]])
+        if np.dot(nrm, (a + b) / 2 - c) < 0: nrm = -nrm
+        lines.append((a + nrm * d, t))
+    out = []
+    for i in range(n):
+        (p1, t1), (p2, t2) = lines[i - 1], lines[i]
+        A = np.array([t1, -t2]).T; k = np.linalg.solve(A, p2 - p1); out.append(tuple(p1 + t1 * k[0]))
+    return out
+
 def hull(pts): return trimesh.convex.convex_hull(np.array(pts, float))
 
 def prism_x(poly_zy, x0, x1):
@@ -98,14 +114,17 @@ def to_print(m, kind):
 
 # ---------------------------------------------------------------- wall strip
 def build_strip():
-    """25 mm dovetail rail (front 25 wide, rear 17 wide, 4 thick) with two press-fit tabs on the top end and two matching pockets in the bottom end,
+    """25 mm dovetail rail (front 25 wide, rear 17 wide, 4 thick) with a male Z-lock (zig-zag joint) on the top end and the matching female Z in the bottom end,
     three 5 mm countersunk screw holes (mirrored about the middle) and a ratchet lane (6 mm sawtooth steps) for the clip's spring pawl."""
     r = strip_w / 2; rr = r - strip_t
     s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)
-    tabs = [box(sg * tab_x - tab_w / 2, sg * tab_x + tab_w / 2, strip_h - 0.01, strip_h + tab_len, -tab_t, 0) for sg in (1, -1)]
-    s = union([s] + tabs); cuts = []
-    for sg in (1, -1):    # pockets in the bottom end (open to the end face and to the front), 0.1 mm narrower than the tab
-        cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -strip_t - 1, 1))
+    r2 = strip_w / 2
+    zpoly = [(z_x0, 0.0), (r2, 0.0), (r2, z_h), (z_x1, z_h)]                              # male Z (quadrilateral: bottom bar, diagonal, top bar) at the strip's top end
+    male = intersection_([prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], strip_h - 0.01, strip_h + z_h),
+                          prism_z([(x, strip_h + y) for x, y in zpoly], -strip_t - 1, 1)])
+    s = union([s, male]); cuts = []
+    fem = offset_convex([(x, y) for x, y in zpoly], z_fit)                                  # female Z in the bottom end, same shape, slightly larger
+    cuts.append(prism_z(fem, -strip_t - 1, 1))
     for y in hole_ys:
         cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 48))
         zc0 = -(csk_d - hole_d) / 2
