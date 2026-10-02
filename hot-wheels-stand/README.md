@@ -531,3 +531,10 @@ Not printed yet. If the pawl is too stiff thin the leaf (`leaf_t` 2.0 -> 1.8); t
   Clip j goes with its foot at y = 20 + 60 j mm (pawl tip at a multiple of the 6 mm pitch). A 4-car stack now just fits one 240 mm strip.
 - **Ledge seat:** pin is 8 mm (was 6) with a 45 degree collar at its base on the solid footing; the ledge barrel is 6.6 mm radius with a countersink that clears the collar. Gutter is 9 mm deep (floor 3 mm): the card sits 6 mm deeper than before, the front lip stays 4 mm above the card bottom so the car name stays visible; corner supports 7 mm, back wall to the same height as before.
 - Checked again: ledge fits, swings 60 degrees lifted, card slides in, 4 racks with cards and blisters collide nowhere, all 6 clips seat on 2 strips, strip joint locks. Kits rebuilt (`simple/`).
+
+## Update: IKEA-style hook-in board (build_board.py, board/)
+The zip-tie ratchet and the slide-along-rail clip are gone. The wall strip is now a 30 x 5 mm peg board (round-headed pegs every 20 mm, 5 mm countersunk
+screw holes between pegs, dovetail ends for stacking). The hinge clip has two keyholes: push it onto two neighbouring pegs and let go - it drops 7 mm and
+hangs (gravity lock like SKADIS). To remove: lift 7 mm and pull toward you. Clip j hangs at y = 13 + 60 j. Ledge is 10 mm longer (assumed: "width" = length along the card).
+Checked by boolean intersection: hang / insert / pull-out path / ledge swing / cards and blisters all collision-free; ~34 mm2 of borderline overhang on the clip (slot roofs).
+Previous generator moved to legacy/build_simple.py.

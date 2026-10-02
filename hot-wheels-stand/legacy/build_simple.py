@@ -8,7 +8,8 @@ Parts:
                a small dimple on its underside that clicks onto a bump on the clip's footing when the ledge is closed
 Needs: pip install trimesh manifold3d numpy matplotlib.  Units mm.
 Assembly frame: x right, y up, z out of the wall; strip front face z = 0, strip centre x = 0; clip foot bottom y = 0."""
-import os
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np
 import trimesh
 
