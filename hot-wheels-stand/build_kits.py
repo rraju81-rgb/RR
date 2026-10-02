@@ -69,5 +69,5 @@ for N in (2, 3, 4, 5, 6):
 | Ledge | ledge_x{N}.stl | {N} | standing |
 Plates: plate_clips.stl (all clips) and plate_ledges.stl ({N} ledges) are laid out for a 256 mm bed.
 Mount: screw the strip to the wall, slide each clip onto the strip from the BOTTOM end and push it up: it clicks one 6 mm step at a time and cannot slide back down. Foot of clip j at y = 20 + 60 j mm. To lower a clip, pull its release tab (top, front) forward and slide it down,
-drop each ledge on the pin. Clip j0 is the lowest rack. The total height of the stack is {top:.0f} mm ({'two identical strips: screw the first strip up, then press the second strip onto its Z-lock from the front' if two else 'fits one 240 mm strip'}).
+drop each ledge on the pin. Clip j0 is the lowest rack. The total height of the stack is {top:.0f} mm ({'two identical strips: screw the first strip up, then press the second strip onto its dovetail from the front' if two else 'fits one 240 mm strip'}).
 """)

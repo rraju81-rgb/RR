@@ -26,9 +26,9 @@ hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
 tooth_p, tooth_d = 6.0, 1.5                           # pitch, depth
 tooth_x0, tooth_x1 = 5.6, 10.8                       # tooth lane
 tooth_y0, tooth_y1 = 18.0, 240.0                      # first wall at y = 15 (clear of the female Z), last ramp ends at the strip end
-# stacking: Z-lock (zig-zag joint) - male Z on the top end, matching female Z in the bottom end of the next strip
-z_h, z_x0, z_x1 = 8.0, 2.0, -6.0                    # Z-lock (zig-zag joint): height, x where the diagonal starts at the bottom / ends at the top (45 degrees)
-z_fit = 0.12                                       # clearance of the female Z around the male Z
+# stacking: dovetail joint - male dovetail on the top end, matching female dovetail in the bottom end of the next strip
+dt_root, dt_tip, dt_len = 4.0, 7.5, 7.0            # dovetail joint: half width at the root and at the tip, length (27 degree flanks)
+z_fit = 0.12                                       # clearance of the female dovetail around the male dovetail
 
 
 # ---- clip ----
@@ -114,16 +114,16 @@ def to_print(m, kind):
 
 # ---------------------------------------------------------------- wall strip
 def build_strip():
-    """25 mm dovetail rail (front 25 wide, rear 17 wide, 4 thick) with a male Z-lock (zig-zag joint) on the top end and the matching female Z in the bottom end,
+    """25 mm dovetail rail (front 25 wide, rear 17 wide, 4 thick) with a male dovetail on the top end and the matching female dovetail in the bottom end,
     three 5 mm countersunk screw holes (mirrored about the middle) and a ratchet lane (6 mm sawtooth steps) for the clip's spring pawl."""
     r = strip_w / 2; rr = r - strip_t
     s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)
     r2 = strip_w / 2
-    zpoly = [(z_x0, 0.0), (r2, 0.0), (r2, z_h), (z_x1, z_h)]                              # male Z (quadrilateral: bottom bar, diagonal, top bar) at the strip's top end
-    male = intersection_([prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], strip_h - 0.01, strip_h + z_h),
+    zpoly = [(-dt_root, 0.0), (dt_root, 0.0), (dt_tip, dt_len), (-dt_tip, dt_len)]         # dovetail: narrow at the strip end, wide at the tip (undercut)
+    male = intersection_([prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], strip_h - 0.01, strip_h + dt_len),
                           prism_z([(x, strip_h + y) for x, y in zpoly], -strip_t - 1, 1)])
     s = union([s, male]); cuts = []
-    fem = offset_convex([(x, y) for x, y in zpoly], z_fit)                                  # female Z in the bottom end, same shape, slightly larger
+    fem = offset_convex([(x, y) for x, y in zpoly], z_fit)                                  # female dovetail in the bottom end, same shape, slightly larger
     cuts.append(prism_z(fem, -strip_t - 1, 1))
     for y in hole_ys:
         cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 48))

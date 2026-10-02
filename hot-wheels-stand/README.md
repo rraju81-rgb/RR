@@ -474,3 +474,8 @@ extruded through the full strip thickness), and the bottom end has the matching 
   The joint does not hold sideways to the left, which the wall screws and the clip take.
 - It prints flat (rear face down) with no overhangs, no thin parts. The bottom end of the lowest strip also has the female Z, so any strip can sit on any other. Kits rebuilt (5 and 6 cars use two identical strips).
 Change `z_h` (8), `z_x0`/`z_x1` (2/-6) or `z_fit` (0.12) in `build_clip.py` to size or tighten the joint.
+
+### Update: dovetail joint (as in the reference drawing) replaces the Z-lock
+The strip ends now use a classic dovetail: a trapezoid tongue on the top end (4.0 mm half width at the root, 7.5 mm at the tip, 7 mm long, 27 degree flanks) and a matching socket (0.12 mm clearance) in the bottom end of the next strip, both through the whole strip thickness.
+Press the next strip on from the front (straight toward the wall); the undercut then locks it against moving along the rail and sideways (checked: any 0.3-4 mm slide up, down or to either side collides), and it only comes off by pulling forward.
+It prints flat, rear face down, no overhangs. Strip length is 247 mm on a 240 mm pitch. Tune `dt_root`, `dt_tip`, `dt_len`, `z_fit` in `build_clip.py`. Kits rebuilt.
