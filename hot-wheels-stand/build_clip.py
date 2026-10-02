@@ -23,8 +23,9 @@ hole_d, csk_d = 5.0, 10.0                          # 5 mm screw hole, 45 degree 
 hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
 dimple_ys = [10.0 + 20 * k for k in range(12)]      # clip nub clicks into these (20 mm pitch)
 dimple_r, dimple_depth = 1.0, 0.6
+stopper_h, stopper_z = 10.0, 3.6                       # bottom stopper block on the base strip (clip foot ends up at y = 20)
 # press-fit stacking: two flat tabs stick out of the top end and push into two pockets in the bottom end of the next strip
-tab_x, tab_w, tab_len, tab_t = 3.5, 3.0, 8.0, 2.0   # tab centre (+-x), width, length, thickness (flush with the front face)
+tab_x, tab_w, tab_len, tab_t = 2.6, 2.6, 8.0, 4.0   # tab centre (+-x), width, length, thickness (flush with the front face)
 press = 0.10                                         # tab is this much wider than its pocket (total), pocket is 0.4 deeper
 
 # ---- clip ----
@@ -83,24 +84,26 @@ def prism_y(poly_xz, y0, y1):
 def to_print(m, kind):
     R = trimesh.transformations.rotation_matrix
     T = {"clip": R(np.pi / 2, [1, 0, 0]), "ledge": R(np.pi / 2, [1, 0, 0]), "pin": np.eye(4),
-         "strip": R(np.pi, [1, 0, 0])}[kind]       # clip: +y up. ledge: gutter opens upward. strip: front face down
+         "strip": R(np.pi, [1, 0, 0]), "strip_up": np.eye(4)}[kind]       # clip: +y up. ledge: gutter opens upward. strip: front face down
     m = m.copy(); m.apply_transform(T); m.apply_translation(-m.bounds[0]); return m
 
 # ---------------------------------------------------------------- wall strip
-def build_strip():
+def build_strip(base=False):
+    """base=True: bottom strip of a stack. A stopper block closes the bottom end so a clip slides down onto it and stops with its foot at y = 20."""
     r = strip_w / 2; rr = r - strip_t
     s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)      # dovetail: wide at the front
     tabs = [box(sg * tab_x - tab_w / 2, sg * tab_x + tab_w / 2, strip_h - 0.01, strip_h + tab_len, -tab_t, 0) for sg in (1, -1)]
-    s = union([s] + tabs)
+    stop = [box(-strip_w / 2, strip_w / 2, 0, stopper_h, 0, stopper_z)] if base else []     # self stopper
+    s = union([s] + tabs + stop)
     cuts = []
-    for sg in (1, -1):    # pockets in the bottom end (open to the end face and to the front)
-        cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -tab_t - 0.05, 1))
+    for sg in (1, -1) if not base else ():    # pockets in the bottom end (open to the end face and to the front)
+        cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -strip_t - 1, 1))
     for y in hole_ys:
         cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 48))
         zc0 = -(csk_d - hole_d) / 2                                   # countersink: clean frustum, 45 degrees
         pts = [(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, zc0), (csk_d / 2, 0.0)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]
         cuts += [hull(pts), cylz(0, y, 0, 1, csk_d / 2, 48)]
-    for y in dimple_ys:
+    for y in dimple_ys[(1 if base else 0):]:
         d = trimesh.creation.icosphere(subdivisions=2, radius=dimple_r); d.apply_translation([0, y, dimple_r - dimple_depth]); cuts.append(d)
     return diff(s, cuts)
 
@@ -110,7 +113,7 @@ def build_clip(k=1, j=0):
     pitch = 60.0
     hz = hz_j(j)                                                     # shadows the module-level hz
     pe = plate_z0 + plate_t
-    cy0 = min(clip_y0, -(hz + bar_r - pe + 0.1) - 1.0)               # plate reaches down past the 45 degree gusset
+    cy0 = clip_y0                                                    # every clip has the same plate height
     y1 = pitch * (k - 1) + clip_y1
     r = strip_w / 2 + clr + 0.1; ax = r + 0.3 + arm_t              # jaw inner face runs parallel to the rail's 45 degree side, 0.25 mm off it
     parts = [box(-ax, ax, cy0, y1, plate_z0, plate_z0 + plate_t)]
@@ -123,9 +126,12 @@ def build_clip(k=1, j=0):
     xl, xr = tg_x, pin_x + bar_r
     for m in range(k):
         o = pitch * m
-        parts += [box(xl, xr, o, o + foot_h, plate_z0 + plate_t - 0.1, hz), cyly(pin_x, hz, o, o + foot_h, bar_r),          # foot flange
-                  prism_x([(plate_z0 + plate_t - 0.1, o), (z_front, o), (plate_z0 + plate_t - 0.1, o - (z_front - plate_z0 - plate_t + 0.1))], xl, xr),  # 45 degree gusset
-                  cyly(pin_x, hz, o + foot_h - 0.1, o + ly1 + 2.0, pin_d / 2, 32)]                                         # pin
+        if m == 0:      # footing: a solid block that sits on the bed and carries the foot flange (no overhang, same plate height for every depth)
+            parts += [box(xl, xr, cy0, o + foot_h, pe - 0.1, hz), cyly(pin_x, hz, cy0, o + foot_h, bar_r)]
+        else:           # upper stations of a multi-station clip: foot flange + 45 degree gusset
+            parts += [box(xl, xr, o, o + foot_h, pe - 0.1, hz), cyly(pin_x, hz, o, o + foot_h, bar_r),
+                      prism_x([(pe - 0.1, o), (z_front, o), (pe - 0.1, o - (z_front - pe + 0.1))], xl, xr)]
+        parts.append(cyly(pin_x, hz, o + foot_h - 0.1, o + ly1 + 2.0, pin_d / 2, 32))                                       # pin
         ty0 = o + foot_h - 0.1
         tz0 = max(pe - 0.1, hz - 6.0)                                                                                          # tongue is a 7 mm fin; deeper racks get a rigid wall behind it
         if hz - 6.0 > pe: parts.append(box(tg_x, tg_x + tg_t + 1.6, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), pe - 0.1, hz - 6.0 + 0.1))
@@ -166,7 +172,7 @@ STACKS = {2: [2], 3: [3], 4: [2, 2], 5: [3, 2], 6: [3, 3]}      # cars -> clip p
 def stack_assembly(N, strips, clips, y0=20.0):
     """N racks, 60 mm apart, first clip foot at y0 (a multiple of 20 so the nubs sit in dimples)"""
     asm, y, j = [], y0, 0
-    for i in range(strips): asm.append(place(strip_m, 0, 240.0 * i))
+    for i in range(strips): asm.append(place(strip_b if i == 0 else strip_m, 0, 240.0 * i))
     for k in STACKS[N]:
         asm.append(place(clips[k], 0, y))
         for m in range(k): asm.append(place(ledge_at(j), 0, y + 60.0 * m)); j += 1
@@ -175,9 +181,9 @@ def stack_assembly(N, strips, clips, y0=20.0):
 
 if __name__ == "__main__":
     os.makedirs("clip", exist_ok=True)
-    strip_m = build_strip(); clips = {1: build_clip(1), 2: build_clip(2), 3: build_clip(3)}
+    strip_m = build_strip(); strip_b = build_strip(True); clips = {1: build_clip(1), 2: build_clip(2), 3: build_clip(3)}
     ledges = [build_ledge(j) for j in range(6)]
-    out = {"wall_strip": to_print(strip_m, "strip")}
+    out = {"wall_strip": to_print(strip_m, "strip"), "wall_strip_base": to_print(strip_b, "strip_up")}
     for k, c in clips.items(): out[f"hinge_clip_x{k}"] = to_print(c, "clip")
     for j, l in enumerate(ledges): out[f"ledge_j{j}"] = to_print(l, "ledge")
     for j in range(6): out[f"hinge_clip_j{j}"] = to_print(build_clip(1, j), "clip")
@@ -186,7 +192,7 @@ if __name__ == "__main__":
         print(f"{n:14s} watertight={m.is_watertight} size={np.round(m.extents, 1)} overhang>45deg={oa} mm2 z={lv}")
     for N in (2, 3, 4, 5, 6):      # separate clip per rack, depth grows with the rack number
         strips = 1 if N <= 4 else 2
-        asm = [place(strip_m, 0, 240.0 * i) for i in range(strips)]
+        asm = [place(strip_b if i == 0 else strip_m, 0, 240.0 * i) for i in range(strips)]
         for jj in range(N):
             y = 20.0 + 60.0 * jj
             asm += [place(build_clip(1, jj), 0, y), place(ledge_at(jj, 0, True), 0, y)]

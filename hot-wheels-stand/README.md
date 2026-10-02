@@ -415,3 +415,12 @@ Deeper clips get a 45 degree gusset under the foot (the plate runs down past it)
 Place clip j with its foot at y = 20 + 60 j mm (nub in a dimple). `clip/separate_<N>_cars_demo.stl` (N = 2..6) shows each set assembled. Checked in software for j0..j5:
 clip slides on the strip, closed ledge clears everything, swing 0-75 degrees is free apart from the snap detent, neighbouring open ledges do not touch.
 The earlier multi-station clips (`hinge_clip_x2/x3`) with the stepped ledges `ledge_j0..j5` are still there as an alternative.
+
+### Update: same-height clips, self stopper on the strip
+- **Same height:** `hinge_clip_j0..j5` are now all exactly 30 mm tall (plate height identical, 24.9 mm wide). Only the depth grows with j. The long 45 degree gusset
+  was replaced by a solid footing block that sits on the print bed under the foot flange, so deeper clips do not need a taller plate and still print without supports.
+- **Self stopper:** new `clip/wall_strip_base.stl` is the bottom strip of a stack. A 10 mm stopper block closes the bottom of the rail, so the lowest clip slides down and stops
+  by itself with its foot at y = 20 mm (nub in the 20 mm dimple, so the 60 mm rack pitch lines up). Print it rear face down (the stopper is on top). Strips above it are the plain
+  `wall_strip.stl`. A one-strip stack (2-4 cars) uses only the base strip.
+- **Stack tabs:** the press-fit tabs are now full strip thickness (two 2.6 mm wide tabs, pockets go all the way through), so they print on the bed with no bridge.
+Checked in software: all six clips slide on the strip from the top, stop on the stopper (1 mm lower is blocked), closed ledges clear everything and neighbouring ledges open to 60 degrees do not touch.
