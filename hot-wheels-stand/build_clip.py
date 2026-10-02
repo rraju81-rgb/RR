@@ -68,6 +68,8 @@ def cyly(x, z, y0, y1, r, n=64):
     m.apply_translation([x, (y0 + y1) / 2, z]); return m
 def union(ms): return trimesh.boolean.union(ms, engine="manifold")
 def diff(a, bs): return trimesh.boolean.difference([a, union(bs)], engine="manifold")
+def hz_j(j): return hz + j * step
+
 def hull(pts): return trimesh.convex.convex_hull(np.array(pts, float))
 
 def prism_x(poly_zy, x0, x1):
@@ -103,17 +105,20 @@ def build_strip():
     return diff(s, cuts)
 
 # ---------------------------------------------------------------- clip (origin: strip centre x=0, y=0 = bottom of the foot flange)
-def build_clip(k=1):
-    """clip with k hinge stations, 60 mm apart (one station per card). origin: strip centre x=0, y=0 = foot bottom of station 0"""
+def build_clip(k=1, j=0):
+    """clip with k hinge stations (j = depth step: the pin stands out j*step further, so racks shingle without a stepped ledge), 60 mm apart (one station per card). origin: strip centre x=0, y=0 = foot bottom of station 0"""
     pitch = 60.0
+    hz = hz_j(j)                                                     # shadows the module-level hz
+    pe = plate_z0 + plate_t
+    cy0 = min(clip_y0, -(hz + bar_r - pe + 0.1) - 1.0)               # plate reaches down past the 45 degree gusset
     y1 = pitch * (k - 1) + clip_y1
     r = strip_w / 2 + clr + 0.1; ax = r + 0.3 + arm_t              # jaw inner face runs parallel to the rail's 45 degree side, 0.25 mm off it
-    parts = [box(-ax, ax, clip_y0, y1, plate_z0, plate_z0 + plate_t)]
+    parts = [box(-ax, ax, cy0, y1, plate_z0, plate_z0 + plate_t)]
     zt = -strip_t + 0.4                                              # jaw tip height (stays clear of the wall)
     for sgn in (1, -1):
         x1 = r + plate_z0; x2 = r + zt
         poly = [(sgn * x1, plate_z0), (sgn * x2, zt), (sgn * (x2 + arm_t), zt), (sgn * ax, -0.3), (sgn * ax, plate_z0 + 0.1)]
-        parts.append(prism_y(poly, clip_y0, y1))
+        parts.append(prism_y(poly, cy0, y1))
     z_front = hz + bar_r
     xl, xr = tg_x, pin_x + bar_r
     for m in range(k):
@@ -122,7 +127,9 @@ def build_clip(k=1):
                   prism_x([(plate_z0 + plate_t - 0.1, o), (z_front, o), (plate_z0 + plate_t - 0.1, o - (z_front - plate_z0 - plate_t + 0.1))], xl, xr),  # 45 degree gusset
                   cyly(pin_x, hz, o + foot_h - 0.1, o + ly1 + 2.0, pin_d / 2, 32)]                                         # pin
         ty0 = o + foot_h - 0.1
-        parts += [box(tg_x, tg_x + tg_t, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), plate_z0 + plate_t - 0.1, hz + 1.0),   # tongue
+        tz0 = max(pe - 0.1, hz - 6.0)                                                                                          # tongue is a 7 mm fin; deeper racks get a rigid wall behind it
+        if hz - 6.0 > pe: parts.append(box(tg_x, tg_x + tg_t + 1.6, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), pe - 0.1, hz - 6.0 + 0.1))
+        parts += [box(tg_x, tg_x + tg_t, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), tz0, hz + 1.0),   # tongue
                   cyly(tg_x + tg_t, hz, o + ly0 + 1.0, o + ly1 - 1.0, bump_r, 32)]
         nub = trimesh.creation.icosphere(subdivisions=2, radius=nub_r); nub.apply_translation([0, o + 10.0, plate_z0 + nub_r - nub_h]); parts.append(nub)
     return union(parts)
@@ -142,9 +149,9 @@ def build_ledge(j=0):
         cuts.append(prism_y(q, ly0 - 1, ly1 + 1))
     return diff(union(body), cuts)
 
-def ledge_at(j, ang=0.0):
-    l = build_ledge(j); l.apply_transform(trimesh.transformations.rotation_matrix(np.radians(-ang), [0, 1, 0]))
-    l.apply_translation([pin_x, 0, hz]); return l
+def ledge_at(j, ang=0.0, stagger_in_clip=False):
+    l = build_ledge(0 if stagger_in_clip else j); l.apply_transform(trimesh.transformations.rotation_matrix(np.radians(-ang), [0, 1, 0]))
+    l.apply_translation([pin_x, 0, hz_j(j) if stagger_in_clip else hz]); return l
 
 # ---------------------------------------------------------------- printability
 def overhang_report(m, thresh_deg=43.0, bed_tol=0.05):
@@ -173,9 +180,17 @@ if __name__ == "__main__":
     out = {"wall_strip": to_print(strip_m, "strip")}
     for k, c in clips.items(): out[f"hinge_clip_x{k}"] = to_print(c, "clip")
     for j, l in enumerate(ledges): out[f"ledge_j{j}"] = to_print(l, "ledge")
+    for j in range(6): out[f"hinge_clip_j{j}"] = to_print(build_clip(1, j), "clip")
     for n, m in out.items():
         m.export(f"clip/{n}.stl"); oa, lv = overhang_report(m)
         print(f"{n:14s} watertight={m.is_watertight} size={np.round(m.extents, 1)} overhang>45deg={oa} mm2 z={lv}")
+    for N in (2, 3, 4, 5, 6):      # separate clip per rack, depth grows with the rack number
+        strips = 1 if N <= 4 else 2
+        asm = [place(strip_m, 0, 240.0 * i) for i in range(strips)]
+        for jj in range(N):
+            y = 20.0 + 60.0 * jj
+            asm += [place(build_clip(1, jj), 0, y), place(ledge_at(jj, 0, True), 0, y)]
+        trimesh.util.concatenate(asm).export(f"clip/separate_{N}_cars_demo.stl")
     for N in STACKS:
         strips = 1 if N <= 4 else 2
         trimesh.util.concatenate(stack_assembly(N, strips, clips)).export(f"clip/stack_{N}_cars_demo.stl")

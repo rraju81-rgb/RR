@@ -406,3 +406,12 @@ Print the clip standing with a brim (its footprint is small).
 ### Update: 5 mm screw holes
 The three screw holes in `wall_strip.stl` (at 20, 120 and 220 mm, mirrored about the middle) are now 5 mm through holes with a clean 10 mm, 45 degree countersink
 (the old countersink was built from a cone that came out with broken faces in some viewers). Printed holes usually come out 0.1-0.3 mm small; change `hole_d` / `csk_d` in `build_clip.py` to adjust.
+
+### Separate clip per rack, depth grows with the rack number (matches the circled hinges in the reference image)
+`clip/hinge_clip_j0.stl` ... `hinge_clip_j5.stl`: one single-hinge clip per card. Clip `j` stands the pin out `j x 5.4 mm` further from the strip, so the clip block gets deeper
+with every rack and the cards shingle. All clips use the same 24.9 mm width, the same slide-on dovetail fit, the same snap lock and the same plain ledge (`ledge_j0.stl` for every rack).
+The strip is unchanged (18 mm, 5 mm holes, press-fit stacking). Racks up to 75 degrees open are free of the clip.
+Deeper clips get a 45 degree gusset under the foot (the plate runs down past it) and a rigid wall behind the snap tongue so it stays a short 7 mm fin; they still print standing, no supports.
+Place clip j with its foot at y = 20 + 60 j mm (nub in a dimple). `clip/separate_<N>_cars_demo.stl` (N = 2..6) shows each set assembled. Checked in software for j0..j5:
+clip slides on the strip, closed ledge clears everything, swing 0-75 degrees is free apart from the snap detent, neighbouring open ledges do not touch.
+The earlier multi-station clips (`hinge_clip_x2/x3`) with the stepped ledges `ledge_j0..j5` are still there as an alternative.
