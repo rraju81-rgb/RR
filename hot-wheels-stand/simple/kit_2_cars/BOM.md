@@ -7,4 +7,4 @@
 Plates: plate_clips.stl, plate_ledges.stl (256 mm bed).
 Mount: screw the strip(s) to the wall (second strip: press it straight onto the first strip's dovetail from the front first). Slide each clip onto the strip from the BOTTOM end and push it up:
 it clicks one 6 mm step at a time and cannot slide back down; to lower it, pull the pull block toward you and slide it down. Foot of clip j at y = 20 + 60 j mm. Drop each ledge on its pin.
-The closed ledge clicks onto the bump on the clip's footing (lift it about 1 mm to open it). Stack height 108 mm.
+The closed ledge clicks onto the bump on the clip's footing (lift it about 1 mm to open it). Stack height 120 mm.

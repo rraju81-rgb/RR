@@ -16,28 +16,30 @@ import trimesh
 card_w, card_h, card_t, blister_h, blister_y0, blister_dx = 105, 165, 1.2, 42, 8, 12
 
 # ---- wall strip ----
-strip_w, strip_h, strip_t = 25.0, 240.0, 4.0           # front width, length, thickness; rear width = 17 (45 degree sides)
+strip_w, strip_h = 27.0, 240.0                          # front width and length (bigger rail so the clip sits snug: jaw gap 0.6 mm, plate gap 0.4 mm)
+sz, rear_z = 0.5, -4.0                                   # front face at z = +0.5, rear face (wall side) at z = -4.0 -> 4.5 mm thick, rear width 18 (45 degree sides)
 hole_d, csk_d, hole_ys = 5.0, 9.0, (20.0, 120.0, 220.0)  # 5 mm screw holes, 45 degree countersink, mirrored about the middle
 dt_root, dt_tip, dt_len, z_fit = 4.0, 7.5, 7.0, 0.12     # dovetail joint (half widths, length, clearance)
-tooth_p, tooth_d, tooth_x0, tooth_x1, tooth_y0 = 6.0, 1.5, 5.3, 10.9, 18.0   # ratchet lane: pitch, depth, x range, first wall (zip-tie steps, vertical wall on the low side)
+tooth_p, tooth_d, tooth_x0, tooth_x1, tooth_y0 = 6.0, 1.0, 5.3, 10.9, 18.0   # ratchet lane: pitch, depth, x range, first wall (zip-tie steps, vertical wall on the low side)
 
 # ---- clip ----
-clr = 1.0                                              # jaw clearance per side (roomy so it slides on)
+jaw_gap = 0.6                                          # horizontal gap between the clip jaws and the rail sides (0.42 mm square to the face)
 plate_z0, plate_t, arm_t = 0.9, 3.0, 2.4
-clip_y0, clip_y1 = -10.0, 28.0
+clip_y0, clip_y1 = -10.0, 40.0
 foot_h = 3.5
-pin_x, pin_d = -5.0, 6.0
-leaf_t, leaf_x0, leaf_x1, slit, leaf_len = 2.0, 5.0, 11.4, 1.6, 24.0           # pawl leaf: thickness, x range, slit width, length (root at the bottom, plate frame closes over the top)
-pawl_y, pawl_h, pawl_out, pawl_w = 16.0, 1.9, 1.6, 3.6                        # pawl tip: locking face height above the foot, height, reach into the teeth, width
+pin_x, pin_d = -5.0, 8.0                              # 8 mm pin
+collar_r, collar_h = 5.2, 1.2                          # 45 degree collar at the pin base (the ledge is countersunk to clear it)
+leaf_t, leaf_x0, leaf_x1, slit, leaf_len, leaf_y0 = 1.8, 5.0, 11.4, 0.8, 34.0, 6.0           # pawl leaf: thickness, x range, slit width, length (root at the bottom, plate frame closes over the top)
+pawl_y, pawl_h, pawl_out, pawl_w = 28.0, 1.9, 0.8, 3.6                        # pawl tip: locking face height above the foot, height, reach into the teeth, width
 tab_h, tab_out = 6.0, 4.0                                                      # pull block on the leaf: height, how far it stands out
 
 # ---- ledge ----
-ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
+ledge_h, gutter_d, slop = 12.0, 9.0, 0.3                   # gutter 9 mm deep (floor 3 mm): the card sits deeper
 rear_wall, front_wall = 4.0, 3.5
-rear_h, front_h = 16.0, 3.0                            # tall back wall / low front lip above the gutter bottom
+rear_h, front_h = 19.0, 4.0                            # tall back wall / low front lip above the gutter bottom
 corner_h, corner_len, corner_gap = 7.0, 9.0, 0.15      # front corner supports
 thumb_out, end_stop, wall_x0 = 8.0, 9.0, 17.0
-bar_r, hole_clr = 5.4, 0.4                              # barrel radius, radial clearance around the pin
+bar_r, hole_clr = 6.6, 0.4                              # barrel radius, radial clearance around the pin
 step = 6.0                                             # depth step between racks
 bump_x, bump_r = 7.0, 1.0                              # closed-position click: bump on top of the clip's footing ...
 dimple_r = 1.3                                         # ... and dimple in the ledge underside
@@ -93,24 +95,24 @@ def overhang_report(m, thresh_deg=43.0, bed_tol=0.05):
 
 # ------------------------------------------------------------------ wall strip
 def build_strip(grow=0.0):
-    r = strip_w / 2; rr = r - strip_t; g = grow
-    s = prism_y([(-r - g, g), (r + g, g), (rr + g, -strip_t), (-rr - g, -strip_t)], 0, strip_h)
+    r = strip_w / 2; rr = r - (sz - rear_z); g = grow
+    s = prism_y([(-r - g, sz + g), (r + g, sz + g), (rr + g, rear_z), (-rr - g, rear_z)], 0, strip_h)
     zpoly = [(-dt_root, 0.0), (dt_root, 0.0), (dt_tip, dt_len), (-dt_tip, dt_len)]
-    male = inter([prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], strip_h - 0.01, strip_h + dt_len),
-                  prism_z([(x, strip_h + y) for x, y in zpoly], -strip_t - 1, 1)])
-    s = union([s, male]); cuts = [prism_z(offset_convex(zpoly, z_fit), -strip_t - 1, 1)]          # female dovetail in the bottom end
+    male = inter([prism_y([(-r, sz), (r, sz), (rr, rear_z), (-rr, rear_z)], strip_h - 0.01, strip_h + dt_len),
+                  prism_z([(x, strip_h + y) for x, y in zpoly], rear_z - 1, sz + 1)])
+    s = union([s, male]); cuts = [prism_z(offset_convex(zpoly, z_fit), rear_z - 1, sz + 1)]        # female dovetail in the bottom end
     for y in hole_ys:                                                                             # screw holes + countersink
-        cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 48))
-        zc0 = -(csk_d - hole_d) / 2
-        cuts += [hull([(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, zc0), (csk_d / 2, 0.0)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]),
-                 cylz(0, y, 0, 1, csk_d / 2, 48)]
-    cuts.append(union([prism_x([(0.5, y), (-tooth_d, y), (0.0, y + tooth_p), (0.5, y + tooth_p)], tooth_x0, tooth_x1) for y in np.arange(tooth_y0, strip_h - 1e-6, tooth_p)]))   # ratchet lane
+        cuts.append(cylz(0, y, rear_z - 1, sz + 1, hole_d / 2, 48))
+        zc0 = sz - (csk_d - hole_d) / 2
+        cuts += [hull([(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, zc0), (csk_d / 2, sz)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]),
+                 cylz(0, y, sz, sz + 1, csk_d / 2, 48)]
+    cuts.append(union([prism_x([(sz + 0.5, y), (sz - tooth_d, y), (sz, y + tooth_p), (sz + 0.5, y + tooth_p)], tooth_x0, tooth_x1) for y in np.arange(tooth_y0, strip_h - 1e-6, tooth_p)]))   # ratchet lane
     return diff(s, cuts)
 
 # ------------------------------------------------------------------ clip
 def build_clip(j=0):
     h = hz_j(j); pe = plate_z0 + plate_t
-    r = strip_w / 2 + clr + 0.1; ax = r + 0.3 + arm_t; zt = -strip_t + 0.8
+    r = strip_w / 2 - sz + jaw_gap; ax = r + 0.3 + arm_t; zt = rear_z + 0.8
     parts = [box(-ax, ax, clip_y0, clip_y1, plate_z0, pe)]
     for sg in (1, -1):                                         # dovetail jaws
         x1, x2 = r + plate_z0, r + zt
@@ -118,12 +120,13 @@ def build_clip(j=0):
     parts += [box(pin_x - bar_r, pin_x + bar_r, clip_y0, foot_h, pe - 0.1, h), cyly(pin_x, h, clip_y0, foot_h, bar_r),     # solid footing block (prints on the bed)
               box(pin_x, pin_x + 8.6, clip_y0, foot_h, pe - 0.1, h + 2.5),                                                  # ... extended under the ledge's end stop
               cyly(pin_x, h, foot_h - 0.1, ly1 + 2.0, pin_d / 2, 48),                                                        # pin
+              hull([(pin_x + r_ * np.cos(a), y_, h + r_ * np.sin(a)) for r_, y_ in ((collar_r, foot_h - 0.1), (pin_d / 2, foot_h + collar_h)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]),   # collar: solid base for the pin
               sphere(pin_x + bump_x, foot_h - 0.2, h, bump_r)]                                                               # bump for the closed ledge
     lx0, lx1 = leaf_x0, leaf_x1; ltop = leaf_len; cx = (lx0 + lx1) / 2; zt0 = plate_z0 + leaf_t
     parts.append(prism_x([(plate_z0 + 0.05, pawl_y), (plate_z0 - pawl_out - 0.5, pawl_y), (plate_z0 + 0.05, pawl_y + pawl_h)], cx - pawl_w / 2, cx + pawl_w / 2))     # pawl tip: vertical face below, ramp above
     parts.append(prism_x([(zt0 - 0.05, ltop - tab_h), (zt0 + tab_out, ltop - tab_h + tab_out), (zt0 + tab_out, ltop), (zt0 - 0.05, ltop)], lx0, lx1))               # pull block, 45 degree underside
-    cuts = [box(lx0 - slit, lx0, 0, ltop + slit, plate_z0 - 1.0, pe + 0.1), box(lx1, lx1 + slit, 0, ltop + slit, plate_z0 - 1.0, pe + 0.1),                      # slits left / right
-            box(lx0 - slit, lx1 + slit, ltop, ltop + slit, plate_z0 - 1.0, pe + 0.1), box(lx0, lx1, 0, ltop, plate_z0 + leaf_t, pe + 0.1)]                       # slit above, front recess (leaf stays 2 mm)
+    cuts = [box(lx0 - slit, lx0, leaf_y0, ltop + slit, plate_z0 - 1.0, pe + 0.1), box(lx1, lx1 + slit, leaf_y0, ltop + slit, plate_z0 - 1.0, pe + 0.1),          # slits left / right (the leaf is 22 mm long: low strain at its root)
+            box(lx0 - slit, lx1 + slit, ltop, ltop + slit, plate_z0 - 1.0, pe + 0.1), box(lx0, lx1, leaf_y0, ltop, plate_z0 + leaf_t, pe + 0.1)]                       # slit above, front recess (leaf stays 2 mm)
     return diff(union(parts), cuts)
 
 # ------------------------------------------------------------------ ledge (pin axis at x = 0, z = 0)
@@ -134,14 +137,15 @@ def build_ledge():
             box(end_stop - 0.01, ledge_len, gb - 0.01, gb + front_h, gw / 2, fext),                  # low front lip
             box(end_stop - 0.01, end_stop + corner_len, gb - 0.01, gb + corner_h, z_snug, fext),     # front corner supports
             box(ledge_len - corner_len, ledge_len, gb - 0.01, gb + corner_h, z_snug, fext)]
-    return diff(union(body), [cyly(0, 0, ly0 - 1, ly1 + 1, pin_d / 2 + hole_clr, 56), sphere(bump_x, ly0 + 0.2, 0, dimple_r)])   # dimple for the clip's bump
+    cs = hull([(r_ * np.cos(a), y_, r_ * np.sin(a)) for r_, y_ in ((collar_r + 0.3, ly0 - 0.01), (pin_d / 2 + hole_clr, ly0 + collar_h + 0.3)) for a in np.linspace(0, 2 * np.pi, 56, endpoint=False)])
+    return diff(union(body), [cyly(0, 0, ly0 - 1, ly1 + 1, pin_d / 2 + hole_clr, 56), cs, sphere(bump_x, ly0 + 0.2, 0, dimple_r)])   # pin hole, clearance for the collar, dimple for the clip's bump
 
 def ledge_at(j, ang=0.0, lift=0.0):
     l = build_ledge(); l.apply_transform(trimesh.transformations.rotation_matrix(np.radians(-ang), [0, 1, 0]))
     l.apply_translation([pin_x, lift, hz_j(j)]); return l
 
 # ------------------------------------------------------------------ exports and kits
-FOOT0 = 20.0                                          # first clip foot; foot + 16 mm (pawl tip) must be a multiple of the 6 mm tooth pitch -> feet at 20 + 60 j
+FOOT0 = 20.0                                          # first clip foot; foot + 28 mm (pawl tip) must be a multiple of the 6 mm tooth pitch -> feet at 20 + 60 j
 
 def stack_scene(N, strip_m, clips, ledge_l=None, ang=None):
     n_strips = 1 if FOOT0 + 60 * (N - 1) + clip_y1 <= strip_h else 2
