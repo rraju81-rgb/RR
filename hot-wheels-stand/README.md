@@ -479,3 +479,11 @@ Change `z_h` (8), `z_x0`/`z_x1` (2/-6) or `z_fit` (0.12) in `build_clip.py` to s
 The strip ends now use a classic dovetail: a trapezoid tongue on the top end (4.0 mm half width at the root, 7.5 mm at the tip, 7 mm long, 27 degree flanks) and a matching socket (0.12 mm clearance) in the bottom end of the next strip, both through the whole strip thickness.
 Press the next strip on from the front (straight toward the wall); the undercut then locks it against moving along the rail and sideways (checked: any 0.3-4 mm slide up, down or to either side collides), and it only comes off by pulling forward.
 It prints flat, rear face down, no overhangs. Strip length is 247 mm on a 240 mm pitch. Tune `dt_root`, `dt_tip`, `dt_len`, `z_fit` in `build_clip.py`. Kits rebuilt.
+
+### Update: new ledge (tall back wall, low front lip, thicker walls, snap slit) - after the first print test
+Changes made from the printed photos:
+- **Card names visible:** the front wall used to be 6 mm above the gutter bottom and covered the printed car name. The front is now a low 3 mm lip. The back is a tall 16 mm wall that the card rests against (starts 8 mm in from the hinge end so it clears the clip's pull block).
+- **Thicker slot walls:** rear wall 4.0 mm (was 3.2), front lip 3.5 mm (was 3.2). Depth step between racks is now 6.0 mm (was 5.4) so the thicker rear wall still clears the card behind it; clips got 0.5 mm more pin stand-off for the thicker rear.
+- **Slit in the barrel:** a 1.2 mm slit through the barrel wall (front-left, 125 degrees) lets the barrel flex, so it clips onto the pin and turns freely even if the printed hole came out tight. The detent groove and relief are unchanged.
+- The ledge is now 22 mm tall when printed standing (110 x 9.3 mm footprint). Checked with cards and blisters on racks j0-j3: no collisions with any ledge, clip or other card; neighbouring ledges open to 60 degrees do not touch. All kits rebuilt.
+If the card still rides too low or high on the lip, change `front_h` (3) and `rear_h` (16) in `build_clip.py`.

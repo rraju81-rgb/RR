@@ -42,13 +42,16 @@ tab_h, tab_out = 6.0, 4.0                               # release tab: a thumb r
 
 # ---- ledge / hinge ----
 ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
-rear_wall = front_wall = 3.2
+rear_wall, front_wall = 4.0, 3.5                      # thicker slot walls (was 3.2)
+rear_h, front_h = 16.0, 3.0                          # tall back wall and a low front lip, measured above the gutter bottom (the card's printed name stays visible)
 thumb_out = 8.0
-step = 5.4                                           # depth step between neighbouring racks (built into ledge_j)
+step = 6.0                                           # depth step between neighbouring racks (thicker walls need more room)
 card_w, card_h, card_t, blister_h = 105, 165, 1.2, 42
 gw = card_t + 2 * slop
-half_d = rear_wall + gw / 2
+rext, fext = rear_wall + gw / 2, front_wall + gw / 2  # ledge extent behind / in front of the pin axis (card plane = pin axis plane)
+half_d = max(rext, fext)
 end_stop = 9.0
+wall_x0 = 17.0                                       # the tall rear wall starts here (ledge frame; clears the clip pull block on the lowest rack)
 ledge_len = end_stop + card_w - thumb_out
 pin_d, pin_clr = 4.0, 0.3
 bar_r = 4.4
@@ -61,10 +64,11 @@ ly1 = ly0 + ledge_h
 tg_t, tg_h = 1.0, 8.0
 tg_x = pin_x - 5.2 - tg_t                            # tongue left face
 bump_r, groove_r = 1.4, 1.6
-relief_r, relief_a0, relief_a1 = 3.5, 85.0, 160.0       # barrel relief (barrel-frame angles, deg from +x toward +z)                          # bump tip pokes 0.6 mm into the barrel's path
+relief_r, relief_a0, relief_a1 = 3.5, 85.0, 160.0
+barrel_slit, slit_a = 1.2, 125.0                      # slit through the barrel wall (width, direction in degrees from +x toward +z)       # barrel relief (barrel-frame angles, deg from +x toward +z)                          # bump tip pokes 0.6 mm into the barrel's path
 
-assert step >= rear_wall + slop + card_t + 0.4
-hz = plate_z0 + plate_t + 0.7 + bar_r                # pin axis stand-off from the strip front face
+assert step >= rext + 0.6 + 0.4              # rear wall of one ledge must clear the card behind it
+hz = plate_z0 + plate_t + 0.7 + bar_r + 0.5          # pin axis stand-off from the strip front face
 
 def box(x0, x1, y0, y1, z0, z1): return trimesh.creation.box(bounds=[[x0, y0, z0], [x1, y1, z1]])
 def cylz(x, y, z0, z1, r, n=48):
@@ -179,17 +183,22 @@ def build_clip(k=1, j=0):
 
 # ---------------------------------------------------------------- ledge for rack position j (pin axis at x=0,z=0 ; body stepped back by j*step)
 def build_ledge(j=0):
-    oz = j * step
+    """ledge: barrel + end stop, 6 mm floor, TALL rear wall (card rests on it) and a LOW front lip (card name stays visible), snap slit in the barrel"""
+    oz = j * step if False else 0.0
+    gb = ly1 - gutter_d                                           # gutter bottom
     body = [cyly(0, 0, ly0, ly1, bar_r),
-            box(0, end_stop, ly0, ly1, -half_d, oz + half_d),
-            box(0, ledge_len, ly0, ly1 - gutter_d, oz - half_d, oz + half_d),
-            box(0, ledge_len, ly0, ly1, oz - half_d, oz - gw / 2), box(0, ledge_len, ly0, ly1, oz + gw / 2, oz + half_d)]
+            box(0, end_stop, ly0, ly1, -rext, fext),
+            box(0, ledge_len, ly0, gb, -rext, fext),                         # floor
+            box(wall_x0, ledge_len, gb - 0.01, gb + rear_h, -rext, -gw / 2),             # tall rear wall (starts past the clip's pull block)
+            box(end_stop - 0.01, ledge_len, gb - 0.01, gb + front_h, gw / 2, fext)]    # low front lip
     cuts = [cyly(0, 0, ly0 - 1, ly1 + 1, pin_d / 2 + pin_clr, 48),
             cyly(-(bar_r + 0.8), 0, ly0 - 1, ly1 + 1, groove_r, 32)]
-    # relief: once the ledge is a little open the barrel is cut back so the tongue relaxes (no constant drag)
-    for a in np.arange(relief_a0, relief_a1, 5.0):
+    for a in np.arange(relief_a0, relief_a1, 5.0):                  # relief: tongue relaxes once the ledge is a little open
         q = [(r_ * np.cos(np.radians(b)), r_ * np.sin(np.radians(b))) for r_ in (relief_r, bar_r + 1.5) for b in (a, a + 5.0)]
         cuts.append(prism_y(q, ly0 - 1, ly1 + 1))
+    d = np.array([np.cos(np.radians(slit_a)), np.sin(np.radians(slit_a))]); nrm = np.array([-d[1], d[0]])      # snap slit: lets the barrel flex so it clips on and turns freely
+    q = [tuple(d * r_ + nrm * w_) for r_ in (1.5, bar_r + 1.5) for w_ in (-barrel_slit / 2, barrel_slit / 2)]
+    cuts.append(prism_y(q, ly0 - 1, ly1 + 1))
     return diff(union(body), cuts)
 
 def ledge_at(j, ang=0.0, stagger_in_clip=False):
