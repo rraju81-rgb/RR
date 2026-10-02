@@ -424,3 +424,8 @@ The earlier multi-station clips (`hinge_clip_x2/x3`) with the stepped ledges `le
   `wall_strip.stl`. A one-strip stack (2-4 cars) uses only the base strip.
 - **Stack tabs:** the press-fit tabs are now full strip thickness (two 2.6 mm wide tabs, pockets go all the way through), so they print on the bed with no bridge.
 Checked in software: all six clips slide on the strip from the top, stop on the stopper (1 mm lower is blocked), closed ledges clear everything and neighbouring ledges open to 60 degrees do not touch.
+
+### Print-ready kits for 2, 3 and 4 cars (`build_kits.py`, `clip/kit_<N>_cars/`)
+Each kit folder has the base strip with stopper, the N same-height hinge clips (`hinge_clip_j0..`), the ledge (`ledge_x<N>.stl`, print N), two print plates
+(`plate_clips.stl`, `plate_ledges.stl`, laid out for a 256 mm bed), `assembled_demo.stl`, `preview.png` and a `BOM.md`. The 4-car stack is 230 mm tall and fits one 240 mm strip.
+Checked: clips slide on and rest on the stopper, closed ledges clear everything, neighbouring ledges open to 60 degrees do not touch.
