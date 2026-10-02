@@ -19,7 +19,7 @@ card_w, card_h, card_t, blister_h = 105, 165, 1.2, 42
 
 # ---- wall strip (<= 1 inch wide) ----
 strip_w, strip_h, strip_t = 18.0, 240.0, 4.0      # front width, length, thickness (rear width = strip_w - 2*strip_t: 45 degree sides)
-hole_d, csk_d = 3.5, 7.0
+hole_d, csk_d = 5.0, 10.0                          # 5 mm screw hole, 45 degree countersink
 hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
 dimple_ys = [10.0 + 20 * k for k in range(12)]      # clip nub clicks into these (20 mm pitch)
 dimple_r, dimple_depth = 1.0, 0.6
@@ -94,10 +94,10 @@ def build_strip():
     for sg in (1, -1):    # pockets in the bottom end (open to the end face and to the front)
         cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -tab_t - 0.05, 1))
     for y in hole_ys:
-        cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 32))
-        cone = trimesh.creation.cone(radius=csk_d / 2, height=(csk_d - hole_d) / 2, sections=32)
-        cone.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])); cone.apply_translation([0, y, 0])
-        cuts += [cone, cylz(0, y, 0, 1, csk_d / 2, 32)]
+        cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 48))
+        zc0 = -(csk_d - hole_d) / 2                                   # countersink: clean frustum, 45 degrees
+        pts = [(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, zc0), (csk_d / 2, 0.0)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]
+        cuts += [hull(pts), cylz(0, y, 0, 1, csk_d / 2, 48)]
     for y in dimple_ys:
         d = trimesh.creation.icosphere(subdivisions=2, radius=dimple_r); d.apply_translation([0, y, dimple_r - dimple_depth]); cuts.append(d)
     return diff(s, cuts)

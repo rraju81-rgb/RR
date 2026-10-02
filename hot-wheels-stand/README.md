@@ -402,3 +402,7 @@ the clip is also inside 1 inch. Clearances were opened up: 0.55 mm each side on 
 The pin moved 2 mm toward the middle so the snap tongue stays inside the narrower clip; the snap lock itself is unchanged (closed ledge clicks into the barrel groove, free after about 25 degrees).
 The press-fit tabs on the strip are now two 3 mm wide tabs. If it is still too tight on your printer, raise `clr` in `build_clip.py` (0.45 -> 0.6) and reprint only the clip.
 Print the clip standing with a brim (its footprint is small).
+
+### Update: 5 mm screw holes
+The three screw holes in `wall_strip.stl` (at 20, 120 and 220 mm, mirrored about the middle) are now 5 mm through holes with a clean 10 mm, 45 degree countersink
+(the old countersink was built from a cone that came out with broken faces in some viewers). Printed holes usually come out 0.1-0.3 mm small; change `hole_d` / `csk_d` in `build_clip.py` to adjust.
