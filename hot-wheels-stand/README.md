@@ -459,3 +459,9 @@ Not printed yet; if the pawl is too stiff or too loose change `leaf_t` (1.4) or 
 The release tab no longer sticks out above the plate. The pawl leaf now ends inside the plate (free end at 22 mm above the foot) and the plate frame closes around it (side posts and a 3 mm bridge above a 1 mm slit),
 so nothing stands free. The thumb tab is a small 45 degree ridge on the leaf's front face, 1.1 mm proud of the plate, near its top: hook a finger or nail behind it and pull toward you to lift the pawl, then slide the clip down.
 The plate is 36 mm tall (same as before). Checked again: lock blocks sliding down, ramp rides up and drops at 5 mm, ledges clear; kits rebuilt.
+
+### Update: sturdier pawl and a pull block (the 1.4 mm leaf with 1 mm slits failed to print)
+- **Leaf:** now 2.0 mm thick and 6.4 mm wide with 1.6 mm slits (every wall is at least 4 perimeters), root at the bottom so it prints upward from the plate, free end closed in by the plate frame (plate is 28 mm above the foot, clip 38 mm tall).
+- **Pull block:** a solid 6.4 x 6 x 4 mm block with a 45 degree underside at the top of the leaf, standing 3 mm proud of the plate front. Grab it with two fingers and pull toward you to lift the pawl; the clip then slides down.
+- **Teeth:** bigger: 6 mm pitch, 1.5 mm deep, pawl tip 4.6 mm wide and 1.9 mm high. Foot of clip j stays at y = 20 + 60 j mm (60 is a multiple of 6, so the tip always lands on a wall).
+- If it is still too stiff, thin the leaf (`leaf_t` 2.0 -> 1.8); too soft, thicken it. Kits rebuilt. Checked: lock blocks sliding down, ramp rides up and drops at 6 mm, ledges clear.

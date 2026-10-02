@@ -6,7 +6,7 @@ Design rules (after the user's feedback that the hook version could not be print
     off forwards (45 degree jaws behind the rail head). No separate hooks, no slots.
   * hinge lock: no extra part. A flexible tongue on the clip has a bump that snaps into a groove in the ledge barrel when
     the ledge is closed; opening pushes the tongue aside.
-  * height lock (zip-tie style ratchet): the strip has 5 mm sawtooth steps, the clip has a spring pawl. The clip clicks upward one step at a time
+  * height lock (zip-tie style ratchet): the strip has 6 mm sawtooth steps, the clip has a spring pawl. The clip clicks upward one step at a time
     and cannot slide down; pull the release tab on the clip to let it slide down.
   * the ledge just drops onto the clip's pin (also removable). Rack depth step j is built into the ledge, so the clip is one part.
 Needs: pip install trimesh manifold3d numpy.  Units mm.
@@ -22,10 +22,10 @@ card_w, card_h, card_t, blister_h = 105, 165, 1.2, 42
 strip_w, strip_h, strip_t = 25.0, 240.0, 4.0      # front width, length, thickness (rear width = strip_w - 2*strip_t: 45 degree sides)
 hole_d, csk_d = 5.0, 10.0                          # 5 mm screw hole, 45 degree countersink
 hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
-# ratchet teeth (zip-tie style): sawtooth steps every 5 mm along the front face, vertical wall on the low side (locks against sliding down), 13 degree ramp on the high side
-tooth_p, tooth_d = 5.0, 1.2                           # pitch, depth
-tooth_x0, tooth_x1 = 6.0, 10.8                       # tooth lane
-tooth_y0, tooth_y1 = 15.0, 240.0                      # first wall at y = 15 (clear of the bottom pockets), last ramp ends at the strip end
+# ratchet teeth (zip-tie style): sawtooth steps every 6 mm along the front face, vertical wall on the low side (locks against sliding down), 14 degree ramp on the high side
+tooth_p, tooth_d = 6.0, 1.5                           # pitch, depth
+tooth_x0, tooth_x1 = 5.6, 10.8                       # tooth lane
+tooth_y0, tooth_y1 = 18.0, 240.0                      # first wall at y = 15 (clear of the bottom pockets), last ramp ends at the strip end
 # press-fit stacking: two flat tabs stick out of the top end and push into two pockets in the bottom end of the next strip
 tab_x, tab_w, tab_len, tab_t = 5.0, 5.0, 8.0, 4.0   # two press-fit tabs: centre +-x, width, length, thickness (full strip thickness, so they print flat on the bed)
 press = 0.10                                         # tab is this much wider than its pocket (total), pocket is 0.4 deeper
@@ -33,11 +33,11 @@ press = 0.10                                         # tab is this much wider th
 # ---- clip ----
 clr = 0.45                                          # clearance between clip and rail
 plate_z0, plate_t, arm_t = 0.5, 3.0, 2.4
-clip_y0, clip_y1 = -10.0, 26.0                      # clip plate length (gusset below the foot runs down to clip_y0)
-leaf_t, leaf_x0, leaf_x1, slit = 1.4, 6.2, 10.6, 1.0     # pawl leaf cut into the plate: thickness, x range, slit width (root at the bottom, free end on top)
-pawl_y, pawl_h, pawl_out, pawl_w = 15.0, 1.6, 1.0, 4.0  # pawl tip: lower (locking) face at y = 15 above the foot, height, how far it reaches into the teeth, width
-leaf_len = 22.0                                         # pawl leaf runs from the plate's lower part up to y = 22 above the foot; the plate frame closes around its top (no free-standing parts)
-tab_h, tab_out = 3.0, 2.7                               # release tab: a thumb ridge on the leaf's front face (height, how far it sticks out of the leaf), 45 degree underside
+clip_y0, clip_y1 = -10.0, 28.0                      # clip plate length (gusset below the foot runs down to clip_y0)
+leaf_t, leaf_x0, leaf_x1, slit = 2.0, 5.0, 11.4, 1.6     # pawl leaf cut into the plate: thickness, x range, slit width (root at the bottom, free end on top)
+pawl_y, pawl_h, pawl_out, pawl_w = 16.0, 1.9, 1.2, 4.6  # pawl tip: lower (locking) face at y = 15 above the foot, height, how far it reaches into the teeth, width
+leaf_len = 24.0                                         # pawl leaf runs from the plate's lower part up to y = 22 above the foot; the plate frame closes around its top (no free-standing parts)
+tab_h, tab_out = 6.0, 4.0                               # release tab: a thumb ridge on the leaf's front face (height, how far it sticks out of the leaf), 45 degree underside
 
 # ---- ledge / hinge ----
 ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
@@ -99,7 +99,7 @@ def to_print(m, kind):
 # ---------------------------------------------------------------- wall strip
 def build_strip():
     """25 mm dovetail rail (front 25 wide, rear 17 wide, 4 thick) with two press-fit tabs on the top end and two matching pockets in the bottom end,
-    three 5 mm countersunk screw holes (mirrored about the middle) and a ratchet lane (5 mm sawtooth steps) for the clip's spring pawl."""
+    three 5 mm countersunk screw holes (mirrored about the middle) and a ratchet lane (6 mm sawtooth steps) for the clip's spring pawl."""
     r = strip_w / 2; rr = r - strip_t
     s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)
     tabs = [box(sg * tab_x - tab_w / 2, sg * tab_x + tab_w / 2, strip_h - 0.01, strip_h + tab_len, -tab_t, 0) for sg in (1, -1)]
