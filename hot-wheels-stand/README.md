@@ -454,3 +454,8 @@ Checked: nub sits in a stop hole with no interference, flexes between holes, cli
 - Clips are now 36 mm tall (30 mm plate plus the release tab); same for every depth. Kits rebuilt. The old multi-station clips and stepped ledges were removed.
 Checked: pushing a seated clip down is blocked (tip hits the wall), pushing it up rides the ramp and drops into the next step at 5 mm, with the tip removed the clip slides down freely, ledges still clear.
 Not printed yet; if the pawl is too stiff or too loose change `leaf_t` (1.4) or `tooth_d` (1.2) in `build_clip.py`.
+
+### Update: release tab built into the clip body
+The release tab no longer sticks out above the plate. The pawl leaf now ends inside the plate (free end at 22 mm above the foot) and the plate frame closes around it (side posts and a 3 mm bridge above a 1 mm slit),
+so nothing stands free. The thumb tab is a small 45 degree ridge on the leaf's front face, 1.1 mm proud of the plate, near its top: hook a finger or nail behind it and pull toward you to lift the pawl, then slide the clip down.
+The plate is 36 mm tall (same as before). Checked again: lock blocks sliding down, ramp rides up and drops at 5 mm, ledges clear; kits rebuilt.

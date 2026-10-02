@@ -33,10 +33,11 @@ press = 0.10                                         # tab is this much wider th
 # ---- clip ----
 clr = 0.45                                          # clearance between clip and rail
 plate_z0, plate_t, arm_t = 0.5, 3.0, 2.4
-clip_y0, clip_y1 = -10.0, 20.0                      # clip plate length (gusset below the foot runs down to clip_y0)
+clip_y0, clip_y1 = -10.0, 26.0                      # clip plate length (gusset below the foot runs down to clip_y0)
 leaf_t, leaf_x0, leaf_x1, slit = 1.4, 6.2, 10.6, 1.0     # pawl leaf cut into the plate: thickness, x range, slit width (root at the bottom, free end on top)
 pawl_y, pawl_h, pawl_out, pawl_w = 15.0, 1.6, 1.0, 4.0  # pawl tip: lower (locking) face at y = 15 above the foot, height, how far it reaches into the teeth, width
-tab_up, tab_out = 6.0, 5.0                              # release tab: extends this far above the plate top and sticks out this far to the front
+leaf_len = 22.0                                         # pawl leaf runs from the plate's lower part up to y = 22 above the foot; the plate frame closes around its top (no free-standing parts)
+tab_h, tab_out = 3.0, 2.7                               # release tab: a thumb ridge on the leaf's front face (height, how far it sticks out of the leaf), 45 degree underside
 
 # ---- ledge / hinge ----
 ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
@@ -146,16 +147,15 @@ def build_clip(k=1, j=0):
         parts += [box(tg_x, tg_x + tg_t, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), tz0, hz + 1.0),   # tongue
                   cyly(tg_x + tg_t, hz, o + ly0 + 1.0, o + ly1 - 1.0, bump_r, 32)]
         lx0, lx1 = leaf_x0, leaf_x1
-        ltop = o + clip_y1 if m == k - 1 else o + 60.0 - 2.0         # leaf runs to the plate top (top station: on up into the release tab)
+        ltop = o + leaf_len
         yb = o + pawl_y
         parts.append(prism_x([(plate_z0 + 0.05, yb), (plate_z0 - pawl_out - 0.5, yb), (plate_z0 + 0.05, yb + pawl_h)], (lx0 + lx1) / 2 - pawl_w / 2, (lx0 + lx1) / 2 + pawl_w / 2))   # pawl tip: vertical face below, ramp above
-        if m == k - 1:
-            parts.append(box(lx0, lx1, ltop - 0.01, ltop + tab_up, plate_z0, plate_z0 + leaf_t))        # leaf continues above the plate
-            zt0 = plate_z0 + leaf_t
-            parts.append(prism_x([(zt0 - 0.05, ltop), (zt0 + tab_out, ltop + tab_out), (zt0 + tab_out, ltop + tab_up), (zt0 - 0.05, ltop + tab_up)], lx0, lx1))   # thumb tab, 45 degree underside
-        cuts += [box(lx0 - slit, lx0, o, ltop + 0.01, plate_z0 - 1.0, pe + 0.1),
-                 box(lx1, lx1 + slit, o, ltop + 0.01, plate_z0 - 1.0, pe + 0.1),
-                 box(lx0, lx1, o, min(ltop, o + clip_y1) + 0.01, plate_z0 + leaf_t, pe + 0.1)]
+        zt0 = plate_z0 + leaf_t
+        parts.append(prism_x([(zt0 - 0.05, ltop - tab_h), (zt0 + tab_out, ltop - tab_h + tab_out), (zt0 + tab_out, ltop), (zt0 - 0.05, ltop)], lx0, lx1))   # release tab: thumb ridge inside the plate, 45 degree underside
+        cuts += [box(lx0 - slit, lx0, o, ltop + slit, plate_z0 - 1.0, pe + 0.1),                       # slit left
+                 box(lx1, lx1 + slit, o, ltop + slit, plate_z0 - 1.0, pe + 0.1),                       # slit right
+                 box(lx0 - slit, lx1 + slit, ltop, ltop + slit, plate_z0 - 1.0, pe + 0.1),             # slit above the free end (the plate frame closes over it)
+                 box(lx0, lx1, o, ltop, plate_z0 + leaf_t, pe + 0.1)]                                   # front recess leaves the 1.4 mm leaf
     return diff(union(parts), cuts) if cuts else union(parts)
 
 # ---------------------------------------------------------------- ledge for rack position j (pin axis at x=0,z=0 ; body stepped back by j*step)
