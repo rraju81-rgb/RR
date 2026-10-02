@@ -23,6 +23,9 @@ hole_d, csk_d = 3.5, 7.0
 hole_ys = (20.0, 120.0, 220.0)                      # mirrored about the middle
 dimple_ys = [10.0 + 20 * k for k in range(12)]      # clip nub clicks into these (20 mm pitch)
 dimple_r, dimple_depth = 1.0, 0.6
+# press-fit stacking: two flat tabs stick out of the top end and push into two pockets in the bottom end of the next strip
+tab_x, tab_w, tab_len, tab_t = 6.0, 5.0, 8.0, 2.0   # tab centre (+-x), width, length, thickness (flush with the front face)
+press = 0.10                                         # tab is this much wider than its pocket (total), pocket is 0.4 deeper
 
 # ---- clip ----
 clr = 0.25                                          # clearance between clip and rail
@@ -85,7 +88,11 @@ def to_print(m, kind):
 def build_strip():
     r = strip_w / 2; rr = r - strip_t
     s = prism_y([(-r, 0), (r, 0), (rr, -strip_t), (-rr, -strip_t)], 0, strip_h)      # dovetail: wide at the front
+    tabs = [box(sg * tab_x - tab_w / 2, sg * tab_x + tab_w / 2, strip_h - 0.01, strip_h + tab_len, -tab_t, 0) for sg in (1, -1)]
+    s = union([s] + tabs)
     cuts = []
+    for sg in (1, -1):    # pockets in the bottom end (open to the end face and to the front)
+        cuts.append(box(sg * tab_x - (tab_w - press) / 2, sg * tab_x + (tab_w - press) / 2, -1, tab_len + 0.4, -tab_t - 0.05, 1))
     for y in hole_ys:
         cuts.append(cylz(0, y, -strip_t - 1, 1, hole_d / 2, 32))
         cone = trimesh.creation.cone(radius=csk_d / 2, height=(csk_d - hole_d) / 2, sections=32)
@@ -96,23 +103,28 @@ def build_strip():
     return diff(s, cuts)
 
 # ---------------------------------------------------------------- clip (origin: strip centre x=0, y=0 = bottom of the foot flange)
-def build_clip():
+def build_clip(k=1):
+    """clip with k hinge stations, 60 mm apart (one station per card). origin: strip centre x=0, y=0 = foot bottom of station 0"""
+    pitch = 60.0
+    y1 = pitch * (k - 1) + clip_y1
     r = strip_w / 2 + clr + 0.1; ax = r + 0.3 + arm_t              # jaw inner face runs parallel to the rail's 45 degree side, 0.25 mm off it
-    parts = [box(-ax, ax, clip_y0, clip_y1, plate_z0, plate_z0 + plate_t)]
+    parts = [box(-ax, ax, clip_y0, y1, plate_z0, plate_z0 + plate_t)]
     zt = -strip_t + 0.4                                              # jaw tip height (stays clear of the wall)
     for sgn in (1, -1):
-        x1 = r + plate_z0; x2 = r + zt                               # inner face points at z = plate_z0 and z = zt
+        x1 = r + plate_z0; x2 = r + zt
         poly = [(sgn * x1, plate_z0), (sgn * x2, zt), (sgn * (x2 + arm_t), zt), (sgn * ax, -0.3), (sgn * ax, plate_z0 + 0.1)]
-        parts.append(prism_y(poly, clip_y0, clip_y1))
+        parts.append(prism_y(poly, clip_y0, y1))
     z_front = hz + bar_r
     xl, xr = tg_x, pin_x + bar_r
-    parts += [box(xl, xr, 0, foot_h, plate_z0 + plate_t - 0.1, hz), cyly(pin_x, hz, 0, foot_h, bar_r),         # foot flange
-              prism_x([(plate_z0 + plate_t - 0.1, 0), (z_front, 0), (plate_z0 + plate_t - 0.1, -(z_front - plate_z0 - plate_t + 0.1))], xl, xr),  # 45 degree gusset
-              cyly(pin_x, hz, foot_h - 0.1, ly1 + 2.0, pin_d / 2, 32)]                                            # pin
-    ty0 = foot_h - 0.1
-    parts += [box(tg_x, tg_x + tg_t, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), plate_z0 + plate_t - 0.1, hz + 1.0),   # tongue
-              cyly(tg_x + tg_t, hz, ly0 + 1.0, ly1 - 1.0, bump_r, 32)]
-    nub = trimesh.creation.icosphere(subdivisions=2, radius=nub_r); nub.apply_translation([0, 10.0, plate_z0 + nub_r - nub_h]); parts.append(nub)
+    for m in range(k):
+        o = pitch * m
+        parts += [box(xl, xr, o, o + foot_h, plate_z0 + plate_t - 0.1, hz), cyly(pin_x, hz, o, o + foot_h, bar_r),          # foot flange
+                  prism_x([(plate_z0 + plate_t - 0.1, o), (z_front, o), (plate_z0 + plate_t - 0.1, o - (z_front - plate_z0 - plate_t + 0.1))], xl, xr),  # 45 degree gusset
+                  cyly(pin_x, hz, o + foot_h - 0.1, o + ly1 + 2.0, pin_d / 2, 32)]                                         # pin
+        ty0 = o + foot_h - 0.1
+        parts += [box(tg_x, tg_x + tg_t, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), plate_z0 + plate_t - 0.1, hz + 1.0),   # tongue
+                  cyly(tg_x + tg_t, hz, o + ly0 + 1.0, o + ly1 - 1.0, bump_r, 32)]
+        nub = trimesh.creation.icosphere(subdivisions=2, radius=nub_r); nub.apply_translation([0, o + 10.0, plate_z0 + nub_r - nub_h]); parts.append(nub)
     return union(parts)
 
 # ---------------------------------------------------------------- ledge for rack position j (pin axis at x=0,z=0 ; body stepped back by j*step)
@@ -142,17 +154,28 @@ def overhang_report(m, thresh_deg=43.0, bed_tol=0.05):
 
 def place(m, x, y): m = m.copy(); m.apply_translation([x, y, 0]); return m
 
+STACKS = {2: [2], 3: [3], 4: [2, 2], 5: [3, 2], 6: [3, 3]}      # cars -> clip pieces (hinge stations per piece)
+
+def stack_assembly(N, strips, clips, y0=20.0):
+    """N racks, 60 mm apart, first clip foot at y0 (a multiple of 20 so the nubs sit in dimples)"""
+    asm, y, j = [], y0, 0
+    for i in range(strips): asm.append(place(strip_m, 0, 240.0 * i))
+    for k in STACKS[N]:
+        asm.append(place(clips[k], 0, y))
+        for m in range(k): asm.append(place(ledge_at(j), 0, y + 60.0 * m)); j += 1
+        y += 60.0 * k
+    return asm
+
 if __name__ == "__main__":
     os.makedirs("clip", exist_ok=True)
-    strip, clip = build_strip(), build_clip()
+    strip_m = build_strip(); clips = {1: build_clip(1), 2: build_clip(2), 3: build_clip(3)}
     ledges = [build_ledge(j) for j in range(6)]
-    out = {"wall_strip": to_print(strip, "strip"), "hinge_clip": to_print(clip, "clip")}
+    out = {"wall_strip": to_print(strip_m, "strip")}
+    for k, c in clips.items(): out[f"hinge_clip_x{k}"] = to_print(c, "clip")
     for j, l in enumerate(ledges): out[f"ledge_j{j}"] = to_print(l, "ledge")
     for n, m in out.items():
         m.export(f"clip/{n}.stl"); oa, lv = overhang_report(m)
-        print(f"{n:12s} watertight={m.is_watertight} bodies={len(m.split(only_watertight=False))} size={np.round(m.extents, 1)} overhang>45deg={oa} mm2 z={lv}")
-    asm = [strip]
-    for i in range(4):
-        y = 30.0 + 60 * i - foot_h                       # clip foot bottoms at y = 27, 87, ...
-        asm += [place(clip, 0, y), place(ledge_at(i), 0, y)]
-    trimesh.util.concatenate(asm).export("clip/demo_assembly.stl")
+        print(f"{n:14s} watertight={m.is_watertight} size={np.round(m.extents, 1)} overhang>45deg={oa} mm2 z={lv}")
+    for N in STACKS:
+        strips = 1 if N <= 4 else 2
+        trimesh.util.concatenate(stack_assembly(N, strips, clips)).export(f"clip/stack_{N}_cars_demo.stl")

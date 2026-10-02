@@ -370,3 +370,26 @@ Checked in software: clip slides over the strip with no collisions and cannot be
 closed to 75 degrees; neighbouring open ledges at 60 mm pitch do not touch; overhang analysis in print orientation shows nothing steeper than 45 degrees
 except the countersinks/dimples (cones) and a few mm2 on the snap bump. Not printed yet. If the tongue is too stiff or too loose, change `tg_t` (tongue thickness) or `bump_r` in `build_clip.py`.
 The strip stays within 1 inch wide; the clip is 31 mm because it wraps around the strip.
+
+
+### Stack variants for 2, 3, 4, 5 and 6 cars, and stackable strips
+The hinge clip now comes with several hinge stations on one clip (one station per card, 60 mm apart, one nub per station),
+so one clip hangs a whole stack. Pieces are limited to 3 stations (150 mm tall) so they print standing on a 31 x 16 mm footprint (use a brim).
+
+| Cars | Wall strips | Clip pieces | Ledges |
+|---|---|---|---|
+| 2 | 1 | `hinge_clip_x2` | `ledge_j0`, `ledge_j1` |
+| 3 | 1 | `hinge_clip_x3` | `ledge_j0..j2` |
+| 4 | 1 | `hinge_clip_x2` x 2 | `ledge_j0..j3` |
+| 5 | 2 | `hinge_clip_x3` + `hinge_clip_x2` | `ledge_j0..j4` |
+| 6 | 2 | `hinge_clip_x3` x 2 | `ledge_j0..j5` |
+
+`hinge_clip_x1` is a single station. Put the first clip at a dimple (foot at y = 20 mm, 60 mm steps) and each following piece 60 mm per card above the last,
+so the pitch stays 60 mm across pieces. `clip/stack_<N>_cars_demo.stl` shows each assembled stack (viewing only).
+
+**Press-fit stacking:** each `wall_strip` now has two flat 5 x 8 x 2 mm tabs on its top end and two matching pockets in its bottom end (open to the front).
+Push the next strip down over the tabs (tab is 0.1 mm wider than the pocket) and screw it up. Strips stay on a 240 mm pitch, so the dimple pitch and rack pitch continue across the joint.
+The strip is 248 mm long including the tabs. The pocket roof is a 5 mm bridge when printed front face down.
+
+Checked in software for every stack: clips slide over the strips, closed ledges clear everything, neighbouring ledges open to 60 degrees do not touch.
+Not printed yet; if the tabs are too tight or loose change `press` in `build_clip.py`.
