@@ -1,5 +1,5 @@
 """Print-ready kits for 2, 3, 4, 5 and 6 car displays.  python3 build_kits.py -> clip/kit_<N>_cars/
-Each kit: wall_strip_base.stl (print once), N same-height hinge clips (hinge_clip_j0..), N ledges, two print plates
+Each kit: wall_strip.stl (one, or two for 5-6 cars), N same-height hinge clips (hinge_clip_j0..), N ledges, two print plates
 (clips standing in a row, ledges standing in a column), an assembled demo and a preview."""
 import os, shutil
 import numpy as np, trimesh, matplotlib
@@ -11,16 +11,16 @@ from build_clip import *
 src = open("render_clip.py").read()
 exec(src[src.index("def raster("):src.index("def panel(")])
 
-base = build_strip(True)
-top_strip = build_strip(False)
+base = build_strip()
 for N in (2, 3, 4, 5, 6):
     d = f"clip/kit_{N}_cars"; os.makedirs(d, exist_ok=True)
     clips = [build_clip(1, j) for j in range(N)]
     ledge = build_ledge(0)
     two = N > 4                                  # 5 and 6 cars need a second strip, joined by the dovetail tongue
-    strips = [base] + ([place(top_strip, 0, 240)] if two else [])
-    to_print(base, "strip_up").export(f"{d}/wall_strip_base.stl")
-    if two: to_print(top_strip, "strip").export(f"{d}/wall_strip_top.stl")
+    strips = [base] + ([place(base, 0, 240)] if two else [])
+    for f in os.listdir(d):
+        if f.startswith("wall_strip"): os.remove(f"{d}/{f}")
+    to_print(base, "strip").export(f"{d}/wall_strip.stl")
     for j, c in enumerate(clips): to_print(c, "clip").export(f"{d}/hinge_clip_j{j}.stl")
     to_print(ledge, "ledge").export(f"{d}/ledge_x{N}.stl")
     # plate 1: clips standing in a row
@@ -64,11 +64,10 @@ for N in (2, 3, 4, 5, 6):
     open(f"{d}/BOM.md", "w").write(f"""# {N}-car display kit
 | Part | File | Qty | Print |
 |---|---|---|---|
-| Wall strip with stopper (bottom strip) | wall_strip_base.stl | 1 | rear face down, 3 x 5 mm screw holes |
-{('| Upper wall strip (dovetail pocket, joins the base strip) | wall_strip_top.stl | 1 | front face down |' + chr(10)) if two else ''}
+| Wall strip (25 mm dovetail rail, 5 mm screw holes, stop holes every 20 mm) | wall_strip.stl | {2 if two else 1} | front face down |
 | Hinge clip, depth j = 0..{N-1} | hinge_clip_j0..j{N-1}.stl | 1 each | standing, brim, all 30 mm tall |
 | Ledge | ledge_x{N}.stl | {N} | standing |
 Plates: plate_clips.stl (all clips) and plate_ledges.stl ({N} ledges) are laid out for a 256 mm bed.
-Mount: screw the strip to the wall, slide clip j onto the strip from the top, rest the lowest on the stopper, space the others 60 mm apart (nub in a dimple),
-drop each ledge on the pin. Clip j0 is the lowest rack. The total height of the stack is {top:.0f} mm ({'two strips: push the upper strip onto the base strip tongue from the front, dovetail locks it' if two else 'fits one 240 mm strip'}).
+Mount: screw the strip to the wall, slide clip j onto the strip from the top, put the lowest clip with its foot 20 mm above the strip bottom and the others 60 mm apart, so the spring nub of each clip snaps into a stop hole,
+drop each ledge on the pin. Clip j0 is the lowest rack. The total height of the stack is {top:.0f} mm ({'two identical strips: push the second strip down over the two tabs of the first strip' if two else 'fits one 240 mm strip'}).
 """)

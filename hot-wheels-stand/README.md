@@ -435,3 +435,12 @@ The two thin press-fit tabs on the strip ends were replaced by one full-thicknes
 Push the upper strip onto the tongue from the front (the pocket goes right through, 0.1 mm press fit); the undercut stops the strips from sliding apart, and the tongue prints flat on the bed.
 `build_kits.py` now also writes `clip/kit_5_cars/` and `clip/kit_6_cars/` (350 mm stack: base strip with stopper + `wall_strip_top.stl`, 6 clips j0..j5, 6 ledges, print plates, demo, BOM).
 Checked: tongue/pocket press fit, strips cannot be pulled apart along the rail, all clips slide on and rest correctly across the joint, closed ledges clear, open ledges do not touch.
+
+### Update: wall strip back to the 25 mm design (`wall_strip2.stl`), pockets on every strip, spring stops
+- **Strip:** one `wall_strip.stl` for every position: 25 mm dovetail rail (front 25, rear 17, 4 thick), 5 mm countersunk screw holes at 20/120/220 mm, two 5 x 8 x 2 mm press-fit tabs on the top end and two matching
+  pockets in the bottom end (so the lowest strip has pockets too, and any strip can be stacked on any other). The dovetail tongue, the separate base strip and the end block are gone.
+- **Stoppers so the rack cannot slide:** the strip has 3 mm stop holes every 20 mm (at x = 6 mm, starting at y = 30 mm). Each clip has a spring leaf cut into its plate (1.4 mm thick, three slits) with a nub on the back.
+  The nub snaps into a stop hole, which fixes the clip at that height; pushing or pulling the clip firmly flexes the leaf (about 0.4 mm) and moves it to the next hole. Put clip j with its foot at y = 20 + 60 j mm.
+- **Clip width:** the clip wraps the 25 mm rail, so it is 31.5 mm wide again (same height 30 mm for every depth).
+- 5 and 6 car kits use two identical strips (second strip pushed down over the first strip's tabs). All kits regenerated (`build_kits.py`).
+Checked: nub sits in a stop hole with no interference, flexes between holes, clip cannot be pulled forward more than 0.5 mm, ledges clear, tabs press into the pockets of the next strip. Not printed yet.
