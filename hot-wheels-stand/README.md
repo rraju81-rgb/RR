@@ -506,23 +506,19 @@ The clip did not slide on the printed strip (printed edges are usually 0.1-0.3 m
 - Checked in software against a strip that is 0.2 mm fatter per side than the model (typical over-extrusion): the clip slides with up to 0.8 mm sideways play and no interference; at 0.4 mm fatter it only touches when pushed hard to one side. Forward play is still limited to about 1 mm. Pawl lock, ledge, card and kit checks unchanged. Kits rebuilt.
 If it is still tight, raise `clr` in `build_clip.py` (1.0 -> 1.3) and reprint only the clips.
 
-## SIMPLE system (`build_simple.py`, `simple/`) - current, supersedes everything above for printing
-The hinge clip with the pawl leaf, slits, pull block, tongue fin and fillet was not printable, and the ledge barrel (slit, groove, relief) was too fiddly.
-Everything was redone with nothing thin and nothing that has to flex. The older generators are in `legacy/` for reference only (their STL folder `clip/` was removed).
+## FINAL system (`build_simple.py`, `simple/`) - zip-tie ratchet restored
+Back to the zip-tie lock and the old wall strip (ratchet lane), with the simplified ledge. The peg version was dropped. Older generators are in `legacy/` (their STL folder was removed).
 
 | Part | What it is |
 |---|---|
-| `wall_strip.stl` | 25 mm dovetail rail, 5 mm countersunk screw holes (20/120/220 mm), dovetail joint on both ends, 4.6 mm peg holes every 20 mm. Print rear face down, no supports |
-| `hinge_clip_j0..j5.stl` | plain 3 mm plate with two dovetail jaws (1 mm clearance per side), solid footing block, 6 mm pin, a lock hole through the plate and a small bump on the footing. 38 mm tall, 32.6 mm wide, same for every depth. Print standing, no supports (0.1 mm2 of overhang) |
-| `lock_peg.stl` | 4 mm peg with a 7 mm head. Push it through the clip's hole into the strip's peg hole: the clip cannot slide. Pull it out to move the clip (20 mm steps). Print head down |
-| `ledge.stl` | plain barrel with a 6.8 mm hole (0.4 mm clearance, turns freely, no slit), floor, tall 16 mm back wall, low 3 mm front lip, two 7 mm front corner supports, and a small dimple on the underside. Print standing |
+| `wall_strip.stl` | the old 25 mm strip: dovetail rail, 5 mm countersunk screw holes (20/120/220 mm), dovetail joint on both ends (press the next strip on from the front), zip-tie ratchet lane of 6 mm sawtooth steps on the front face. Print rear face down, no supports |
+| `hinge_clip_j0..j5.stl` | zip-tie clip: plate with two dovetail jaws (1 mm clearance per side), 2 mm pawl leaf (1.6 mm slits, closed in by the plate frame) with a solid pull block, solid footing block, 6 mm pin, a bump on the footing for the ledge. 38 mm tall, 32.6 mm wide; only the depth changes with j. Print standing with a brim |
+| `ledge.stl` | simplified: plain barrel with a 6.8 mm hole (0.4 mm clearance, no slit/groove/relief), floor, tall 16 mm back wall, low 3 mm front lip, two 7 mm front corner supports, a dimple underneath. Print standing |
 
-**Locking:** the clip is locked in place by the peg (sheared peg = very strong, nothing flexes). The ledge door clicks into the closed position because the bump on the clip's footing sits in the dimple under the ledge;
-lift the ledge about 1 mm (it just sits on the pin) and swing it open up to 75 degrees.
-**Mounting:** screw the strip to the wall; slide each clip onto the strip from the top with its foot at y = 30 + 60 j mm (its lock hole then lines up with a strip hole), push a peg through, drop the ledge on the pin.
-Stacks over 240 mm use a second identical strip that presses on the first strip's dovetail from the front (it locks both along and across the rail).
-`simple/kit_<N>_cars/` (N = 2..6): strip(s), clips, ledge, pegs, three print plates, an assembled demo, a preview and a BOM.
+**Use:** screw the strip(s) to the wall. Slide each clip onto the strip from the bottom end and push it up: it clicks one 6 mm step at a time and cannot slide back down. To lower it, pull the pull block toward you and slide it down.
+Clip j's foot goes at y = 20 + 60 j mm (the pawl tip then sits on a tooth wall). Drop the ledge on the pin; the closed ledge clicks onto the bump (lift it about 1 mm to open it, free to 75 degrees).
+`simple/kit_<N>_cars/` (N = 2..6): strip(s), clips, ledge, two print plates, assembled demo, preview, BOM. Stacks over 240 mm use a second identical strip.
 
-Checked in software (all pass): the clip slides on a strip that is 0.2 mm too fat per side with 0.8 mm of sideways play; the peg fits through the clip and strip and blocks 1 mm of sliding both ways; peg holes keep 0.7 mm of wall from the screw holes;
-the ledge fits on the pin, the card slides in from the right, 4 racks with cards and blisters have no collisions, ledges open 60 degrees do not touch, the strip joint locks. Overhang check in print orientation: strip 0, clip 0.1 mm2, peg 0, ledge 2.8 mm2.
-Not printed yet. If the clip is still tight raise `clr` (1.0) in `build_simple.py`; if the ledge is too loose lower `hole_clr` (0.4).
+Checked in software (all pass): clip slides onto a strip 0.2 mm too fat per side with 0.8 mm sideways play; pushing a seated clip down is blocked, pushing it up rides the ramp and drops into the next step at 6 mm, with the pawl tip lifted out it slides down; the pawl still catches with 1 mm sideways play;
+ledge fits the pin, card slides in, 4 racks with cards and blisters have no collisions, ledges open 60 degrees do not touch, all 6 clips seat on 2 strips, the strip joint locks. Overhang in print orientation: strip 0, ledge 2.8 mm2, clip 36 mm2 (the pawl tip underside and the small bridge over the top slit).
+Not printed yet. If the pawl is too stiff thin the leaf (`leaf_t` 2.0 -> 1.8); too soft thicken it. If the clip is tight raise `clr` (1.0).

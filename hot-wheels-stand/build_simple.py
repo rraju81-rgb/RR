@@ -1,12 +1,11 @@
 """SIMPLE print-ready rack system (replaces the compliant-mechanism version).
 Usage: python3 build_simple.py   -> simple/*.stl, simple/kit_<N>_cars/ for N = 2..6   (every STL is in PRINT orientation, +z up)
 
-Parts (nothing thin, nothing that has to flex):
-  wall_strip   25 mm dovetail rail, 5 mm screw holes, dovetail joint on both ends, 4.5 mm peg holes every 20 mm
-  hinge_clip   plate with two dovetail jaws + solid footing block + 6 mm pin. One 4.6 mm hole through the plate.
-  lock_peg     4 mm peg: pushed through the clip's hole into a peg hole of the strip = clip cannot slide. Pull it out to move the clip.
+Parts:
+  wall_strip   25 mm dovetail rail, 5 mm screw holes, dovetail joint on both ends, zip-tie style ratchet lane (6 mm sawtooth steps)
+  hinge_clip   plate with two dovetail jaws + solid footing block + 6 mm pin + zip-tie pawl (2 mm leaf with a pull block). Clicks up one step at a time, pull the block to slide it down.
   ledge        barrel with a plain 6.8 mm hole (turns freely), floor, tall back wall, low front lip, 2 front corner supports,
-               a small bump on its underside that clicks into a dimple in the clip's footing when the ledge is closed
+               a small dimple on its underside that clicks onto a bump on the clip's footing when the ledge is closed
 Needs: pip install trimesh manifold3d numpy matplotlib.  Units mm.
 Assembly frame: x right, y up, z out of the wall; strip front face z = 0, strip centre x = 0; clip foot bottom y = 0."""
 import os
@@ -20,7 +19,7 @@ card_w, card_h, card_t, blister_h, blister_y0, blister_dx = 105, 165, 1.2, 42, 8
 strip_w, strip_h, strip_t = 25.0, 240.0, 4.0           # front width, length, thickness; rear width = 17 (45 degree sides)
 hole_d, csk_d, hole_ys = 5.0, 9.0, (20.0, 120.0, 220.0)  # 5 mm screw holes, 45 degree countersink, mirrored about the middle
 dt_root, dt_tip, dt_len, z_fit = 4.0, 7.5, 7.0, 0.12     # dovetail joint (half widths, length, clearance)
-peg_hole_r, peg_hole_depth = 2.3, 3.0                   # peg holes in the strip: every 20 mm at x = 0, y = 12 + 20 k
+tooth_p, tooth_d, tooth_x0, tooth_x1, tooth_y0 = 6.0, 1.5, 5.3, 10.9, 18.0   # ratchet lane: pitch, depth, x range, first wall (zip-tie steps, vertical wall on the low side)
 
 # ---- clip ----
 clr = 1.0                                              # jaw clearance per side (roomy so it slides on)
@@ -28,8 +27,9 @@ plate_z0, plate_t, arm_t = 0.9, 3.0, 2.4
 clip_y0, clip_y1 = -10.0, 28.0
 foot_h = 3.5
 pin_x, pin_d = -5.0, 6.0
-peg_y = 22.0                                           # lock hole height above the foot bottom (above the ledge, clear of the card)
-peg_r, peg_head_r, peg_head_h = 2.0, 3.5, 3.0
+leaf_t, leaf_x0, leaf_x1, slit, leaf_len = 2.0, 5.0, 11.4, 1.6, 24.0           # pawl leaf: thickness, x range, slit width, length (root at the bottom, plate frame closes over the top)
+pawl_y, pawl_h, pawl_out, pawl_w = 16.0, 1.9, 1.6, 3.6                        # pawl tip: locking face height above the foot, height, reach into the teeth, width
+tab_h, tab_out = 6.0, 4.0                                                      # pull block on the leaf: height, how far it stands out
 
 # ---- ledge ----
 ledge_h, gutter_d, slop = 12.0, 6.0, 0.3
@@ -104,8 +104,7 @@ def build_strip(grow=0.0):
         zc0 = -(csk_d - hole_d) / 2
         cuts += [hull([(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, zc0), (csk_d / 2, 0.0)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]),
                  cylz(0, y, 0, 1, csk_d / 2, 48)]
-    for y in np.arange(12.0, strip_h - 5, 20.0):                                                  # peg holes
-        cuts.append(cylz(0, y, -peg_hole_depth, 1, peg_hole_r, 40))
+    cuts.append(union([prism_x([(0.5, y), (-tooth_d, y), (0.0, y + tooth_p), (0.5, y + tooth_p)], tooth_x0, tooth_x1) for y in np.arange(tooth_y0, strip_h - 1e-6, tooth_p)]))   # ratchet lane
     return diff(s, cuts)
 
 # ------------------------------------------------------------------ clip
@@ -120,8 +119,11 @@ def build_clip(j=0):
               box(pin_x, pin_x + 8.6, clip_y0, foot_h, pe - 0.1, h + 2.5),                                                  # ... extended under the ledge's end stop
               cyly(pin_x, h, foot_h - 0.1, ly1 + 2.0, pin_d / 2, 48),                                                        # pin
               sphere(pin_x + bump_x, foot_h - 0.2, h, bump_r)]                                                               # bump for the closed ledge
-    c = -peg_r - 0.3                                            # lock hole: round with a 45 degree roof (prints without support)
-    cuts = [cylz(0, peg_y, plate_z0 - 0.1, pe + 0.1, peg_r + 0.3, 40), prism_z([(-1.64, peg_y + 1.64), (1.64, peg_y + 1.64), (0, peg_y + 3.25)], plate_z0 - 0.1, pe + 0.1)]
+    lx0, lx1 = leaf_x0, leaf_x1; ltop = leaf_len; cx = (lx0 + lx1) / 2; zt0 = plate_z0 + leaf_t
+    parts.append(prism_x([(plate_z0 + 0.05, pawl_y), (plate_z0 - pawl_out - 0.5, pawl_y), (plate_z0 + 0.05, pawl_y + pawl_h)], cx - pawl_w / 2, cx + pawl_w / 2))     # pawl tip: vertical face below, ramp above
+    parts.append(prism_x([(zt0 - 0.05, ltop - tab_h), (zt0 + tab_out, ltop - tab_h + tab_out), (zt0 + tab_out, ltop), (zt0 - 0.05, ltop)], lx0, lx1))               # pull block, 45 degree underside
+    cuts = [box(lx0 - slit, lx0, 0, ltop + slit, plate_z0 - 1.0, pe + 0.1), box(lx1, lx1 + slit, 0, ltop + slit, plate_z0 - 1.0, pe + 0.1),                      # slits left / right
+            box(lx0 - slit, lx1 + slit, ltop, ltop + slit, plate_z0 - 1.0, pe + 0.1), box(lx0, lx1, 0, ltop, plate_z0 + leaf_t, pe + 0.1)]                       # slit above, front recess (leaf stays 2 mm)
     return diff(union(parts), cuts)
 
 # ------------------------------------------------------------------ ledge (pin axis at x = 0, z = 0)
@@ -138,30 +140,21 @@ def ledge_at(j, ang=0.0, lift=0.0):
     l = build_ledge(); l.apply_transform(trimesh.transformations.rotation_matrix(np.radians(-ang), [0, 1, 0]))
     l.apply_translation([pin_x, lift, hz_j(j)]); return l
 
-# ------------------------------------------------------------------ lock peg (axis z, head at the bottom)
-def build_peg():
-    shaft = plate_t + plate_z0 + peg_hole_depth - 0.4
-    return union([cylz(0, 0, 0, peg_head_h, peg_head_r, 48), cylz(0, 0, peg_head_h - 0.01, peg_head_h + shaft, peg_r, 40)])
-
-def peg_at(foot_y):                                   # assembled: head on the plate front, shaft through clip into the strip
-    p = build_peg(); p.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0]))     # shaft toward -z
-    p.apply_translation([0, foot_y + peg_y, plate_z0 + plate_t + peg_head_h]); return p
-
 # ------------------------------------------------------------------ exports and kits
-FOOT0 = 30.0                                          # first clip foot (peg hole y = 52 = 12 + 20*2)
+FOOT0 = 20.0                                          # first clip foot; foot + 16 mm (pawl tip) must be a multiple of the 6 mm tooth pitch -> feet at 20 + 60 j
 
 def stack_scene(N, strip_m, clips, ledge_l=None, ang=None):
     n_strips = 1 if FOOT0 + 60 * (N - 1) + clip_y1 <= strip_h else 2
     asm = [place(strip_m, 0, 240.0 * i) for i in range(n_strips)]
     for j in range(N):
         y = FOOT0 + 60.0 * j
-        asm += [place(clips[j], 0, y), place(ledge_at(j, 0 if ang is None else ang[j]), 0, y), peg_at(y)]
+        asm += [place(clips[j], 0, y), place(ledge_at(j, 0 if ang is None else ang[j], 1.0 if ang and ang[j] else 0.0), 0, y)]
     return asm, n_strips
 
 if __name__ == "__main__":
     os.makedirs("simple", exist_ok=True)
-    strip = build_strip(); ledge = build_ledge(); peg = build_peg(); clips = [build_clip(j) for j in range(6)]
-    out = {"wall_strip": to_print(strip, "strip"), "ledge": to_print(ledge, "ledge"), "lock_peg": to_print(peg, "peg")}
+    strip = build_strip(); ledge = build_ledge(); clips = [build_clip(j) for j in range(6)]
+    out = {"wall_strip": to_print(strip, "strip"), "ledge": to_print(ledge, "ledge")}
     for j, c in enumerate(clips): out[f"hinge_clip_j{j}"] = to_print(c, "clip")
     for n, m in out.items():
         m.export(f"simple/{n}.stl")
@@ -176,7 +169,7 @@ if __name__ == "__main__":
         trimesh.util.concatenate(asm).export(f"{d}/assembled_demo.stl")
         to_print(strip, "strip").export(f"{d}/wall_strip.stl")
         for j in range(N): to_print(clips[j], "clip").export(f"{d}/hinge_clip_j{j}.stl")
-        to_print(ledge, "ledge").export(f"{d}/ledge.stl"); to_print(peg, "peg").export(f"{d}/lock_peg.stl")
+        to_print(ledge, "ledge").export(f"{d}/ledge.stl")
         # print plates (256 mm bed): clips in a row, ledges and pegs
         row, x = [], 0.0
         for j in range(N):
@@ -186,26 +179,21 @@ if __name__ == "__main__":
         for _ in range(N):
             p = to_print(ledge, "ledge"); p.apply_translation([0, y, 0]); col.append(p); y += p.extents[1] + 6
         trimesh.util.concatenate(col).export(f"{d}/plate_ledges.stl")
-        pr, x = [], 0.0
-        for _ in range(N):
-            p = to_print(peg, "peg"); p.apply_translation([x, 0, 0]); pr.append(p); x += 2 * peg_head_r + 4
-        trimesh.util.concatenate(pr).export(f"{d}/plate_pegs.stl")
         top = FOOT0 + 60.0 * (N - 1) + clip_y1
         fig, axs = plt.subplots(1, 2, figsize=(11, 6.5), dpi=100)
-        axs[0].imshow(raster(asm, [grey] * ns + sum([[dk, orange, (0.9, 0.2, 0.2)] for _ in range(N)], []), 12, 28, (420, 640), [[-50, 0, -5], [130, 240 * ns, 60]])); axs[0].set_title(f"{N} cars"); axs[0].axis("off")
+        axs[0].imshow(raster(asm, [grey] * ns + sum([[dk, orange] for _ in range(N)], []), 12, 28, (420, 640), [[-50, 0, -5], [130, 240 * ns, 60]])); axs[0].set_title(f"{N} cars"); axs[0].axis("off")
         asm2, _ = stack_scene(N, strip, clips, ang=[0, 40, 75, 20, 60, 30][:N])
-        axs[1].imshow(raster(asm2, [grey] * ns + sum([[dk, orange, (0.9, 0.2, 0.2)] for _ in range(N)], []), 50, 30, (420, 640), [[-50, 0, -5], [130, 240 * ns, 110]])); axs[1].set_title("ledges open"); axs[1].axis("off")
+        axs[1].imshow(raster(asm2, [grey] * ns + sum([[dk, orange] for _ in range(N)], []), 50, 30, (420, 640), [[-50, 0, -5], [130, 240 * ns, 110]])); axs[1].set_title("ledges open"); axs[1].axis("off")
         fig.savefig(f"{d}/preview.png", bbox_inches="tight"); plt.close(fig)
         open(f"{d}/BOM.md", "w").write(f"""# {N}-car display kit
 | Part | File | Qty | Print |
 |---|---|---|---|
-| Wall strip | wall_strip.stl | {ns} | rear face down, no supports |
-| Hinge clip, depth j = 0..{N-1} | hinge_clip_j0..j{N-1}.stl | 1 each | standing, brim, no supports |
-| Lock peg | lock_peg.stl | {N} | head down |
+| Wall strip (ratchet lane, dovetail joints) | wall_strip.stl | {ns} | rear face down, no supports |
+| Hinge clip with zip-tie pawl, depth j = 0..{N-1} | hinge_clip_j0..j{N-1}.stl | 1 each | standing, brim, no supports |
 | Ledge | ledge.stl | {N} | standing |
-Plates: plate_clips.stl, plate_ledges.stl, plate_pegs.stl (256 mm bed).
-Mount: screw the strip(s) to the wall (second strip: press it straight onto the first strip's dovetail from the front first). Slide each clip onto the strip from the top; clip j with its foot
-at y = {FOOT0:.0f} + 60 j mm (its lock hole then lines up with a peg hole in the strip). Push a peg through the clip's hole into the strip hole. Drop each ledge on its pin. The closed ledge clicks into a dimple (lift the ledge about 1 mm to open it).
-Stack height {top:.0f} mm.
+Plates: plate_clips.stl, plate_ledges.stl (256 mm bed).
+Mount: screw the strip(s) to the wall (second strip: press it straight onto the first strip's dovetail from the front first). Slide each clip onto the strip from the BOTTOM end and push it up:
+it clicks one 6 mm step at a time and cannot slide back down; to lower it, pull the pull block toward you and slide it down. Foot of clip j at y = {FOOT0:.0f} + 60 j mm. Drop each ledge on its pin.
+The closed ledge clicks onto the bump on the clip's footing (lift it about 1 mm to open it). Stack height {top:.0f} mm.
 """)
         print(f"kit {N}: strips {ns}, top {top:.0f} mm")
