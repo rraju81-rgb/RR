@@ -492,3 +492,9 @@ If the card still rides too low or high on the lip, change `front_h` (3) and `re
 Both ends of the low front lip now have a 9 mm long, 7 mm tall support (only at the corners, so the middle of the lip stays 3 mm low and the car name stays visible). The supports narrow the slot to 1.35 mm
 (card 1.2 mm + 0.15 mm play) with the card pushed against the tall rear wall, so the card is held firmly at its bottom corners but still slides in from the right end. Checked: card slides in from 60 mm out to fully home with no
 interference, blister (starts 8 mm above the card bottom, 12 mm in from the sides) clears the supports, stacks of 4 with cards have no collisions. Change `corner_h`, `corner_len`, `corner_gap` in `build_clip.py` to tune. Kits rebuilt.
+
+### Update: stronger pin with a solid base (the 4 mm pin snapped at the foot)
+- **Pin:** 6 mm diameter (was 4 mm, bending strength about 3.4x) with a 45 degree fillet collar (4.2 mm radius at the foot, 1.2 mm high) so it grows out of the foot block instead of ending in a sharp corner. The pin stands on the full solid footing block, which sits on the print bed.
+- **Barrel:** radius 5.4 mm (was 4.4) so the ledge keeps a 2 mm wall around the 6.6 mm pin hole; its hole is countersunk at the bottom to clear the collar. Relief and detent groove moved with it.
+- Pin stand-off from the strip grew by 1 mm for every rack (clip j is still 38 mm tall and 31.5 mm wide, only deeper). Checked again: ledge clears the clip and strip, ratchet lock unchanged, detent and swing unchanged, cards and blisters clear, kits rebuilt.
+- Tip: print the clip with 4+ walls and 40% infill (or more) and a brim; the pin is vertical on the bed, so layer lines run across it.

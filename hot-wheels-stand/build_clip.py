@@ -54,8 +54,9 @@ half_d = max(rext, fext)
 end_stop = 9.0
 wall_x0 = 17.0                                       # the tall rear wall starts here (ledge frame; clears the clip pull block on the lowest rack)
 ledge_len = end_stop + card_w - thumb_out
-pin_d, pin_clr = 4.0, 0.3
-bar_r = 4.4
+pin_d, pin_clr = 6.0, 0.3                            # 6 mm pin (4 mm snapped at the base)
+fillet_r, fillet_h = 4.2, 1.2                        # 45 degree fillet collar at the base of the pin (the ledge is countersunk to clear it)
+bar_r = 5.4                                          # barrel / foot radius (bigger to keep a 2 mm wall around the 6 mm pin)
 foot_h = 3.5
 pin_x = -5.0                                         # pin axis (clip coordinates, x=0 is the strip centre)
 ly0 = foot_h + 0.4                                   # ledge sits on the foot flange
@@ -63,9 +64,9 @@ ly1 = ly0 + ledge_h
 
 # ---- snap lock ----
 tg_t, tg_h = 1.0, 8.0
-tg_x = pin_x - 5.2 - tg_t                            # tongue left face
+tg_x = pin_x - (bar_r + 0.8) - tg_t                      # tongue left face
 bump_r, groove_r = 1.4, 1.6
-relief_r, relief_a0, relief_a1 = 3.5, 85.0, 160.0
+relief_r, relief_a0, relief_a1 = 4.5, 85.0, 160.0
 barrel_slit, slit_a = 1.2, 125.0                      # slit through the barrel wall (width, direction in degrees from +x toward +z)       # barrel relief (barrel-frame angles, deg from +x toward +z)                          # bump tip pokes 0.6 mm into the barrel's path
 
 assert step >= rext + 0.6 + 0.4              # rear wall of one ledge must clear the card behind it
@@ -164,7 +165,8 @@ def build_clip(k=1, j=0):
         else:           # upper stations of a multi-station clip: foot flange + 45 degree gusset
             parts += [box(xl, xr, o, o + foot_h, pe - 0.1, hz), cyly(pin_x, hz, o, o + foot_h, bar_r),
                       prism_x([(pe - 0.1, o), (z_front, o), (pe - 0.1, o - (z_front - pe + 0.1))], xl, xr)]
-        parts.append(cyly(pin_x, hz, o + foot_h - 0.1, o + ly1 + 2.0, pin_d / 2, 32))                                       # pin
+        parts.append(cyly(pin_x, hz, o + foot_h - 0.1, o + ly1 + 2.0, pin_d / 2, 48))                                       # pin
+        parts.append(hull([(pin_x + r_ * np.cos(a), y_, hz + r_ * np.sin(a)) for r_, y_ in ((fillet_r, o + foot_h - 0.1), (pin_d / 2, o + foot_h + fillet_h)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)]))   # fillet collar: solid base for the pin
         ty0 = o + foot_h - 0.1
         tz0 = max(pe - 0.1, hz - 6.0)                                                                                          # tongue is a 7 mm fin; deeper racks get a rigid wall behind it
         if hz - 6.0 > pe: parts.append(box(tg_x, tg_x + tg_t + 1.6, ty0, ty0 + tg_h + 0.1 + (ly0 + 1.5 - foot_h), pe - 0.1, hz - 6.0 + 0.1))
@@ -196,7 +198,8 @@ def build_ledge(j=0):
             box(end_stop - 0.01, end_stop + corner_len, gb - 0.01, gb + corner_h, z_snug, fext),            # front corner support, hinge end
             box(ledge_len - corner_len, ledge_len, gb - 0.01, gb + corner_h, z_snug, fext)]                  # front corner support, free end
     cuts = [cyly(0, 0, ly0 - 1, ly1 + 1, pin_d / 2 + pin_clr, 48),
-            cyly(-(bar_r + 0.8), 0, ly0 - 1, ly1 + 1, groove_r, 32)]
+            cyly(-(bar_r + 0.8), 0, ly0 - 1, ly1 + 1, groove_r, 32),
+            hull([(r_ * np.cos(a), y_, r_ * np.sin(a)) for r_, y_ in ((fillet_r + 0.3, ly0 - 0.01), (pin_d / 2 + pin_clr, ly0 + fillet_h + 0.3)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)])]   # clears the pin's fillet collar
     for a in np.arange(relief_a0, relief_a1, 5.0):                  # relief: tongue relaxes once the ledge is a little open
         q = [(r_ * np.cos(np.radians(b)), r_ * np.sin(np.radians(b))) for r_ in (relief_r, bar_r + 1.5) for b in (a, a + 5.0)]
         cuts.append(prism_y(q, ly0 - 1, ly1 + 1))
