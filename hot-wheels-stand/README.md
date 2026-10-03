@@ -570,3 +570,10 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
   wide solid footing; the 8 mm pin runs the full 22 mm height of the ledge, 0.2 mm clearance; cheeks 0.2 mm.
 - Checks (fixed the check helper, which had hidden failed booleans): joint locks in y, presses on from the front; clip
   hang/lift/pull; ledge 0 deg stop, detent, opening to 120 deg; cards load with the ledge opened 10-40 deg.
+
+## Update v5: C-interlock as sketched, strip printed flat (build_board.py)
+- Strip ends: the top end is a C (left post 7 mm + arm + 4 mm down-turned tip), the bottom end of the next strip wraps
+  around it (as in the red/yellow sketch). Full thickness, locks up/down/left/right, press the next strip on from the front.
+- The strip now prints FLAT (back on the bed): this interlock can only print flat (on edge one hook would hang in the air).
+  To make the hook lips print flat too, the groove under each lip has a 45 deg fillet, leaving only a 2.5 mm overhang; the
+  clip finger is chamfered to match. Screw holes are plain round countersinks again. Strip is 254 mm long (bed >= 256).

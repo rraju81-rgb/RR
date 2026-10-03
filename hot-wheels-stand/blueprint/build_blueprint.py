@@ -102,7 +102,7 @@ def sheet1():
     arrow3(ax, pre, (B.pin_x, B.clip_y(0) + 40, 60), (B.pin_x, B.clip_y(0) + 26, 60))
     arrow3(ax, pre, (0, 52, 30), (0, 44, 8))
     # parts list
-    x0, y0 = 282, 140; rows = [("ITEM", "PART", "QTY (4-car)", "PRINT"), ("1", "Wall strip 30 x 6 x 252 (hook lips every 20)", "1", "on long edge"),
+    x0, y0 = 282, 140; rows = [("ITEM", "PART", "QTY (4-car)", "PRINT"), ("1", "Wall strip 30 x 6 x 254 (hook lips every 20)", "1", "flat, back down"),
                                 ("2", "Hinge clip, depth j = 0..3 (one each)", "4", "standing"), ("3", "Ledge 128.6 long, 1.8 mm card slot", "4", "standing"),
                                 ("-", "Screw 4-5 mm countersunk + wall plug", "3", "-")]
     cw = [12, 72, 20, 20]
@@ -137,7 +137,7 @@ def sheet2():
     # ---------- PART 1 strip
     label(bg, 14, 31, "1  WALL STRIP", "front 1:2 · section A-A 1:1 · details 3:1")
     ax = axmm(fig, 14, 36, 34, 140); pr = Proj([strip], FRONT, res=3.0); draw(ax, pr, alpha=0.35); frame(ax, pr, 2.0)
-    dim(ax, (-15, 0), (-15, 252), 8, "252"); dim(ax, (-15, 0), (15, 0), -5, "30")
+    dim(ax, (-15, 0), (-15, 254), 8, "254"); dim(ax, (-15, 0), (15, 0), -5, "30")
     dim(ax, (16, B.lip_ys[1]), (16, B.lip_ys[2]), -5, "20", fs=5.5)
     ax = axmm(fig, 50, 36, 22, 140); prs = Proj([strip], SIDE, res=3.0); draw(ax, prs, alpha=0.35); frame(ax, prs, 2.0)
     dim(ax, (-6, -1), (6, -1), -5, "12", fs=5.5)
@@ -149,18 +149,19 @@ def sheet2():
     dim(ax, (B.lip_d, b), (B.lip_d, b + B.shelf_h), 2.2, "4", fs=5.5); dim(ax, (B.lip_d, b + B.shelf_h), (B.lip_d, b + B.shelf_h + B.lip_up), 2.2, "5", fs=5.5)
     dim(ax, (0, b - 1.5), (B.groove, b - 1.5), -1.6, "3.5", fs=5.5); dim(ax, (B.groove, b - 1.5), (B.lip_d, b - 1.5), -1.6, "2.5", fs=5.5)
     dim(ax, (-6, b + 15), (0, b + 15), 1.5, "6", fs=5.5)
-    bg.text(76, 98, "DETAIL B  hook lip (3:1)", color=INK, fontsize=6.5, fontweight="bold")
+    bg.text(76, 98, "DETAIL B  hook lip, 45° fillet for flat printing (3:1)", color=INK, fontsize=6.5, fontweight="bold")
     # C-joint detail 3:1
     ax = axmm(fig, 76, 104, 48, 72); ax.set_aspect("equal")
     two = [B.inter([strip, box(-20, 20, 228, 260, -10, 10)]), place(B.inter([strip, box(-20, 20, 0, 24, -10, 10)]), 0, 240)]
     M2 = np.array([[1, 0, 0], [0, 1, 0]])
     section(ax, two[0], (0, 0, -3), (0, 0, 1), M2); section(ax, two[1], (0, 0, -3), (0, 0, 1), M2, hatch="\\\\\\\\")
     ax.set_xlim(-17, 17); ax.set_ylim(229, 263)
-    dim(ax, (-15, 240), (-15, 252), 2.5, "12", fs=5.5); dim(ax, (-15, 253), (0, 253), 1.5, "15", fs=5.5)
-    leader(ax, (-7, 251), (4, 258), "hook post", fs=5.5); leader(ax, (-9, 244), (4, 236), "45° ramp", fs=5.5)
+    dim(ax, (-15, 240), (-15, 254), 2.5, "14", fs=5.5); dim(ax, (-15, 255), (-8, 255), 1.5, "7", fs=5); dim(ax, (3, 255), (7, 255), 1.5, "4", fs=5)
+    leader(ax, (-11.5, 247), (-4, 235.5), "post", fs=5.5); leader(ax, (-2, 251.5), (9.5, 259), "arm", fs=5.5); leader(ax, (5, 247), (10, 244), "tip", fs=5.5)
+    ax.set_ylim(232, 262)
     pass
     bg.text(76, 178, "DETAIL C  C-interlock, front view (2:1)", color=INK, fontsize=6.5, fontweight="bold")
-    bg.text(76, 182, "full thickness; press the upper strip on from the front", color=HID, fontsize=5.6)
+    bg.text(76, 182, "full thickness; locks up/down/left/right; press on from the front", color=HID, fontsize=5.6)
     # ---------- PART 2 clip (j0)
     c0 = clips[0]
     label(bg, 132, 31, "2  HINGE CLIP  (depth j = 0 shown)", "front / side / top 1:1 · iso NTS")
@@ -232,7 +233,7 @@ def sheet2():
              "2. Clip hangs by gravity: finger behind a full-width hook lip; cheeks stop twisting.",
              "3. Ledge rests on the wide footing; the solid block stops it at 0°, bump holds it closed.",
              "4. To load: open the ledges above, lift 1 mm, swing 10-40°, slide card down.",
-             "5. Every part prints without supports (strip on edge, clip & ledge standing).",
+             "5. No supports: strip flat (back down), clip & ledge standing.",
              "6. Fit verified on the CAD model by boolean collision checks (hang, lift-off,",
              "    swing, stop, card loading, strip joint). Print tolerances may need tuning."]
     for i, t in enumerate(notes): bg.text(222, 206 + i * 4.3, t, color=INK, fontsize=5.8)

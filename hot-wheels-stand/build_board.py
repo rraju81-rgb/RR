@@ -1,9 +1,10 @@
 """Hook-strip system (v3): wall strip with full-width integrated hook lips + compact solid hinge clip that drops onto a lip.
 Usage: python3 build_board.py   -> board/*.stl, board/kit_<N>_cars/ (N = 2..6); every STL is in PRINT orientation (+z up)
 
-  wall_strip   30 x 6 mm strip, 240 mm pitch. Every 20 mm a hook LIP runs across the full 30 mm width (shelf + upturned lip).
-               Printed standing on its long edge, so every hook profile lies in the layer plane. 5 mm countersunk screw holes (teardrop),
-               C-shaped interlock on the ends (front view, full thickness: 45 deg ramp + hook post); press the next strip on from the front.
+  wall_strip   30 x 6 mm strip, 240 mm pitch. Every 20 mm a hook LIP runs across the full 30 mm width (shelf + upturned lip,
+               with a 45 deg fillet under the lip so only 2.5 mm overhangs). Printed FLAT, back on the bed. 5 mm countersunk screw holes.
+               C-interlock on the ends (front view, full thickness): the top end is a C (post + arm + down-turned tip), the bottom end
+               of the next strip wraps around it; locked up/down/left/right, press the next strip on from the front.
   hinge_clip   one solid block behind the pin whose flat front face backs the cards of the racks below; a 30 mm finger drops behind a strip
                lip (gravity lock, lift ~6 mm and pull to remove); cheeks hug the strip. Wide solid footing the ledge sits on, 8 mm pin running
                the full ledge height, detent bump; the solid fill right behind the ledge is the 0 degree stop (no small nubs). Nothing sticks into the card lane: cards start 15 mm from the pin.
@@ -24,7 +25,8 @@ card_w, card_h, card_t, blister_h, blister_y0, blister_dx = 105, 165, 1.2, 42, 8
 # ---- wall strip ----
 strip_w, strip_h, strip_t = 30.0, 240.0, 6.0
 hole_d, csk_d, hole_ys = 5.0, 9.0, (20.0, 120.0, 220.0)
-lap, post_w, post_h, jc = 12.0, 3.0, 15.0, 0.2                  # C-joint (front view): lap length, hook post width/height, clearance
+lap, jc = 14.0, 0.2                                              # C-interlock (front view): overlap length, clearance
+fil_z, fil_y = 1.0, 2.5                                          # 45 deg fillet under the lip so the strip prints flat (lip overhang only 2.5 mm)
 lip_ys = [26.0 + 20.0 * k for k in range(11)]                    # bottom of each hook shelf (26 .. 226); screw holes sit in the gaps
 shelf_h, groove, lip_t, lip_up = 4.0, 3.5, 2.5, 5.0              # shelf height, groove behind the lip, lip thickness, lip height above shelf
 lip_d = groove + lip_t                                           # hook sticks out 6 mm
@@ -69,7 +71,7 @@ def zf_j(j):                                                       # front of th
 K0 = 1                                                           # clip j hangs on lip 1 + 3 j  (60 mm pitch)
 def to_print(m, kind):
     R = trimesh.transformations.rotation_matrix
-    T = {"strip": R(-np.pi / 2, [0, 1, 0]), "clip": R(np.pi / 2, [1, 0, 0]), "ledge": R(np.pi / 2, [1, 0, 0])}[kind]
+    T = {"strip": np.eye(4), "clip": R(np.pi / 2, [1, 0, 0]), "ledge": R(np.pi / 2, [1, 0, 0])}[kind]
     m = m.copy(); m.apply_transform(T); m.apply_translation(-m.bounds[0]); return m
 
 def overhang_report(m, thresh_deg=43.0, bed_tol=0.05):
@@ -84,26 +86,36 @@ def teardrop(cx, cy, r, z, n=40):  # circle in x-y with a 45 degree point toward
     return pts + [(cx + r * np.sqrt(2), cy, z)]
 
 # ------------------------------------------------------------------ wall strip
-def c_hook(y0, grow=0.0):
-    """C-joint tongue in the front (x-y) plane, through the full thickness: a 45 deg ramp + a hook post.
-    Printed on edge (x up) every face is vertical or 45 deg; printed flat it is a plain extrusion."""
-    hw, t, L = strip_w / 2, strip_t, lap
-    tri = [(-hw, y0), (-hw, y0 + L), (-hw + L, y0 + L)]                                      # 45 deg ramp
-    post = [(-hw, y0 + L - post_w), (-hw + post_h, y0 + L - post_w), (-hw + post_h, y0 + L), (-hw, y0 + L)]
-    if grow: tri, post = offset_convex(tri, grow), offset_convex(post, grow)
-    return union([prism_z(tri, -t - (1 if grow else 0), 1 if grow else 0), prism_z(post, -t - (1 if grow else 0), 1 if grow else 0)])
+def c_red(y0, grow=0.0):
+    """Top end of a strip (red in the sketch): left post + top arm + down-turned tip = a C that opens downward-right.
+    The bottom end of the next strip (yellow) is the strip minus this shape grown by the clearance, so it fills the C
+    and wraps over the arm: the two hook into each other (locked up/down and left/right). Full thickness; prints flat."""
+    hw, t, e = strip_w / 2, strip_t, (1.0 if grow else 0.0)
+    parts = [box(-hw - e, -hw + 7, y0 - e, y0 + lap, -t - e, e),                # post (left edge)
+             box(-hw - e, 7, y0 + 9, y0 + lap, -t - e, e),                      # arm (towards the right, stops 8 mm short of the edge)
+             box(3, 7, y0 + 5, y0 + lap, -t - e, e)]                            # down-turned tip
+    if grow:
+        parts = [box(m.bounds[0][0] - grow, m.bounds[1][0] + grow, m.bounds[0][1] - grow, m.bounds[1][1] + grow, m.bounds[0][2], m.bounds[1][2]) for m in parts]
+    return union(parts)
+
+def lip_fillet(b, grow=0.0):                                     # 45 deg fillet in the groove under the lip (y-z triangle across the width)
+    tri = [(b + shelf_h, fil_z), (b + shelf_h, groove), (b + shelf_h + fil_y, groove)]
+    if grow:                                                     # triangle offset outward by `grow` (45 deg corners)
+        tri = [(y + dy, z + dz) for (y, z), (dy, dz) in zip(tri, ((-grow, -grow * 2.414), (-grow, grow), (grow * 2.414, grow)))]
+    hw = strip_w / 2 + (1.0 if grow else 0.0)
+    return hull([(x, y, z) for x in (-hw, hw) for y, z in tri])
 
 def build_strip():
     hw, t = strip_w / 2, strip_t
-    body = diff(box(-hw, hw, 0, strip_h, -t, 0), [c_hook(0.0, jc)])                                     # C-recess at the bottom
-    top = inter([c_hook(strip_h, 0.0), box(-hw, hw, strip_h - 0.01, strip_h + lap, -t, 0)])
+    body = diff(box(-hw, hw, 0, strip_h, -t, 0), [c_red(0.0, jc)])                                       # yellow: wraps the C of the strip below
+    top = inter([c_red(strip_h), box(-hw, hw, strip_h - 0.01, strip_h + lap, -t, 0)])                     # red: the C itself
     cuts = []
     for y in hole_ys:
-        cuts += [hull(teardrop(0, y, hole_d / 2, -t - 1) + teardrop(0, y, hole_d / 2, 1)),
-                 hull(teardrop(0, y, hole_d / 2, -(csk_d - hole_d) / 2) + teardrop(0, y, csk_d / 2, 0.0) + teardrop(0, y, csk_d / 2, 1))]
+        cuts += [cylz(0, y, -t - 1, 1, hole_d / 2, 48),
+                 hull([(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, -(csk_d - hole_d) / 2), (csk_d / 2, 0.0), (csk_d / 2, 1.0)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)])]
     lips = []
     for b in lip_ys:
-        lips += [box(-hw, hw, b, b + shelf_h, -0.01, lip_d), box(-hw, hw, b, b + shelf_h + lip_up, groove, lip_d)]
+        lips += [box(-hw, hw, b, b + shelf_h, -0.01, lip_d), box(-hw, hw, b, b + shelf_h + lip_up, groove, lip_d), lip_fillet(b)]
     return diff(union([body, top] + lips), cuts)
 
 # ------------------------------------------------------------------ hinge clip
@@ -121,7 +133,7 @@ def build_clip(j=0):
              cyly(pin_x, h, ly0 - 0.15, ly0 + bar_h + 3.5, pin_d / 2, 64),                  # pin runs the full height of the ledge
              hull([(pin_x + r_ * np.cos(a), y_, h + r_ * np.sin(a)) for r_, y_ in ((collar_r, ly0 - 0.15), (pin_d / 2, ly0 + collar_h - 0.15)) for a in np.linspace(0, 2 * np.pi, 64, endpoint=False)]),
              sphere(pin_x + bump_x, ly0 - 0.3, h, bump_r)]
-    return union(parts)
+    return diff(union(parts), [lip_fillet(b_loc, g)])
 
 # ------------------------------------------------------------------ ledge (pin axis at x = 0, z = 0)
 def build_ledge():
@@ -188,10 +200,10 @@ if __name__ == "__main__":
         open(f"{d}/BOM.md", "w").write(f"""# {N}-car display kit (hook strip + solid hinge clips)
 | Part | File | Qty | Print |
 |---|---|---|---|
-| Wall strip with hook lips | wall_strip.stl | {ns} | standing on its long edge (as exported), brim, no supports |
+| Wall strip with hook lips | wall_strip.stl | {ns} | flat, back on the bed (as exported), no supports |
 | Hinge clip, depth j = 0..{N-1} | hinge_clip_j0..j{N-1}.stl | 1 each | standing (as exported), no supports (finger bridges 31 mm between the cheeks) |
 | Ledge | ledge.stl | {N} | standing (as exported) |
-Mount: screw the strip(s) to the wall (second strip: press its bottom C-recess onto the top hook of the first strip from the front, then screw it).
+Mount: screw the strip(s) to the wall (second strip: press its bottom end over the C on top of the first strip, straight in from the front, then screw it).
 Hang each clip: hold it 6 mm above its hook lip (clip j uses lip {K0}, {K0 + 3}, {K0 + 6}, ... counted from the bottom, starting at 0), push it against the strip
 with the two cheeks either side of the strip, and let it drop - the finger falls behind the lip. To remove: lift 6 mm and pull toward you.
 Drop each ledge on its pin. It rests on the wide footing; the clip's solid block stops it at 0 degrees and the bump holds it closed
