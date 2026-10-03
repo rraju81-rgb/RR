@@ -51,7 +51,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <h1>Your collection, on the wall.<br><em>Every card opens like a door.</em></h1>
  <p class="lead">{NAME} is a 3D-printed wall rack for carded die-cast cars. Each card gets its own swing-out ledge. The ledges are stacked and staggered so every name stays readable, and you can take any one card out without touching the others.</p>
  <div class="hero">
-  <figure><img src="img/hero_closed.png"><figcaption>4-car kit, closed: the cards step forward 6 mm per row, so no card hides the one above it.</figcaption></figure>
+  <figure><img src="img/hero_closed.png"><figcaption>4-car kit, closed: the cards step forward 7 mm per row, so no card hides the one above it.</figcaption></figure>
   <figure class="photo"><img src="img/photo_prototype_wide.jpg"><figcaption>Early printed prototype holding real carded cars (photo by the designer).</figcaption></figure>
  </div>
  <div class="grid2">
@@ -85,10 +85,10 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <div class="feat">
   <div><b>Hooks that can't snap</b><span>The hook lips run across the full 30 mm width of the strip, and the strip prints on its edge, so the layers run along each hook. The earlier pegs broke where they met the strip.</span></div>
   <div><b>Gravity lock, no tools</b><span>A 30 mm finger drops behind a lip. Side cheeks hug the strip so the clip can't twist. The bottom of the clip rests on the lip below it.</span></div>
-  <div><b>No sagging ledge</b><span>A support arm sits under the closed ledge. A stop nub fits a notch in the ledge and holds it at 0&deg;. A bump-and-dimple detent keeps it closed.</span></div>
-  <div><b>Names always visible</b><span>Each rack sits 6 mm further from the wall than the one below it. The ledge's low front lip leaves the card title in view.</span></div>
-  <div><b>Stackable strips</b><span>A 45&deg; dovetail joins 240 mm strips end-to-end, so stacks over 240 mm still screw flat to the wall.</span></div>
-  <div><b>Prints on any FDM printer</b><span>Every part was checked for overhangs: there are only two short bridges and no supports. 247 mm long parts, PLA or PETG.</span></div>
+  <div><b>No sagging ledge</b><span>A support pad sits under the closed ledge, and the barrel is 18 mm tall. A stop nub fits a notch in the ledge and holds it at 0&deg;. A bump-and-dimple detent keeps it closed.</span></div>
+  <div><b>Names always visible</b><span>Each rack sits 7 mm further from the wall than the one below it. The 1 mm front lip leaves the card title in view.</span></div>
+  <div><b>Stackable strips</b><span>A simple C-hook joint links strips end-to-end: press the next strip on from the front, then screw it down.</span></div>
+  <div><b>Prints on any FDM printer</b><span>Every part was checked for overhangs: there are only two short bridges and no supports. 252 mm long strip, PLA or PETG.</span></div>
  </div>
  <div class="imgrow"><img src="img/parts.png"><img src="img/all_open.png"></div>
  <h2 style="margin-top:4mm">Kit line-up</h2>
@@ -137,7 +137,7 @@ poster(f"""<div class="kicker">How it works</div>
 poster(f"""<div class="kicker">Swing it open</div>
 <h1 style="font-size:104px">Grab one card.<br><em>Leave the rest.</em></h1>
 <div class="sub">Each ledge pivots on its own pin. A detent clicks it shut and a stop nub holds it level. No unhooking the whole row.</div>
-<div class="tile" style="position:absolute;left:80px;right:80px;top:650px;height:560px;padding:20px"><img src="img/all_open.png"></div>
+<div class="tile" style="position:absolute;left:80px;right:80px;top:650px;height:560px;padding:20px"><img src="img/one_open.png"></div>
 <div class="fine">{TM}</div>"""),
 poster(f"""<div style="position:absolute;inset:0"><img src="img/photo_prototype_close.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 35%"></div>
 <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,22,27,.0) 35%,rgba(20,22,27,.92) 72%)"></div>

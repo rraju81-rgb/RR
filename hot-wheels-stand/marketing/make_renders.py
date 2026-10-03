@@ -27,9 +27,9 @@ def scene(N, angs, cards=True, slide=None):
 # hero: 4 cars closed
 m, c = scene(4, [0, 0, 0, 0]); save(raster(m, c, 15, 30, (1100, 1500), [[-40, 0, -5], [140, 420, 80]]), "hero_closed")
 # one door open
-m, c = scene(4, [0, 0, 70, 0]); save(raster(m, c, 20, 40, (1100, 1500), [[-40, 0, -5], [160, 420, 140]]), "one_open")
+m, c = scene(4, [0, 0, 30, 90]); save(raster(m, c, 20, 40, (1100, 1500), [[-40, 0, -5], [160, 420, 140]]), "one_open")
 # all open (fan)
-m, c = scene(4, [20, 45, 70, 90]); save(raster(m, c, 25, 45, (1100, 1500), [[-40, 0, -5], [160, 420, 160]]), "all_open")
+m, c = scene(4, [20, 45, 70, 90], cards=False); save(raster(m, c, 25, 45, (1100, 1500), [[-40, 0, -5], [160, 420, 160]]), "all_open")
 # no cards, closed (structure)
 m, c = scene(4, [0, 0, 0, 0], cards=False); save(raster(m, c, 20, 35, (900, 1300), [[-40, 0, -5], [140, 260, 60]]), "frame_only")
 # hang the clip: 3 steps (close-up)

@@ -549,3 +549,15 @@ Fixes from the test print: the pegs snapped at the base (printed across layers) 
   hits at 0 degrees (the ledge cannot swing back past closed); the bump/dimple still holds it closed.
 Checked by boolean intersection: hang, lift-off and insert paths, pull-out and drop blocked, x play blocked, ledge open/closed/-2 deg, cards and blisters.
 Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm strip.
+
+## Update v3: card lane, solid hinge block, stronger ledge, C-hook strip joint (build_board.py, board/)
+- Cards now start 15 mm from the pin (was 9) and nothing on a clip reaches into that lane, so a card slides past the hinges above it.
+  Racks step 7 mm (was 6) away from the wall, so each card has 1.5 mm to the ledge in front of it.
+- Clip: the block is filled forward to a flat face just behind the lowest card that passes in front of it, and the gap behind the
+  barrel is filled solid. The long support arm is replaced by a short sag pad (with the 0 degree stop nub) that stays out of the
+  swing path of the cards below. Barrel 18 mm tall with 0.3 mm pin clearance.
+- Ledge: the hinge block is solid and full height, and the tall back wall starts right at it (the 3 mm floor neck snapped).
+  Front lip 1 mm and corner supports 4 mm (both 3 mm lower), so the card name shows.
+- Wall strip: 6 mm thick, dovetail replaced by a C-hook joint (half-thickness tongues with small hooks; press the next strip on from the front).
+- Checked: clip hang/lift/pull, C-joint locks in y and assembles from the front, ledge stop at 0 degrees, detent, every card
+  slides in its full length with its ledge opened 10-35 degrees (ledges above opened). Above about 40 degrees a card hits the hinge two racks up.
