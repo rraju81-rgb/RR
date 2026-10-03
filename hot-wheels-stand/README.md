@@ -538,3 +538,14 @@ screw holes between pegs, dovetail ends for stacking). The hinge clip has two ke
 hangs (gravity lock like SKADIS). To remove: lift 7 mm and pull toward you. Clip j hangs at y = 13 + 60 j. Ledge is 10 mm longer (assumed: "width" = length along the card).
 Checked by boolean intersection: hang / insert / pull-out path / ledge swing / cards and blisters all collision-free; ~34 mm2 of borderline overhang on the clip (slot roofs).
 Previous generator moved to legacy/build_simple.py.
+
+## Update v2: integrated hook lips + compact solid clip (build_board.py, board/)
+Fixes from the test print: the pegs snapped at the base (printed across layers) and the tall keyhole plate was flimsy.
+- Wall strip: pegs replaced by full-width (30 mm) hook lips every 20 mm (shelf + upturned lip). The strip now prints standing on its long
+  edge, so every hook profile lies in the layer plane. Teardrop countersunk 5 mm holes, 45 degree parallelogram dovetail joint (no overhangs).
+- Hinge clip: no plate above the pin any more. One solid block behind the pin: a 30 mm finger drops behind a lip (lift 5.3 mm + pull to remove),
+  cheeks hug both strip edges (no twisting), block bottom bears on the lip below. Footing solid down to the bed. Prints standing, no supports.
+- Anti-sag: a support arm (45 degree gusset) under the closed ledge out to 20 mm from the pin, plus a stop nub that the ledge's rear-open notch
+  hits at 0 degrees (the ledge cannot swing back past closed); the bump/dimple still holds it closed.
+Checked by boolean intersection: hang, lift-off and insert paths, pull-out and drop blocked, x play blocked, ledge open/closed/-2 deg, cards and blisters.
+Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm strip.
