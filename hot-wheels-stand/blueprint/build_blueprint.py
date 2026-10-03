@@ -112,7 +112,7 @@ def sheet1():
             bg.add_patch(Rectangle((xx, yy), c_, 6.2, fill=(i == 0), fc="#174d93", ec=INK, lw=0.4))
             bg.text(xx + 1.5, yy + 3.1, t, color=INK, fontsize=5.8 if i else 6, va="center", fontweight="bold" if i == 0 else "normal"); xx += c_
     bg.text(x0, y0 + 36, "Kits: 2, 3, 4 cars on 1 strip (119 / 179 / 239 mm tall), 5-6 cars on 2 strips.", color=HID, fontsize=6)
-    bg.text(x0, y0 + 40, "Strips join with the C-hook joint; clips need no tools.", color=HID, fontsize=6)
+    bg.text(x0, y0 + 40, "Strips join with the C-interlock; clips need no tools.", color=HID, fontsize=6)
     # --- operation sequence
     label(bg, 14, 203, "OPERATION SEQUENCE", "how the product works")
     y = B.clip_y(1); sub = B.inter([strip, box(-20, 20, y - 30, y + 50, -10, 10)])
@@ -121,7 +121,7 @@ def sheet1():
     s1 = [sub]; steps.append(("1  SCREW THE STRIP", "3 countersunk screws; hook lips face up", s1, None))
     s2 = [sub, mv(place(clips[1], 0, y), [0, B.lift + 0.5, 22])]; steps.append(("2  HANG THE CLIP", "hold 6 mm high, push in, let go: gravity lock", s2, [((B.pin_x, y + 20, 26), (B.pin_x, y + 20, 8)), ((0, y + 34, 6), (0, y + 27, 6))]))
     s3 = [sub, place(clips[1], 0, y), mv(place(B.ledge_at(1, 0), 0, y), [0, 26, 0])]; steps.append(("3  DROP THE LEDGE ON THE PIN", "it clicks shut on the detent bump", s3, [((B.pin_x - 10, y + 48, B.hz_j(1)), (B.pin_x - 10, y + 32, B.hz_j(1)))]))
-    s4 = [sub, place(clips[1], 0, y), place(B.ledge_at(1, 30, 1), 0, y), card(1, 30, 1, 40)]; steps.append(("4  LIFT 1 mm, SWING 10-35°, SLIDE CARD IN", "close it: the stop nub holds it at 0°", s4, [((60, y + 140, 50), (60, y + 105, 50))]))
+    s4 = [sub, place(clips[1], 0, y), place(B.ledge_at(1, 30, 1), 0, y), card(1, 30, 1, 40)]; steps.append(("4  LIFT 1 mm, SWING 10-40°, SLIDE CARD IN", "close it: the solid block stops it at 0°", s4, [((60, y + 140, 50), (60, y + 105, 50))]))
     for i, (t, sbt, ms, arrows) in enumerate(steps):
         x = 14 + i * 67; ax = axmm(fig, x, 212, 64, 72)
         pr_ = Proj(ms, iso_M(20, 38), res=3.0); draw(ax, pr_, fill=True, alpha=0.6, lw=0.45, tint={3: (0.25, 0.55, 0.95)} if i == 3 else None); frame(ax, pr_)
@@ -152,13 +152,15 @@ def sheet2():
     bg.text(76, 98, "DETAIL B  hook lip (3:1)", color=INK, fontsize=6.5, fontweight="bold")
     # C-joint detail 3:1
     ax = axmm(fig, 76, 104, 48, 72); ax.set_aspect("equal")
-    two = [B.inter([strip, box(-1, 1, 226, 260, -10, 10)]), place(B.inter([strip, box(-1, 1, 0, 26, -10, 10)]), 0, 240)]
-    section(ax, two[0], (0, 0, 0), (1, 0, 0), np.array([[0, 0, 1], [0, 1, 0]])); section(ax, two[1], (0, 0, 0), (1, 0, 0), np.array([[0, 0, 1], [0, 1, 0]]), hatch="\\\\\\\\")
-    ax.set_xlim(-10, 8); ax.set_ylim(234, 258)
-    dim(ax, (-6.5, 240), (-6.5, 252), -1.5, "12 lap", fs=5.5); dim(ax, (-3, 249), (-1.5, 249), 3.5, "1.5", fs=5)
-    leader(ax, (-2.4, 250.5), (1.5, 255.5), "hook", fs=5.5); leader(ax, (-3.7, 241.5), (1.5, 237), "hook", fs=5.5)
-    bg.text(76, 178, "DETAIL C  C-hook strip joint (3:1)", color=INK, fontsize=6.5, fontweight="bold")
-    bg.text(76, 182, "press the upper strip on from the front; hooks lock it vertically", color=HID, fontsize=5.6)
+    two = [B.inter([strip, box(-20, 20, 228, 260, -10, 10)]), place(B.inter([strip, box(-20, 20, 0, 24, -10, 10)]), 0, 240)]
+    M2 = np.array([[1, 0, 0], [0, 1, 0]])
+    section(ax, two[0], (0, 0, -3), (0, 0, 1), M2); section(ax, two[1], (0, 0, -3), (0, 0, 1), M2, hatch="\\\\\\\\")
+    ax.set_xlim(-17, 17); ax.set_ylim(229, 263)
+    dim(ax, (-15, 240), (-15, 252), 2.5, "12", fs=5.5); dim(ax, (-15, 253), (0, 253), 1.5, "15", fs=5.5)
+    leader(ax, (-7, 251), (4, 258), "hook post", fs=5.5); leader(ax, (-9, 244), (4, 236), "45° ramp", fs=5.5)
+    pass
+    bg.text(76, 178, "DETAIL C  C-interlock, front view (2:1)", color=INK, fontsize=6.5, fontweight="bold")
+    bg.text(76, 182, "full thickness; press the upper strip on from the front", color=HID, fontsize=5.6)
     # ---------- PART 2 clip (j0)
     c0 = clips[0]
     label(bg, 132, 31, "2  HINGE CLIP  (depth j = 0 shown)", "front / side / top 1:1 · iso NTS")
@@ -169,7 +171,7 @@ def sheet2():
     ax = axmm(fig, 186, 38, 48, 50); prs = Proj([c0], SIDE, res=8.0); draw(ax, prs, hidden=True, alpha=0.35); frame(ax, prs, 1.0)
     dim(ax, (B.cheek_z0, B.clip_y0 - 1), (B.hz + B.fext, B.clip_y0 - 1), -4, f"{B.hz + B.fext - B.cheek_z0:.1f}")
     leader(ax, (1.5, B.b_loc + 8), (-6, B.b_loc + 24), "finger drops\nbehind lip", fs=5.2)
-    leader(ax, (B.hz + 4, B.ly0 - 1), (B.hz + 2, B.ly0 + 22), "sag pad\n+ stop nub", fs=5.2)
+    leader(ax, (B.hz + 1, B.ly0 - 1), (B.hz + 2, B.ly0 + 22), "wide footing\n(ledge rests here)", fs=5.2)
     ax = axmm(fig, 132, 92, 52, 40); prt = Proj([c0], TOP, res=8.0); draw(ax, prt, hidden=True, alpha=0.35); frame(ax, prt, 1.0)
     dim(ax, (B.pin_x, -B.hz), (B.pin_x, 0), -4, f"{B.hz:.1f}", fs=5.5)
     ax = axmm(fig, 186, 92, 48, 40); pri = Proj([c0], iso_M(25, 35), res=6.0); draw(ax, pri, alpha=0.6); frame(ax, pri)
@@ -178,9 +180,9 @@ def sheet2():
         for k, t in enumerate(r): bg.text(132 + [0, 8, 30][k], 138 + i * 4, t, color=INK if i else DIM, fontsize=5.6, fontweight="bold" if i == 0 else "normal")
     bg.text(186, 138, "Clip j sits 7 mm deeper per rack.", color=HID, fontsize=5.6)
     bg.text(186, 142, "Hang: lift 5.3 mm over the lip.", color=HID, fontsize=5.6)
-    bg.text(186, 146, "Cheeks: 0.3 mm each side of strip.", color=HID, fontsize=5.6)
-    bg.text(186, 150, "Pin-to-barrel clearance 0.3 mm.", color=HID, fontsize=5.6)
-    bg.text(186, 154, "Nothing right of pin + 6.6 mm in", color=HID, fontsize=5.6); bg.text(186, 158, "the card lane (cards start at 15).", color=HID, fontsize=5.6)
+    bg.text(186, 146, "Cheeks: 0.2 mm each side of strip.", color=HID, fontsize=5.6)
+    bg.text(186, 150, "Pin-to-barrel clearance 0.2 mm.", color=HID, fontsize=5.6)
+    bg.text(186, 154, "Nothing right of pin + 9 mm in", color=HID, fontsize=5.6); bg.text(186, 158, "the card lane (cards start at 15).", color=HID, fontsize=5.6)
     # ---------- PART 3 ledge
     label(bg, 240, 31, "3  LEDGE", "top 1:1 · front 1:1 · section D-D 3:1 · iso NTS")
     ax = axmm(fig, 240, 38, 168, 22); pr = Proj([ledge], TOP, res=6.0); draw(ax, pr, hidden=True, alpha=0.35); frame(ax, pr, 1.0)
@@ -205,7 +207,7 @@ def sheet2():
     bg.text(240, 170, "tall back wall 19, front lip 1, corner pads 4", color=HID, fontsize=5.6)
     ax = axmm(fig, 300, 98, 108, 64); pri = Proj([ledge], iso_M(28, 30), res=5.0); draw(ax, pri, alpha=0.6); frame(ax, pri)
     p = pri.p2((B.end_stop / 2, B.gb + 10, 0))[0]; leader(ax, p, p + np.array([18, 10]), "solid hinge block\n(full height)", fs=5.5)
-    p = pri.p2((B.nub_x + 1, B.ly0, -B.rext + 1))[0]; leader(ax, p, p + np.array([22, -10]), "stop notch (underside)", fs=5.5)
+    p = pri.p2((B.bump_x, B.ly0, 0))[0]; leader(ax, p, p + np.array([22, -10]), "detent dimple (underside)", fs=5.5)
     # ---------- hinge function detail (bottom)
     label(bg, 14, 192, "HINGE FUNCTION", "section through the pin axis, 2:1  ·  ledge closed / lifted & opening")
     y = 0.0
@@ -228,8 +230,8 @@ def sheet2():
     bg.text(222, 200, "NOTES", color=INK, fontsize=8, fontweight="bold")
     notes = ["1. Card: ~105 x 165 mm, 1.2 mm thick, blister up to 42 mm. Slot 1.8 mm.",
              "2. Clip hangs by gravity: finger behind a full-width hook lip; cheeks stop twisting.",
-             "3. Ledge rests on the sag pad; nub + notch stop it at 0°, bump holds it closed.",
-             "4. To load: open the ledges above, lift 1 mm, swing 10-35°, slide card down.",
+             "3. Ledge rests on the wide footing; the solid block stops it at 0°, bump holds it closed.",
+             "4. To load: open the ledges above, lift 1 mm, swing 10-40°, slide card down.",
              "5. Every part prints without supports (strip on edge, clip & ledge standing).",
              "6. Fit verified on the CAD model by boolean collision checks (hang, lift-off,",
              "    swing, stop, card loading, strip joint). Print tolerances may need tuning."]

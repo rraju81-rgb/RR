@@ -561,3 +561,12 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
 - Wall strip: 6 mm thick, dovetail replaced by a C-hook joint (half-thickness tongues with small hooks; press the next strip on from the front).
 - Checked: clip hang/lift/pull, C-joint locks in y and assembles from the front, ledge stop at 0 degrees, detent, every card
   slides in its full length with its ledge opened 10-35 degrees (ledges above opened). Above about 40 degrees a card hits the hinge two racks up.
+
+## Update v4: C-interlock strip joint, no nub/pad (build_board.py)
+- Strip ends: C-shaped interlock in the front view, through the full thickness (45 deg ramp + hook post). Prints on edge
+  (every face vertical or 45 deg, one 3.4 mm bridge) or flat. Press the next strip on from the front; it locks vertically.
+- Clip: the sag pad, stop nub and ledge notch are gone (cards caught on them and they jammed the ledge). The solid block now
+  comes right up behind the ledge (0.3 mm) and is the 0 degree stop (ledge stops ~2 deg past closed). The ledge sits on a
+  wide solid footing; the 8 mm pin runs the full 22 mm height of the ledge, 0.2 mm clearance; cheeks 0.2 mm.
+- Checks (fixed the check helper, which had hidden failed booleans): joint locks in y, presses on from the front; clip
+  hang/lift/pull; ledge 0 deg stop, detent, opening to 120 deg; cards load with the ledge opened 10-40 deg.

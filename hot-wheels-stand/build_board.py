@@ -3,13 +3,13 @@ Usage: python3 build_board.py   -> board/*.stl, board/kit_<N>_cars/ (N = 2..6); 
 
   wall_strip   30 x 6 mm strip, 240 mm pitch. Every 20 mm a hook LIP runs across the full 30 mm width (shelf + upturned lip).
                Printed standing on its long edge, so every hook profile lies in the layer plane. 5 mm countersunk screw holes (teardrop),
-               simple C-hook joint on the ends: each end is a half-thickness tongue with a small hook; press the next strip on from the front.
+               C-shaped interlock on the ends (front view, full thickness: 45 deg ramp + hook post); press the next strip on from the front.
   hinge_clip   one solid block behind the pin whose flat front face backs the cards of the racks below; a 30 mm finger drops behind a strip
-               lip (gravity lock, lift ~6 mm and pull to remove); cheeks hug the strip. Footing solid to the bed, 8 mm pin, sag support pad
-               under the closed ledge with a 0 degree stop nub, detent bump. Nothing sticks into the card lane: cards start 15 mm from the pin.
+               lip (gravity lock, lift ~6 mm and pull to remove); cheeks hug the strip. Wide solid footing the ledge sits on, 8 mm pin running
+               the full ledge height, detent bump; the solid fill right behind the ledge is the 0 degree stop (no small nubs). Nothing sticks into the card lane: cards start 15 mm from the pin.
   ledge        18 mm tall barrel, solid full-height hinge block, tall back wall from the hinge block on, 1 mm front lip (card name visible),
-               4 mm front corner supports, stop notch + detent dimple underneath.
-Loading: open the ledges above, swing the ledge 10-35 degrees (lift it ~1 mm over the detent), slide the card down into the slot.
+               4 mm front corner supports, detent dimple underneath.
+Loading: open the ledges above, swing the ledge 10-40 degrees (lift it ~1 mm over the detent), slide the card down into the slot.
 Needs: pip install trimesh manifold3d numpy matplotlib.  Units mm.
 Assembly frame: x right, y up, z out of the wall; strip front face z = 0, strip centre x = 0."""
 import os, sys
@@ -24,7 +24,7 @@ card_w, card_h, card_t, blister_h, blister_y0, blister_dx = 105, 165, 1.2, 42, 8
 # ---- wall strip ----
 strip_w, strip_h, strip_t = 30.0, 240.0, 6.0
 hole_d, csk_d, hole_ys = 5.0, 9.0, (20.0, 120.0, 220.0)
-lap, hook_d, hook_l, jc = 12.0, 1.5, 3.0, 0.15                  # C-hook end joint: lap length, hook depth/length, clearance
+lap, post_w, post_h, jc = 12.0, 3.0, 15.0, 0.2                  # C-joint (front view): lap length, hook post width/height, clearance
 lip_ys = [26.0 + 20.0 * k for k in range(11)]                    # bottom of each hook shelf (26 .. 226); screw holes sit in the gaps
 shelf_h, groove, lip_t, lip_up = 4.0, 3.5, 2.5, 5.0              # shelf height, groove behind the lip, lip thickness, lip height above shelf
 lip_d = groove + lip_t                                           # hook sticks out 6 mm
@@ -36,14 +36,13 @@ zb0 = lip_d + g; zb1 = zb0 + body_t                              # solid block z
 b_loc = 7.5                                                      # shelf bottom of the engaged lip, in clip coordinates (foot bottom = 0)
 clip_y0 = b_loc - 14.5                                           # block bottom bears on the front of the lip below
 clip_y1 = b_loc + shelf_h + lip_up + g + arm_t
-cheek_x, cheek_t, cheek_z0 = strip_w / 2 + g, 3.0, -3.0
+cheek_x, cheek_t, cheek_z0 = strip_w / 2 + 0.2, 3.0, -3.0
 x_min = -(cheek_x + cheek_t)                                     # print bed face
 lift = lip_up + g                                                # lift needed to unhook
-foot_h = 3.5
+foot_h = 3.5                                                     # (ledge underside sits at ly0; footing top is flush with it)
 pin_x, pin_d = -14.6, 8.0
 collar_r, collar_h = 5.2, 1.2
-pad_x1, pad_z1 = 12.0, 0.5                                      # sag support pad under the closed ledge (x from pin, z top above the pin axis)
-nub_x, nub_w, nub_h, nub_d = 9.5, 2.0, 1.2, 2.8                  # 0 degree stop nub on the pad
+foot_x1, foot_z1 = 9.0, 2.0                                       # wide footing under the ledge's hinge block (x from pin, z above the pin axis)
 
 # ---- ledge ----
 ledge_h, gutter_d, slop = 12.0, 9.0, 0.3
@@ -52,7 +51,7 @@ rear_wall, front_wall = 4.0, 3.5
 rear_h, front_h = 19.0, 1.0                                      # front lip 3 mm lower so the card name shows
 corner_h, corner_len, corner_gap = 4.0, 9.0, 0.15
 thumb_out, end_stop, extra_len = 8.0, 15.0, 10.0              # card starts 15 mm from the pin: clear of the hinge above
-bar_r, hole_clr = 6.6, 0.3
+bar_r, hole_clr = 6.6, 0.2
 step = 7.0
 bump_x, bump_r, dimple_r = 7.0, 1.0, 1.3
 
@@ -85,16 +84,19 @@ def teardrop(cx, cy, r, z, n=40):  # circle in x-y with a 45 degree point toward
     return pts + [(cx + r * np.sqrt(2), cy, z)]
 
 # ------------------------------------------------------------------ wall strip
+def c_hook(y0, grow=0.0):
+    """C-joint tongue in the front (x-y) plane, through the full thickness: a 45 deg ramp + a hook post.
+    Printed on edge (x up) every face is vertical or 45 deg; printed flat it is a plain extrusion."""
+    hw, t, L = strip_w / 2, strip_t, lap
+    tri = [(-hw, y0), (-hw, y0 + L), (-hw + L, y0 + L)]                                      # 45 deg ramp
+    post = [(-hw, y0 + L - post_w), (-hw + post_h, y0 + L - post_w), (-hw + post_h, y0 + L), (-hw, y0 + L)]
+    if grow: tri, post = offset_convex(tri, grow), offset_convex(post, grow)
+    return union([prism_z(tri, -t - (1 if grow else 0), 1 if grow else 0), prism_z(post, -t - (1 if grow else 0), 1 if grow else 0)])
+
 def build_strip():
-    hw, zm, t = strip_w / 2, -strip_t / 2, strip_t
-    H, L = strip_h, lap
-    body = box(-hw, hw, L, H, -t, 0)
-    # bottom end: front half-tongue with a backward hook at its tip and a notch for the lower strip's hook
-    bot = diff(box(-hw, hw, jc, L + 0.01, zm + jc / 2, 0), [box(-hw - 1, hw + 1, L - hook_l - jc, L + 0.02, zm - 0.01, zm + hook_d + jc)])
-    bot_hook = box(-hw, hw, jc, hook_l, zm - hook_d, zm + jc / 2 + 0.01)
-    # top end: rear half-tongue with a forward hook at its tip and a notch for the upper strip's hook (C shapes that interlock)
-    top = diff(box(-hw, hw, H - 0.01, H + L - jc, -t, zm - jc / 2), [box(-hw - 1, hw + 1, H, H + hook_l + jc, zm - hook_d - jc, zm)])
-    top_hook = box(-hw, hw, H + L - hook_l, H + L - jc, zm - jc / 2 - 0.01, zm + hook_d)
+    hw, t = strip_w / 2, strip_t
+    body = diff(box(-hw, hw, 0, strip_h, -t, 0), [c_hook(0.0, jc)])                                     # C-recess at the bottom
+    top = inter([c_hook(strip_h, 0.0), box(-hw, hw, strip_h - 0.01, strip_h + lap, -t, 0)])
     cuts = []
     for y in hole_ys:
         cuts += [hull(teardrop(0, y, hole_d / 2, -t - 1) + teardrop(0, y, hole_d / 2, 1)),
@@ -102,26 +104,23 @@ def build_strip():
     lips = []
     for b in lip_ys:
         lips += [box(-hw, hw, b, b + shelf_h, -0.01, lip_d), box(-hw, hw, b, b + shelf_h + lip_up, groove, lip_d)]
-    return diff(union([body, bot, bot_hook, top, top_hook] + lips), cuts)
+    return diff(union([body, top] + lips), cuts)
 
 # ------------------------------------------------------------------ hinge clip
 def build_clip(j=0):
     h = hz_j(j); b = b_loc; zf = zf_j(j)
     fz0, fz1 = g, groove - g                                      # finger z range (in the groove)
-    xe = pin_x + 6.6                                              # nothing right of this in the card lane
-    pad = [(pin_x + 6.0, clip_y0, z_) for z_ in (h - rext, h + pad_z1)] + [(pin_x + 6.0, ly0 - 0.05, z_) for z_ in (h - rext, h + pad_z1)] \
-        + [(pin_x + pad_x1, ly0 - 0.05, z_) for z_ in (h - rext, h + pad_z1)] + [(pin_x + pad_x1, clip_y0 + (pad_x1 - 6.0), z_) for z_ in (h - rext, h + pad_z1)]
+    xs = pin_x + foot_x1
     parts = [box(-cheek_x, cheek_x, b + shelf_h, clip_y1, fz0, fz1),                        # finger (rests on the shelf)
              box(-cheek_x, cheek_x, clip_y1 - arm_t, clip_y1, fz0, zb1),                    # bridge over the lip
              box(x_min, cheek_x + cheek_t, clip_y0, clip_y1, zb0, zf),                      # solid block, flat face backs the cards behind
              box(x_min, -cheek_x, clip_y0, clip_y1, cheek_z0, zb1), box(cheek_x, cheek_x + cheek_t, clip_y0, clip_y1, cheek_z0, zb1),   # cheeks
-             box(x_min, xe, clip_y0, clip_y1, zf - 0.1, h - bar_r - 0.4),                   # fills the gap behind the barrel (left of the card lane)
-             box(x_min, xe, clip_y0, foot_h, zf - 0.1, h + fext), cyly(pin_x, h, clip_y0, foot_h, bar_r, 64),   # footing, solid to the bed
-             hull(pad),                                                                     # sag support pad (45 deg underside)
-             box(pin_x + nub_x, pin_x + nub_x + nub_w, ly0 - 0.2, ly0 - 0.05 + nub_h, h - rext, h - rext + nub_d),   # 0 degree stop nub
-             cyly(pin_x, h, foot_h - 0.1, ly0 + bar_h + 1.0, pin_d / 2, 64),
-             hull([(pin_x + r_ * np.cos(a), y_, h + r_ * np.sin(a)) for r_, y_ in ((collar_r, foot_h - 0.1), (pin_d / 2, foot_h + collar_h)) for a in np.linspace(0, 2 * np.pi, 64, endpoint=False)]),
-             sphere(pin_x + bump_x, ly0 - 0.25, h, bump_r)]
+             diff(box(x_min, xs, clip_y0, clip_y1, zf - 0.1, h - rext - 0.3),                # solid fill right up behind the ledge = 0 degree stop
+                  [cyly(pin_x, h, ly0 - 0.05, clip_y1 + 1, bar_r + 0.4, 64)]),
+             box(x_min, xs, clip_y0, ly0 - 0.05, zf - 0.1, h + foot_z1), cyly(pin_x, h, clip_y0, ly0 - 0.05, bar_r, 64),   # wide footing: the ledge sits on it
+             cyly(pin_x, h, ly0 - 0.15, ly0 + bar_h + 3.5, pin_d / 2, 64),                  # pin runs the full height of the ledge
+             hull([(pin_x + r_ * np.cos(a), y_, h + r_ * np.sin(a)) for r_, y_ in ((collar_r, ly0 - 0.15), (pin_d / 2, ly0 + collar_h - 0.15)) for a in np.linspace(0, 2 * np.pi, 64, endpoint=False)]),
+             sphere(pin_x + bump_x, ly0 - 0.3, h, bump_r)]
     return union(parts)
 
 # ------------------------------------------------------------------ ledge (pin axis at x = 0, z = 0)
@@ -134,8 +133,7 @@ def build_ledge():
             box(end_stop - 0.01, ledge_len, gb - 0.01, gb + front_h, gw / 2, fext),
             box(end_stop - 0.01, end_stop + corner_len, gb - 0.01, gb + corner_h, z_snug, fext), box(ledge_len - corner_len, ledge_len, gb - 0.01, gb + corner_h, z_snug, fext)]
     cs = hull([(r_ * np.cos(a), y_, r_ * np.sin(a)) for r_, y_ in ((collar_r + 0.3, ly0 - 0.01), (pin_d / 2 + hole_clr, ly0 + collar_h + 0.3)) for a in np.linspace(0, 2 * np.pi, 56, endpoint=False)])
-    notch = box(nub_x - 0.8, nub_x + nub_w + 0.8, ly0 - 1, ly0 + nub_h + 0.3, -rext - 1, -rext + nub_d + 0.25)   # open to the back: nub slides out when opening
-    return diff(union(body), [cyly(0, 0, ly0 - 1, top + 1, pin_d / 2 + hole_clr, 56), cs, sphere(bump_x, ly0 - 0.1, 0, dimple_r), notch])
+    return diff(union(body), [cyly(0, 0, ly0 - 1, top + 1, pin_d / 2 + hole_clr, 56), cs, sphere(bump_x, ly0 - 0.1, 0, dimple_r)])
 
 def ledge_at(j, ang=0.0, lift_=0.0):
     l = build_ledge(); l.apply_transform(trimesh.transformations.rotation_matrix(np.radians(-ang), [0, 1, 0]))
@@ -193,10 +191,10 @@ if __name__ == "__main__":
 | Wall strip with hook lips | wall_strip.stl | {ns} | standing on its long edge (as exported), brim, no supports |
 | Hinge clip, depth j = 0..{N-1} | hinge_clip_j0..j{N-1}.stl | 1 each | standing (as exported), no supports (finger bridges 31 mm between the cheeks) |
 | Ledge | ledge.stl | {N} | standing (as exported) |
-Mount: screw the strip(s) to the wall (second strip: hook its bottom C-joint onto the top of the first strip, pressing it on from the front, before screwing).
+Mount: screw the strip(s) to the wall (second strip: press its bottom C-recess onto the top hook of the first strip from the front, then screw it).
 Hang each clip: hold it 6 mm above its hook lip (clip j uses lip {K0}, {K0 + 3}, {K0 + 6}, ... counted from the bottom, starting at 0), push it against the strip
 with the two cheeks either side of the strip, and let it drop - the finger falls behind the lip. To remove: lift 6 mm and pull toward you.
-Drop each ledge on its pin. It rests on the support pad; the nub under it stops it at 0 degrees and the bump holds it closed
-(lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-35 degrees and slide the card down into the slot. Stack height {top:.0f} mm.
+Drop each ledge on its pin. It rests on the wide footing; the clip's solid block stops it at 0 degrees and the bump holds it closed
+(lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-40 degrees and slide the card down into the slot. Stack height {top:.0f} mm.
 """)
         print(f"kit {N}: strips {ns}, top {top:.0f} mm")
