@@ -1,0 +1,7 @@
+work/fe/
+work/*.npz
+work/*.npy
+work/*.stl
+work/*.msh
+work/__pycache__/
+work/asa_tds.pdf

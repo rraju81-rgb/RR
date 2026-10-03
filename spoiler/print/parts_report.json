@@ -1,0 +1,369 @@
+[
+ {
+  "name": "TOP_L3",
+  "kind": "TOP section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 249.1,
+  "mass_g_ASA": 267.0,
+  "print_extent_mm": [
+   221.8,
+   222.5,
+   217.0
+  ],
+  "fits_256": true,
+  "note": "print standing on its inboard cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 894.0
+ },
+ {
+  "name": "TOP_L2",
+  "kind": "TOP section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 205.1,
+  "mass_g_ASA": 219.0,
+  "print_extent_mm": [
+   203.0,
+   202.0,
+   216.0
+  ],
+  "fits_256": true,
+  "note": "print standing on its inboard cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 962.0
+ },
+ {
+  "name": "TOP_L1",
+  "kind": "TOP section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 208.1,
+  "mass_g_ASA": 223.0,
+  "print_extent_mm": [
+   193.9,
+   193.9,
+   217.0
+  ],
+  "fits_256": true,
+  "note": "print standing on its inboard cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 957.0
+ },
+ {
+  "name": "TOP_R1",
+  "kind": "TOP section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 208.1,
+  "mass_g_ASA": 223.0,
+  "print_extent_mm": [
+   193.9,
+   193.9,
+   217.0
+  ],
+  "fits_256": true,
+  "note": "print standing on its inboard cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 957.0
+ },
+ {
+  "name": "TOP_R2",
+  "kind": "TOP section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 205.1,
+  "mass_g_ASA": 219.0,
+  "print_extent_mm": [
+   203.0,
+   202.0,
+   216.0
+  ],
+  "fits_256": true,
+  "note": "print standing on its inboard cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 962.0
+ },
+ {
+  "name": "TOP_R3",
+  "kind": "TOP section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 249.1,
+  "mass_g_ASA": 267.0,
+  "print_extent_mm": [
+   222.5,
+   221.8,
+   217.0
+  ],
+  "fits_256": true,
+  "note": "print standing on its inboard cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 894.0
+ },
+ {
+  "name": "BOTTOM_L2",
+  "kind": "BOTTOM section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 109.8,
+  "mass_g_ASA": 118.0,
+  "print_extent_mm": [
+   147.3,
+   147.9,
+   215.4
+  ],
+  "fits_256": true,
+  "note": "print standing on a cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 555.0
+ },
+ {
+  "name": "BOTTOM_L1",
+  "kind": "BOTTOM section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 111.1,
+  "mass_g_ASA": 119.0,
+  "print_extent_mm": [
+   131.3,
+   130.8,
+   215.0
+  ],
+  "fits_256": true,
+  "note": "print standing on a cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 491.0
+ },
+ {
+  "name": "BOTTOM_C",
+  "kind": "BOTTOM section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 105.8,
+  "mass_g_ASA": 113.0,
+  "print_extent_mm": [
+   113.7,
+   114.4,
+   216.0
+  ],
+  "fits_256": true,
+  "note": "print standing on a cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 491.0
+ },
+ {
+  "name": "BOTTOM_R1",
+  "kind": "BOTTOM section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 111.1,
+  "mass_g_ASA": 119.0,
+  "print_extent_mm": [
+   131.3,
+   130.8,
+   215.0
+  ],
+  "fits_256": true,
+  "note": "print standing on a cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 491.0
+ },
+ {
+  "name": "BOTTOM_R2",
+  "kind": "BOTTOM section",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 109.8,
+  "mass_g_ASA": 118.0,
+  "print_extent_mm": [
+   147.9,
+   147.3,
+   215.4
+  ],
+  "fits_256": true,
+  "note": "print standing on a cut face",
+  "self_intersections": 0,
+  "bed_contact_mm2": 555.0
+ },
+ {
+  "name": "SPLICE_TOP_x-433",
+  "kind": "TOP joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 4.2,
+  "mass_g_ASA": 5.0,
+  "print_extent_mm": [
+   97.3,
+   97.5,
+   11.0
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 0.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.13,
+  "min_gap_to_other_mm": 0.99
+ },
+ {
+  "name": "SPLICE_TOP_x-217",
+  "kind": "TOP joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 5.4,
+  "mass_g_ASA": 6.0,
+  "print_extent_mm": [
+   99.3,
+   99.6,
+   7.2
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 1.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.14,
+  "min_gap_to_other_mm": 0.98
+ },
+ {
+  "name": "SPLICE_TOP_x+0",
+  "kind": "TOP joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 5.4,
+  "mass_g_ASA": 6.0,
+  "print_extent_mm": [
+   96.6,
+   96.6,
+   5.5
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 53.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.13,
+  "min_gap_to_other_mm": 0.98
+ },
+ {
+  "name": "SPLICE_TOP_x+217",
+  "kind": "TOP joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 5.4,
+  "mass_g_ASA": 6.0,
+  "print_extent_mm": [
+   99.6,
+   99.3,
+   7.2
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 1.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.13,
+  "min_gap_to_other_mm": 0.98
+ },
+ {
+  "name": "SPLICE_TOP_x+433",
+  "kind": "TOP joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 4.2,
+  "mass_g_ASA": 5.0,
+  "print_extent_mm": [
+   97.5,
+   97.3,
+   11.0
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 0.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.13,
+  "min_gap_to_other_mm": 0.97
+ },
+ {
+  "name": "SPLICE_BOTTOM_x-323",
+  "kind": "BOTTOM joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 5.5,
+  "mass_g_ASA": 6.0,
+  "print_extent_mm": [
+   107.7,
+   107.4,
+   19.1
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 0.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.14,
+  "min_gap_to_other_mm": 0.99
+ },
+ {
+  "name": "SPLICE_BOTTOM_x-108",
+  "kind": "BOTTOM joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 5.1,
+  "mass_g_ASA": 5.0,
+  "print_extent_mm": [
+   96.4,
+   96.6,
+   15.5
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 0.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.14,
+  "min_gap_to_other_mm": 0.99
+ },
+ {
+  "name": "SPLICE_BOTTOM_x+108",
+  "kind": "BOTTOM joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 5.1,
+  "mass_g_ASA": 5.0,
+  "print_extent_mm": [
+   96.6,
+   96.4,
+   15.5
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 0.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.14,
+  "min_gap_to_other_mm": 0.99
+ },
+ {
+  "name": "SPLICE_BOTTOM_x+323",
+  "kind": "BOTTOM joint splice",
+  "watertight": true,
+  "bodies": 1,
+  "volume_cm3": 5.5,
+  "mass_g_ASA": 6.0,
+  "print_extent_mm": [
+   107.7,
+   107.4,
+   19.1
+  ],
+  "fits_256": true,
+  "note": "print lying flat (as installed), tree supports under it",
+  "self_intersections": 0,
+  "bed_contact_mm2": 0.0,
+  "interference_mm3": 0.0,
+  "min_gap_to_host_mm": 0.14,
+  "min_gap_to_other_mm": 0.98
+ }
+]
