@@ -5,8 +5,9 @@ Usage: python3 build_board.py   -> board/*.stl, board/kit_<N>_cars/ (N = 2..6); 
                with a 45 deg fillet under the lip so only 2.5 mm overhangs). Printed FLAT, back on the bed. 5 mm countersunk screw holes.
                C-interlock on the ends (front view, full thickness): the top end is a C (post + arm + down-turned tip), the bottom end
                of the next strip wraps around it; locked up/down/left/right, press the next strip on from the front.
-  hinge_clip   one solid block behind the pin whose flat front face backs the cards of the racks below; a 30 mm finger drops behind a strip
-               lip (gravity lock, lift ~6 mm and pull to remove); cheeks hug the strip. Wide solid footing the ledge sits on, 8 mm pin running
+  hinge_clip   one solid block behind the pin whose flat front face backs the cards of the racks below; DOUBLE LOCK: two 30 mm fingers drop behind
+               BOTH lips of a lip pair (20 mm apart) at once; a snap latch clicks in under the lower lip; cheeks hug the strip.
+               Remove: pull the latch tab, lift ~6 mm, pull toward you. Wide solid footing the ledge sits on, 8 mm pin running
                the full ledge height, detent bump; the solid fill right behind the ledge is the 0 degree stop (no small nubs). Nothing sticks into the card lane: cards start 15 mm from the pin.
   ledge        18 mm tall barrel, solid full-height hinge block, tall back wall from the hinge block on, 1 mm front lip (card name visible),
                4 mm front corner supports, detent dimple underneath.
@@ -27,11 +28,12 @@ strip_w, strip_h, strip_t = 30.0, 400.0, 6.0                    # one 40 cm stri
 hole_d, csk_d = 5.0, 9.0
 lap, jc = 14.0, 0.2                                              # C-interlock (front view): overlap length, clearance
 fil_z, fil_y = 1.0, 2.5                                          # 45 deg fillet under the lip so the strip prints flat (lip overhang only 2.5 mm)
-pitch, n_slots, B0 = 54.0, 7, 42.5                                # rack pitch (was 60), clip positions on the strip, first hook lip
+pitch, n_slots, B0 = 54.0, 7, 43.5                                # rack pitch (was 60), clip positions on the strip, first hook lip
 hook_ys = [B0 + pitch * j for j in range(n_slots)]               # clip j hangs on the lip at hook_ys[j] ...
-lip_ys = sorted(set([b - 18.0 for b in hook_ys] + hook_ys))      # ... and its block bears on the lip 18 mm lower; no other lips
-hole_ys = tuple(hook_ys[j] + 22.5 for j in (0, 1, 4, 5))         # 4 screws in the free gaps, symmetric top / bottom (65, 119, 281, 335)
-split_y = hook_ys[2] + 15.5                                      # 2-piece version: C-interlock in the free gap at 166 (halves 180 / 234 mm)
+pair_d = 20.0                                                    # lip pair: upper (hook) lip + lower lip 20 mm below; the clip hooks onto BOTH (double lock)
+lip_ys = sorted(set([b - pair_d for b in hook_ys] + hook_ys))    # no other lips
+hole_ys = tuple(hook_ys[j] + 21.5 for j in (0, 1, 4, 5))         # 4 screws in the free gaps, symmetric top / bottom (65, 119, 281, 335)
+split_y = hook_ys[2] + 14.0                                      # 2-piece version: C-interlock in the free gap at 165.5 (halves 179.5 / 234.5 mm)
 shelf_h, groove, lip_t, lip_up = 4.0, 3.5, 2.5, 5.0              # shelf height, groove behind the lip, lip thickness, lip height above shelf
 lip_d = groove + lip_t                                           # hook sticks out 6 mm
 
@@ -40,7 +42,7 @@ g = 0.3                                                          # running clear
 body_t, arm_t = 4.0, 3.5
 zb0 = lip_d + g; zb1 = zb0 + body_t                              # solid block z range (in front of the lips)
 b_loc = 7.5                                                      # shelf bottom of the engaged lip, in clip coordinates (foot bottom = 0)
-bear_y = b_loc - 18.0                                            # bottom of the lower (bearing) lip, clip coordinates
+bear_y = b_loc - pair_d                                          # bottom of the lower lip, clip coordinates
 # SNAP LATCH (built in, no loose parts): a springy arm along the bottom of the clip. Its catch clicks in under the lower
 # (bearing) lip when the clip drops into place, so the clip can't lift more than 0.3 mm. Pull the side tab to release.
 catch_top = bear_y - 0.3                                         # catch sits 0.3 mm under the lower lip
@@ -142,6 +144,8 @@ def build_clip(j=0):
     xs = pin_x + foot_x1
     parts = [box(-cheek_x, cheek_x, b + shelf_h, clip_y1, fz0, fz1),                        # finger (rests on the shelf)
              box(-cheek_x, cheek_x, clip_y1 - arm_t, clip_y1, fz0, zb1),                    # bridge over the lip
+             box(-cheek_x, cheek_x, bear_y + shelf_h + 0.3, bear_y + shelf_h + lip_up + g + arm_t, fz0, fz1),   # DOUBLE LOCK: 2nd finger behind the lower lip
+             box(-cheek_x, cheek_x, bear_y + shelf_h + lip_up + g, bear_y + shelf_h + lip_up + g + arm_t, fz0, zb1),   # ... and its bridge over that lip
              box(x_min, cheek_x + cheek_t, clip_y0, clip_y1, zb0, zf),                      # solid block, flat face backs the cards behind
              box(x_min, -cheek_x, clip_y0, clip_y1, cheek_z0, zb1), box(cheek_x, cheek_x + cheek_t, clip_y0, clip_y1, cheek_z0, zb1),   # cheeks
              diff(box(x_min, xs, clip_y0, clip_y1, zf - 0.1, h - rext - 0.3),                # solid fill right up behind the ledge = 0 degree stop
@@ -155,7 +159,7 @@ def build_clip(j=0):
     cuts = [box(arm_x0 - 1, arm_x1, clip_y0 - 1, Y, zA, zG),                                   # flex gap in front of the arm
             box(arm_x0 - 1, arm_x1, catch_top, Y, zb0 - 1, zA),                               # slot above the arm
             hull([(x_, y_, z_) for x_ in (arm_x0 - 1, arm_x1) for y_, z_ in ((Y - 0.01, zb0 - 1), (Y - 0.01, zG), (Y + (zG - zb0 + 1), zb0 - 1))]),   # 45 deg roof over gap + slot
-            lip_fillet(b_loc, 0.5)]
+            lip_fillet(b_loc, 0.5), lip_fillet(bear_y, 0.5)]
     body = diff(union(parts), cuts)
     arm = box(arm_x0, arm_x1 + 0.5, clip_y0, catch_top, zb0, zA)
     dz = zb0 - catch_z

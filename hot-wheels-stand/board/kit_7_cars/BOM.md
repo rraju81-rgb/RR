@@ -10,4 +10,4 @@ Hang each clip: hold it 6 mm above its hook lip (clips hang 54 mm apart: clip j 
 with the two cheeks either side of the strip, and let it drop - the finger falls behind the lip and the snap latch at the bottom clicks in under
 the lip below: the clip can no longer lift. To remove: pull the side tab (left, bottom of the clip) toward you, lift 6 mm, pull the clip off.
 Drop each ledge on its pin. It rests on the wide footing; the clip's solid block stops it at 0 degrees and the bump holds it closed
-(lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-40 degrees and slide the card down into the slot. Stack height 379 mm.
+(lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-40 degrees and slide the card down into the slot. Stack height 380 mm.

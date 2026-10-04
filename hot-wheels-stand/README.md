@@ -612,3 +612,12 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
 - Remove a clip: pull the tab on the left side of the clip bottom toward you (arm flexes 2.3 mm), lift 6 mm, pull off.
 - Checked on all 7 positions: latched clip can't lift 0.5 mm, drop or be pulled off; with the latch open it lifts and comes
   off freely; ledges, cards and loading unchanged. board/latch_detail.png. lock_pin.stl (v8) removed.
+
+## Update v10: double lock on the lip pair
+- Each clip position is a PAIR of hook lips 20 mm apart (was 18). The clip now has two fingers: the upper one drops behind
+  the upper lip and a second one, with its own bridge, drops behind the lower lip at the same time. The v9 snap latch still
+  clicks in under the lower lip. Hooked on both lips, the clip can't twist or pull away; the latch stops it lifting.
+- Rack pitch stays 54 mm; screws still at 65 / 119 / 281 / 335; the 2-piece split moved to 165.5 mm (halves 179.5 / 234.5).
+- Checked on all 7 positions: hangs with no collision; drop and pull-off blocked (the lower finger alone resists pull-off);
+  latched lift of 0.5 mm blocked; with the latch open it lifts 5.6 mm and comes off. Ledges, cards, blisters and loading
+  unchanged. board/double_lock_detail.png shows the section.

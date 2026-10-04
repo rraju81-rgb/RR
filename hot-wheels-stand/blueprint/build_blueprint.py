@@ -138,7 +138,7 @@ def sheet2():
     label(bg, 14, 31, "1  WALL STRIP", "front & side 1:3 · details 3:1 / 2:1")
     ax = axmm(fig, 14, 36, 34, 140); pr = Proj([strip], FRONT, res=2.5); draw(ax, pr, alpha=0.35); frame(ax, pr, 3.0)
     dim(ax, (-15, 0), (-15, B.strip_h), 10, "400"); dim(ax, (-15, 0), (15, 0), -7, "30")
-    dim(ax, (16, B.hook_ys[0]), (16, B.hook_ys[1]), -7, "54", fs=5.5); dim(ax, (16, B.hook_ys[1] - 18), (16, B.hook_ys[1]), -7, "18", fs=5)
+    dim(ax, (16, B.hook_ys[0]), (16, B.hook_ys[1]), -7, "54", fs=5.5); dim(ax, (16, B.hook_ys[1] - B.pair_d), (16, B.hook_ys[1]), -7, "20", fs=5)
     ax = axmm(fig, 50, 36, 22, 140); prs = Proj([strip], SIDE, res=2.5); draw(ax, prs, alpha=0.35); frame(ax, prs, 3.0)
     dim(ax, (-6, -1), (6, -1), -5, "12", fs=5.5)
     # lip profile detail 3:1
