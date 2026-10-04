@@ -648,3 +648,14 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
 - Recommended prices (USD): STL files $7.99, Starter 4-car $29.99, Full 7-car strip $39.99 (launch $34.99), add-on rack $6.99.
 - marketing/meta_ad_1..5.png (1080x1350, Facebook/Instagram feed): real prototype photo + CAD renders of the real parts.
   Rebuild with python3 marketing/build_sales.py.
+
+## Update v13: solid anti-slip bump (no spring), sales kit in rupees
+- The v12 spring wall is gone (no springs wanted). Now each clip cheek has a solid 0.35 mm dome on its inside face, and
+  the strip has a V-notch (indent, 0.7 mm deep) on both side edges at every clip position. When the clip drops in, the
+  domes click into the notches; lifting it needs the cheeks to spread ~0.15 mm each, so it no longer creeps up when a
+  ledge is lifted over its detent, but a firm lift removes it. Strip notches go through the full thickness (prints flat).
+- Checked on all 7 positions: hanging clip collision-free (domes sit in the notches), lifting meets only the domes,
+  drop and pull-off blocked by the double L lock, ledges/cards/loading unchanged.
+- marketing/sales_pitch.pdf and meta_ad_1..5.png now in INR for India: cost about Rs 425 (4-car) / Rs 640 (7-car);
+  prices: STL Rs 499, Starter 4-car Rs 999, Full 7-car Rs 1,499 (launch Rs 1,299), add-on rack Rs 199 (3 for Rs 549),
+  free shipping over Rs 999. Competitors from Etsy India (hooks Rs 277-302, 4-car case Rs 1,658, STL Rs 1,188).

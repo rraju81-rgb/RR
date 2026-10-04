@@ -44,7 +44,7 @@ doc = f"""<!doctype html><html><head><meta charset="utf-8"><title>PITLANE sales 
 <div class="top"><div class="logo">PIT<b>LANE</b></div><span>Sales pitch &amp; product analysis<br>Swing-out wall garage for carded 1:64 cars</span></div>
 <h1>Every car gets its own garage.<br><em>Every card stays on show.</em></h1>
 <p class="lead">PITLANE is a 3D-printed wall system for carded die-cast cars. One 40 cm strip holds up to 7 cars, and each card sits in its own swing-out ledge. Lift a ledge, swing it open, slide the card in, swing it shut. The cards step out 7 mm per row, so every name stays visible and no card covers another.</p>
-<div class="quote"><b>The pitch (30 seconds):</b> &ldquo;Collectors keep their best cars carded, then hide them in boxes or crush them on peg hooks. PITLANE gives every card its own swing-out garage on the wall. You can see every name, take any one card out without touching the others, and add racks as your collection grows. It snaps together with no tools. One 40 cm strip holds up to 7 cars, at about the price of a few mainline cars.&rdquo;</div>
+<div class="quote"><b>The pitch (30 seconds):</b> &ldquo;Collectors keep their best cars carded, then hide them in boxes or crush them on peg hooks. PITLANE gives every card its own swing-out garage on the wall. You can see every name, take any one card out without touching the others, and add racks as your collection grows. It snaps together with no tools. One 40 cm strip holds up to 7 cars, for about the price of one mainline car per slot.&rdquo;</div>
 <div class="g2" style="margin-top:3mm">
  <div class="img ph"><img src="img/photo_prototype_7rack.jpg"><div class="cap">Real printed prototype loaded with real carded cars (designer&rsquo;s photo).</div></div>
  <div class="img"><img src="img/hero_7.png"><div class="cap">Current design: 7 cars on one 40 cm strip (CAD render, cards shown as blanks).</div></div>
@@ -52,62 +52,65 @@ doc = f"""<!doctype html><html><head><meta charset="utf-8"><title>PITLANE sales 
 <h2>What&rsquo;s in the box (7-car kit)</h2>
 <div class="g3">
  <div class="card"><b>1&times; wall strip, 40 cm</b><p>One piece, or two halves that lock with a C-interlock. Fixed with 4 screws. Hook-lip pairs every 54 mm.</p></div>
- <div class="card"><b>7&times; hinge clips</b><p>Each clip double-hooks behind two lips and clicks onto a friction bump. Each one sits 7 mm deeper than the one below. No tools.</p></div>
+ <div class="card"><b>7&times; hinge clips</b><p>Each clip double-hooks behind two lips, and two solid bumps click into notches in the strip (no springs). Each one sits 7 mm deeper than the one below. No tools.</p></div>
  <div class="card"><b>7&times; swing ledges</b><p>8 mm pin running the full height, a 0&deg; stop, a click detent and 14 mm corner posts that keep the card upright.</p></div>
 </div>
 <h2>Why it wins</h2>
 <ul><li><b>Grab one, leave the rest:</b> other displays make you unhook the cards in front. Here each card has its own door.</li>
 <li><b>Names stay readable:</b> a 1 mm front lip and stepped rows mean nothing covers the card title.</li>
 <li><b>Built for real prints:</b> every part prints without supports, and every lock was redesigned after real test prints failed.</li>
-<li><b>Grows with the collection:</b> buy the strip once and add racks for about $6 each.</li></ul>
+<li><b>Grows with the collection:</b> buy the strip once and add racks for &#8377;199 each.</li></ul>
 {foot(1)}</section>
 
 <section class="page"><div class="bar track"></div>
 <div class="top"><div class="logo">PIT<b>LANE</b></div><span>Product analysis</span></div>
 <h2>Market</h2>
-<p>Adult collectors now drive the die-cast market: an estimated 58% of revenue, worth about $4.2&ndash;5.8 billion worldwide in 2025 and growing 5&ndash;6% a year. North America is the largest region at about 38%. Many collectors keep their cars <b>carded</b> (mint in package), which is the segment PITLANE serves.</p>
-<h2>Competition and prices (Oct 2026)</h2>
+<p>Adult collectors now drive the die-cast market worldwide (an estimated 58% of revenue, a $4.2&ndash;5.8 billion market growing 5&ndash;6% a year). India&rsquo;s collector scene is young and growing fast: mainline cars sell for roughly &#8377;200&ndash;450 each online, and collectors who keep cars <b>carded</b> (mint in package) have few wall options made for cards. That gap is what PITLANE fills.</p>
+<h2>Competition and prices in India (Oct 2026)</h2>
 <table><tr><th>Product</th><th>What it does</th><th>Price</th><th>PITLANE advantage</th></tr>
-<tr><td>Etsy 3D-printed hooks and card stands</td><td>Static hooks or stands; cards hang flat or in rows</td><td>$2.75&ndash;$12.86 (e.g. 20 hangers $12.86, 4-pack $12)</td><td>Swing-out access, rows that step forward, double-lock clip</td></tr>
-<tr><td>Official collector &ldquo;case strips&rdquo; (Target)</td><td>5 clear sleeves, 10 cars each, stacked</td><td>$9.99 for 50 cars</td><td>Each card visible and removable on its own; no plastic sleeves</td></tr>
-<tr><td>Wall cabinets / display cases</td><td>Loose (uncarded) cars behind glass</td><td>$36&ndash;$124 (24&ndash;56 cars)</td><td>Made for <i>carded</i> cars; much cheaper per wall metre</td></tr></table>
-<p class="src" style="font-size:7pt;margin-top:1mm">Sources: <a href="https://www.etsy.com/market/hotwheels_carded_display">Etsy carded displays</a>, <a href="https://www.etsy.com/listing/1675476376/die-cast-wall-display-for-standard">Etsy 20-hanger display</a>, <a href="https://www.target.com/p/hot-wheels-collector-case-strips/-/A-95007268">Target collector case strips</a>, <a href="https://www.walmart.com/c/kp/hot-wheels-display">Walmart displays</a>, <a href="https://marketintelo.com/report/die-cast-collectibles-market">Market Intelo</a>, <a href="https://www.intelmarketresearch.com/diecast-model-car-market-33549">Intel Market Research</a>.</p>
+<tr><td>3D-printed card hooks (Etsy India)</td><td>Static hooks; cards hang flat, one behind another</td><td>&#8377;277&ndash;302</td><td>Swing-out access, every card visible, rows step forward</td></tr>
+<tr><td>Wall-mount 1:64 stands (direct sellers)</td><td>Printed stands for loose cars, packs of 12&ndash;48</td><td>&#8377;550&ndash;1,690</td><td>Made for <i>carded</i> cars, double-locked clips</td></tr>
+<tr><td>Modular 3D-printed wall case (Etsy India)</td><td>4 cars per module</td><td>&#8377;1,658+</td><td>7 cars on one 40 cm strip for less</td></tr>
+<tr><td>Display STL files (Etsy India)</td><td>Print-at-home files</td><td>&#8377;1,188</td><td>Our STL pack at &#8377;499</td></tr></table>
+<p class="src" style="font-size:7pt;margin-top:1mm">Sources: <a href="https://www.etsy.com/in-en/market/hot_wheels_display_3d_printed">Etsy India: 3D-printed displays</a>, <a href="https://www.etsy.com/in-en/listing/1855211793/hot-wheels-display-case-3d-printed">Etsy India: modular wall case</a>, <a href="https://www.etsy.com/in-en/listing/4296116586/3d-printing-modular-car-display-hot">Etsy India: display STL</a>, <a href="https://modmusestore.com/products/hot-wheels-wall-mount-3d-printed-display-stand-1-64-scale">ModMuse wall stand</a>, <a href="https://pricehistory.app/p/esun-pla-3d-printing-filament-1-75mm-iblWdqG5">eSUN PLA+ price in India</a>, <a href="https://magicdrop.in/drops/cheap-hot-wheels">Hot Wheels prices in India</a>.</p>
 <h2>SWOT</h2>
 <div class="sw">
  <div class="s"><h3>Strengths</h3><ul><li>A genuinely new mechanism: swing-out door for each card</li><li>Every name visible; rows step out 7 mm</li><li>No supports, low cost per unit, modular</li><li>Designer is a collector, with real-print testing</li></ul></div>
- <div class="w"><h3>Weaknesses</h3><ul><li>Fits standard mainline cards only (~105 &times; 165 mm, blister &le; 42 mm)</li><li>Print time per kit is high (estimate 12&ndash;18 h)</li><li>Ledges above must be opened to load a lower card</li><li>The newest version (friction bump, L-lock) is not yet test-printed</li></ul></div>
+ <div class="w"><h3>Weaknesses</h3><ul><li>Fits standard mainline cards only (~105 &times; 165 mm, blister &le; 42 mm)</li><li>Print time per kit is high (about 16 h for 4 cars, 26 h for 7)</li><li>Ledges above must be opened to load a lower card</li><li>The newest version (solid bump, L-lock) is not yet test-printed</li></ul></div>
  <div class="o"><h3>Opportunities</h3><ul><li>Sell the STL files too: zero marginal cost</li><li>Colour editions (orange track, black and white)</li><li>Premium / long-card ledge, Matchbox and Mini GT variants</li><li>Hobby-shop wall displays (B2B)</li></ul></div>
- <div class="t"><h3>Threats</h3><ul><li>Cheap static hooks at $3&ndash;13</li><li>Copycats on file marketplaces</li><li>Trademark: never use &ldquo;Hot Wheels&rdquo; as your brand, only &ldquo;fits Hot Wheels&reg; cards&rdquo;</li><li>Shipping cost of a 40 cm part</li></ul></div>
+ <div class="t"><h3>Threats</h3><ul><li>Cheap static hooks at &#8377;277&ndash;302</li><li>Copycats on file marketplaces</li><li>Trademark: never use &ldquo;Hot Wheels&rdquo; as your brand, only &ldquo;fits Hot Wheels&reg; cards&rdquo;</li><li>Courier cost of a 40 cm part (ship the 2-piece strip)</li></ul></div>
 </div>
 <h2>Who buys it</h2>
-<ul><li><b>Adult carded collectors</b> (25&ndash;45) with 20&ndash;200 cards and a wall to fill. This is the main ad audience.</li>
-<li><b>Parents</b> buying a tidy display for a child&rsquo;s collection (gift season: Nov&ndash;Dec).</li>
-<li><b>Makers</b> who print their own and buy the STL files on Printables, MakerWorld and Cults3D.</li></ul>
+<ul><li><b>Adult carded collectors</b> (18&ndash;40, metro and Tier-1 cities) with 20&ndash;200 cards and a wall to fill. This is the main ad audience.</li>
+<li><b>Parents and gift buyers</b>: birthdays, plus the Diwali and Christmas gift season (Oct&ndash;Dec).</li>
+<li><b>Makers</b> with their own 3D printer, who buy the STL files.</li></ul>
 {foot(2)}</section>
 
 <section class="page"><div class="bar track"></div>
 <div class="top"><div class="logo">PIT<b>LANE</b></div><span>Pricing &amp; go-to-market</span></div>
-<h2>Cost to make (estimate)</h2>
+<h2>Cost to make (estimate, in rupees)</h2>
 <table><tr><th>Item</th><th>4-car kit</th><th>7-car kit</th><th>Basis</th></tr>
-<tr><td>Filament (PLA/PETG at about $20/kg)</td><td>$3.40&ndash;4.00</td><td>$5.40&ndash;6.20</td><td>From the STL files: 281 g / 449 g if fully solid; real prints about 60&ndash;70% of that</td></tr>
-<tr><td>Power and printer wear</td><td>$1.50</td><td>$2.50</td><td>About $0.15/h &times; 10&ndash;16 h of printing</td></tr>
-<tr><td>4 screws, wall plugs, packaging</td><td>$2.00</td><td>$2.50</td><td>Box for a 40 cm strip (or ship the 2-piece strip)</td></tr>
-<tr><td><b>Total cost</b></td><td><b>&asymp; $7&ndash;8</b></td><td><b>&asymp; $10&ndash;11</b></td><td>Excludes your time and shipping (charge shipping separately)</td></tr></table>
-<h2>Recommended prices (USD)</h2>
+<tr><td>Filament (PLA+ at &#8377;1,500/kg)</td><td>&#8377;297</td><td>&#8377;474</td><td>From the STL files: about 198 g / 316 g printed (70% of fully solid)</td></tr>
+<tr><td>Electricity</td><td>&#8377;20</td><td>&#8377;32</td><td>150 W printer, &#8377;8/kWh, 16 h / 26 h of printing at about 12 g/h</td></tr>
+<tr><td>Failed-print allowance (15%)</td><td>&#8377;48</td><td>&#8377;76</td><td>Reprints, nozzle wear</td></tr>
+<tr><td>Box, 4 screws + wall plugs, label</td><td>&#8377;60</td><td>&#8377;60</td><td>Ship the 2-piece strip to keep the box small</td></tr>
+<tr><td><b>Total cost</b></td><td><b>&asymp; &#8377;425</b></td><td><b>&asymp; &#8377;640</b></td><td>Excludes your time and courier (about &#8377;80&ndash;120 within India)</td></tr></table>
+<h2>Recommended prices (INR)</h2>
 <div class="g3" style="grid-template-columns:repeat(4,1fr)">
- <div class="tier"><h3>STL files</h3><div class="price">$7.99</div><p>All parts and kits, print at home. Launch at $5.99. Sell on Etsy digital, Cults3D and MakerWorld.</p></div>
- <div class="tier"><h3>Starter (4 cars)</h3><div class="price">$29.99</div><p>40 cm strip + 4 clips + 4 ledges. Room to add 3 more.</p></div>
- <div class="tier hot"><span class="tag">BEST VALUE</span><h3>Full strip (7 cars)</h3><div class="price">$39.99</div><p>Fully loaded. $5.71 per car. Launch at $34.99.</p></div>
- <div class="tier"><h3>Add-on rack</h3><div class="price">$6.99</div><p>One clip + one ledge. Bundle of 3 for $17.99.</p></div>
+ <div class="tier"><h3>STL files</h3><div class="price">&#8377;499</div><p>All parts and kits, print at home. Launch offer &#8377;399.</p></div>
+ <div class="tier"><h3>Starter (4 cars)</h3><div class="price">&#8377;999</div><p>40 cm strip + 4 clips + 4 ledges. Room to add 3 more.</p></div>
+ <div class="tier hot"><span class="tag">BEST VALUE</span><h3>Full strip (7 cars)</h3><div class="price">&#8377;1,499</div><p>Fully loaded: &#8377;214 per car. Launch offer &#8377;1,299.</p></div>
+ <div class="tier"><h3>Add-on rack</h3><div class="price">&#8377;199</div><p>One clip + one ledge. 3 for &#8377;549.</p></div>
 </div>
-<p style="margin-top:2.5mm"><b>Why these prices:</b> static Etsy hooks sell for $3&ndash;13 and glass cabinets for $36&ndash;124. PITLANE sits between them as a <i>functional premium</i> product at about $5&ndash;6 per car. At $39.99 on Etsy (roughly $4.40 in fees) the 7-car kit leaves about <b>$24&ndash;25 margin</b> before your time. Don&rsquo;t go below $29.99 for the full strip: it signals a cheap hook, which this isn&rsquo;t.</p>
-<h2>Go-to-market plan</h2>
-<ul><li><b>Week 0&ndash;2:</b> test-print the v12 parts, film a 15 s video of a ledge swinging open (the hook for every ad) and take photos on a real wall.</li>
-<li><b>Launch:</b> list on Etsy (physical + digital) and on MakerWorld/Printables with a free single rack to build reviews. Post the video to r/HotWheels and to Instagram and TikTok collector groups.</li>
-<li><b>Meta ads:</b> $10&ndash;15/day, ages 25&ndash;45, interests: Hot Wheels, die-cast, Matchbox, car culture. Test the 5 posters, keep the 2 cheapest per click, retarget site visitors with the &ldquo;Full strip $39.99&rdquo; ad.</li>
+<p style="margin-top:2.5mm"><b>Why these prices:</b> static hooks sell for &#8377;277&ndash;302 and a 4-car modular case for &#8377;1,658. PITLANE sits above the hooks as a <i>functional premium</i> product but undercuts the case on price per car. Sell the 7-car strip at &#8377;1,499 with free shipping. Sold direct (Instagram or WhatsApp, paid by UPI), it leaves about <b>&#8377;750 per kit</b> after cost and courier. On Amazon or Flipkart, with about 20% in fees, it leaves about <b>&#8377;460</b>. Don&rsquo;t go below &#8377;1,199 for the full strip: it starts to look like a cheap hook. <b>Free shipping on orders of &#8377;999 and up</b>; &#8377;79 below that.</p>
+<h2>Go-to-market plan (India)</h2>
+<ul><li><b>Week 0&ndash;2:</b> test-print the newest parts. Film a 15-second Reel of a ledge swinging open (the hook for every ad) and take photos on a real wall.</li>
+<li><b>Launch:</b> sell direct on Instagram and WhatsApp with UPI payment. Post in Hot Wheels collector groups on Facebook and WhatsApp. Give 3&ndash;5 local collectors and YouTubers a free strip for honest reviews.</li>
+<li><b>Marketplaces:</b> Amazon.in and Flipkart (search reach), Meesho (no commission), Etsy India (STL files and export orders).</li>
+<li><b>Meta ads:</b> &#8377;300&ndash;500/day, ages 18&ndash;40, metro and Tier-1 cities, interests: Hot Wheels, die-cast, Matchbox, car culture. Test the 5 posters for a week, keep the 2 with the cheapest clicks, and retarget profile visitors with the &ldquo;7 cars &#8377;1,499&rdquo; ad. Push hardest from October to December (Diwali and Christmas gifting).</li>
 <li><b>Listing title:</b> &ldquo;PITLANE Swing-Out Wall Display for Carded 1:64 Die-cast Cars, fits Hot Wheels&reg; &amp; Matchbox&reg; mainline cards, 7-car 40 cm strip&rdquo;.</li></ul>
 <h2>Name</h2>
-<p><b>PITLANE</b>: each ledge is a garage that swings open, like the pit lane at a race. The orange stripe nods to the orange track every collector remembers. Backups: <b>CardGarage</b>, <b>Swing Grid</b>. Before you register a name, check trademark and domain availability (e.g. USPTO TESS, your local registry, the Etsy shop name).</p>
+<p><b>PITLANE</b>: every car gets its own garage door, like a pit box in the pit lane at a race, and the strip is the pit wall. The orange stripe nods to the orange track every collector remembers. Backups: <b>CardGarage</b>, <b>Swing Grid</b>. Before you register a name, check trademark and domain availability (India: the IP India trademark search, classes 20 and 28; plus Instagram handle and domain).</p>
 {foot(3)}</section></body></html>"""
 
 AD = CSS + """
@@ -136,9 +139,9 @@ ad(f"""<img src="img/photo_prototype_7rack.jpg" style="position:absolute;left:0;
 <div class="pad" style="top:56px"><div class="logo" style="background:rgba(20,22,27,.75);display:inline-block;padding:8px 18px;border-radius:10px">PIT<b>LANE</b></div></div>
 <div class="pad" style="top:820px"><h1>Your cars deserve<br><em>a garage.</em></h1>
 <div class="sub" style="margin-top:20px">A swing-out wall display for carded die-cast. Every name on show.</div>
-<div class="cta" style="margin-top:34px">Shop now &middot; from <b>$29.99</b></div></div>{FINE}"""),
+<div class="cta" style="margin-top:34px">Shop now &middot; from <b>&#8377;999</b></div></div>{FINE}"""),
 ad(f"""<div class="pad" style="top:64px"><span class="kick">Swing it open</span><h1 style="margin-top:22px">Grab one card.<br><em>Leave the rest.</em></h1></div>
-<div class="tile pad" style="top:400px;height:640px;padding:18px"><img src="img/open_7.png"></div>
+<div class="tile pad" style="top:400px;height:640px;padding:18px"><img src="img/one_open.png"></div>
 <div class="pad" style="top:1080px;display:flex;gap:18px">
  <div class="chip" style="flex:1"><b>1</b>Lift the ledge 1 mm</div><div class="chip" style="flex:1"><b>2</b>Swing it out</div><div class="chip" style="flex:1"><b>3</b>Slide the card in</div></div>{FINE}"""),
 ad(f"""<div class="pad" style="top:64px"><span class="kick">7 cars &middot; 40 cm</span><h1 style="margin-top:22px">Every name.<br><em>Every car.</em></h1>
@@ -147,21 +150,21 @@ ad(f"""<div class="pad" style="top:64px"><span class="kick">7 cars &middot; 40 c
 <div class="pad" style="top:560px;width:430px;display:flex;flex-direction:column;gap:18px">
  <div class="chip"><b>54 mm</b>between racks</div><div class="chip"><b>14 mm</b>corner posts keep cards upright</div><div class="chip"><b>0 tools</b>clips hook on by hand</div></div>{FINE}"""),
 ad(f"""<span></span><div class="pad" style="top:64px"><span class="kick">Engineered to stay put</span><h1 style="margin-top:22px;color:#141414;font-size:92px">Locks twice.<br><em>Lifts off by hand.</em></h1></div>
-<div class="tile pad" style="top:430px;height:430px;padding:10px;border:2px solid #e3e5ea"><img src="../board/double_lock_detail.png"></div>
+<div class="pad" style="top:430px;height:430px;display:grid;grid-template-columns:1fr 1fr;gap:18px"><div class="tile" style="padding:10px;border:2px solid #e3e5ea"><img src="img/hinge_closeup.png"></div><div class="tile" style="padding:10px;border:2px solid #e3e5ea"><img src="img/parts.png"></div></div>
 <div class="pad" style="top:900px;display:flex;gap:18px">
  <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">2&times;</b>L-hooks behind two lips</div>
- <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">Click</b>friction bump stops creep</div>
+ <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">Click</b>solid bump clicks into the strip</div>
  <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">0</b>supports needed to print</div></div>
 <div class="pad" style="top:1130px;font-size:28px;font-weight:700;color:#141414">Strip + clips + ledges. Real parts, printed and tested with real cars.</div>
 <div class="fine" style="color:#6b7180">Fits standard 1:64 carded cars (Hot Wheels&reg;, Matchbox&reg;). Not affiliated with Mattel.</div>""", light=True),
 ad(f"""<div class="pad" style="top:64px"><div class="logo">PIT<b>LANE</b></div><h1 style="margin-top:26px">Pick your<br><em>pit lane.</em></h1></div>
 <div class="pad" style="top:430px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
- <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Starter &middot; 4 cars</span><b style="font-size:72px;margin-top:6px">$29.99</b>40 cm strip, room for 3 more</div>
- <div class="chip" style="padding:28px;border:3px solid var(--orange)"><span style="font-size:24px;color:var(--orange);font-weight:800">BEST VALUE &middot; 7 cars</span><b style="font-size:72px;margin-top:6px">$39.99</b>Fully loaded 40 cm strip</div>
- <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Add-on rack</span><b style="font-size:72px;margin-top:6px">$6.99</b>One clip + one ledge</div>
- <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Print it yourself</span><b style="font-size:72px;margin-top:6px">$7.99</b>All STL files</div></div>
+ <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Starter &middot; 4 cars</span><b style="font-size:72px;margin-top:6px">&#8377;999</b>40 cm strip, room for 3 more</div>
+ <div class="chip" style="padding:28px;border:3px solid var(--orange)"><span style="font-size:24px;color:var(--orange);font-weight:800">BEST VALUE &middot; 7 cars</span><b style="font-size:72px;margin-top:6px">&#8377;1,499</b>Fully loaded 40 cm strip</div>
+ <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Add-on rack</span><b style="font-size:72px;margin-top:6px">&#8377;199</b>One clip + one ledge</div>
+ <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Print it yourself</span><b style="font-size:72px;margin-top:6px">&#8377;499</b>All STL files</div></div>
 <div class="tile pad" style="top:950px;height:200px;padding:8px"><img src="img/photo_prototype_7rack.jpg" style="object-fit:cover"></div>
-<div class="pad" style="top:1185px"><span class="cta" style="font-size:26px;padding:12px 24px">Shop now &rarr;</span></div>"""),
+<div class="pad" style="top:1185px"><span class="cta" style="font-size:26px;padding:12px 24px">DM to order &middot; UPI &middot; free shipping over <b>&#8377;999</b></span></div>"""),
 ]
 def run(a): subprocess.run([CHROME, "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--virtual-time-budget=8000"] + a, check=True, capture_output=True)
 os.chdir(HERE)
