@@ -41,10 +41,13 @@ body_t, arm_t = 4.0, 3.5
 zb0 = lip_d + g; zb1 = zb0 + body_t                              # solid block z range (in front of the lips)
 b_loc = 7.5                                                      # shelf bottom of the engaged lip, in clip coordinates (foot bottom = 0)
 bear_y = b_loc - 18.0                                            # bottom of the lower (bearing) lip, clip coordinates
-pin_s, pin_c = 3.0, 0.3                                          # square LOCK PIN 3 x 3 mm, pushed sideways through both cheeks
-pin_y1 = bear_y - pin_c; pin_y0 = pin_y1 - pin_s                 # it sits just under the lower lip: the clip can't rise more than 0.3 mm
-pin_z0 = 1.0
-clip_y0 = pin_y0 - 2.5                                           # cheeks / block reach below the pin
+# SNAP LATCH (built in, no loose parts): a springy arm along the bottom of the clip. Its catch clicks in under the lower
+# (bearing) lip when the clip drops into place, so the clip can't lift more than 0.3 mm. Pull the side tab to release.
+catch_top = bear_y - 0.3                                         # catch sits 0.3 mm under the lower lip
+catch_z = 4.0                                                    # catch reaches 2 mm behind the lip front (lip front at z = 6)
+arm_t2, flex = 1.6, 2.8                                          # arm thickness (z) and the free space it flexes into
+arm_x0, arm_x1, catch_x = -(strip_w / 2 + 3.4) - 6.0, 15.0, (-14.0, 0.0)   # tab end (left, outside the cheek), anchor (right), catch span
+clip_y0 = bear_y - 6.0                                           # cheeks / block / arm reach 6 mm below the lower lip
 clip_y1 = b_loc + shelf_h + lip_up + g + arm_t
 cheek_x, cheek_t, cheek_z0 = strip_w / 2 + 0.2, 3.0, -3.0
 x_min = -(cheek_x + cheek_t)                                     # print bed face
@@ -78,7 +81,7 @@ def zf_j(j):                                                       # front of th
     return hz_j(0) - card_t / 2 - 0.5 if j else hz - bar_r - 0.4
 def to_print(m, kind):
     R = trimesh.transformations.rotation_matrix
-    T = {"strip": np.eye(4), "clip": R(np.pi / 2, [1, 0, 0]), "ledge": R(np.pi / 2, [1, 0, 0]), "pin": np.eye(4)}[kind]
+    T = {"strip": np.eye(4), "clip": R(np.pi / 2, [1, 0, 0]), "ledge": R(np.pi / 2, [1, 0, 0])}[kind]
     m = m.copy(); m.apply_transform(T); m.apply_translation(-m.bounds[0]); return m
 
 def overhang_report(m, thresh_deg=43.0, bed_tol=0.05):
@@ -147,16 +150,18 @@ def build_clip(j=0):
              cyly(pin_x, h, ly0 - 0.15, ly0 + bar_h + 3.5, pin_d / 2, 64),                  # pin runs the full height of the ledge
              hull([(pin_x + r_ * np.cos(a), y_, h + r_ * np.sin(a)) for r_, y_ in ((collar_r, ly0 - 0.15), (pin_d / 2, ly0 + collar_h - 0.15)) for a in np.linspace(0, 2 * np.pi, 64, endpoint=False)]),
              sphere(pin_x + bump_x, ly0 - 0.3, h, bump_r)]
-    hole = box(x_min - 1, cheek_x + cheek_t + 1, pin_y0 - pin_c, pin_y1 + pin_c, pin_z0 - pin_c, pin_z0 + pin_s + pin_c)   # pin hole through both cheeks
-    return diff(union(parts), [lip_fillet(b_loc, 0.5), hole])
-
-def build_pin():
-    """lock pin, in clip coordinates (inserted from the left). Square, prints flat; a 0.6 mm bump clicks past the right cheek and keeps it in."""
-    L0, L1 = x_min - 2.5, cheek_x + cheek_t + 2.0
-    bar = box(L0, L1, pin_y0, pin_y1, pin_z0, pin_z0 + pin_s)
-    head = box(L0, x_min - 0.3, pin_y0 - 2.5, pin_y1 + 2.5, pin_z0, pin_z0 + pin_s)
-    bump = hull([(x_, y_, z_) for x_ in (cheek_x + cheek_t + 0.3, cheek_x + cheek_t + 1.6) for y_ in (pin_y0 + 0.5, pin_y1 - 0.5) for z_ in (pin_z0 + pin_s - 0.01, pin_z0 + pin_s + (0.6 if x_ > cheek_x + cheek_t + 1 else 0.05))])
-    return union([bar, head, bump])
+    zA, zG = zb0 + arm_t2, zb0 + arm_t2 + flex                   # arm front face, front of the flex gap
+    Y = catch_top + 0.6                                           # top of the slot above the arm
+    cuts = [box(arm_x0 - 1, arm_x1, clip_y0 - 1, Y, zA, zG),                                   # flex gap in front of the arm
+            box(arm_x0 - 1, arm_x1, catch_top, Y, zb0 - 1, zA),                               # slot above the arm
+            hull([(x_, y_, z_) for x_ in (arm_x0 - 1, arm_x1) for y_, z_ in ((Y - 0.01, zb0 - 1), (Y - 0.01, zG), (Y + (zG - zb0 + 1), zb0 - 1))]),   # 45 deg roof over gap + slot
+            lip_fillet(b_loc, 0.5)]
+    body = diff(union(parts), cuts)
+    arm = box(arm_x0, arm_x1 + 0.5, clip_y0, catch_top, zb0, zA)
+    dz = zb0 - catch_z
+    catch = hull([(x_, y_, z_) for x_ in catch_x for y_, z_ in ((catch_top, zb0 + 0.01), (catch_top, catch_z), (catch_top - 0.6, catch_z), (catch_top - 0.6 - dz, zb0 + 0.01))])
+    tab = box(arm_x0, x_min - 0.6, clip_y0, catch_top, zb0, zb0 + 4.0)                       # finger tab to pull the latch open
+    return union([body, arm, catch, tab])
 
 # ------------------------------------------------------------------ ledge (pin axis at x = 0, z = 0)
 def build_ledge():
@@ -199,7 +204,7 @@ if __name__ == "__main__":
     strip = build_strip(); ledge = build_ledge(); clips = [build_clip(j) for j in range(n_slots)]
     half1, half2 = split_strip(strip)
     out = {"wall_strip_400": to_print(strip, "strip"), "wall_strip_400_part1": to_print(half1, "strip"), "wall_strip_400_part2": to_print(half2, "strip"),
-           "ledge": to_print(ledge, "ledge"), "lock_pin": to_print(build_pin(), "pin")}
+           "ledge": to_print(ledge, "ledge")}
     for j, c in enumerate(clips): out[f"hinge_clip_j{j}"] = to_print(c, "clip")
     for n, m in out.items():
         m.export(f"board/{n}.stl"); print(f"{n:15s} watertight={m.is_watertight} size={np.round(m.extents, 1)} overhang>45deg={overhang_report(m)} mm2")
@@ -214,7 +219,6 @@ if __name__ == "__main__":
         for n in ("wall_strip_400", "wall_strip_400_part1", "wall_strip_400_part2"): out[n].export(f"{d}/{n}.stl")
         to_print(ledge, "ledge").export(f"{d}/ledge.stl")
         for j in range(N): to_print(clips[j], "clip").export(f"{d}/hinge_clip_j{j}.stl")
-        out["lock_pin"].export(f"{d}/lock_pin.stl")
         row, x = [], 0.0
         for j in range(N):
             p = to_print(clips[j], "clip"); p.apply_translation([x, 0, 0]); row.append(p); x += p.extents[0] + 6
@@ -235,11 +239,11 @@ if __name__ == "__main__":
 |---|---|---|---|
 | Wall strip 400 mm, one piece (bed >= 400 mm) | wall_strip_400.stl | 1 | flat, back on the bed, no supports |\n| or: the same strip in two halves (180 + 234 mm, C-interlock) | wall_strip_400_part1.stl + part2.stl | 1 each | flat, back on the bed |
 | Hinge clip, depth j = 0..{N-1} | hinge_clip_j0..j{N-1}.stl | 1 each | standing (as exported), no supports (finger bridges 31 mm between the cheeks) |
-| Ledge | ledge.stl | {N} | standing (as exported) |\n| Lock pin (one per clip) | lock_pin.stl | {N} | flat (as exported) |
+| Ledge | ledge.stl | {N} | standing (as exported) |
 Mount: screw the strip to the wall with 4 countersunk screws (two-piece strip: press part 2 over the C on top of part 1, straight in from the front).
 Hang each clip: hold it 6 mm above its hook lip (clips hang 54 mm apart: clip j on the upper lip of pair j, counted from the bottom), push it against the strip
-with the two cheeks either side of the strip, and let it drop - the finger falls behind the lip. Then push a lock pin through the square holes
-in both cheeks (head on the left) until it clicks: it sits under the lip below and the clip can no longer lift. To remove: pull the pin, lift 6 mm, pull toward you.
+with the two cheeks either side of the strip, and let it drop - the finger falls behind the lip and the snap latch at the bottom clicks in under
+the lip below: the clip can no longer lift. To remove: pull the side tab (left, bottom of the clip) toward you, lift 6 mm, pull the clip off.
 Drop each ledge on its pin. It rests on the wide footing; the clip's solid block stops it at 0 degrees and the bump holds it closed
 (lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-40 degrees and slide the card down into the slot. Stack height {top:.0f} mm.
 """)

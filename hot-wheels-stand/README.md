@@ -604,3 +604,11 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
   at most 0.3 mm (checked: 0.4 mm lift already collides). A 0.6 mm bump clicks past the right cheek to keep the pin in.
 - Finger now 0.2 mm each side in the 3.5 mm groove (was 0.3), and 0.5 mm clearance around the 45 deg lip fillet so it seats fully.
 - Remove a clip: pull the pin, lift 6 mm, pull toward you. board/lock_pin_detail.png shows the lock.
+
+## Update v9: built-in snap latch replaces the lock pin (clip can't slide up)
+- A spring arm (1.6 mm thick, 22 mm free length, runs sideways along the bottom of the clip) carries a catch that clicks in
+  0.3 mm under the lower (bearing) lip when the clip drops into place. No loose parts. Printed standing, the arm lies in the
+  layer plane, so it flexes along its layers instead of across them (strain ~1.3% at full flex).
+- Remove a clip: pull the tab on the left side of the clip bottom toward you (arm flexes 2.3 mm), lift 6 mm, pull off.
+- Checked on all 7 positions: latched clip can't lift 0.5 mm, drop or be pulled off; with the latch open it lifts and comes
+  off freely; ledges, cards and loading unchanged. board/latch_detail.png. lock_pin.stl (v8) removed.
