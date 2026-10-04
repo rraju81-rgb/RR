@@ -3,17 +3,18 @@
 Changes vs. source/rack_6slot_original.stl:
   * Frame (backbone) is thicker and wider: 3 mm -> 6 mm thick, 14 mm -> 20 mm wide.
   * Keyhole slots removed; replaced by plain 3 mm through-holes with a
-    countersink on the front face. Round holes stop the rack from rotating
-    on its screws (the old keyholes let it tilt to the right).
-  * Display arms replaced by the profile from source/ledge.stl (longer,
-    with car end-stops). Every ledge sits flush on the wall plane (z = 0)
-    instead of the old staircase offsets, and each one has a solid boss and
-    a gusset where it joins the frame.
+    countersink on the front face, so the rack can't rotate on its screws.
+  * Keeps the original step-by-step display: each ledge sits STEP mm further
+    from the wall than the one below it (4.6 mm, same as the original).
+  * Each ledge is a car channel based on source/ledge.stl (same length, back
+    wall + end stop), widened into a groove the car slides into from the open
+    end: floor, back wall, chamfered front lip, end stop at the frame and a
+    small retaining bump at the open end.
 
 Coordinates (print orientation, back face on the bed):
   x = horizontal along the wall, y = up the wall, z = out from the wall.
 
-Usage: pip install trimesh manifold3d numpy && python build_rack.py
+Usage: pip install trimesh manifold3d shapely numpy && python build_rack.py
 """
 from pathlib import Path
 
@@ -23,24 +24,30 @@ from shapely.geometry import Polygon
 
 HERE = Path(__file__).parent
 
-# --- parameters (mm) ---------------------------------------------------------
+# --- frame (mm) --------------------------------------------------------------
 FRAME_W = 20.0          # backbone width (x)
 FRAME_T = 6.0           # backbone thickness (z)
 FRAME_L = 449.0         # backbone length (y), same as original
-SLOTS = 6
-SLOT_PITCH = 55.0       # same spacing as original
-FIRST_SLOT_Y = 15.0     # room below the bottom ledge for its gusset
 HOLE_D = 3.0            # screw hole
 CSINK_D = 6.5           # countersink diameter at the front face
-GUSSET = 12.0           # gusset leg length under each ledge
-HOLE_Y = [41.0, 151.0, 430.0]  # between ledges / near the top, spread wide
+HOLE_Y = [40.0, 150.0, 430.0]  # between ledges / near the top, spread wide
 
-# ledge.stl geometry (its own coordinates): ring centre at x = 6.6, bar
-# section spans y 2.2..11.5, floor at y 7.5..11.5, height 22 in z.
-LEDGE_RING_X = 6.6
-LEDGE_CUT_X = 13.4      # drop the mounting ring; the frame replaces it
-LEDGE_Y_MIN, LEDGE_Y_MAX = 2.2, 11.5
-LEDGE_H = 22.0
+# --- ledges (mm) -------------------------------------------------------------
+SLOTS = 6
+SLOT_PITCH = 55.0       # same spacing as original
+FIRST_SLOT_Y = 10.0
+STEP = 4.6              # extra distance from the wall per slot (original step)
+LEDGE_LEN = 122.0       # bar length of ledge.stl (128.6 minus its ring)
+BACK_T = 3.0            # back wall thickness at the bottom slot (ledge.stl flange)
+BACK_H = 9.3            # back wall height above floor underside (ledge.stl flange)
+FLOOR_T = 3.0           # channel floor thickness
+GROOVE_W = 36.0         # inside width of the groove (Hot Wheels cars are ~30-34)
+LIP_T = 3.0             # front lip thickness
+LIP_H = 4.0             # front lip height above the floor
+END_T = 3.0             # end stop wall at the frame end
+BUMP_H = 1.5            # retaining bump at the open end
+BUMP_W = 6.0
+BUMP_FROM_END = 6.0
 
 
 def box(x0, x1, y0, y1, z0, z1):
@@ -49,28 +56,48 @@ def box(x0, x1, y0, y1, z0, z1):
     return b
 
 
-def ledge_body():
-    """ledge.stl without its ring, flipped so the floor is at the bottom
-    and the end-stops sit on top, with the floor underside at y = 0."""
-    m = trimesh.load(HERE / "source" / "ledge.stl")
-    keep = box(LEDGE_CUT_X, 200, -1, 20, -1, 30)
-    m = trimesh.boolean.intersection([m, keep], engine="manifold")
-    # y -> LEDGE_Y_MAX - y; a mirror inverts the winding, so fix it after
-    m.apply_transform(np.array([[1, 0, 0, 0],
-                                [0, -1, 0, LEDGE_Y_MAX],
-                                [0, 0, 1, 0],
+def prism_yz(points, x0, x1):
+    """Extrude a polygon given in (y, z) along x from x0 to x1."""
+    m = trimesh.creation.extrude_polygon(Polygon(points), height=x1 - x0)
+    # extrude_polygon builds in (x, y) and extrudes along z; remap to (y, z, x)
+    m.apply_transform(np.array([[0, 0, 1, x0],
+                                [1, 0, 0, 0],
+                                [0, 1, 0, 0],
                                 [0, 0, 0, 1]], dtype=float))
-    if m.volume < 0:
-        m.invert()
-    # ring centre lines up with the frame centre line
-    m.apply_translation([FRAME_W / 2 - LEDGE_RING_X, 0, 0])
     return m
 
 
-def gusset(y):
-    tri = Polygon([(FRAME_W - 1, y + 0.5), (FRAME_W - 1, y - GUSSET),
-                   (FRAME_W + GUSSET, y + 0.5)])
-    return trimesh.creation.extrude_polygon(tri, height=LEDGE_H)
+def prism_xy(points, z0, z1):
+    m = trimesh.creation.extrude_polygon(Polygon(points), height=z1 - z0)
+    m.apply_translation([0, 0, z0])
+    return m
+
+
+def ledge(y, k):
+    """Car channel for slot k with its floor underside at height y."""
+    back = BACK_T + k * STEP               # stepped back wall thickness
+    depth = back + GROOVE_W + LIP_T        # total projection from the wall
+    x0 = FRAME_W - 1.0                     # overlap into the frame
+    x1 = FRAME_W + LEDGE_LEN
+    floor_top = y + FLOOR_T
+    parts = [
+        box(x0, x1, y, y + BACK_H, 0, back),          # back wall
+        box(x0, x1, y, floor_top, 0, depth),          # floor
+        # front lip, 45 deg underside so it prints without support and
+        # guides the wheels into the groove
+        prism_yz([(floor_top - 0.01, depth - LIP_T - LIP_H),
+                  (floor_top - 0.01, depth),
+                  (floor_top + LIP_H, depth),
+                  (floor_top + LIP_H, depth - LIP_T)], x0, x1),
+        # end stop at the frame end
+        box(x0, FRAME_W + END_T, y, floor_top + LIP_H, 0, depth),
+    ]
+    # low ramped bump near the open end keeps the car from rolling out
+    bx = x1 - BUMP_FROM_END
+    parts.append(prism_xy([(bx - BUMP_W / 2, floor_top - 0.01),
+                           (bx + BUMP_W / 2, floor_top - 0.01),
+                           (bx, floor_top + BUMP_H)], back - 0.01, depth - LIP_T + 0.01))
+    return parts
 
 
 def countersunk_hole(y):
@@ -88,20 +115,11 @@ def countersunk_hole(y):
 
 def build():
     parts = [box(0, FRAME_W, 0, FRAME_L, 0, FRAME_T)]
-    base = ledge_body()
-    ledge_h = LEDGE_Y_MAX - LEDGE_Y_MIN
-    for i in range(SLOTS):
-        y = FIRST_SLOT_Y + i * SLOT_PITCH
-        lg = base.copy()
-        lg.apply_translation([0, y, 0])
-        parts.append(lg)
-        # solid boss in the frame at the ledge root, full ledge height
-        parts.append(box(0, FRAME_W, y - GUSSET, y + ledge_h, 0, LEDGE_H))
-        parts.append(gusset(y))
+    for k in range(SLOTS):
+        parts += ledge(FIRST_SLOT_Y + k * SLOT_PITCH, k)
     rack = trimesh.boolean.union(parts, engine="manifold")
     cutters = [c for hy in HOLE_Y for c in countersunk_hole(hy)]
-    rack = trimesh.boolean.difference([rack] + cutters, engine="manifold")
-    return rack
+    return trimesh.boolean.difference([rack] + cutters, engine="manifold")
 
 
 if __name__ == "__main__":
