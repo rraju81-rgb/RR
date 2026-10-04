@@ -111,7 +111,7 @@ def sheet1():
         for c_, t in zip(cw, r):
             bg.add_patch(Rectangle((xx, yy), c_, 6.2, fill=(i == 0), fc="#174d93", ec=INK, lw=0.4))
             bg.text(xx + 1.5, yy + 3.1, t, color=INK, fontsize=5.8 if i else 6, va="center", fontweight="bold" if i == 0 else "normal"); xx += c_
-    bg.text(x0, y0 + 36, "Kits: 2-6 cars on one 40 cm strip, racks 54 mm apart (7 positions).", color=HID, fontsize=6)
+    bg.text(x0, y0 + 36, "Kits: 2-7 cars on one 40 cm strip (54 mm apart). 14 cars: second strip 491 mm higher, clips j0-j6 again.", color=HID, fontsize=6)
     bg.text(x0, y0 + 40, "Strips join with the C-interlock; clips need no tools.", color=HID, fontsize=6)
     # --- operation sequence
     label(bg, 14, 203, "OPERATION SEQUENCE", "how the product works")
@@ -177,7 +177,7 @@ def sheet2():
     ax = axmm(fig, 132, 92, 52, 40); prt = Proj([c0], TOP, res=8.0); draw(ax, prt, hidden=True, alpha=0.35); frame(ax, prt, 1.0)
     dim(ax, (B.pin_x, -B.hz), (B.pin_x, 0), -4, f"{B.hz:.1f}", fs=5.5)
     ax = axmm(fig, 186, 92, 48, 40); pri = Proj([c0], iso_M(25, 35), res=6.0); draw(ax, pri, alpha=0.6); frame(ax, pri)
-    rows = [("j", "pin from strip", "block depth")] + [(str(j), f"{B.hz_j(j):.1f}", f"{B.zf_j(j) - B.zb0:.1f}") for j in range(6)]
+    rows = [("j", "pin from strip", "block depth")] + [(str(j), f"{B.hz_j(j):.1f}", f"{B.zf_j(j) - B.zb0:.1f}") for j in range(7)]
     for i, r in enumerate(rows):
         for k, t in enumerate(r): bg.text(132 + [0, 8, 30][k], 138 + i * 4, t, color=INK if i else DIM, fontsize=5.6, fontweight="bold" if i == 0 else "normal")
     bg.text(186, 138, "Clip j sits 7 mm deeper per rack.", color=HID, fontsize=5.6)

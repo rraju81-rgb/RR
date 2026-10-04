@@ -25,13 +25,13 @@ def scene(N, angs, cards=True, slide=None):
         if cards: m.append(card(j, a, lf, (slide or [0] * N)[j])); c.append(CARD_COLS[j % 4])
     return m, c
 # hero: 4 cars closed
-m, c = scene(4, [0, 0, 0, 0]); save(raster(m, c, 15, 30, (1100, 1500), [[-40, 0, -5], [140, 420, 80]]), "hero_closed")
+m, c = scene(6, [0] * 6); save(raster(m, c, 15, 30, (1100, 1500), [[-40, 0, -5], [140, 520, 100]]), "hero_closed")
 # one door open
-m, c = scene(4, [0, 0, 30, 90]); save(raster(m, c, 20, 40, (1100, 1500), [[-40, 0, -5], [160, 420, 140]]), "one_open")
+m, c = scene(6, [0, 0, 0, 30, 90, 90]); save(raster(m, c, 20, 40, (1100, 1500), [[-40, 0, -5], [160, 520, 160]]), "one_open")
 # all open (fan)
-m, c = scene(4, [20, 45, 70, 90], cards=False); save(raster(m, c, 25, 45, (1100, 1500), [[-40, 0, -5], [160, 420, 160]]), "all_open")
+m, c = scene(6, [10, 25, 40, 55, 70, 90], cards=False); save(raster(m, c, 25, 45, (1100, 1500), [[-40, 0, -5], [160, 420, 180]]), "all_open")
 # no cards, closed (structure)
-m, c = scene(4, [0, 0, 0, 0], cards=False); save(raster(m, c, 20, 35, (900, 1300), [[-40, 0, -5], [140, 260, 60]]), "frame_only")
+m, c = scene(6, [0] * 6, cards=False); save(raster(m, c, 20, 35, (900, 1300), [[-40, 0, -5], [140, 400, 80]]), "frame_only")
 # hang the clip: 3 steps (close-up)
 y = clip_y(1); sub = inter([strip, box(-20, 20, y - 30, y + 45, -10, 20)])
 for i, (dy, dz) in enumerate([(lift + 0.5, 25), (lift + 0.5, 0), (0, 0)]):

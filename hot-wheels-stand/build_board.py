@@ -166,6 +166,11 @@ def ledge_at(j, ang=0.0, lift_=0.0):
 def clip_y(j):                                                    # foot y of clip j on the 400 mm strip
     return hook_ys[j] - b_loc
 
+# second (upper) strip: racks restart at depth 0. The upper strip must start this far above the lower one so its first card
+# begins above the top of the lower strip's last card (depths can't go back down 6-5-4..: the blisters would hit the card below
+# and every car would be hidden behind it).
+upper_offset = hook_ys[n_slots - 1] - hook_ys[0] + card_h + 2.0   # 491 mm  -> 91 mm of bare wall between the two strips
+
 def scene(N, strip_m, clips, ang=None):
     ns = 1
     asm = [strip_m]
@@ -178,7 +183,7 @@ if __name__ == "__main__":
     os.makedirs("board", exist_ok=True)
     for f in os.listdir("board"):
         if f.endswith(".stl") or f.endswith(".zip"): os.remove(f"board/{f}")
-    strip = build_strip(); ledge = build_ledge(); clips = [build_clip(j) for j in range(6)]
+    strip = build_strip(); ledge = build_ledge(); clips = [build_clip(j) for j in range(n_slots)]
     half1, half2 = split_strip(strip)
     out = {"wall_strip_400": to_print(strip, "strip"), "wall_strip_400_part1": to_print(half1, "strip"), "wall_strip_400_part2": to_print(half2, "strip"),
            "ledge": to_print(ledge, "ledge")}
@@ -188,7 +193,7 @@ if __name__ == "__main__":
     import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
     src = open("render_clip.py").read(); exec(src[src.index("def raster("):src.index("def panel(")])
     grey, orange, dk = (0.75, 0.75, 0.78), (0.95, 0.6, 0.1), (0.3, 0.3, 0.35)
-    for N in (2, 3, 4, 5, 6):
+    for N in (2, 3, 4, 5, 6, 7):
         d = f"board/kit_{N}_cars"; os.makedirs(d, exist_ok=True)
         for f in os.listdir(d): os.remove(f"{d}/{f}")
         asm, ns = scene(N, strip, clips)
@@ -208,7 +213,7 @@ if __name__ == "__main__":
         fig, axs = plt.subplots(1, 2, figsize=(11, 6.5), dpi=100)
         cols = [grey] * ns + [dk, orange] * N
         axs[0].imshow(raster(asm, cols, 12, 28, (420, 640), [[-50, 0, -5], [130, strip_h, 60]])); axs[0].set_title(f"{N} cars"); axs[0].axis("off")
-        asm2, _ = scene(N, strip, clips, ang=[0, 40, 75, 20, 60, 30][:N])
+        asm2, _ = scene(N, strip, clips, ang=[0, 40, 75, 20, 60, 30, 50][:N])
         axs[1].imshow(raster(asm2, cols, 50, 30, (420, 640), [[-50, 0, -5], [130, strip_h, 110]])); axs[1].set_title("ledges open"); axs[1].axis("off")
         fig.savefig(f"{d}/preview.png", bbox_inches="tight"); plt.close(fig)
         open(f"{d}/BOM.md", "w").write(f"""# {N}-car display kit (hook strip + solid hinge clips)
@@ -224,3 +229,29 @@ Drop each ledge on its pin. It rests on the wide footing; the clip's solid block
 (lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-40 degrees and slide the card down into the slot. Stack height {top:.0f} mm.
 """)
         print(f"kit {N}: strips {ns}, top {top:.0f} mm")
+
+    # ---------------- two strips, one above the other: 7 + 7 racks, depths 0..6 then 0..6 again
+    d = "board/column_14_cars_two_strips"; os.makedirs(d, exist_ok=True)
+    for f in os.listdir(d): os.remove(f"{d}/{f}")
+    asm = [strip, place(strip, 0, upper_offset)]
+    for k in range(2):
+        for j in range(n_slots):
+            asm += [place(clips[j], 0, upper_offset * k + clip_y(j)), place(ledge_at(j, 0), 0, upper_offset * k + clip_y(j))]
+    trimesh.util.concatenate(asm).export(f"{d}/assembled_demo.stl")
+    fig, ax = plt.subplots(1, 1, figsize=(6, 9), dpi=100)
+    ax.imshow(raster(asm, [grey, grey] + [dk, orange] * (2 * n_slots), 12, 28, (520, 820), [[-50, 0, -5], [130, upper_offset + strip_h, 80]])); ax.axis("off")
+    ax.set_title(f"two 40 cm strips: 14 cars, upper strip starts {upper_offset:.0f} mm above the lower one")
+    fig.savefig(f"{d}/preview.png", bbox_inches="tight"); plt.close(fig)
+    open(f"{d}/BOM.md", "w").write(f"""# 14 cars on two 40 cm strips (7 + 7)
+| Part | Qty |
+|---|---|
+| wall_strip_400.stl (or part1 + part2) | 2 |
+| hinge_clip_j0 ... hinge_clip_j6 | 2 of each (one set per strip) |
+| ledge.stl | 14 |
+Mount the second strip directly above the first, same x, with its bottom end {upper_offset:.0f} mm above the bottom end of the first
+(that leaves {upper_offset - strip_h:.0f} mm of bare wall between them). On each strip the clips go j0 at the bottom up to j6 at the top.
+Why not 0-1-2-3-4-5-6-5-4-3-2-1-0: when the depth goes back down, a card sits in front of the rack above it, so the blister
+of the upper card hits it and every car above is hidden behind it. Starting again at depth 0 needs the {upper_offset - strip_h:.0f} mm gap
+so the last card of the lower strip ends before the first card of the upper strip begins.
+""")
+    print(f"column: upper strip offset {upper_offset:.0f} mm, gap {upper_offset - strip_h:.0f} mm")

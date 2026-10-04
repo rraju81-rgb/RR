@@ -51,7 +51,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <h1>Your collection, on the wall.<br><em>Every card opens like a door.</em></h1>
  <p class="lead">{NAME} is a 3D-printed wall rack for carded die-cast cars. Each card gets its own swing-out ledge. The ledges are stacked and staggered so every name stays readable, and you can take any one card out without touching the others.</p>
  <div class="hero">
-  <figure><img src="img/hero_closed.png"><figcaption>4-car kit, closed: the cards step forward 7 mm per row, so no card hides the one above it.</figcaption></figure>
+  <figure><img src="img/hero_closed.png"><figcaption>6-car kit on the 40 cm strip, closed: each row steps forward 7 mm, so every car and name stays in view.</figcaption></figure>
   <figure class="photo"><img src="img/photo_prototype_wide.jpg"><figcaption>Early printed prototype holding real carded cars (photo by the designer).</figcaption></figure>
  </div>
  <div class="grid2">
@@ -61,12 +61,12 @@ tr:nth-child(even) td{{background:var(--soft)}}
    <li>Most shelf displays are built for loose cars, not for cards with a blister on the front.</li></ul></div>
   <div><h2>The solution</h2><ul>
    <li>One ledge per card, hinged on a vertical pin. Lift it 1 mm, swing it out, slide the card out.</li>
-   <li>A slot with a low front lip and a tall back wall holds the card upright while its printed name stays visible.</li>
+   <li>A slot with a 1 mm front lip, a tall back wall and 14 mm corner posts holds the card upright, so it can't lean forward, while its name stays visible.</li>
    <li>Modular: one 40 cm wall strip carries up to 7 cars, 54 mm apart. It also prints as two halves that lock together.</li></ul></div>
  </div>
  <h2 style="margin-top:4mm">How it works</h2>
  <div class="steps">
-  <div class="step"><b class="n">01</b><h3>Screw the strip to the wall</h3><p>Two or three 5 mm countersunk screws. Hook lips every 20 mm.</p><img src="img/frame_only.png"></div>
+  <div class="step"><b class="n">01</b><h3>Screw the strip to the wall</h3><p>Four 5 mm countersunk screws. 40 cm strip, racks 54 mm apart.</p><img src="img/frame_only.png"></div>
   <div class="step"><b class="n">02</b><h3>Drop a clip on a hook lip</h3><p>Hold it 6 mm above a lip, push it in and let go. It locks under its own weight. To remove it, lift and pull.</p><img src="img/hang_step3.png"></div>
   <div class="step"><b class="n">03</b><h3>Drop the ledge on the pin</h3><p>Slide a card into the slot. A small bump clicks the ledge shut and the solid clip block keeps it at 0&deg;.</p><img src="img/hinge_closeup.png"></div>
  </div>
@@ -83,7 +83,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  </div>
  <h2>Engineering that survived the test prints</h2>
  <div class="feat">
-  <div><b>Hooks that can't snap</b><span>The hook lips run across the full 30 mm width of the strip, and the strip prints on its edge, so the layers run along each hook. The earlier pegs broke where they met the strip.</span></div>
+  <div><b>Hooks that can't snap</b><span>The hook lips run across the full 30 mm width of the strip and print flat with a 45&deg; under-fillet, so there is nothing thin to break off. The earlier pegs broke where they met the strip.</span></div>
   <div><b>Gravity lock, no tools</b><span>A 30 mm finger drops behind a lip. Side cheeks hug the strip so the clip can't twist. The bottom of the clip rests on the lip below it.</span></div>
   <div><b>No sagging ledge</b><span>The ledge sits on a wide solid footing, with an 8 mm pin running its full height. The clip's solid block stops it at 0&deg;, and a bump-and-dimple detent keeps it closed.</span></div>
   <div><b>Names always visible</b><span>Each rack sits 7 mm further from the wall than the one below it. The 1 mm front lip leaves the card title in view.</span></div>
@@ -101,7 +101,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <p style="font-size:7.5pt;color:var(--muted);margin-top:1.5mm">*Upper bound from STL volume printed 100% solid in PLA; real prints with normal infill use less. Fits cards about 105 &times; 165 mm with a blister up to 42 mm tall.</p>
  <div class="grid2" style="margin-top:3mm">
   <div class="card"><h2>Who it's for</h2><ul><li>Collectors who keep their cars carded.</li><li>Hobby and toy shops that want a neat counter or wall display.</li><li>Makers who buy printable files on Printables, Etsy and similar marketplaces.</li></ul></div>
-  <div class="card"><h2>Next steps</h2><ul><li>Test print the v2 hook strip and clip, then do load and drop tests with full cards.</li><li>Launch the STL files and printed kits. Set prices after the cost test.</li><li>Add-ons: colour sets, snap-on name plates, an 8-car kit.</li></ul></div>
+  <div class="card"><h2>Next steps</h2><ul><li>Test print the 40 cm strip, clip and ledge, then do load and drop tests with full cards.</li><li>Launch the STL files and printed kits. Set prices after the cost test.</li><li>Add-ons: colour sets, snap-on name plates, an 8-car kit.</li></ul></div>
  </div>
  <div class="foot"><span>{TM}</span><span>2 / 2</span></div>
 </section></body></html>"""
@@ -131,12 +131,12 @@ poster(f"""<div class="brand">SWING<span>RACK</span></div>
 poster(f"""<div class="kicker">How it works</div>
 <h1 style="font-size:96px">3 steps.<br><em>Zero tools*</em></h1>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:40px">
- {''.join(f'<div><div class="tile" style="height:330px;padding:12px"><img src="img/{im}"></div><div style="font-family:Anton,sans-serif;font-size:64px;color:var(--orange);margin-top:22px">0{i+1}</div><div style="font-size:30px;font-weight:800;margin:6px 0 8px">{t}</div><div style="font-size:23px;color:#c9ccd3;line-height:1.4">{d}</div></div>' for i,(im,t,d) in enumerate([("frame_only.png","Mount the strip","Screw it to the wall. Hook lips every 20 mm."),("hang_step3.png","Drop in the clip","Push it onto a lip and let go. It locks under its own weight."),("one_open.png","Swing &amp; slide","Lift the ledge 1 mm, swing it out and slide your card in.")]))}
+ {''.join(f'<div><div class="tile" style="height:330px;padding:12px"><img src="img/{im}"></div><div style="font-family:Anton,sans-serif;font-size:64px;color:var(--orange);margin-top:22px">0{i+1}</div><div style="font-size:30px;font-weight:800;margin:6px 0 8px">{t}</div><div style="font-size:23px;color:#c9ccd3;line-height:1.4">{d}</div></div>' for i,(im,t,d) in enumerate([("frame_only.png","Mount the strip","Screw the 40 cm strip to the wall with 4 screws."),("hang_step3.png","Drop in the clip","Push it onto a lip and let go. It locks under its own weight."),("one_open.png","Swing &amp; slide","Lift the ledge 1 mm, swing it out and slide your card in.")]))}
 </div>
 <div class="fine">*A screwdriver for the wall strip, that's it. {TM}</div>"""),
 poster(f"""<div class="kicker">Swing it open</div>
 <h1 style="font-size:104px">Grab one card.<br><em>Leave the rest.</em></h1>
-<div class="sub">Each ledge pivots on its own pin. A detent clicks it shut and the solid hinge block holds it level. No unhooking the whole row.</div>
+<div class="sub">Each ledge pivots on its own pin. A detent clicks it shut, and tall corner posts hold the card upright. No unhooking the whole row.</div>
 <div class="tile" style="position:absolute;left:80px;right:80px;top:650px;height:560px;padding:20px"><img src="img/one_open.png"></div>
 <div class="fine">{TM}</div>"""),
 poster(f"""<div style="position:absolute;inset:0"><img src="img/photo_prototype_close.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 35%"></div>

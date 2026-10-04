@@ -587,3 +587,12 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
   clip hangs (hook lip + bearing lip 18 mm below), 7 clip positions on the strip; a 6-car kit uses 325 mm.
 - Checks: halves lock in 4 directions, all 7 clip positions hang/lift/pull, ledges stop at 0 deg, closed cards and
   blisters clear everything, cards load with the ledge opened up to 40 deg.
+
+## Update v7: second strip / clip order
+- Asked for clip depths 0-1-2-3-4-5-6-5-4-3-2-1-0. Simulated: once the depth goes back down, each card sits in front of the
+  rack above, so the upper blisters collide with it (7000+ mm3 overlap) and those cars are hidden. Not buildable.
+- Built instead: every 40 cm strip uses clips j0..j6 bottom to top; a second strip goes 491 mm above the first (91 mm bare
+  wall) so the last card of the lower strip ends before the first card of the upper strip starts. Checked: no collisions,
+  no hidden cars. board/column_14_cars_two_strips/, board/hinge_order_explained.png (side-view comparison).
+- hinge_clip_j6 added; kit_7_cars added (7 cars fit one 40 cm strip, 379 mm used).
+- Marketing (pitch report + posters) updated: 6-car hero on the 40 cm strip, 4 screws, 54 mm pitch, corner posts.
