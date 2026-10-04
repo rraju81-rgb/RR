@@ -577,3 +577,13 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
 - The strip now prints FLAT (back on the bed): this interlock can only print flat (on edge one hook would hang in the air).
   To make the hook lips print flat too, the groove under each lip has a 45 deg fillet, leaving only a 2.5 mm overhang; the
   clip finger is chamfered to match. Screw holes are plain round countersinks again. Strip is 254 mm long (bed >= 256).
+
+## Update v6: 40 cm strip, 54 mm rack pitch, taller front posts (build_board.py)
+- Front corner posts on the ledge are 14 mm tall (were 4) with a 2 mm lead-in at the top and 0.1 mm gap to the card,
+  so the card can no longer lean forward. They stay clear of the blister (blister starts 12 mm in from each card edge).
+- Wall strip is 400 mm long: wall_strip_400.stl (one piece, needs a 400 mm bed) or wall_strip_400_part1/2.stl
+  (180 + 234 mm, joined by the C-interlock at y = 166). 4 screws at 65 / 119 / 281 / 335 mm (symmetric).
+- Rack pitch 54 mm (was 60): the smallest that keeps a 42 mm blister 1 mm below the ledge above. Lips only where a
+  clip hangs (hook lip + bearing lip 18 mm below), 7 clip positions on the strip; a 6-car kit uses 325 mm.
+- Checks: halves lock in 4 directions, all 7 clip positions hang/lift/pull, ledges stop at 0 deg, closed cards and
+  blisters clear everything, cards load with the ledge opened up to 40 deg.

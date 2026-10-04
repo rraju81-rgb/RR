@@ -73,17 +73,17 @@ def sheet1():
     asm = [strip] + [place(clips[j], 0, B.clip_y(j)) for j in range(N)] + [place(B.ledge_at(j, 0), 0, B.clip_y(j)) for j in range(N)]
     top = B.clip_y(N - 1) + B.gb + B.rear_h
     # --- front elevation 1:2
-    ax = axmm(fig, 14, 34, 92, 158); pr = Proj(asm, FRONT, res=3.0); draw(ax, pr, fill=True, alpha=0.35); frame(ax, pr, 2.0)
-    label(bg, 14, 31, "FRONT ELEVATION", "scale 1:2  ·  cards omitted")
+    ax = axmm(fig, 14, 34, 92, 158); pr = Proj(asm, FRONT, res=2.5); draw(ax, pr, fill=True, alpha=0.35); frame(ax, pr, 3.0)
+    label(bg, 14, 31, "FRONT ELEVATION", "scale 1:3  ·  cards omitted")
     xr = B.pin_x + B.ledge_len
-    dim(ax, (-15, 0), (-15, 240), 14, "240 strip pitch")
-    dim(ax, (B.pin_x - 7, B.clip_y(0)), (B.pin_x - 7, B.clip_y(1)), -9, "60 rack pitch")
+    dim(ax, (-15, 0), (-15, B.strip_h), 16, "400 strip")
+    dim(ax, (B.pin_x - 7, B.clip_y(0)), (B.pin_x - 7, B.clip_y(1)), -9, "54 pitch")
     dim(ax, (-15, -1), (15, -1), -6, "30")
     dim(ax, (B.pin_x, B.clip_y(N - 1) + B.ly0 + B.bar_h + 6), (xr, B.clip_y(N - 1) + B.ly0 + B.bar_h + 6), 4, f"{B.ledge_len:.0f} ledge")
     for y_ in B.hole_ys: leader(ax, (0, y_), (32, y_ + 6), "Ø5 csk Ø9")
     # --- side elevation 1:2 (from the left)
-    ax = axmm(fig, 108, 34, 46, 158); prs = Proj(asm, SIDE, res=3.0); draw(ax, prs, fill=True, alpha=0.35); frame(ax, prs, 2.0)
-    label(bg, 108, 31, "SIDE ELEVATION", "scale 1:2  ·  from the left")
+    ax = axmm(fig, 108, 34, 46, 158); prs = Proj(asm, SIDE, res=2.5); draw(ax, prs, fill=True, alpha=0.35); frame(ax, prs, 3.0)
+    label(bg, 108, 31, "SIDE ELEVATION", "scale 1:3  ·  from the left")
     dim(ax, (-B.strip_t, -2), (B.hz_j(N - 1) + B.fext, -2), -6, f"{B.hz_j(N-1) + B.fext + B.strip_t:.0f}")
     for j in range(N - 1): pass
     dim(ax, (B.hz_j(2), B.clip_y(2) + 30), (B.hz_j(3), B.clip_y(2) + 30), 0, "7", fs=5.5)
@@ -102,7 +102,7 @@ def sheet1():
     arrow3(ax, pre, (B.pin_x, B.clip_y(0) + 40, 60), (B.pin_x, B.clip_y(0) + 26, 60))
     arrow3(ax, pre, (0, 52, 30), (0, 44, 8))
     # parts list
-    x0, y0 = 282, 140; rows = [("ITEM", "PART", "QTY (4-car)", "PRINT"), ("1", "Wall strip 30 x 6 x 254 (hook lips every 20)", "1", "flat, back down"),
+    x0, y0 = 282, 140; rows = [("ITEM", "PART", "QTY (4-car)", "PRINT"), ("1", "Wall strip 30 x 6 x 400 (or 2 halves, C-interlock)", "1", "flat, back down"),
                                 ("2", "Hinge clip, depth j = 0..3 (one each)", "4", "standing"), ("3", "Ledge 128.6 long, 1.8 mm card slot", "4", "standing"),
                                 ("-", "Screw 4-5 mm countersunk + wall plug", "3", "-")]
     cw = [12, 72, 20, 20]
@@ -111,7 +111,7 @@ def sheet1():
         for c_, t in zip(cw, r):
             bg.add_patch(Rectangle((xx, yy), c_, 6.2, fill=(i == 0), fc="#174d93", ec=INK, lw=0.4))
             bg.text(xx + 1.5, yy + 3.1, t, color=INK, fontsize=5.8 if i else 6, va="center", fontweight="bold" if i == 0 else "normal"); xx += c_
-    bg.text(x0, y0 + 36, "Kits: 2, 3, 4 cars on 1 strip (119 / 179 / 239 mm tall), 5-6 cars on 2 strips.", color=HID, fontsize=6)
+    bg.text(x0, y0 + 36, "Kits: 2-6 cars on one 40 cm strip, racks 54 mm apart (7 positions).", color=HID, fontsize=6)
     bg.text(x0, y0 + 40, "Strips join with the C-interlock; clips need no tools.", color=HID, fontsize=6)
     # --- operation sequence
     label(bg, 14, 203, "OPERATION SEQUENCE", "how the product works")
@@ -135,11 +135,11 @@ def sheet1():
 def sheet2():
     fig, bg = page(); header(bg, "PART DETAILS  ·  1 WALL STRIP  ·  2 HINGE CLIP  ·  3 LEDGE", 2)
     # ---------- PART 1 strip
-    label(bg, 14, 31, "1  WALL STRIP", "front 1:2 · section A-A 1:1 · details 3:1")
-    ax = axmm(fig, 14, 36, 34, 140); pr = Proj([strip], FRONT, res=3.0); draw(ax, pr, alpha=0.35); frame(ax, pr, 2.0)
-    dim(ax, (-15, 0), (-15, 254), 8, "254"); dim(ax, (-15, 0), (15, 0), -5, "30")
-    dim(ax, (16, B.lip_ys[1]), (16, B.lip_ys[2]), -5, "20", fs=5.5)
-    ax = axmm(fig, 50, 36, 22, 140); prs = Proj([strip], SIDE, res=3.0); draw(ax, prs, alpha=0.35); frame(ax, prs, 2.0)
+    label(bg, 14, 31, "1  WALL STRIP", "front & side 1:3 · details 3:1 / 2:1")
+    ax = axmm(fig, 14, 36, 34, 140); pr = Proj([strip], FRONT, res=2.5); draw(ax, pr, alpha=0.35); frame(ax, pr, 3.0)
+    dim(ax, (-15, 0), (-15, B.strip_h), 10, "400"); dim(ax, (-15, 0), (15, 0), -7, "30")
+    dim(ax, (16, B.hook_ys[0]), (16, B.hook_ys[1]), -7, "54", fs=5.5); dim(ax, (16, B.hook_ys[1] - 18), (16, B.hook_ys[1]), -7, "18", fs=5)
+    ax = axmm(fig, 50, 36, 22, 140); prs = Proj([strip], SIDE, res=2.5); draw(ax, prs, alpha=0.35); frame(ax, prs, 3.0)
     dim(ax, (-6, -1), (6, -1), -5, "12", fs=5.5)
     # lip profile detail 3:1
     ax = axmm(fig, 76, 36, 48, 60); ax.set_aspect("equal")
@@ -152,15 +152,16 @@ def sheet2():
     bg.text(76, 98, "DETAIL B  hook lip, 45° fillet for flat printing (3:1)", color=INK, fontsize=6.5, fontweight="bold")
     # C-joint detail 3:1
     ax = axmm(fig, 76, 104, 48, 72); ax.set_aspect("equal")
-    two = [B.inter([strip, box(-20, 20, 228, 260, -10, 10)]), place(B.inter([strip, box(-20, 20, 0, 24, -10, 10)]), 0, 240)]
+    h1, h2 = B.split_strip(strip); sy = B.split_y
+    two = [B.inter([h1, box(-20, 20, sy - 12, sy + 20, -10, 10)]), B.inter([h2, box(-20, 20, sy - 12, sy + 20, -10, 10)])]
     M2 = np.array([[1, 0, 0], [0, 1, 0]])
     section(ax, two[0], (0, 0, -3), (0, 0, 1), M2); section(ax, two[1], (0, 0, -3), (0, 0, 1), M2, hatch="\\\\\\\\")
-    ax.set_xlim(-17, 17); ax.set_ylim(229, 263)
-    dim(ax, (-15, 240), (-15, 254), 2.5, "14", fs=5.5); dim(ax, (-15, 255), (-8, 255), 1.5, "7", fs=5); dim(ax, (3, 255), (7, 255), 1.5, "4", fs=5)
-    leader(ax, (-11.5, 247), (-4, 235.5), "post", fs=5.5); leader(ax, (-2, 251.5), (9.5, 259), "arm", fs=5.5); leader(ax, (5, 247), (10, 244), "tip", fs=5.5)
-    ax.set_ylim(232, 262)
+    ax.set_xlim(-17, 17); ax.set_ylim(sy - 11, sy + 23)
+    dim(ax, (-15, sy), (-15, sy + 14), 2.5, "14", fs=5.5); dim(ax, (-15, sy + 15), (-8, sy + 15), 1.5, "7", fs=5); dim(ax, (3, sy + 15), (7, sy + 15), 1.5, "4", fs=5)
+    leader(ax, (-11.5, sy + 7), (-4, sy - 4.5), "post", fs=5.5); leader(ax, (-2, sy + 11.5), (9.5, sy + 19), "arm", fs=5.5); leader(ax, (5, sy + 7), (10, sy + 4), "tip", fs=5.5)
+    ax.set_ylim(sy - 8, sy + 22)
     pass
-    bg.text(76, 178, "DETAIL C  C-interlock, front view (2:1)", color=INK, fontsize=6.5, fontweight="bold")
+    bg.text(76, 178, "DETAIL C  C-interlock of the 2-piece strip (2:1)", color=INK, fontsize=6.5, fontweight="bold")
     bg.text(76, 182, "full thickness; locks up/down/left/right; press on from the front", color=HID, fontsize=5.6)
     # ---------- PART 2 clip (j0)
     c0 = clips[0]
@@ -205,7 +206,7 @@ def sheet2():
     dim(ax, (-B.rext - 0.3, B.ly0), (-B.rext - 0.3, B.gb), 1.2, "3", fs=4.6)
     dim(ax, (-B.rext, B.ly0 - 0.8), (-B.gw / 2, B.ly0 - 0.8), -0.8, "4", fs=4.6)
     bg.text(240, 166, "SECTION D-D (3:1)", color=INK, fontsize=6.5, fontweight="bold")
-    bg.text(240, 170, "tall back wall 19, front lip 1, corner pads 4", color=HID, fontsize=5.6)
+    bg.text(240, 170, "back wall 19, front lip 1, front corner posts 14", color=HID, fontsize=5.6)
     ax = axmm(fig, 300, 98, 108, 64); pri = Proj([ledge], iso_M(28, 30), res=5.0); draw(ax, pri, alpha=0.6); frame(ax, pri)
     p = pri.p2((B.end_stop / 2, B.gb + 10, 0))[0]; leader(ax, p, p + np.array([18, 10]), "solid hinge block\n(full height)", fs=5.5)
     p = pri.p2((B.bump_x, B.ly0, 0))[0]; leader(ax, p, p + np.array([22, -10]), "detent dimple (underside)", fs=5.5)

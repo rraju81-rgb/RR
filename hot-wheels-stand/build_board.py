@@ -23,11 +23,15 @@ from build_simple import box, cylz, cyly, union, diff, inter, hull, prism_z, sph
 card_w, card_h, card_t, blister_h, blister_y0, blister_dx = 105, 165, 1.2, 42, 8, 12
 
 # ---- wall strip ----
-strip_w, strip_h, strip_t = 30.0, 240.0, 6.0
-hole_d, csk_d, hole_ys = 5.0, 9.0, (20.0, 120.0, 220.0)
+strip_w, strip_h, strip_t = 30.0, 400.0, 6.0                    # one 40 cm strip (also exported as two halves)
+hole_d, csk_d = 5.0, 9.0
 lap, jc = 14.0, 0.2                                              # C-interlock (front view): overlap length, clearance
 fil_z, fil_y = 1.0, 2.5                                          # 45 deg fillet under the lip so the strip prints flat (lip overhang only 2.5 mm)
-lip_ys = [26.0 + 20.0 * k for k in range(11)]                    # bottom of each hook shelf (26 .. 226); screw holes sit in the gaps
+pitch, n_slots, B0 = 54.0, 7, 42.5                                # rack pitch (was 60), clip positions on the strip, first hook lip
+hook_ys = [B0 + pitch * j for j in range(n_slots)]               # clip j hangs on the lip at hook_ys[j] ...
+lip_ys = sorted(set([b - 18.0 for b in hook_ys] + hook_ys))      # ... and its block bears on the lip 18 mm lower; no other lips
+hole_ys = tuple(hook_ys[j] + 22.5 for j in (0, 1, 4, 5))         # 4 screws in the free gaps, symmetric top / bottom (65, 119, 281, 335)
+split_y = hook_ys[2] + 15.5                                      # 2-piece version: C-interlock in the free gap at 166 (halves 180 / 234 mm)
 shelf_h, groove, lip_t, lip_up = 4.0, 3.5, 2.5, 5.0              # shelf height, groove behind the lip, lip thickness, lip height above shelf
 lip_d = groove + lip_t                                           # hook sticks out 6 mm
 
@@ -51,7 +55,7 @@ ledge_h, gutter_d, slop = 12.0, 9.0, 0.3
 bar_h = 18.0                                                     # barrel height (taller = less sag)
 rear_wall, front_wall = 4.0, 3.5
 rear_h, front_h = 19.0, 1.0                                      # front lip 3 mm lower so the card name shows
-corner_h, corner_len, corner_gap = 4.0, 9.0, 0.15
+corner_h, corner_len, corner_gap = 14.0, 9.0, 0.1                # tall front corner posts hold the card upright
 thumb_out, end_stop, extra_len = 8.0, 15.0, 10.0              # card starts 15 mm from the pin: clear of the hinge above
 bar_r, hole_clr = 6.6, 0.2
 step = 7.0
@@ -68,7 +72,6 @@ assert step >= rext + 0.6 + 1.0
 def hz_j(j): return hz + j * step
 def zf_j(j):                                                       # front of the solid block: just behind the lowest card that passes in front of it
     return hz_j(0) - card_t / 2 - 0.5 if j else hz - bar_r - 0.4
-K0 = 1                                                           # clip j hangs on lip 1 + 3 j  (60 mm pitch)
 def to_print(m, kind):
     R = trimesh.transformations.rotation_matrix
     T = {"strip": np.eye(4), "clip": R(np.pi / 2, [1, 0, 0]), "ledge": R(np.pi / 2, [1, 0, 0])}[kind]
@@ -107,8 +110,8 @@ def lip_fillet(b, grow=0.0):                                     # 45 deg fillet
 
 def build_strip():
     hw, t = strip_w / 2, strip_t
-    body = diff(box(-hw, hw, 0, strip_h, -t, 0), [c_red(0.0, jc)])                                       # yellow: wraps the C of the strip below
-    top = inter([c_red(strip_h), box(-hw, hw, strip_h - 0.01, strip_h + lap, -t, 0)])                     # red: the C itself
+    body = box(-hw, hw, 0, strip_h, -t, 0)
+    top = None
     cuts = []
     for y in hole_ys:
         cuts += [cylz(0, y, -t - 1, 1, hole_d / 2, 48),
@@ -116,7 +119,14 @@ def build_strip():
     lips = []
     for b in lip_ys:
         lips += [box(-hw, hw, b, b + shelf_h, -0.01, lip_d), box(-hw, hw, b, b + shelf_h + lip_up, groove, lip_d), lip_fillet(b)]
-    return diff(union([body, top] + lips), cuts)
+    return diff(union([body] + lips), cuts)
+
+def split_strip(full):
+    """two printable halves joined by the C-interlock at split_y (lower half carries the C, upper half wraps it)"""
+    hw, t = strip_w / 2, strip_t
+    lower = union([inter([full, box(-hw - 1, hw + 1, -1, split_y, -t - 1, 20)]), inter([full, c_red(split_y)])])
+    upper = diff(inter([full, box(-hw - 1, hw + 1, split_y, strip_h + 1, -t - 1, 20)]), [c_red(split_y, jc)])
+    return lower, upper
 
 # ------------------------------------------------------------------ hinge clip
 def build_clip(j=0):
@@ -144,20 +154,21 @@ def build_ledge():
             box(end_stop - 0.01, ledge_len, gb - 0.01, top, -rext, -gw / 2),                        # tall back wall starts at the hinge block
             box(end_stop - 0.01, ledge_len, gb - 0.01, gb + front_h, gw / 2, fext),
             box(end_stop - 0.01, end_stop + corner_len, gb - 0.01, gb + corner_h, z_snug, fext), box(ledge_len - corner_len, ledge_len, gb - 0.01, gb + corner_h, z_snug, fext)]
+    lead = [hull([(x_, y_, z_) for x_ in (x0 - 0.1, x0 + corner_len + 0.1) for y_, z_ in ((gb + corner_h + 0.1, z_snug - 0.1), (gb + corner_h + 0.1, z_snug + 2.0), (gb + corner_h - 2.0, z_snug - 0.1))])
+            for x0 in (end_stop - 0.01, ledge_len - corner_len)]                           # 2 mm lead-in at the top of each post
     cs = hull([(r_ * np.cos(a), y_, r_ * np.sin(a)) for r_, y_ in ((collar_r + 0.3, ly0 - 0.01), (pin_d / 2 + hole_clr, ly0 + collar_h + 0.3)) for a in np.linspace(0, 2 * np.pi, 56, endpoint=False)])
-    return diff(union(body), [cyly(0, 0, ly0 - 1, top + 1, pin_d / 2 + hole_clr, 56), cs, sphere(bump_x, ly0 - 0.1, 0, dimple_r)])
+    return diff(union(body), [cyly(0, 0, ly0 - 1, top + 1, pin_d / 2 + hole_clr, 56), cs, sphere(bump_x, ly0 - 0.1, 0, dimple_r)] + lead)
 
 def ledge_at(j, ang=0.0, lift_=0.0):
     l = build_ledge(); l.apply_transform(trimesh.transformations.rotation_matrix(np.radians(-ang), [0, 1, 0]))
     l.apply_translation([pin_x, lift_, hz_j(j)]); return l
 
-def clip_y(j):                                                    # global foot y of clip j (strips repeat every 240 mm)
-    k = K0 + 3 * j; s, kk = divmod(k, 12)
-    return 240.0 * s + lip_ys[kk] - b_loc
+def clip_y(j):                                                    # foot y of clip j on the 400 mm strip
+    return hook_ys[j] - b_loc
 
 def scene(N, strip_m, clips, ang=None):
-    ns = 1 if clip_y(N - 1) + clip_y1 <= strip_h else 2
-    asm = [place(strip_m, 0, 240.0 * i) for i in range(ns)]
+    ns = 1
+    asm = [strip_m]
     for j in range(N):
         y = clip_y(j); a = 0 if ang is None else ang[j]
         asm += [place(clips[j], 0, y), place(ledge_at(j, a, 1.0 if a else 0.0), 0, y)]
@@ -168,7 +179,9 @@ if __name__ == "__main__":
     for f in os.listdir("board"):
         if f.endswith(".stl") or f.endswith(".zip"): os.remove(f"board/{f}")
     strip = build_strip(); ledge = build_ledge(); clips = [build_clip(j) for j in range(6)]
-    out = {"wall_strip": to_print(strip, "strip"), "ledge": to_print(ledge, "ledge")}
+    half1, half2 = split_strip(strip)
+    out = {"wall_strip_400": to_print(strip, "strip"), "wall_strip_400_part1": to_print(half1, "strip"), "wall_strip_400_part2": to_print(half2, "strip"),
+           "ledge": to_print(ledge, "ledge")}
     for j, c in enumerate(clips): out[f"hinge_clip_j{j}"] = to_print(c, "clip")
     for n, m in out.items():
         m.export(f"board/{n}.stl"); print(f"{n:15s} watertight={m.is_watertight} size={np.round(m.extents, 1)} overhang>45deg={overhang_report(m)} mm2")
@@ -180,7 +193,8 @@ if __name__ == "__main__":
         for f in os.listdir(d): os.remove(f"{d}/{f}")
         asm, ns = scene(N, strip, clips)
         trimesh.util.concatenate(asm).export(f"{d}/assembled_demo.stl")
-        to_print(strip, "strip").export(f"{d}/wall_strip.stl"); to_print(ledge, "ledge").export(f"{d}/ledge.stl")
+        for n in ("wall_strip_400", "wall_strip_400_part1", "wall_strip_400_part2"): out[n].export(f"{d}/{n}.stl")
+        to_print(ledge, "ledge").export(f"{d}/ledge.stl")
         for j in range(N): to_print(clips[j], "clip").export(f"{d}/hinge_clip_j{j}.stl")
         row, x = [], 0.0
         for j in range(N):
@@ -193,18 +207,18 @@ if __name__ == "__main__":
         top = clip_y(N - 1) + clip_y1
         fig, axs = plt.subplots(1, 2, figsize=(11, 6.5), dpi=100)
         cols = [grey] * ns + [dk, orange] * N
-        axs[0].imshow(raster(asm, cols, 12, 28, (420, 640), [[-50, 0, -5], [130, 240 * ns, 60]])); axs[0].set_title(f"{N} cars"); axs[0].axis("off")
+        axs[0].imshow(raster(asm, cols, 12, 28, (420, 640), [[-50, 0, -5], [130, strip_h, 60]])); axs[0].set_title(f"{N} cars"); axs[0].axis("off")
         asm2, _ = scene(N, strip, clips, ang=[0, 40, 75, 20, 60, 30][:N])
-        axs[1].imshow(raster(asm2, cols, 50, 30, (420, 640), [[-50, 0, -5], [130, 240 * ns, 110]])); axs[1].set_title("ledges open"); axs[1].axis("off")
+        axs[1].imshow(raster(asm2, cols, 50, 30, (420, 640), [[-50, 0, -5], [130, strip_h, 110]])); axs[1].set_title("ledges open"); axs[1].axis("off")
         fig.savefig(f"{d}/preview.png", bbox_inches="tight"); plt.close(fig)
         open(f"{d}/BOM.md", "w").write(f"""# {N}-car display kit (hook strip + solid hinge clips)
 | Part | File | Qty | Print |
 |---|---|---|---|
-| Wall strip with hook lips | wall_strip.stl | {ns} | flat, back on the bed (as exported), no supports |
+| Wall strip 400 mm, one piece (bed >= 400 mm) | wall_strip_400.stl | 1 | flat, back on the bed, no supports |\n| or: the same strip in two halves (180 + 234 mm, C-interlock) | wall_strip_400_part1.stl + part2.stl | 1 each | flat, back on the bed |
 | Hinge clip, depth j = 0..{N-1} | hinge_clip_j0..j{N-1}.stl | 1 each | standing (as exported), no supports (finger bridges 31 mm between the cheeks) |
 | Ledge | ledge.stl | {N} | standing (as exported) |
-Mount: screw the strip(s) to the wall (second strip: press its bottom end over the C on top of the first strip, straight in from the front, then screw it).
-Hang each clip: hold it 6 mm above its hook lip (clip j uses lip {K0}, {K0 + 3}, {K0 + 6}, ... counted from the bottom, starting at 0), push it against the strip
+Mount: screw the strip to the wall with 4 countersunk screws (two-piece strip: press part 2 over the C on top of part 1, straight in from the front).
+Hang each clip: hold it 6 mm above its hook lip (clips hang 54 mm apart: clip j on the upper lip of pair j, counted from the bottom), push it against the strip
 with the two cheeks either side of the strip, and let it drop - the finger falls behind the lip. To remove: lift 6 mm and pull toward you.
 Drop each ledge on its pin. It rests on the wide footing; the clip's solid block stops it at 0 degrees and the bump holds it closed
 (lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-40 degrees and slide the card down into the slot. Stack height {top:.0f} mm.
