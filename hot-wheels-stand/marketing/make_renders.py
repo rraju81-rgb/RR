@@ -5,7 +5,7 @@ from build_board import *
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 src = open("render_clip.py").read(); exec(src[src.index("def raster("):src.index("def panel(")])
 OUT = "marketing/img"
-strip = build_strip(); clips = [build_clip(j) for j in range(6)]
+strip = build_strip(); clips = [build_clip(j) for j in range(7)]
 GREY, DARK, ORANGE = (0.82, 0.83, 0.86), (0.22, 0.23, 0.27), (0.98, 0.45, 0.08)
 CARD_COLS = [(0.12, 0.35, 0.85), (0.85, 0.12, 0.15), (0.1, 0.65, 0.35), (0.55, 0.2, 0.75)]
 def card(j, ang=0.0, lift=0.0, slide=0.0):
@@ -45,3 +45,7 @@ parts = [strip, place(clips[0], 45, 60), place(ledge_at(0, 0), 60, 20)]
 lp = build_ledge(); lp.apply_translation([40, 95, 20])
 save(raster([inter([strip, box(-20, 20, 0, 130, -10, 20)]), place(clips[0], 60, 30), lp], [GREY, DARK, ORANGE], 25, 30, (1000, 1300), [[-30, 0, -10], [190, 140, 50]]), "parts")
 print("ok")
+# 7 cars on the full 40 cm strip (ads)
+CARD_COLS += [(0.95, 0.75, 0.1), (0.1, 0.7, 0.85), (0.9, 0.35, 0.6)]
+m, c = scene(7, [0] * 7); save(raster(m, c, 12, 32, (1100, 1600), [[-40, 0, -5], [140, 560, 110]]), "hero_7")
+m, c = scene(7, [0, 0, 0, 0, 0, 0, 35]); save(raster(m, c, 16, 40, (1100, 1600), [[-40, 0, -5], [160, 560, 130]]), "open_7")

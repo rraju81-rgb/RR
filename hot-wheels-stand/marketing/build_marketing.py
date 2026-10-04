@@ -2,7 +2,7 @@
 import os, subprocess, pathlib
 HERE = pathlib.Path(__file__).resolve().parent
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
-NAME = "SWINGRACK"   # working product name - change here
+NAME = "PITLANE"   # working product name - change here
 FONTS = '<link href="fonts/fonts.css" rel="stylesheet">'   # Anton + Inter (SIL OFL), downloaded from Google Fonts
 BASE_CSS = """
 :root{--ink:#14161b;--asphalt:#1d2027;--orange:#ff6a13;--yellow:#ffc21a;--paper:#ffffff;--soft:#f3f4f6;--muted:#5b6170;}
@@ -47,7 +47,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
 .imgrow{{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm}} .imgrow img{{width:100%;height:31mm;object-fit:contain;background:var(--soft);border-radius:2mm}}
 </style></head><body>
 <section class="page"><div class="bar stripe"></div>
- <div class="top"><div class="brand">SWING<span>RACK</span></div><div class="tag">Product pitch &middot; 2026<br>Modular wall display for carded 1:64 die-cast</div></div>
+ <div class="top"><div class="brand">PIT<span>LANE</span></div><div class="tag">Product pitch &middot; 2026<br>Modular wall display for carded 1:64 die-cast</div></div>
  <h1>Your collection, on the wall.<br><em>Every card opens like a door.</em></h1>
  <p class="lead">{NAME} is a 3D-printed wall rack for carded die-cast cars. Each card gets its own swing-out ledge. The ledges are stacked and staggered so every name stays readable, and you can take any one card out without touching the others.</p>
  <div class="hero">
@@ -74,7 +74,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
 </section>
 
 <section class="page"><div class="bar stripe"></div>
- <div class="top"><div class="brand">SWING<span>RACK</span></div><div class="tag">Design, kits and next steps</div></div>
+ <div class="top"><div class="brand">PIT<span>LANE</span></div><div class="tag">Design, kits and next steps</div></div>
  <div class="kpis">
   <div class="kpi"><b>3</b><span>printed part types: strip, clip, ledge</span></div>
   <div class="kpi"><b>0</b><span>support material needed to print</span></div>
@@ -123,7 +123,7 @@ def poster(body, light=False):
     return f'<!doctype html><html><head><meta charset="utf-8"><title>poster</title>{FONTS}<style>{POSTER_CSS}</style></head><body><div class="p" style="{bg}">{body}<div class="stripe-b stripe"></div></div></body></html>'
 
 posters = [
-poster(f"""<div class="brand">SWING<span>RACK</span></div>
+poster(f"""<div class="brand">PIT<span>LANE</span></div>
 <h1 style="margin-top:40px">Your cars.<br><em>On the wall.</em></h1>
 <div class="sub">A swing-out wall display for carded die-cast. Every card is visible, and each one opens like a door.</div>
 <div class="tile" style="position:absolute;left:80px;right:80px;top:640px;height:560px;padding:20px"><img src="img/hero_closed.png"></div>

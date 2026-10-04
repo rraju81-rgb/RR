@@ -11,7 +11,7 @@ import build_board as B
 from build_board import box, union, place
 from draw import *
 
-NAME = "SWINGRACK"
+NAME = "PITLANE"
 PW, PH = 420.0, 297.0
 strip = B.build_strip(); ledge = B.build_ledge(); clips = [B.build_clip(j) for j in range(4)]
 N = 4

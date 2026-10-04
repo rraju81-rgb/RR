@@ -639,3 +639,12 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
   no longer creeps up when a ledge is lifted over its detent; a firm lift still removes it.
 - Checked on the CAD model: hanging clip is collision-free; lifting interferes only with the two bumps (the intended
   snap); drop and pull-off blocked; ledges, cards, blisters, loading and the 2-piece joint unchanged.
+
+## Sales kit: name PITLANE, product analysis, pricing, Meta ads (marketing/)
+- Name: PITLANE (each ledge is a garage that swings open, like the pit lane at a race; orange-track styling). Backups:
+  CardGarage, Swing Grid. Check trademark / domain availability before registering. Never use "Hot Wheels" as the brand.
+- marketing/sales_pitch.pdf: 30 s pitch, market, competitor prices (Etsy hooks $2.75-12.86, official case strips $9.99,
+  cabinets $36-124), SWOT, buyers, cost (~$7-8 for 4 cars, ~$10-11 for 7 cars), prices, go-to-market, listing title.
+- Recommended prices (USD): STL files $7.99, Starter 4-car $29.99, Full 7-car strip $39.99 (launch $34.99), add-on rack $6.99.
+- marketing/meta_ad_1..5.png (1080x1350, Facebook/Instagram feed): real prototype photo + CAD renders of the real parts.
+  Rebuild with python3 marketing/build_sales.py.
