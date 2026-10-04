@@ -6,8 +6,8 @@ Usage: python3 build_board.py   -> board/*.stl, board/kit_<N>_cars/ (N = 2..6); 
                C-interlock on the ends (front view, full thickness): the top end is a C (post + arm + down-turned tip), the bottom end
                of the next strip wraps around it; locked up/down/left/right, press the next strip on from the front.
   hinge_clip   one solid block behind the pin whose flat front face backs the cards of the racks below; DOUBLE LOCK: two 30 mm fingers drop behind
-               BOTH lips of a lip pair (20 mm apart) at once; a snap latch clicks in under the lower lip; cheeks hug the strip.
-               Remove: pull the latch tab, lift ~6 mm, pull toward you. Wide solid footing the ledge sits on, 8 mm pin running
+               BOTH lips of a lip pair (20 mm apart) at once: a plain L-on-L hook at each lip; cheeks hug the strip.
+               Remove: lift ~6 mm and pull toward you. Wide solid footing the ledge sits on, 8 mm pin running
                the full ledge height, detent bump; the solid fill right behind the ledge is the 0 degree stop (no small nubs). Nothing sticks into the card lane: cards start 15 mm from the pin.
   ledge        18 mm tall barrel, solid full-height hinge block, tall back wall from the hinge block on, 1 mm front lip (card name visible),
                4 mm front corner supports, detent dimple underneath.
@@ -27,7 +27,6 @@ card_w, card_h, card_t, blister_h, blister_y0, blister_dx = 105, 165, 1.2, 42, 8
 strip_w, strip_h, strip_t = 30.0, 400.0, 6.0                    # one 40 cm strip (also exported as two halves)
 hole_d, csk_d = 5.0, 9.0
 lap, jc = 14.0, 0.2                                              # C-interlock (front view): overlap length, clearance
-fil_z, fil_y = 1.0, 2.5                                          # 45 deg fillet under the lip so the strip prints flat (lip overhang only 2.5 mm)
 pitch, n_slots, B0 = 54.0, 7, 43.5                                # rack pitch (was 60), clip positions on the strip, first hook lip
 hook_ys = [B0 + pitch * j for j in range(n_slots)]               # clip j hangs on the lip at hook_ys[j] ...
 pair_d = 20.0                                                    # lip pair: upper (hook) lip + lower lip 20 mm below; the clip hooks onto BOTH (double lock)
@@ -43,13 +42,7 @@ body_t, arm_t = 4.0, 3.5
 zb0 = lip_d + g; zb1 = zb0 + body_t                              # solid block z range (in front of the lips)
 b_loc = 7.5                                                      # shelf bottom of the engaged lip, in clip coordinates (foot bottom = 0)
 bear_y = b_loc - pair_d                                          # bottom of the lower lip, clip coordinates
-# SNAP LATCH (built in, no loose parts): a springy arm along the bottom of the clip. Its catch clicks in under the lower
-# (bearing) lip when the clip drops into place, so the clip can't lift more than 0.3 mm. Pull the side tab to release.
-catch_top = bear_y - 0.3                                         # catch sits 0.3 mm under the lower lip
-catch_z = 4.0                                                    # catch reaches 2 mm behind the lip front (lip front at z = 6)
-arm_t2, flex = 1.6, 2.8                                          # arm thickness (z) and the free space it flexes into
-arm_x0, arm_x1, catch_x = -(strip_w / 2 + 3.4) - 6.0, 15.0, (-14.0, 0.0)   # tab end (left, outside the cheek), anchor (right), catch span
-clip_y0 = bear_y - 6.0                                           # cheeks / block / arm reach 6 mm below the lower lip
+clip_y0 = bear_y + shelf_h + 0.3                                 # clip ends at the bottom of the lower finger (on the print bed)
 clip_y1 = b_loc + shelf_h + lip_up + g + arm_t
 cheek_x, cheek_t, cheek_z0 = strip_w / 2 + 0.2, 3.0, -3.0
 x_min = -(cheek_x + cheek_t)                                     # print bed face
@@ -110,13 +103,6 @@ def c_red(y0, grow=0.0):
         parts = [box(m.bounds[0][0] - grow, m.bounds[1][0] + grow, m.bounds[0][1] - grow, m.bounds[1][1] + grow, m.bounds[0][2], m.bounds[1][2]) for m in parts]
     return union(parts)
 
-def lip_fillet(b, grow=0.0):                                     # 45 deg fillet in the groove under the lip (y-z triangle across the width)
-    tri = [(b + shelf_h, fil_z), (b + shelf_h, groove), (b + shelf_h + fil_y, groove)]
-    if grow:                                                     # triangle offset outward by `grow` (45 deg corners)
-        tri = [(y + dy, z + dz) for (y, z), (dy, dz) in zip(tri, ((-grow, -grow * 2.414), (-grow, grow), (grow * 2.414, grow)))]
-    hw = strip_w / 2 + (1.0 if grow else 0.0)
-    return hull([(x, y, z) for x in (-hw, hw) for y, z in tri])
-
 def build_strip():
     hw, t = strip_w / 2, strip_t
     body = box(-hw, hw, 0, strip_h, -t, 0)
@@ -127,7 +113,7 @@ def build_strip():
                  hull([(r_ * np.cos(a), y + r_ * np.sin(a), z_) for r_, z_ in ((hole_d / 2, -(csk_d - hole_d) / 2), (csk_d / 2, 0.0), (csk_d / 2, 1.0)) for a in np.linspace(0, 2 * np.pi, 48, endpoint=False)])]
     lips = []
     for b in lip_ys:
-        lips += [box(-hw, hw, b, b + shelf_h, -0.01, lip_d), box(-hw, hw, b, b + shelf_h + lip_up, groove, lip_d), lip_fillet(b)]
+        lips += [box(-hw, hw, b, b + shelf_h, -0.01, lip_d), box(-hw, hw, b, b + shelf_h + lip_up, groove, lip_d)]   # plain L: shelf + upright lip
     return diff(union([body] + lips), cuts)
 
 def split_strip(full):
@@ -154,18 +140,7 @@ def build_clip(j=0):
              cyly(pin_x, h, ly0 - 0.15, ly0 + bar_h + 3.5, pin_d / 2, 64),                  # pin runs the full height of the ledge
              hull([(pin_x + r_ * np.cos(a), y_, h + r_ * np.sin(a)) for r_, y_ in ((collar_r, ly0 - 0.15), (pin_d / 2, ly0 + collar_h - 0.15)) for a in np.linspace(0, 2 * np.pi, 64, endpoint=False)]),
              sphere(pin_x + bump_x, ly0 - 0.3, h, bump_r)]
-    zA, zG = zb0 + arm_t2, zb0 + arm_t2 + flex                   # arm front face, front of the flex gap
-    Y = catch_top + 0.6                                           # top of the slot above the arm
-    cuts = [box(arm_x0 - 1, arm_x1, clip_y0 - 1, Y, zA, zG),                                   # flex gap in front of the arm
-            box(arm_x0 - 1, arm_x1, catch_top, Y, zb0 - 1, zA),                               # slot above the arm
-            hull([(x_, y_, z_) for x_ in (arm_x0 - 1, arm_x1) for y_, z_ in ((Y - 0.01, zb0 - 1), (Y - 0.01, zG), (Y + (zG - zb0 + 1), zb0 - 1))]),   # 45 deg roof over gap + slot
-            lip_fillet(b_loc, 0.5), lip_fillet(bear_y, 0.5)]
-    body = diff(union(parts), cuts)
-    arm = box(arm_x0, arm_x1 + 0.5, clip_y0, catch_top, zb0, zA)
-    dz = zb0 - catch_z
-    catch = hull([(x_, y_, z_) for x_ in catch_x for y_, z_ in ((catch_top, zb0 + 0.01), (catch_top, catch_z), (catch_top - 0.6, catch_z), (catch_top - 0.6 - dz, zb0 + 0.01))])
-    tab = box(arm_x0, x_min - 0.6, clip_y0, catch_top, zb0, zb0 + 4.0)                       # finger tab to pull the latch open
-    return union([body, arm, catch, tab])
+    return union(parts)                                           # double L lock: two plain fingers + bridges, no latch
 
 # ------------------------------------------------------------------ ledge (pin axis at x = 0, z = 0)
 def build_ledge():
@@ -246,8 +221,7 @@ if __name__ == "__main__":
 | Ledge | ledge.stl | {N} | standing (as exported) |
 Mount: screw the strip to the wall with 4 countersunk screws (two-piece strip: press part 2 over the C on top of part 1, straight in from the front).
 Hang each clip: hold it 6 mm above its hook lip (clips hang 54 mm apart: clip j on the upper lip of pair j, counted from the bottom), push it against the strip
-with the two cheeks either side of the strip, and let it drop - the finger falls behind the lip and the snap latch at the bottom clicks in under
-the lip below: the clip can no longer lift. To remove: pull the side tab (left, bottom of the clip) toward you, lift 6 mm, pull the clip off.
+with the two cheeks either side of the strip, and let it drop - both fingers fall behind both lips (double L lock). To remove: lift 6 mm, pull the clip toward you.
 Drop each ledge on its pin. It rests on the wide footing; the clip's solid block stops it at 0 degrees and the bump holds it closed
 (lift the ledge about 1 mm to swing it open). To load a card: open the ledges above, swing this ledge out 10-40 degrees and slide the card down into the slot. Stack height {top:.0f} mm.
 """)

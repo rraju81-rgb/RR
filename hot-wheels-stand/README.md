@@ -621,3 +621,13 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
 - Checked on all 7 positions: hangs with no collision; drop and pull-off blocked (the lower finger alone resists pull-off);
   latched lift of 0.5 mm blocked; with the latch open it lifts 5.6 mm and comes off. Ledges, cards, blisters and loading
   unchanged. board/double_lock_detail.png shows the section.
+
+## Update v11: plain double L lock, no latch
+- Snap latch and pull tab removed. The lock is now two plain L-on-L hooks: each lip on the strip is a plain L (4 mm shelf +
+  5 mm upright lip, the 45 deg fillet is gone) and the clip has two plain L-fingers (bridge over the lip + finger behind it),
+  one for each lip of the pair. The clip ends at the bottom of its lower finger, which sits on the print bed.
+- To hang: hold the clip 6 mm high, push it in, let it drop. To remove: lift 6 mm and pull toward you.
+- Printing: the strip prints flat; each lip now overhangs its groove by 5 mm (no supports needed on a well-cooled
+  printer; print the one-piece 400 mm strip on its edge if you want zero overhang). Clip: three short bridges between the cheeks.
+- Checked on all 7 positions: hangs with no collision, drop and pull-off blocked (each lip alone also blocks pull-off),
+  lifts 5.6 mm and comes off freely. Ledges, cards, blisters and loading unchanged.

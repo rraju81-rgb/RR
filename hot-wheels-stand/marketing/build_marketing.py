@@ -67,7 +67,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <h2 style="margin-top:4mm">How it works</h2>
  <div class="steps">
   <div class="step"><b class="n">01</b><h3>Screw the strip to the wall</h3><p>Four 5 mm countersunk screws. 40 cm strip, racks 54 mm apart.</p><img src="img/frame_only.png"></div>
-  <div class="step"><b class="n">02</b><h3>Drop a clip on a hook lip</h3><p>Drop it onto a lip: the snap latch clicks in and it can't lift off. To remove it, pull the side tab, then lift and pull.</p><img src="img/hang_step3.png"></div>
+  <div class="step"><b class="n">02</b><h3>Drop a clip on a hook lip</h3><p>Drop it onto a lip pair: two L-hooks fall behind both lips. To remove it, lift it 6 mm and pull it toward you.</p><img src="img/hang_step3.png"></div>
   <div class="step"><b class="n">03</b><h3>Drop the ledge on the pin</h3><p>Slide a card into the slot. A small bump clicks the ledge shut and the solid clip block keeps it at 0&deg;.</p><img src="img/hinge_closeup.png"></div>
  </div>
  <div class="foot"><span>{TM}</span><span>1 / 2</span></div>
@@ -84,7 +84,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <h2>Engineering that survived the test prints</h2>
  <div class="feat">
   <div><b>Hooks that can't snap</b><span>The hook lips run across the full 30 mm width of the strip and print flat with a 45&deg; under-fillet, so there is nothing thin to break off. The earlier pegs broke where they met the strip.</span></div>
-  <div><b>Hook + snap latch, no tools</b><span>A 30 mm finger drops behind a lip, and a built-in spring latch clicks in under the lip below, so the clip can't lift off when you open a ledge. No loose parts. Side cheeks stop it twisting.</span></div>
+  <div><b>Double L-hook, no tools</b><span>Two 30 mm fingers drop behind both lips of a lip pair at once. Plain L-on-L hooks, no springs and no loose parts. Side cheeks stop it twisting.</span></div>
   <div><b>No sagging ledge</b><span>The ledge sits on a wide solid footing, with an 8 mm pin running its full height. The clip's solid block stops it at 0&deg;, and a bump-and-dimple detent keeps it closed.</span></div>
   <div><b>Names always visible</b><span>Each rack sits 7 mm further from the wall than the one below it. The 1 mm front lip leaves the card title in view.</span></div>
   <div><b>40 cm strip, any printer</b><span>Big bed: print it in one piece. Smaller bed: print two halves (180 + 234 mm) and press them together; a C-shaped interlock locks them.</span></div>
