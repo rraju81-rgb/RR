@@ -631,3 +631,11 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
   printer; print the one-piece 400 mm strip on its edge if you want zero overhang). Clip: three short bridges between the cheeks.
 - Checked on all 7 positions: hangs with no collision, drop and pull-off blocked (each lip alone also blocks pull-off),
   lifts 5.6 mm and comes off freely. Ledges, cards, blisters and loading unchanged.
+
+## Update v12: friction bump (clip can't creep up)
+- Each side edge of the strip has a 1 mm spring wall (20 mm long, freed by a 0.8 mm slot) with a 0.45 mm bump at every
+  clip position; each clip cheek has a V-groove that the bump clicks into when the clip drops into place. To lift the
+  clip the bump must be pushed back (spring wall flexes ~0.25 mm, roughly 6-10 N per side by beam estimate), so the clip
+  no longer creeps up when a ledge is lifted over its detent; a firm lift still removes it.
+- Checked on the CAD model: hanging clip is collision-free; lifting interferes only with the two bumps (the intended
+  snap); drop and pull-off blocked; ledges, cards, blisters, loading and the 2-piece joint unchanged.

@@ -45,6 +45,12 @@ bear_y = b_loc - pair_d                                          # bottom of the
 clip_y0 = bear_y + shelf_h + 0.3                                 # clip ends at the bottom of the lower finger (on the print bed)
 clip_y1 = b_loc + shelf_h + lip_up + g + arm_t
 cheek_x, cheek_t, cheek_z0 = strip_w / 2 + 0.2, 3.0, -3.0
+# FRICTION BUMP: each side edge of the strip has a thin spring wall (1 mm, 20 mm long, freed by a 0.8 mm slot) with a small
+# bump on it. When the clip drops into place the bump clicks into a V-groove inside each cheek. Lifting the clip pushes the
+# bump back in (wall flexes ~0.25 mm, ~10 N per side by beam estimate), so the clip can't creep up when a ledge is lifted
+# over its detent, yet a firm lift still takes it off. Prints flat (strip) / standing (clip) without supports.
+bump_y, bump_h = b_loc - 6.0, 0.45                               # bump centre in clip coords (between the two lips), bump height
+spring_w, spring_slot, spring_l = 1.0, 0.8, 20.0
 x_min = -(cheek_x + cheek_t)                                     # print bed face
 lift = lip_up + g                                                # lift needed to unhook
 foot_h = 3.5                                                     # (ledge underside sits at ly0; footing top is flush with it)
@@ -114,7 +120,15 @@ def build_strip():
     lips = []
     for b in lip_ys:
         lips += [box(-hw, hw, b, b + shelf_h, -0.01, lip_d), box(-hw, hw, b, b + shelf_h + lip_up, groove, lip_d)]   # plain L: shelf + upright lip
-    return diff(union([body] + lips), cuts)
+    bumps = []
+    for b in hook_ys:                                              # spring walls + bumps on both side edges (friction bump)
+        yc = b - b_loc + bump_y
+        for sgn in (-1, 1):
+            x0 = sgn * (hw - spring_w)
+            cuts.append(box(min(x0, x0 - sgn * spring_slot), max(x0, x0 - sgn * spring_slot), yc - spring_l / 2, yc + spring_l / 2, -t - 1, lip_d + 1))
+            bumps.append(hull([(sgn * hw - sgn * 0.01, yc + dy, z_) for dy in (-bump_h - 0.6, bump_h + 0.6) for z_ in (-t, 0)] +
+                              [(sgn * (hw + bump_h), yc + dy, z_) for dy in (-0.6, 0.6) for z_ in (-t, 0)]))
+    return union([diff(union([body] + lips), cuts)] + bumps)
 
 def split_strip(full):
     """two printable halves joined by the C-interlock at split_y (lower half carries the C, upper half wraps it)"""
@@ -140,7 +154,9 @@ def build_clip(j=0):
              cyly(pin_x, h, ly0 - 0.15, ly0 + bar_h + 3.5, pin_d / 2, 64),                  # pin runs the full height of the ledge
              hull([(pin_x + r_ * np.cos(a), y_, h + r_ * np.sin(a)) for r_, y_ in ((collar_r, ly0 - 0.15), (pin_d / 2, ly0 + collar_h - 0.15)) for a in np.linspace(0, 2 * np.pi, 64, endpoint=False)]),
              sphere(pin_x + bump_x, ly0 - 0.3, h, bump_r)]
-    return union(parts)                                           # double L lock: two plain fingers + bridges, no latch
+    grooves = [hull([(sgn * (cheek_x - 0.5), bump_y + dy, z_) for dy in (-bump_h - 1.3, bump_h + 1.3) for z_ in (cheek_z0 - 0.5, 0.5)] +
+                    [(sgn * (strip_w / 2 + bump_h + 0.2), bump_y + dy, z_) for dy in (-0.9, 0.9) for z_ in (cheek_z0 - 0.5, 0.5)]) for sgn in (-1, 1)]
+    return diff(union(parts), grooves)                            # double L lock; V-grooves catch the strip's friction bumps
 
 # ------------------------------------------------------------------ ledge (pin axis at x = 0, z = 0)
 def build_ledge():
