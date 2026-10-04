@@ -104,7 +104,7 @@ def sheet1():
     # parts list
     x0, y0 = 282, 140; rows = [("ITEM", "PART", "QTY (4-car)", "PRINT"), ("1", "Wall strip 30 x 6 x 400 (or 2 halves, C-interlock)", "1", "flat, back down"),
                                 ("2", "Hinge clip, depth j = 0..3 (one each)", "4", "standing"), ("3", "Ledge 128.6 long, 1.8 mm card slot", "4", "standing"),
-                                ("-", "Screw 4-5 mm countersunk + wall plug", "3", "-")]
+                                ("4", "Lock pin 3 x 3 mm (one per clip, stops the clip lifting)", "4", "flat"), ("-", "Screw 4-5 mm countersunk + wall plug", "4", "-")]
     cw = [12, 72, 20, 20]
     for i, r in enumerate(rows):
         yy = y0 + i * 6.2; xx = x0
@@ -119,7 +119,7 @@ def sheet1():
     steps = []
     # 1 mount
     s1 = [sub]; steps.append(("1  SCREW THE STRIP", "3 countersunk screws; hook lips face up", s1, None))
-    s2 = [sub, mv(place(clips[1], 0, y), [0, B.lift + 0.5, 22])]; steps.append(("2  HANG THE CLIP", "hold 6 mm high, push in, let go: gravity lock", s2, [((B.pin_x, y + 20, 26), (B.pin_x, y + 20, 8)), ((0, y + 34, 6), (0, y + 27, 6))]))
+    s2 = [sub, mv(place(clips[1], 0, y), [0, B.lift + 0.5, 22])]; steps.append(("2  HANG THE CLIP", "drop it on the lip, then push the lock pin through", s2, [((B.pin_x, y + 20, 26), (B.pin_x, y + 20, 8)), ((0, y + 34, 6), (0, y + 27, 6))]))
     s3 = [sub, place(clips[1], 0, y), mv(place(B.ledge_at(1, 0), 0, y), [0, 26, 0])]; steps.append(("3  DROP THE LEDGE ON THE PIN", "it clicks shut on the detent bump", s3, [((B.pin_x - 10, y + 48, B.hz_j(1)), (B.pin_x - 10, y + 32, B.hz_j(1)))]))
     s4 = [sub, place(clips[1], 0, y), place(B.ledge_at(1, 30, 1), 0, y), card(1, 30, 1, 40)]; steps.append(("4  LIFT 1 mm, SWING 10-40°, SLIDE CARD IN", "close it: the solid block stops it at 0°", s4, [((60, y + 140, 50), (60, y + 105, 50))]))
     for i, (t, sbt, ms, arrows) in enumerate(steps):
@@ -231,7 +231,7 @@ def sheet2():
             ax.text(B.hz_j(1) + 3, B.ly0 + 3, "lift 1 mm\nthen swing", color=DIM, fontsize=5.4)
     bg.text(222, 200, "NOTES", color=INK, fontsize=8, fontweight="bold")
     notes = ["1. Card: ~105 x 165 mm, 1.2 mm thick, blister up to 42 mm. Slot 1.8 mm.",
-             "2. Clip hangs by gravity: finger behind a full-width hook lip; cheeks stop twisting.",
+             "2. Clip: finger behind a hook lip, lock pin under the lip below (cannot lift); cheeks stop twisting.",
              "3. Ledge rests on the wide footing; the solid block stops it at 0°, bump holds it closed.",
              "4. To load: open the ledges above, lift 1 mm, swing 10-40°, slide card down.",
              "5. No supports: strip flat (back down), clip & ledge standing.",

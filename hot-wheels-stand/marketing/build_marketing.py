@@ -67,7 +67,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <h2 style="margin-top:4mm">How it works</h2>
  <div class="steps">
   <div class="step"><b class="n">01</b><h3>Screw the strip to the wall</h3><p>Four 5 mm countersunk screws. 40 cm strip, racks 54 mm apart.</p><img src="img/frame_only.png"></div>
-  <div class="step"><b class="n">02</b><h3>Drop a clip on a hook lip</h3><p>Hold it 6 mm above a lip, push it in and let go. It locks under its own weight. To remove it, lift and pull.</p><img src="img/hang_step3.png"></div>
+  <div class="step"><b class="n">02</b><h3>Drop a clip on a hook lip</h3><p>Drop it onto a lip, then push the lock pin through: now it can't lift off. To remove it, pull the pin, then lift and pull.</p><img src="img/hang_step3.png"></div>
   <div class="step"><b class="n">03</b><h3>Drop the ledge on the pin</h3><p>Slide a card into the slot. A small bump clicks the ledge shut and the solid clip block keeps it at 0&deg;.</p><img src="img/hinge_closeup.png"></div>
  </div>
  <div class="foot"><span>{TM}</span><span>1 / 2</span></div>
@@ -84,7 +84,7 @@ tr:nth-child(even) td{{background:var(--soft)}}
  <h2>Engineering that survived the test prints</h2>
  <div class="feat">
   <div><b>Hooks that can't snap</b><span>The hook lips run across the full 30 mm width of the strip and print flat with a 45&deg; under-fillet, so there is nothing thin to break off. The earlier pegs broke where they met the strip.</span></div>
-  <div><b>Gravity lock, no tools</b><span>A 30 mm finger drops behind a lip. Side cheeks hug the strip so the clip can't twist. The bottom of the clip rests on the lip below it.</span></div>
+  <div><b>Hook + lock pin, no tools</b><span>A 30 mm finger drops behind a lip, and a small lock pin pushed through the clip sits under the lip below, so the clip can't lift off when you open a ledge. Side cheeks stop it twisting.</span></div>
   <div><b>No sagging ledge</b><span>The ledge sits on a wide solid footing, with an 8 mm pin running its full height. The clip's solid block stops it at 0&deg;, and a bump-and-dimple detent keeps it closed.</span></div>
   <div><b>Names always visible</b><span>Each rack sits 7 mm further from the wall than the one below it. The 1 mm front lip leaves the card title in view.</span></div>
   <div><b>40 cm strip, any printer</b><span>Big bed: print it in one piece. Smaller bed: print two halves (180 + 234 mm) and press them together; a C-shaped interlock locks them.</span></div>
@@ -131,7 +131,7 @@ poster(f"""<div class="brand">SWING<span>RACK</span></div>
 poster(f"""<div class="kicker">How it works</div>
 <h1 style="font-size:96px">3 steps.<br><em>Zero tools*</em></h1>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:40px">
- {''.join(f'<div><div class="tile" style="height:330px;padding:12px"><img src="img/{im}"></div><div style="font-family:Anton,sans-serif;font-size:64px;color:var(--orange);margin-top:22px">0{i+1}</div><div style="font-size:30px;font-weight:800;margin:6px 0 8px">{t}</div><div style="font-size:23px;color:#c9ccd3;line-height:1.4">{d}</div></div>' for i,(im,t,d) in enumerate([("frame_only.png","Mount the strip","Screw the 40 cm strip to the wall with 4 screws."),("hang_step3.png","Drop in the clip","Push it onto a lip and let go. It locks under its own weight."),("one_open.png","Swing &amp; slide","Lift the ledge 1 mm, swing it out and slide your card in.")]))}
+ {''.join(f'<div><div class="tile" style="height:330px;padding:12px"><img src="img/{im}"></div><div style="font-family:Anton,sans-serif;font-size:64px;color:var(--orange);margin-top:22px">0{i+1}</div><div style="font-size:30px;font-weight:800;margin:6px 0 8px">{t}</div><div style="font-size:23px;color:#c9ccd3;line-height:1.4">{d}</div></div>' for i,(im,t,d) in enumerate([("frame_only.png","Mount the strip","Screw the 40 cm strip to the wall with 4 screws."),("hang_step3.png","Drop in the clip","Drop it onto a lip, then push the lock pin through."),("one_open.png","Swing &amp; slide","Lift the ledge 1 mm, swing it out and slide your card in.")]))}
 </div>
 <div class="fine">*A screwdriver for the wall strip, that's it. {TM}</div>"""),
 poster(f"""<div class="kicker">Swing it open</div>

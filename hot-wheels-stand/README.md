@@ -596,3 +596,11 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
   no hidden cars. board/column_14_cars_two_strips/, board/hinge_order_explained.png (side-view comparison).
 - hinge_clip_j6 added; kit_7_cars added (7 cars fit one 40 cm strip, 379 mm used).
 - Marketing (pitch report + posters) updated: 6-car hero on the 40 cm strip, 4 screws, 54 mm pitch, corner posts.
+
+## Update v8: lock pin (clip can no longer slide up)
+- Problem: the clip was held only by gravity, so lifting the ledge over its detent (or pushing a card) slid the clip up.
+- Fix: the clip's cheeks/block reach 9 mm lower and have a 3.3 mm square hole; a square LOCK PIN (lock_pin.stl, one per clip,
+  prints flat) is pushed through both cheeks after hanging. It sits 0.3 mm under the lower (bearing) lip, so the clip can rise
+  at most 0.3 mm (checked: 0.4 mm lift already collides). A 0.6 mm bump clicks past the right cheek to keep the pin in.
+- Finger now 0.2 mm each side in the 3.5 mm groove (was 0.3), and 0.5 mm clearance around the 45 deg lip fillet so it seats fully.
+- Remove a clip: pull the pin, lift 6 mm, pull toward you. board/lock_pin_detail.png shows the lock.
