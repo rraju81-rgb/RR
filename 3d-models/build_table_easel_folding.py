@@ -77,13 +77,19 @@ if __name__ == '__main__':
     base = box(bounds=[[X0, H1['y'], B_Z[0]], [X1, B_Y1, B_Z[1]]])
     base = D(base, *[xcyl(GROOVE_R, H1['y'] + s, B_Z[1], X0 - 1, X1 + 1) for _, s in grooves])
     leg_plate = box(bounds=[[X0, L_Y0, L_Z[0]], [X1, H2['y'], L_Z[1]]])
-    win = []                                             # diamond windows (45 deg edges: print without support)
-    for yc in np.arange(L_Y0 + 38, H2['y'] - 30, 44):
-        for xc in [X0 + 32, X1 - 32]:
-            d = trimesh.creation.extrude_polygon(__import__('shapely.geometry', fromlist=['Polygon']).Polygon(
-                [(xc - 20, yc), (xc, yc + 20), (xc + 20, yc), (xc, yc - 20)]), 20)
-            d.apply_translation([0, 0, L_Z[0] - 5]); win.append(d)
-    leg = U(D(leg_plate, *win), xcyl(FOOT_R, L_Y0, FOOT[2], X0, X1))
+    # edge rails on the leg's back face (thin web, thick edges), 45-deg inner chamfer for the side print
+    import shapely.geometry as sg
+    rz0, rz1, RW, RH = L_Z[0], L_Z[0] - 5.0, 10.0, 5.0
+    ry0, ry1 = L_Y0 + 12.0, H2['y'] - 8.0
+    rails = []
+    for poly in [[(X0, rz0), (X0, rz1), (X0 + RW, rz1), (X0 + RW + RH, rz0)], [(X1, rz0), (X1, rz1), (X1 - RW, rz1), (X1 - RW - RH, rz0)]]:
+        m = trimesh.creation.extrude_polygon(sg.Polygon(poly), ry1 - ry0)        # (x, z) polygon, length along y
+        m.apply_transform(np.array([[1, 0, 0, 0], [0, 0, 1, ry0], [0, 1, 0, 0], [0, 0, 0, 1]], float))
+        if m.volume < 0: m.invert()
+        rails.append(m)
+    rails += [box(bounds=[[X0, ry0, rz1], [X1, ry0 + RW, rz0]]), box(bounds=[[X0, ry1 - RW, rz1], [X1, ry1, rz0]])]
+    win = []
+    leg = U(leg_plate, *rails, xcyl(FOOT_R, L_Y0, FOOT[2], X0, X1))
     panel, base = hinge(panel, base, H1)
     panel, leg = hinge(panel, leg, H2)
     for nme, m in [('panel', panel), ('base', base), ('leg', leg)]:

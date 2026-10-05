@@ -4,9 +4,9 @@
   "size_mm": [
    119.0,
    113.0,
-   168.9
+   170.0
   ],
-  "filament_g": 244,
+  "filament_g": 269,
   "watertight": true,
   "parts": 1,
   "card_clash_mm3": 0.0,
@@ -14,16 +14,16 @@
   "card_stop_min_mm3": 13.0,
   "stability": {
    "empty": {
-    "mass_g": 244,
-    "com_height": 65.3,
-    "tip_front_deg": 36.3,
-    "tip_rear_deg": 44.9
+    "mass_g": 269,
+    "com_height": 62.5,
+    "tip_front_deg": 38.0,
+    "tip_rear_deg": 45.8
    },
    "full": {
-    "mass_g": 364,
-    "com_height": 83.1,
-    "tip_front_deg": 25.3,
-    "tip_rear_deg": 41.6
+    "mass_g": 389,
+    "com_height": 79.9,
+    "tip_front_deg": 26.8,
+    "tip_rear_deg": 42.3
    }
   },
   "front_toe_mm": 0.0
@@ -33,9 +33,9 @@
   "size_mm": [
    119.0,
    131.6,
-   244.1
+   244.9
   ],
-  "filament_g": 339,
+  "filament_g": 378,
   "watertight": true,
   "parts": 1,
   "card_clash_mm3": 0.0,
@@ -43,16 +43,16 @@
   "card_stop_min_mm3": 4.7,
   "stability": {
    "empty": {
-    "mass_g": 339,
-    "com_height": 103.8,
-    "tip_front_deg": 28.8,
-    "tip_rear_deg": 35.7
+    "mass_g": 378,
+    "com_height": 98.4,
+    "tip_front_deg": 31.0,
+    "tip_rear_deg": 36.4
    },
    "full": {
-    "mass_g": 539,
-    "com_height": 129.6,
-    "tip_front_deg": 20.2,
-    "tip_rear_deg": 33.0
+    "mass_g": 578,
+    "com_height": 124.3,
+    "tip_front_deg": 21.7,
+    "tip_rear_deg": 33.4
    }
   },
   "front_toe_mm": 0.0

@@ -13,9 +13,9 @@
    "card_clash": 0.0,
    "height": 169.1,
    "depth": 166.7,
-   "mass_g": 406,
-   "tip_front_deg": 19.8,
-   "tip_rear_deg": 59.1
+   "mass_g": 458,
+   "tip_front_deg": 21.5,
+   "tip_rear_deg": 58.2
   },
   "15": {
    "base_flat_bottom_Z": -0.0,
@@ -26,9 +26,9 @@
    "card_clash": 0.0,
    "height": 166.6,
    "depth": 166.7,
-   "mass_g": 406,
-   "tip_front_deg": 25.1,
-   "tip_rear_deg": 57.6
+   "mass_g": 458,
+   "tip_front_deg": 27.5,
+   "tip_rear_deg": 56.4
   },
   "20": {
    "base_flat_bottom_Z": -0.0,
@@ -39,9 +39,9 @@
    "card_clash": 0.0,
    "height": 163.0,
    "depth": 166.7,
-   "mass_g": 406,
-   "tip_front_deg": 30.3,
-   "tip_rear_deg": 56.3
+   "mass_g": 458,
+   "tip_front_deg": 33.1,
+   "tip_rear_deg": 54.6
   },
   "25": {
    "base_flat_bottom_Z": -0.0,
@@ -52,9 +52,9 @@
    "card_clash": 0.0,
    "height": 159.4,
    "depth": 166.5,
-   "mass_g": 406,
-   "tip_front_deg": 35.2,
-   "tip_rear_deg": 55.0
+   "mass_g": 458,
+   "tip_front_deg": 38.3,
+   "tip_rear_deg": 52.9
   }
  }
 }

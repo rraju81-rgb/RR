@@ -8,9 +8,9 @@ side with the left end wall on the bed, and need no supports.
 
 | File | Cards | Size W × D × H (standing) | Filament |
 |---|---|---|---|
-| `table_easel_3card_folding.stl` | 3 | 119 × 167 × 159–169 mm | ~406 g with cards, ~286 g stand |
-| `table_onesided_3card.stl` | 3 | 119 × 113 × 169 mm | ~244 g |
-| `table_onesided_5card.stl` | 5 | 119 × 132 × 244 mm | ~339 g |
+| `table_easel_3card_folding.stl` | 3 | 119 × 167 × 159–169 mm | ~338 g |
+| `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
+| `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
 ## Folding easel, 3 cards (print-in-place hinges)
 
@@ -18,8 +18,9 @@ The mechanism follows the adjustable drawing-pad stand. It has three bodies and 
 
 1. **Card panel:** 3 tiers. The 170 mm panel covers the bottom card's full height.
 2. **Base plate:** hinged at the bottom of the panel. It has 4 grooves across its top.
-3. **Back leg:** hinged at the top of the panel, with diamond windows and a rounded foot along its
-   bottom edge.
+3. **Back leg:** hinged at the top of the panel, with a rounded foot along its bottom edge. It is a 3 mm
+   web with 10 × 5 mm rails along its edges on the back face. The rails stop 12 mm short of the foot so
+   they never touch the base.
 
 **Using it:** swing the leg out, lower the base flat onto the table, then set the foot in a groove. The
 groove you pick sets the card-face angle:
@@ -27,7 +28,7 @@ groove you pick sets the card-face angle:
 | Groove (from the hinge) | 66 mm | 92 mm | 118 mm | 143 mm |
 |---|---|---|---|---|
 | Card face tilt | 10° | 15° | 20° | 25° |
-| Tip angle front / back (full) | 20° / 59° | 25° / 58° | 30° / 56° | 35° / 55° |
+| Tip angle front / back (full) | 21.5° / 58° | 27.5° / 56° | 33° / 55° | 38° / 53° |
 
 Fold it flat for storage or for printing. A 5° groove was rejected: with the face that upright, cards
 can tip forward.
@@ -49,14 +50,22 @@ most reliable orientation for print-in-place hinges.
 
 ## One-sided stand, 3 or 5 cards
 
-The card face is fixed at 15°. Behind it are a back leg and a base, both cut with two staggered columns
-of diamond windows. The windows keep the stand light. Their 45° edges also mean the plates print without
-supports.
+The card face is fixed at 15°. Behind it are a back leg and a base, built as **edge frames**: a 2 mm
+web across the full width, with 10 mm wide, 5 mm high rails along all four edges. The load runs through
+the edges, and the stand looks clean from behind (`table_onesided_rear_preview.png`).
+
+- **Leg:** the rails are on its outer (back) face.
+- **Base:** the rails are on its top face, starting just behind the card panel, so the bottom card
+  never touches them.
+
+The side rails have a 45° chamfer on their inner edge. In the side print, the top rail therefore builds
+off the web without supports. The thin web is there for printing: separate open struts would leave the
+top rail as a 170 mm unsupported bridge.
 
 | | 3 cards | 5 cards |
 |---|---|---|
-| Tip angle front / back, full | 25° / 42° | 20° / 33° |
-| Tip angle front / back, empty | 36° / 45° | 29° / 36° |
+| Tip angle front / back, full | 26.8° / 42° | 21.7° / 33° |
+| Tip angle front / back, empty | 38° / 46° | 31° / 36° |
 | Print footprint (on its side) | 113 × 169 mm | 132 × 244 mm, needs a 250 mm+ bed |
 
 **Checked** (`table_onesided_report.json`):

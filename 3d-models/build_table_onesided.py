@@ -1,4 +1,4 @@
-"""One-sided card stand (3 or 5 cards): card face + light diamond-lattice back leg + lattice base. One print, on its side."""
+"""One-sided card stand (3 or 5 cards): card face + edge-framed back leg and base (thin web, thick edge rails). One print, on its side."""
 import trimesh, numpy as np, json, shapely.geometry as sg
 from trimesh.creation import box
 src = open('table_stands.py').read().split('CONFIG = {')[0]; ns = {}; exec(src, ns)
@@ -24,6 +24,30 @@ def lattice_plate(p0, p1, t, side=+1, margin=8.0):
     if m.volume < 0: m.invert()
     return m
 
+
+RAIL_W, RAIL_H = 10.0, 5.0      # edge rail width and height above the web
+
+def framed_plate(p0, p1, t, side=+1, rails=True):
+    """thin full-width web from p0 to p1 in (Y,Z) with thick rails on all four edges (on the `side` face).
+    Side rails have a 45-deg inner chamfer so the top one prints without support when the part lies on its side."""
+    p0, p1 = np.array(p0, float), np.array(p1, float); L = np.linalg.norm(p1 - p0); d = (p1 - p0)/L
+    n = np.array([-d[1], d[0]]) * side
+    parts = [box(bounds=[[0, X0, 0], [L, X1, t]])]                       # local (s, x, n)
+    if rails:
+        H = t + RAIL_H
+        for poly in [[(X0, 0), (X0, H), (X0 + RAIL_W, H), (X0 + RAIL_W + RAIL_H, t), (X0 + RAIL_W + RAIL_H, 0)],
+                     [(X1, 0), (X1, H), (X1 - RAIL_W, H), (X1 - RAIL_W - RAIL_H, t), (X1 - RAIL_W - RAIL_H, 0)]]:
+            m = trimesh.creation.extrude_polygon(sg.Polygon(poly), L)          # (x, n) polygon, length along s
+            m.apply_transform(np.array([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]], float))
+            if m.volume < 0: m.invert()
+            parts.append(m)
+        parts += [box(bounds=[[0, X0, 0], [RAIL_W, X1, H]]), box(bounds=[[L - RAIL_W, X0, 0], [L, X1, H]])]
+    m = U(*parts)
+    M = np.array([[0, 1, 0, 0], [d[0], 0, n[0], p0[0]], [d[1], 0, n[1], p0[1]], [0, 0, 0, 1]], float)
+    m.apply_transform(M)
+    if m.volume < 0: m.invert()
+    return m
+
 def build(N, rear=58.0, toe=0.0):
     ns['N'] = N; ns['LP'] = LP = max((N - 1)*55.0 + 22.0, 170.0)
     F = ns['face'](); F.apply_transform(ns['TILT'])
@@ -32,9 +56,11 @@ def build(N, rear=58.0, toe=0.0):
     yf = F.bounds[0, 1] - toe
     P = Wp(LP - 10, -3.0)                                  # leg meets the panel back 10 mm below its top
     foot = np.array([P[0] + rear, 0.0])
-    leg = lattice_plate(P, foot, 4.0, side=-1)
+    leg = framed_plate(P, foot, 2.0, side=-1)            # rails on the outside (back) face
     leg = U(leg, box(bounds=[[X0, foot[0] - 6, 0], [X1, foot[0] + 2, 3.0]]))   # foot pad
-    base = lattice_plate([yf, 0], [foot[0] + 2, 0], 3.0, side=+1, margin=10)
+    ys = Wp(0, -3.0)[0] + 1.0                                # just behind the panel's bottom back edge
+    base = U(framed_plate([yf, 0], [ys, 0], 2.0, side=+1, rails=False),     # plain web under the cards
+             framed_plate([ys, 0], [foot[0] + 2, 0], 2.0, side=+1))          # edge rails behind the panel only
     body = U(F, leg, base)
     body.apply_translation([-X0, 0, 0])
     return body, lift, LP
