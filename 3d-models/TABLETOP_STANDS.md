@@ -84,7 +84,41 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
-## Kickstand easel v6: no base plate, one small hinge (recommended easel)
+## Kickstand easel v7: hinge at the stop-wall end, solid leg (recommended easel)
+
+| File | Cards | Card face leans back | Hinge axis up the panel | Tip angle forward / back / sideways, loaded | Filament |
+|---|---|---|---|---|---|
+| `table_easel_3card_kickstand_v7.stl` | 3 | 26.5° | 90 mm | 20.1° / 13.1° / 31.6° | ~118 g |
+| `table_easel_5card_kickstand_v7.stl` | 5 | 25° | 140 mm | 19.6° / 14.0° / 21.9° | ~178 g |
+
+**What changed from v6.**
+- **Hinge position.** The single hinge moved from the centre to the solid stop-wall end of the panel,
+  which is the right side when seen from behind. It spans that end's 40 mm.
+- **Solid leg.** The A-frame leg is replaced by a solid 40 × 4 mm rectangular strip under the hinge.
+  - A 10 mm foot bar runs along the bottom of the strip across the full width. With a one-sided leg
+    alone, the stand would tip sideways toward the open end at only 5.5°.
+  - The strip and bar fold flat together as an L, 0.6 mm behind the panel.
+- **A sturdier hinge.** It has 3 knuckles (panel / leg / panel) with the same 45° cone joints as before.
+  - Knuckles are 11 mm across (were 8 mm), and the pin is 5 mm (was 3.5 mm).
+  - Every print gap is 0.6 mm (was 0.5 mm).
+- **Still two positions only:** 0° (folded flat) and 35° (stop tab flat on the panel back).
+
+**Printing.** The stand prints on its side, stop wall down. The strip, the hinge's bottom knuckle and the
+panel's stop wall all start on the bed, and the foot bar rises from the strip.
+- The leg has no overhang steeper than 45°.
+- The hinge has two specks of about 2.5 mm² each.
+- The panel's other overhang is the corner-support bridge that earlier racks also have.
+
+**Checked** (`table_easel_{3,5}card_kickstand_v7_report.json`):
+- As printed: the parts don't touch, even after a 0.45 mm shift in any direction.
+- Swing: free from 0° to 34.8°. The stop meets the panel at 35.0° and blocks 36°.
+- When open, the foot bar and the panel's front edge both sit on the table.
+- Stability numbers include the cars and cards.
+- The STLs reload as watertight solids, two bodies each.
+
+Preview: `table_easel_kickstand_v7_preview.png`. Built by `build_table_easel_kickstand_v7.py`.
+
+## Kickstand easel v6: no base plate, one small centred hinge
 
 | File | Cards | Card face leans back | Hinge axis | Standing W × D × H | Tip angle forward / back, loaded | Filament |
 |---|---|---|---|---|---|---|

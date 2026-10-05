@@ -1,0 +1,42 @@
+{
+ "N": 3,
+ "hinge_y": 90.0,
+ "lean_deg": 26.5,
+ "open_deg": 35.0,
+ "printed_overlap_mm3": 0.0,
+ "shift045_overlap_mm3": 0.0,
+ "sweep_overlap_mm3": {
+  "0": 0.0,
+  "5": 0.0,
+  "10": 0.0,
+  "15": 0.0,
+  "20": 0.0,
+  "25": 0.0,
+  "30": 0.0,
+  "34": 0.0,
+  "34.8": 0.0,
+  "36": 8.432,
+  "38": 24.947,
+  "-2": 4299.408
+ },
+ "stop_deg": 35.00587445497513,
+ "foot_Z_min": 0.002,
+ "panel_Z_min": 0.0,
+ "mass_stand_g": 118,
+ "mass_loaded_g": 238,
+ "footprint_depth_mm": 54.4,
+ "tip_front_deg": 20.1,
+ "tip_rear_deg": 13.1,
+ "tip_sideways_deg": 31.6,
+ "hinge": {
+  "width_mm": 40.0,
+  "knuckles": 3,
+  "knuckle_dia_mm": 11.0,
+  "pin_dia_mm": 5.0,
+  "gap_mm": 0.6,
+  "axis_height_on_panel_mm": 90.0,
+  "axis_height_above_table_mm": 77.8
+ },
+ "stl_watertight": true,
+ "stl_bodies": 2
+}
