@@ -84,7 +84,55 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
-## Kickstand easel v7: hinge at the stop-wall end, solid leg (recommended easel)
+## Kickstand easel v8: lift-off hinge, strip leg (recommended easel)
+
+Each stand is two prints: the panel, and a separate leg that drops onto the panel's hinge pin.
+
+| Files | Cards | Lean | Hinge axis up the panel | Tip angle forward / back / sideways, loaded | Filament |
+|---|---|---|---|---|---|
+| `table_easel_3card_kickstand_v8_panel.stl` + `_leg.stl` | 3 | 26.5° | 90 mm | 19.7° / 13.1° / 6.3° | ~114 g |
+| `table_easel_5card_kickstand_v8_panel.stl` + `_leg.stl` | 5 | 25° | 140 mm | 19.3° / 14.0° / 5.9° | ~175 g |
+
+**Why v8.** The print-in-place knuckles of v7 fused. v8 uses the lift-off hinge from
+`reference_LiftOffHinge.stl`, which has the same dimensions as that reference:
+- The panel has a 10 mm barrel, 15 mm long, on a 5 mm pin.
+- The leg has a 10 mm barrel, 15 mm long, with a 5.5 mm hole (0.25 mm clearance all round).
+- The two halves are printed separately, so they can't fuse.
+- Assembly: open the leg to 35° and slide its barrel onto the pin from the stop-wall end.
+
+**Leg.** A plain 40 × 4 mm solid strip with a rounded foot. The v7 foot bar is gone.
+
+**Positions.** As before, the leg has only two positions:
+- **0°, folded flat:** the strip lies 0.4 mm behind the panel.
+- **35°, open:** a stop tab on the leg barrel lands flat on the panel back.
+
+**Keeping the leg on.** The pin lies horizontal when the stand is in use, so gravity doesn't hold the leg
+on. A 2.6 mm cleat on the panel back at the stop-wall end does that job instead:
+- **Below 30°:** the strip can't slide off the pin.
+- **From 32° to 35°:** the strip clears the cleat. When the stand is in use, the panel's weight on the
+  stop tab and the foot's friction on the table keep the leg in place.
+
+**Sideways stability.** With the foot bar removed, the only support at the open end is the panel's front
+edge. The stand tips sideways toward that end at about 6°, so a light knock can push it over. If that is
+a problem, there are two fixes: a wider strip, or bringing back a foot.
+
+**Printing.** No supports are needed.
+- **Panel:** prints on its side, stop wall down. The pin rises from the bed into the barrel, and the
+  barrel and web undersides are 45° cones.
+- **Leg:** prints standing on its barrel end.
+- **Overhangs:** the hinge parts have none steeper than 45°. The panel's only overhang is the
+  corner-support bridge from earlier racks.
+
+**Checked** (`table_easel_{3,5}card_kickstand_v8_report.json`):
+- Assembled, the parts don't touch.
+- Swing: free from 0° to 34.8°, and the stop catches at 35.0°.
+- Lock: sliding the leg off is blocked at 0° and 20°, and the leg slides free at 34.5°.
+- When open, the foot and the panel's front edge both sit on the table.
+- All four STLs are watertight single bodies.
+
+Preview: `table_easel_kickstand_v8_preview.png`. Built by `build_table_easel_kickstand_v8.py`.
+
+## Kickstand easel v7: hinge at the stop-wall end, solid leg (print-in-place, knuckles fused)
 
 | File | Cards | Card face leans back | Hinge axis up the panel | Tip angle forward / back / sideways, loaded | Filament |
 |---|---|---|---|---|---|
