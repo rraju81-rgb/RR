@@ -1,0 +1,67 @@
+{
+ "N": 5,
+ "hinge_y": 140.0,
+ "lean_deg": 25.0,
+ "open_deg": 35.0,
+ "assembled_overlap_mm3": {
+  "panel_leg": 0.0,
+  "panel_pin": 0.0,
+  "leg_pin": 0.0
+ },
+ "pin_hole_radial_clearance_mm": 0.25,
+ "snap": {
+  "barb_dia": 6.4,
+  "hole_dia": 5.5,
+  "prong_deflection_mm": 0.45,
+  "slot_mm": 1.6
+ },
+ "leg_slide_overlap_mm3": {
+  "0deg": {
+   "minus_1mm": 4.59,
+   "plus_1mm": 4.59
+  },
+  "35deg": {
+   "minus_1mm": 4.59,
+   "plus_1mm": 4.59
+  }
+ },
+ "sweep_overlap_mm3": {
+  "0": 0.0,
+  "5": 0.0,
+  "10": 0.0,
+  "15": 0.0,
+  "20": 0.0,
+  "25": 0.0,
+  "30": 0.0,
+  "34": 0.0,
+  "34.8": 0.0,
+  "36": 12.977,
+  "38": 38.238,
+  "-2": 17612.393
+ },
+ "stop_deg": 35.00384232401848,
+ "foot_Z_min": 0.0,
+ "panel_Z_min": 0.0,
+ "mass_stand_g": 192,
+ "mass_loaded_g": 392,
+ "footprint_depth_mm": 83.6,
+ "tip_front_deg": 20.2,
+ "tip_rear_deg": 13.9,
+ "tip_sideways_deg": 15.0,
+ "hinge": {
+  "type": "3-barrel, separate snap pin (barrels as LiftOffHinge.stl)",
+  "barrel_dia_mm": 10.0,
+  "panel_barrel_len_mm": 8.0,
+  "leg_barrel_len_mm": 24.0,
+  "pin_dia_mm": 5.0,
+  "hole_dia_mm": 5.5,
+  "axis_height_on_panel_mm": 140.0,
+  "axis_height_above_table_mm": 124.6
+ },
+ "stl_panel_watertight": true,
+ "stl_panel_bodies": 1,
+ "stl_leg_watertight": true,
+ "stl_leg_bodies": 1,
+ "stl_pin_watertight": true,
+ "stl_pin_bodies": 1
+}
