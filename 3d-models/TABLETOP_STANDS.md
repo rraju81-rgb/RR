@@ -84,7 +84,36 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
-## Kickstand easel v8: lift-off hinge, strip leg (recommended easel)
+## Kickstand easel v9: v8 + short foot on the leg (recommended easel)
+
+v9 is v8 with a short foot added to the bottom of the leg strip. The foot runs from the strip toward the
+open card end, so the stand no longer tips sideways at a light knock. The panel and hinge are unchanged
+from v8.
+
+| Files | Cards | Foot | Tip angle forward / back / sideways, loaded | Filament |
+|---|---|---|---|---|
+| `table_easel_3card_kickstand_v9_panel.stl` + `_leg.stl` | 3 | 30 mm past the strip (leg 70 mm wide at the bottom) | 19.8° / 13.1° / 16.4° (v8: 6.3°) | ~115 g |
+| `table_easel_5card_kickstand_v9_panel.stl` + `_leg.stl` | 5 | 40 mm past the strip (leg 80 mm wide at the bottom) | 19.4° / 14.0° / 15.8° (v8: 5.9°) | ~177 g |
+
+**The foot.** It is 10 mm tall and 4 mm thick, the same thickness as the strip, with the same rounded
+edge on the table.
+- Folded, it lies flat behind the panel with the rest of the leg.
+- The leg still prints standing on its barrel end with no supports, because the foot sits on top of the
+  strip as it prints.
+
+**Unchanged from v8.**
+- The lift-off hinge and its clearances.
+- Free swing from 0° to 34.8°, with the stop catching at 35.0°.
+- The cleat lock: the leg slides off only when opened past about 32°.
+
+**Checked** (`table_easel_{3,5}card_kickstand_v9_report.json`):
+- Assembled, the parts don't touch.
+- When open, the foot sits on the table.
+- All STLs are watertight single bodies.
+
+Preview: `table_easel_kickstand_v9_preview.png`. Built by `build_table_easel_kickstand_v9.py`.
+
+## Kickstand easel v8: lift-off hinge, strip leg
 
 Each stand is two prints: the panel, and a separate leg that drops onto the panel's hinge pin.
 
