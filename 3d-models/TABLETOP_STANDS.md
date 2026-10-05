@@ -1,6 +1,30 @@
 # Tabletop Hot Wheels card stands
 
-## Recommended: card rack + frame-holder base (two simple prints)
+## Recommended: one universal base, two interchangeable racks
+
+`table_base_universal.stl` (124 g, 119 × 141 × 146 mm, prints upright, no supports) holds **either**
+`table_rack_3card.stl` or `table_rack_5card.stl`. Both racks have the same bottom edge and the same edge
+ribs, so they drop into the same slot and rest on the same 140 mm back rests. The 140 mm height stays
+32 mm below the top of the 3-card rack's panel. The base's feet and 8 mm front toe are sized for the
+taller 5-card rack.
+
+The gusset under each back rest now follows the leaning back rest down to the floor. That closes the
+wedge-shaped gap of the first version.
+
+| On the universal base | Standing W × D × H | Tip angle front / back, full | Tip angle front / back, empty |
+|---|---|---|---|
+| 3-card rack | 119 × 141 × 178 mm | 26.7° / 51.0° | 34.5° / 57.6° |
+| 5-card rack | 119 × 141 × 253 mm | 20.8° / 36.5° | 27.0° / 43.5° |
+
+Checked (`table_universal_base_report.json`):
+
+- The bases computed for the two racks are identical (0 mm³ difference).
+- Each rack seats in the base without interference.
+- No card touches the rack or the base, and every card's side-slide path is clear.
+
+Preview: `table_universal_base_preview.png`. Built by `build_table_base_universal.py`.
+
+## Card rack + frame-holder base, size-matched bases (earlier)
 
 | Cards | Rack (prints on its side) | Base (prints upright) | Standing W × D × H | Filament |
 |---|---|---|---|---|

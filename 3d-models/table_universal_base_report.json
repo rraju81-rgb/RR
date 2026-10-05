@@ -1,0 +1,79 @@
+{
+ "3card_on_universal_base": {
+  "rack_watertight": true,
+  "rack_parts": 1,
+  "base_watertight": true,
+  "base_parts": 1,
+  "rack_size": [
+   119.0,
+   60.4,
+   167.3
+  ],
+  "base_size": [
+   119.0,
+   140.6,
+   145.6
+  ],
+  "rack_g": 185,
+  "base_g": 124,
+  "rack_base_overlap": 0.0,
+  "rack_seated": 989.34,
+  "card_clash": 0.0,
+  "side_slide_blocked": 0.0,
+  "empty": {
+   "mass_g": 309,
+   "tip_front": 34.5,
+   "tip_rear": 57.6
+  },
+  "full": {
+   "mass_g": 429,
+   "tip_front": 26.7,
+   "tip_rear": 51.0
+  },
+  "standing_size": [
+   119.0,
+   140.6,
+   177.8
+  ],
+  "back_rest_top_below_rack_top_mm": 32.2
+ },
+ "5card_on_universal_base": {
+  "rack_watertight": true,
+  "rack_parts": 1,
+  "base_watertight": true,
+  "base_parts": 1,
+  "rack_size": [
+   119.0,
+   79.1,
+   242.9
+  ],
+  "base_size": [
+   119.0,
+   140.6,
+   145.6
+  ],
+  "rack_g": 273,
+  "base_g": 124,
+  "rack_base_overlap": 0.0,
+  "rack_seated": 989.34,
+  "card_clash": 0.0,
+  "side_slide_blocked": 0.0,
+  "empty": {
+   "mass_g": 397,
+   "tip_front": 27.0,
+   "tip_rear": 43.5
+  },
+  "full": {
+   "mass_g": 597,
+   "tip_front": 20.8,
+   "tip_rear": 36.5
+  },
+  "standing_size": [
+   119.0,
+   140.6,
+   253.4
+  ],
+  "back_rest_top_below_rack_top_mm": 107.8
+ },
+ "base_identical_for_both_racks_mm3_diff": 0.0
+}

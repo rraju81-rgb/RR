@@ -28,9 +28,9 @@ def rack(N):
         ribs.append(box(bounds=[[X0, yc - 3, ZB], [X1, yc + 3, -3]]))
     return U(F, *ribs), LP
 
-def base(LP, alpha=15.0):
+def base(LP, alpha=15.0, H_UP=None):
     """frame-holder base in the rack frame (before tilt): V-slot floor + front lip + two end back-rests"""
-    H_UP = 0.72*LP; UT = 6.0; FL = 6.0
+    H_UP = H_UP or 0.72*LP; UT = 6.0; FL = 6.0
     zf = 9.0                                                     # bottom tier front face
     parts = [box(bounds=[[X0, -FL, ZB - CLR - UT], [X1, -CLR, zf + CLR + 4]]),          # slot floor (square to the face)
              box(bounds=[[X0, -FL, zf + CLR], [X1, 6.0, zf + CLR + 4]])]                # front lip, lower than the ledge lip
@@ -38,8 +38,8 @@ def base(LP, alpha=15.0):
         parts.append(box(bounds=[[xa, -FL, ZB - CLR - UT], [xb, H_UP, ZB - CLR]]))
     return U(*parts), H_UP
 
-def assemble(N, alpha=15.0, rear=None, toe=0.0):
-    R, LP = rack(N); Bm, H_UP = base(LP, alpha)
+def assemble(N, alpha=15.0, rear=None, toe=0.0, H_UP=None):
+    R, LP = rack(N); Bm, H_UP = base(LP, alpha, H_UP)
     T = ns['TILT'].copy()
     for m in (R, Bm): m.apply_transform(T)
     lift = 3.0 - Bm.bounds[0, 2]
@@ -57,7 +57,7 @@ def assemble(N, alpha=15.0, rear=None, toe=0.0):
         parts.append(box(bounds=[[xa, yb, 0], [xb, yr, 5.0]]))                          # foot
         # gusset: triangle between the back rest and the foot (rounded look via 3 steps)
         zg = 45.0; yback = yback_at(zg)
-        tri = sg.Polygon([(yback - 2, zg), (yback - 2, 4.0), (yback + 38, 4.0)])
+        tri = sg.Polygon([(yback_at(3.0) - 1.5, 3.0), (yback - 1.5, zg), (yback + 38, 4.0), (yback + 38, 3.0)])   # front edge on the back rest
         g = trimesh.creation.extrude_polygon(tri, xb - xa)
         g.apply_transform(np.array([[0, 0, 1, xa], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]], float))
         if g.volume < 0: g.invert()
