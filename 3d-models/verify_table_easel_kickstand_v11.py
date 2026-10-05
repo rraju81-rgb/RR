@@ -5,14 +5,25 @@ TAG = E.TAG; cfg = json.load(open(f'_ks11_{TAG}.json'))
 P = trimesh.load(f'_ks11_{TAG}_panel.stl'); L = trimesh.load(f'_ks11_{TAG}_leg.stl')
 mv = lambda m, M: trimesh.Trimesh(trimesh.transform_points(m.vertices, M), m.faces)
 r = dict(N=E.N, hinge_y=E.YH, lean_deg=E.ALPHA, open_deg=E.PSI)
-Q = trimesh.load(f'_ks11_{TAG}_pin.stl')
-r['assembled_overlap_mm3'] = dict(panel_leg=round(E.I(P, L), 4), panel_pin=round(E.I(P, Q), 4), leg_pin=round(E.I(L, Q), 4))
-r['pin_hole_radial_clearance_mm'] = E.R_HOLE - E.R_PIN
-r['snap'] = dict(barb_dia=2*E.BARB['r'], hole_dia=2*E.R_HOLE, prong_deflection_mm=round(E.BARB['r'] - E.R_HOLE, 2), slot_mm=E.BARB['slot'])
-# captured: the leg can't slide either way along the pin
-slide = lambda a, d: round(E.I(E.U(P, Q), mv(L, trimesh.transformations.translation_matrix([d, 0, 0]) @ E.rot(a))), 2)
-r['leg_slide_overlap_mm3'] = {f'{a}deg': dict(minus_1mm=slide(a, -1), plus_1mm=slide(a, 1)) for a in (0, 35)}
-P = E.U(P, Q)   # the pin rides with the panel for the sweep
+# printed clearance: no overlap, and none when the leg is shifted 0.45 mm in any direction
+sh = [np.array(v)*0.45 for v in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0),(0,0,1),(0,0,-1)]]
+r['printed_overlap_mm3'] = round(E.I(P, L), 4)
+r['shift045_overlap_mm3'] = round(max(E.I(P, L.copy().apply_translation(v)) for v in sh), 4)
+# smallest gap between the two bodies as printed (sampled), and the leg is captured along the pin
+from trimesh.proximity import signed_distance
+pts = L.sample(60000); d = -signed_distance(P, pts); r['min_print_gap_mm'] = round(float(d.min()), 3)
+slide = lambda dx: round(E.I(P, L.copy().apply_translation([dx, 0, 0])), 2)
+from scipy.optimize import brentq
+play = lambda sgn: brentq(lambda dx: slide(sgn*dx) - 0.05, 0.0, 4.0, xtol=0.02)
+r['leg_axial_play_mm'] = dict(toward_stop_wall=round(play(-1), 2), toward_panel_barrel=round(play(1), 2))
+# downward-facing leg surfaces (as printed, x up) that sit within 1.5 mm above the panel = fusion risk
+n, c = L.face_normals, L.triangles_center
+down = (n[:, 0] < -0.75) & (c[:, 0] > E.X0 + 0.05)
+if down.any():
+    dd = -signed_distance(P, c[down] - np.array([0.75, 0, 0]))
+    r['leg_flat_overhang_mm2'] = round(float(L.area_faces[down].sum()), 2)
+else:
+    r['leg_flat_overhang_mm2'] = 0.0
 # sweep: free from 0 to 35, blocked beyond (stop), blocked below 0 (folded against panel)
 sweep = {a: round(E.I(P, mv(L, E.rot(a))), 3) for a in [0, 5, 10, 15, 20, 25, 30, 34, 34.8, 36, 38, -2]}
 r['sweep_overlap_mm3'] = sweep
@@ -38,8 +49,8 @@ for i in range(len(hull)):
     if abs(e[1]) > 0.3*np.linalg.norm(e): side.append(dist)   # edges running front-to-back = sideways tipping lines
 r['tip_sideways_deg'] = round(np.degrees(np.arctan2(min(side), com[1])), 1) if side else None
 # cards slide path clear of leg in deployed pose (cards are on the front face; leg is behind panel)
-r['hinge'] = dict(type='3-barrel, separate snap pin (barrels as LiftOffHinge.stl)', barrel_dia_mm=2*E.R_BAR, panel_barrel_len_mm=E.PB, leg_barrel_len_mm=E.LB, pin_dia_mm=2*E.R_PIN, hole_dia_mm=2*E.R_HOLE,
+r['hinge'] = dict(leg_barrel_mm=[2*E.R_LEG, E.LB], panel_barrel_mm=[2*E.R_BAR, E.PB], pin_dia_mm=2*E.R_PIN, gaps_mm=dict(pin_bore=E.G_RAD, cones=E.G_CONE, leg_to_panel=E.GAP), strip_thickness_mm=E.LT,
                   axis_height_on_panel_mm=E.YH, axis_height_above_table_mm=round(float((T @ np.array([0, E.YH, E.H['z'], 1]))[2]), 1))
-for part in ('panel', 'leg', 'pin'):
-    S = trimesh.load(f'table_kickstand_{TAG}_v11_{part}.stl'); r[f'stl_{part}_watertight'] = bool(S.is_watertight); r[f'stl_{part}_bodies'] = len(S.split())
+S = trimesh.load(f'table_kickstand_{TAG}_v11.stl')
+r['stl_watertight'] = bool(S.is_watertight); r['stl_bodies'] = len(S.split())
 print(json.dumps(r, indent=1)); json.dump(r, open(f'table_kickstand_{TAG}_v11_report.json', 'w'), indent=1)

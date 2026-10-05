@@ -1,9 +1,9 @@
-"""Kickstand easel v11 (v10 with a wider leg strip): card panel + a lift-off hinge (after LiftOffHinge.stl) + a separate solid leg strip.
-The panel carries the lower half of the hinge (10 mm barrel on a 5 mm pin); the leg carries the upper half
-(10 mm barrel, 5.5 mm hole) and simply slides onto the pin, so the hinge can never fuse.
-Two positions only: 0 deg (folded flat) and 35 deg (a stop tab on the leg barrel lands on the panel back).
-Rack frame: x width, y up the panel, z out of the card face. The panel prints on its side (x up, stop wall
-down); the leg prints standing on its barrel end; the pin prints standing on its head."""
+"""Kickstand easel v11: ONE print-in-place print. Card panel + a 3-part hinge + a solid 6 mm leg strip.
+Leg barrel (24 mm, 12 mm across) and strip start on the bed at the stop-wall end. The panel's pin rises from the bed
+through the leg barrel (0.7 mm radial gap) into an 8 mm panel barrel above; the pin's cone-shaped foot is the end stop.
+Every surface printed over a gap is a 45-deg cone with a 0.8 mm gap, so nothing bridges flat over the moving part.
+Two positions only: 0 deg (folded) and 35 deg (stop tab on the panel back).
+Rack frame: x width, y up the panel, z out of the card face. Prints on its side (x up, stop wall down)."""
 import os, json, numpy as np, trimesh, manifold3d as mf, shapely.geometry as sg
 from scipy.optimize import brentq
 from trimesh.creation import box, cylinder
@@ -17,20 +17,20 @@ N = int(os.environ.get('KS_N', 3)); YH = float(os.environ.get('KS_YH', 90)); ALP
 LP = max((N - 1)*55.0 + 22.0, 170.0); ns['N'], ns['LP'] = N, LP; TAG = f'{N}card'
 X0, X1 = ns['X0'], ns['X1']
 # --- lift-off hinge, dimensions as in LiftOffHinge.stl ---
-R_BAR, R_PIN, R_HOLE, L_BAR = 5.0, 2.5, 2.75, 15.0       # 10 mm barrels, 5 mm pin, 5.5 mm hole, 15 mm barrels
-GAP = 0.4                                                  # barrels / leg to panel back
-H = dict(y=YH, z=-3.0 - GAP - R_BAR)
-PB = float(os.environ.get('KS_PB', 8.0)); LB = float(os.environ.get('KS_LB', 24.0))   # panel / leg barrel lengths
-XS = (X0, X0 + PB)                                         # stopper barrel (stop-wall end, on the bed)
-XL = (XS[1] + 0.3, XS[1] + 0.3 + LB)                       # leg barrel
-XP = (XL[1] + 0.3, XL[1] + 0.3 + PB)                       # main panel barrel
-LW = float(os.environ.get('KS_LW', 80.0))
-LEG_X = (X0, X0 + LW)                                      # solid strip, flush with the stop-wall end
-L_Z = (-3.0 - GAP - 4.0, -3.0 - GAP); FOOT_R = 2.0         # 4 mm strip, 0.4 mm behind the panel back when folded
+R_BAR, R_LEG, R_PIN = 5.0, 6.0, 2.5                        # panel barrel 10 mm, leg barrel 12 mm, pin 5 mm
+G_RAD, G_CONE, GAP = 0.7, 0.8, 0.6                          # print gaps: pin/bore, cone & barrel ends, leg/panel back
+R_BORE = R_PIN + G_RAD
+H = dict(y=YH, z=-3.0 - GAP - R_LEG)
+LB, PB = 24.0, 8.0
+XL = (X0, X0 + LB)                                          # leg barrel, on the bed
+XP = (XL[1] + G_CONE, XL[1] + G_CONE + PB)                  # panel barrel above it
+LEG_X = (X0, X0 + 40.0)                                     # 40 mm strip, flush with the stop-wall end
+LT = float(os.environ.get('KS_LT', 6.0))                    # strip thickness
+L_Z = (-3.0 - GAP - LT, -3.0 - GAP); FOOT_R = LT/2
 ZM = (L_Z[0] + L_Z[1])/2
+HEAD = (4.0, 1.5)                                           # pin foot: cone r 4 at the bed -> r 2.5 at 1.5 mm
 PSI = 35.0
 HEAD = (4.5, 2.5)                                          # pin head radius / thickness (sits outside the stopper barrel)
-BARB = dict(r=3.2, len=0.6, cone=2.5, slot=1.6, slot_len=9.0)
 
 def xcyl(r, y, z, xa, xb, sec=96):
     c = cylinder(radius=r, height=xb - xa, sections=sec)
@@ -59,43 +59,31 @@ def clean(m, tol=1e-3):
     M = mf.Manifold(mf.Mesh(vert_properties=np.asarray(m.vertices, np.float32), tri_verts=np.asarray(m.faces, np.uint32))).simplify(tol)
     me = M.to_mesh(); return trimesh.Trimesh(np.asarray(me.vert_properties)[:, :3], np.asarray(me.tri_verts), process=True)
 
-def barrel_with_web(xa, xb, cone_under):
-    b = U(xcyl(R_BAR, H['y'], H['z'], xa, xb), box(bounds=[[xa, H['y'] - 4, H['z']], [xb, H['y'] + 4, -2.9]]))
-    if cone_under:   # 45-deg underside (as printed on its side) instead of a flat overhang
-        b = trimesh.boolean.intersection([b, xrev([(0, xa), (R_HOLE, xa), (R_HOLE + 40, xa + 40), (0, xa + 40), (0, xa)])], engine='manifold')
-    return b
-
-def make_pin():
-    """headed 5 mm pin with a split, barbed tip that snaps out past the main barrel"""
-    xt = XP[1] + 0.2                                             # barb's flat back face just outside the barrel
-    prof = [(0, XS[0] - HEAD[1]), (HEAD[0], XS[0] - HEAD[1]), (HEAD[0], XS[0] - 0.2), (R_PIN, XS[0] - 0.2),
-            (R_PIN, xt), (BARB['r'], xt), (BARB['r'], xt + BARB['len']), (R_PIN - 0.4, xt + BARB['len'] + BARB['cone']),
-            (0, xt + BARB['len'] + BARB['cone'])]
-    pin = xrev(prof)
-    xe = xt + BARB['len'] + BARB['cone']
-    slot = box(bounds=[[xe - BARB['slot_len'], H['y'] - 5, H['z'] - BARB['slot']/2], [xe + 1, H['y'] + 5, H['z'] + BARB['slot']/2]])
-    return D(pin, slot)
+def cone_from(x0, r0):
+    """region above a 45-deg cone starting at radius r0, height x0: x >= x0 + max(0, r - r0)"""
+    return xrev([(0, x0), (r0, x0), (r0 + 60, x0 + 60), (0, x0 + 60), (0, x0)])
 
 def build(yf):
     panel = ns['face']()
-    holes = xcyl(R_HOLE, H['y'], H['z'], X0 - 1, XP[1] + 1)
-    panel = D(U(panel, barrel_with_web(*XS, False), barrel_with_web(*XP, True)), holes)
-    # leg: solid strip + barrel + stop tab + rounded foot
+    # panel barrel + web, underside a 45-deg cone growing out of the pin (no flat overhang over the leg)
+    bar = U(xcyl(R_BAR, H['y'], H['z'], *XP), box(bounds=[[XP[0], H['y'] - 4, H['z']], [XP[1], H['y'] + 4, -2.9]]))
+    bar = trimesh.boolean.intersection([bar, cone_from(XP[0], R_PIN)], engine='manifold')
+    pin = xcyl(R_PIN, H['y'], H['z'], X0, XP[0] + 1)
+    foot = xrev([(0, X0), (HEAD[0], X0), (R_PIN, X0 + HEAD[1]), (0, X0 + HEAD[1]), (0, X0)])
+    panel = U(panel, bar, pin, foot)
+    # leg: barrel + 6 mm strip + rounded foot + stop tab, all starting on the bed
     leg = box(bounds=[[LEG_X[0], yf, L_Z[0]], [LEG_X[1], H['y'], L_Z[1]]])
     leg = U(leg, xcyl(FOOT_R, yf, ZM, *LEG_X))
-    clear = lambda xa, xb: box(bounds=[[xa, H['y'] - R_BAR - 0.6, -30], [xb, H['y'] + 30, 5]])
-    leg = D(leg, clear(LEG_X[0] - 1, XL[0]), clear(XL[1], LEG_X[1] + 1))       # clear of both panel barrels
-    tab = box(bounds=[[XL[0], H['y'], -3.0 - 5.0], [XL[1], H['y'] + R_BAR + 4, -3.0]])
+    leg = D(leg, box(bounds=[[XL[1], H['y'] - R_BAR - GAP, -30], [LEG_X[1] + 1, H['y'] + 30, 5]]))   # clear of the panel barrel
+    tab = box(bounds=[[XL[0], H['y'], -3.0 - 6.0], [XL[1], H['y'] + R_LEG + 4, -3.0]])
     tab.apply_transform(rot(-PSI))                                   # lands flat on the panel back at PSI
-    # the leg prints standing on its stop-wall end: everything above the strip's notch (barrel, tab and the
-    # strip next to the barrel) starts with a 45-deg cone underside instead of a flat overhang
-    x0, yn = XL[0], H['y'] - R_BAR - 0.6
-    upper = box(bounds=[[x0 - 1, yn, -30], [LEG_X[1] + 1, H['y'] + 30, 5]])
-    top = U(xcyl(R_BAR, H['y'], H['z'], *XL), tab, trimesh.boolean.intersection([leg, upper], engine='manifold'))
-    top = trimesh.boolean.intersection([top, xrev([(0, x0), (R_HOLE, x0), (R_HOLE + 40, x0 + 40), (0, x0 + 40), (0, x0)])], engine='manifold')
-    leg = U(D(leg, upper), top)
-    leg = D(leg, xcyl(R_HOLE, H['y'], H['z'], XL[0] - 1, XL[1] + 1))
-    return clean(panel), clean(leg), clean(make_pin())
+    leg = U(leg, xcyl(R_LEG, H['y'], H['z'], *XL), tab)
+    # bore, and the pin foot's envelope (0.8 mm normal gap on the 45-deg cone; the leg overhangs it at 45 deg)
+    dh = G_CONE*np.sqrt(2)
+    env = xrev([(0, X0 - 1), (HEAD[0] + dh + 1, X0 - 1), (R_PIN + dh, X0 + HEAD[1]), (R_BORE, X0 + HEAD[1] + (R_PIN + dh - R_BORE)),
+                (R_BORE, XL[1] + 1), (0, XL[1] + 1), (0, X0 - 1)])
+    leg = D(leg, env)
+    return clean(panel), clean(leg)
 
 def stop_angle(panel, leg, lo=0.5, hi=60.0):
     hit = lambda a: I(trimesh.Trimesh(trimesh.transform_points(leg.vertices, rot(a)), leg.faces), panel) > 0.05
@@ -106,12 +94,9 @@ def stop_angle(panel, leg, lo=0.5, hi=60.0):
 
 if __name__ == '__main__':
     P0 = ns['face'](); T = tilt(ALPHA, P0); yf = foot_y(T)
-    panel, leg, pin = build(yf); s = stop_angle(U(panel, pin), leg)
+    panel, leg = build(yf); s = stop_angle(panel, leg)
     print(f'{TAG}: hinge y={YH}, lean {ALPHA}, foot y={yf:.2f}, stop at {s:.2f} deg')
-    for nme, m in [('panel', panel), ('leg', leg), ('pin', pin)]:
+    for nme, m in [('panel', panel), ('leg', leg)]:
         print(nme, m.is_watertight, len(m.split()), np.round(m.bounds, 1).tolist()); m.export(f'_ks11_{TAG}_{nme}.stl')
-    # print-ready: panel on its stop wall (x up); leg on its barrel end (x up); pin standing on its head (x up)
-    p = panel.copy(); p.apply_translation([-X0, 0, 0]); p.export(f'table_kickstand_{TAG}_v11_panel.stl')
-    l = leg.copy(); l.apply_translation(-l.bounds[0]); l.export(f'table_kickstand_{TAG}_v11_leg.stl')
-    q = pin.copy(); q.apply_translation(-q.bounds[0]); q.export(f'table_kickstand_{TAG}_v11_pin.stl')
+    allm = trimesh.util.concatenate([panel, leg]); allm.apply_translation([-X0, 0, 0]); allm.export(f'table_kickstand_{TAG}_v11.stl')
     json.dump(dict(N=N, YH=YH, alpha=ALPHA, psi=PSI, stop=s, foot_y=yf), open(f'_ks11_{TAG}.json', 'w'))
