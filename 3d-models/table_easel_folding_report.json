@@ -1,0 +1,60 @@
+{
+ "printed_overlap": 0.0,
+ "printed_0.3mm_shift_overlap": 0.0,
+ "leg_sweep_max_overlap": 0.0,
+ "base_sweep_max_overlap": 0.0,
+ "display": {
+  "10": {
+   "base_flat_bottom_Z": -0.0,
+   "panel_lowest_Z": 0.0,
+   "overlap_panel_base": 0.0,
+   "overlap_leg_panel": 0.0,
+   "foot_in_groove_overlap": 0.0,
+   "card_clash": 0.0,
+   "height": 169.1,
+   "depth": 166.7,
+   "mass_g": 406,
+   "tip_front_deg": 19.8,
+   "tip_rear_deg": 59.1
+  },
+  "15": {
+   "base_flat_bottom_Z": -0.0,
+   "panel_lowest_Z": 0.0,
+   "overlap_panel_base": 0.0,
+   "overlap_leg_panel": 0.0,
+   "foot_in_groove_overlap": 0.01,
+   "card_clash": 0.0,
+   "height": 166.6,
+   "depth": 166.7,
+   "mass_g": 406,
+   "tip_front_deg": 25.1,
+   "tip_rear_deg": 57.6
+  },
+  "20": {
+   "base_flat_bottom_Z": -0.0,
+   "panel_lowest_Z": 0.0,
+   "overlap_panel_base": 0.0,
+   "overlap_leg_panel": 0.0,
+   "foot_in_groove_overlap": 0.01,
+   "card_clash": 0.0,
+   "height": 163.0,
+   "depth": 166.7,
+   "mass_g": 406,
+   "tip_front_deg": 30.3,
+   "tip_rear_deg": 56.3
+  },
+  "25": {
+   "base_flat_bottom_Z": -0.0,
+   "panel_lowest_Z": 0.0,
+   "overlap_panel_base": 0.0,
+   "overlap_leg_panel": 0.0,
+   "foot_in_groove_overlap": 0.02,
+   "card_clash": 0.0,
+   "height": 159.4,
+   "depth": 166.5,
+   "mass_g": 406,
+   "tip_front_deg": 35.2,
+   "tip_rear_deg": 55.0
+  }
+ }
+}

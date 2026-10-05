@@ -1,0 +1,60 @@
+{
+ "3card": {
+  "cards": 3,
+  "size_mm": [
+   119.0,
+   113.0,
+   168.9
+  ],
+  "filament_g": 244,
+  "watertight": true,
+  "parts": 1,
+  "card_clash_mm3": 0.0,
+  "side_slide_blocked_mm3": 0.0,
+  "card_stop_min_mm3": 13.0,
+  "stability": {
+   "empty": {
+    "mass_g": 244,
+    "com_height": 65.3,
+    "tip_front_deg": 36.3,
+    "tip_rear_deg": 44.9
+   },
+   "full": {
+    "mass_g": 364,
+    "com_height": 83.1,
+    "tip_front_deg": 25.3,
+    "tip_rear_deg": 41.6
+   }
+  },
+  "front_toe_mm": 0.0
+ },
+ "5card": {
+  "cards": 5,
+  "size_mm": [
+   119.0,
+   131.6,
+   244.1
+  ],
+  "filament_g": 339,
+  "watertight": true,
+  "parts": 1,
+  "card_clash_mm3": 0.0,
+  "side_slide_blocked_mm3": 0.0,
+  "card_stop_min_mm3": 4.7,
+  "stability": {
+   "empty": {
+    "mass_g": 339,
+    "com_height": 103.8,
+    "tip_front_deg": 28.8,
+    "tip_rear_deg": 35.7
+   },
+   "full": {
+    "mass_g": 539,
+    "com_height": 129.6,
+    "tip_front_deg": 20.2,
+    "tip_rear_deg": 33.0
+   }
+  },
+  "front_toe_mm": 0.0
+ }
+}

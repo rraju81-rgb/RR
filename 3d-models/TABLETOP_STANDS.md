@@ -1,76 +1,74 @@
 # Tabletop Hot Wheels card stands
 
-Two tabletop versions of the wall rack. Both use the wall rack's tier geometry unchanged: 55 mm pitch,
-each tier 4.6 mm further forward than the one below, the same ledge profile, a 1.8 mm groove narrowing
-to 1.3 mm behind the 10 mm corner supports, and a 4 mm front lip. The cards shingle exactly as they do
-on the printed wall rack.
+There are three current designs. All of them use the wall rack's card tiers: 55 mm pitch, each tier
+4.6 mm further forward, the 1.8 mm groove narrowing to 1.3 mm behind the 10 mm corner supports, and the
+4 mm front lip. In all three, cards **slide in from the open right end** and stop against a **solid
+left end wall**. The card is 108 mm and the ledge 111 mm. All three are single prints, printed on their
+side with the left end wall on the bed, and need no supports.
 
-| | **A: Easel** (`table_stand_A_easel.stl`) | **B: A-frame** (`table_stand_B_aframe.stl`) |
-|---|---|---|
-| Use | Desk against a wall, one viewing side | Free-standing (table centre, shelf), both sides |
-| Cards | 4 (one face, 4 tiers) | 6 (two faces, 3 tiers each) |
-| Size W × D × H | 119 × 121 × 189 mm | 119 × 141 × 227 mm |
-| Filament (solid, PLA) | ~248 g | ~387 g |
-| Card loading | Slide in from the open right end | Slide in from the open right end (both faces) |
-| Card face tilt | 15° back | 15° back on each face |
+| File | Cards | Size W × D × H (standing) | Filament |
+|---|---|---|---|
+| `table_easel_3card_folding.stl` | 3 | 119 × 167 × 159–169 mm | ~406 g with cards, ~286 g stand |
+| `table_onesided_3card.stl` | 3 | 119 × 113 × 169 mm | ~244 g |
+| `table_onesided_5card.stl` | 5 | 119 × 132 × 244 mm | ~339 g |
 
-## Design decisions
+## Folding easel, 3 cards (print-in-place hinges)
 
-- **Cards slide in from the side.** The right end of every ledge is fully open. A card goes into the
-  groove from the right and slides left until it meets the **solid 8 mm left end wall**, which stops it
-  1.5 mm from home with the 108 mm card fully on the 111 mm ledge. Nothing joins the ledges to the panel
-  at the right end, because any such link would cross the cards' slide path. So each ledge is held from
-  the left wall, the same way the spine holds the ledges on the wall rack.
-- **Face tilt 15°.** Gravity keeps each card seated in its groove and leaning on the card or panel
-  behind it. At 0–5° cards can rock forward. Above about 20° the shingled cards slide down onto each
-  other and the stand gets deep.
-- **Back panel.** On the wall rack the wall itself holds the card stack. Here a 3 mm panel takes that
-  role, sized to cover the bottom card (165 mm). Higher cards lean on the cards below them, as on the
-  wall.
-- **How the ledges attach.** The cards pass between each ledge and the panel, so a ledge can only
-  attach outside the card's slide path. The left end wall ties every ledge to the panel. It is stepped to
-  follow each tier's front edge.
-- **Easel support.** Two 22 mm wide rear legs run from just below the panel top to a full-width base
-  plate. The panel, legs and base form a rigid triangle. The legs sit only at the ends to save material.
-- **A-frame apex height.** Cards on a leaning face extend past the panel top. If the panels meet too
-  low, the top cards of the two faces cross in the air (this was found and fixed in the first draft,
-  which had 4 + 4 cards). With 3 tiers per face and a 232 mm panel, the faces' cards never touch.
-  Checked: 0 mm³ overlap.
+The mechanism follows the adjustable drawing-pad stand. It has three bodies and two hinges:
 
-## Stability
+1. **Card panel:** 3 tiers. The 170 mm panel covers the bottom card's full height.
+2. **Base plate:** hinged at the bottom of the panel. It has 4 grooves across its top.
+3. **Back leg:** hinged at the top of the panel, with diamond windows and a rounded foot along its
+   bottom edge.
 
-Assumed loads, per card: a 30 g car in the blister, 50 mm above the card bottom and 12 mm proud of the
-face, plus 10 g of card and blister at the card's centre. The stand is counted as solid PLA. The tip
-angle is how far the stand can be tilted before it falls.
+**Using it:** swing the leg out, lower the base flat onto the table, then set the foot in a groove. The
+groove you pick sets the card-face angle:
 
-| Case | CoM height | Margin front / rear | Tip angle front / rear | Push at top to tip |
+| Groove (from the hinge) | 66 mm | 92 mm | 118 mm | 143 mm |
 |---|---|---|---|---|
-| A empty | 73 mm | 46 / 75 mm | 32° / 46° | 0.6 N |
-| A full (4 cards) | 102 mm | 38 / 83 mm | 21° / 39° | 0.8 N |
-| B empty | 85 mm | 71 / 71 mm | 40° / 40° | 1.2 N |
-| B full (6 cards) | 98 mm | 71 / 71 mm | 36° / 36° | 2.0 N |
-| B one face full | 93 mm | 59 / 83 mm | 32° / 41° | 1.3 N |
+| Card face tilt | 10° | 15° | 20° | 25° |
+| Tip angle front / back (full) | 20° / 59° | 25° / 58° | 30° / 56° | 35° / 55° |
 
-The exact values are in `table_stands_report.json`. In that file, `side_slide_path_blocked_mm3 = 0`
-confirms that each card's path from 150 mm right of the stand to its stop is clear.
+Fold it flat for storage or for printing. A 5° groove was rejected: with the face that upright, cards
+can tip forward.
 
-Both pass a 15° tip check, the usual rule of thumb for freestanding furniture items, in every load case.
-The easel's weak direction is forward: that is where the cards are. Its rear foot position (62 mm behind
-the leg's top attachment) was chosen for this. The A-frame is symmetric and is stiffer to bumps.
-Optional: 4 small rubber bumpers under the base corners stop it sliding.
+**The hinges:** each runs the full width, with 7 knuckles that alternate between the panel and the
+moving part. A pin on the panel runs through bores in the moving part's knuckles. Clearances are 0.4 mm
+axial and 0.45 mm radial. The stand prints folded flat, on its side, so every pin stands vertical, the
+most reliable orientation for print-in-place hinges.
 
-## Printing
+**Checked** (`verify_table_easel_folding.py`, results in `table_easel_folding_report.json`):
 
-- **Orientation:** on its side, with the solid left end wall on the bed. Every panel, ledge, leg and
-  the base rises straight up from that wall, and the open right end is the top of the print. There are
-  no overhangs or bridges, so no supports are needed.
-- **Bed:** A needs 121 × 189 mm. B needs 141 × 226 mm, which fits a 256 mm bed (Bambu, Prusa XL). On a
-  250 × 210 mm bed, place it diagonally.
-- **Print height:** 119 mm for both.
-- **Settings:** 3 walls, 15 % infill. The 3 mm panels print essentially solid.
+- As printed: the three bodies are separate, with no contact even when shifted 0.3 mm in any
+  direction.
+- Unfolding: no collisions while the leg swings out to 110° or the base folds down.
+- At each of the four angles:
+  - The base lies flat, and the panel's front edge rests on the table.
+  - The foot sits in its groove with no other contact.
+  - No card touches anything.
 
-## Files
+## One-sided stand, 3 or 5 cards
 
-- `build_table_stands.py` builds both stands and writes `table_stands_report.json`, which holds the
-  analysis numbers above.
-- `render_table_stands.py` writes `table_stands_preview.png`.
+The card face is fixed at 15°. Behind it are a back leg and a base, both cut with two staggered columns
+of diamond windows. The windows keep the stand light. Their 45° edges also mean the plates print without
+supports.
+
+| | 3 cards | 5 cards |
+|---|---|---|
+| Tip angle front / back, full | 25° / 42° | 20° / 33° |
+| Tip angle front / back, empty | 36° / 45° | 29° / 36° |
+| Print footprint (on its side) | 113 × 169 mm | 132 × 244 mm, needs a 250 mm+ bed |
+
+**Checked** (`table_onesided_report.json`):
+
+- No card touches the stand.
+- Every card's side-slide path is clear.
+- The left wall stops every card.
+
+The 5-card stand meets the 18° front-tip target without a front toe.
+
+## Earlier versions
+
+`table_stand_A_easel.stl` (4 cards, fixed rear legs) and `table_stand_B_aframe.stl` (double-sided) are
+kept for reference. They are replaced by the designs above. Their analysis is in
+`table_stands_report.json`, built by `build_table_stands.py`.
