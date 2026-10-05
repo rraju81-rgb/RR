@@ -1,5 +1,5 @@
-"""Kickstand easel v6: card panel + ONE small low print-in-place hinge + a 40 mm kickstand that folds down.
-No base plate. The display angle is set by a stop tab on the leg that bears on the panel back.
+"""Kickstand easel v7: card panel + ONE print-in-place hinge at the stop-wall end + a solid 40 mm leg strip
+with a full-width foot bar. No base plate. The hinge has two positions: 0 (flat) and 35 deg (stop tab on the panel back).
 Rack frame (as printed, folded): x width, y up the panel, z out of the card face. Prints on its side (x up)."""
 import os, json, numpy as np, trimesh, manifold3d as mf, shapely.geometry as sg
 from scipy.optimize import brentq
