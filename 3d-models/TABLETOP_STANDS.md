@@ -84,7 +84,50 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
-## Folding easel v5: 40 mm leg strip, reinforced hinges (recommended easel)
+## Kickstand easel v6: no base plate, one small hinge (recommended easel)
+
+| File | Cards | Card face leans back | Hinge axis | Standing W × D × H | Tip angle forward / back, loaded | Filament |
+|---|---|---|---|---|---|---|
+| `table_easel_3card_kickstand_v6.stl` | 3 | 26.5° | 90 mm up the panel (79 mm above the table) | 119 × 87 × 157 mm | 19.6° / 12.9° | ~112 g |
+| `table_easel_5card_kickstand_v6.stl` | 5 | 25° | 140 mm up the panel (125 mm above the table) | 119 × 113 × 232 mm | 19.4° / 13.9° | ~174 g |
+
+**What changed from v5.**
+- The base plate and its hinge are gone. The panel stands directly on the table, and the leg's foot is
+  the only other contact.
+- There is one hinge, centred on the panel back. It is 36 mm wide with 3 knuckles: panel, leg, panel.
+  The knuckles are 8 mm across, on a 3.5 mm pin, with the same 45° cone joints and 0.5 mm gaps as v5.
+- The hinge has exactly two positions:
+  - **0°, folded flat.** The leg lies 0.5 mm behind the panel and can't fold past it.
+  - **35°, open.** A stop tab on the middle knuckle lands face-to-face on the panel back. The panel's
+    weight pushes the tab harder against the panel, so the stand can't splay open further.
+
+**The leg.** The leg is an A-frame: full width at the foot, narrowing at 45° to the centre knuckle, with
+a triangular opening. The 5-card leg also has a crossbar, like a letter A.
+- It has to be this shape to print. The stand prints on its side, stop wall down, and a 40 mm leg in the
+  middle would start in mid-air.
+- Every edge of the A-frame runs either along the panel or at 45°, so the leg has no unsupported
+  overhang (0 mm²). The foot touches the bed, and so does the panel's stop wall.
+- The full-width rounded foot also keeps the stand from rocking sideways.
+
+**Why the hinge is not lower.** With the leg fixed at 35°, the foot lands only `35° − lean` behind the
+panel's line. Lowering the hinge brings the foot forward and the stand tips backwards more easily.
+- 90 mm (3-card) and 140 mm (5-card) are the lowest heights that keep the backward tip angle above 12°.
+- The lean is 25–26.5°. That is the least lean that keeps the forward tip angle above 18°: with no base
+  plate, the only front contact is the panel's bottom edge.
+
+**Checked** (`table_easel_{3,5}card_kickstand_v6_report.json`):
+- As printed: the parts don't touch, even after a 0.45 mm shift in any direction.
+- Swing: free from 0° to 34.8°. The tab meets the panel at 35.0° and blocks 36°. Below 0° the leg is
+  blocked by the panel.
+- When open, the foot and the panel's front edge both sit on the table (±0.002 mm).
+- The leg has 0 mm² of overhang steeper than 45°. The panel's only overhang is the small bridge under
+  the right-hand corner supports, the same as earlier racks.
+- The STLs reload as watertight solids: two bodies each, the panel and the leg.
+
+Preview: `table_easel_kickstand_v6_preview.png`. Built by `build_table_easel_kickstand_v6.py`, checked
+by `verify_table_easel_kickstand_v6.py`, rendered by `render_table_easel_kickstand_v6.py`.
+
+## Folding easel v5: 40 mm leg strip, reinforced hinges
 
 | File | Cards | Leg | Settings | Standing W × D × H | Tip angle forward, loaded | Filament |
 |---|---|---|---|---|---|---|
