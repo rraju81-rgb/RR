@@ -32,19 +32,23 @@ def base(LP, alpha=15.0, H_UP=None):
     """frame-holder base in the rack frame (before tilt): V-slot floor + front lip + two end back-rests"""
     H_UP = H_UP or 0.72*LP; UT = 6.0; FL = 6.0
     zf = 9.0                                                     # bottom tier front face
-    parts = [box(bounds=[[X0, -FL, ZB - CLR - UT], [X1, -CLR, zf + CLR + 4]]),          # slot floor (square to the face)
+    floor = box(bounds=[[X0, -FL, ZB - CLR - UT], [X1, -CLR, zf + CLR + 4]])
+    parts = [floor,                                                                      # slot floor (square to the face)
              box(bounds=[[X0, -FL, zf + CLR], [X1, 6.0, zf + CLR + 4]])]                # front lip, lower than the ledge lip
     for xa, xb in [(X0, X0 + RIB_W), (X1 - RIB_W, X1)]:                                 # back rests behind the edge ribs
         parts.append(box(bounds=[[xa, -FL, ZB - CLR - UT], [xb, H_UP, ZB - CLR]]))
-    return U(*parts), H_UP
+    return U(*parts), H_UP, floor
 
 def assemble(N, alpha=15.0, rear=None, toe=0.0, H_UP=None):
-    R, LP = rack(N); Bm, H_UP = base(LP, alpha, H_UP)
+    R, LP = rack(N); Bm, H_UP, floor = base(LP, alpha, H_UP)
     T = ns['TILT'].copy()
-    for m in (R, Bm): m.apply_transform(T)
-    lift = 3.0 - Bm.bounds[0, 2]
-    for m in (R, Bm): m.apply_translation([0, 0, lift])
-    Bm = trimesh.boolean.intersection([Bm, box(bounds=[[-50, -100, 3.0], [300, 400, 400]])], engine='manifold')
+    for m in (R, Bm, floor): m.apply_transform(T)
+    lift = -floor.bounds[0, 2]                    # slot floor's lowest corner sits on the table (no raised slot)
+    for m in (R, Bm, floor): m.apply_translation([0, 0, lift])
+    # fill the wedge between the tilted slot floor and the table: hull of the floor block and its shadow on the table
+    v = floor.vertices; shadow = v.copy(); shadow[:, 2] = 0.0
+    fill = trimesh.convex.convex_hull(np.vstack([v, shadow]))
+    Bm = trimesh.boolean.intersection([U(Bm, fill), box(bounds=[[-50, -100, 0.0], [300, 400, 400]])], engine='manifold')
     # world-horizontal parts: floor pad under the slot, two feet and fillet gussets (like the frame holder)
     yb = Bm.bounds[0, 1]; ytop = Bm.bounds[1, 1]
     if rear is None: rear = 0.62*H_UP

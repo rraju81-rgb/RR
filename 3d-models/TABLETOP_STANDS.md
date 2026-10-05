@@ -2,19 +2,21 @@
 
 ## Recommended: one universal base, two interchangeable racks
 
-`table_base_universal.stl` (124 g, 119 × 141 × 146 mm, prints upright, no supports) holds **either**
+`table_base_universal.stl` (119 g, 119 × 141 × 143 mm, prints upright, no supports) holds **either**
 `table_rack_3card.stl` or `table_rack_5card.stl`. Both racks have the same bottom edge and the same edge
 ribs, so they drop into the same slot and rest on the same 140 mm back rests. The 140 mm height stays
 32 mm below the top of the 3-card rack's panel. The base's feet and 8 mm front toe are sized for the
 taller 5-card rack.
 
-The gusset under each back rest now follows the leaning back rest down to the floor. That closes the
-wedge-shaped gap of the first version.
+The gusset under each back rest now follows the leaning back rest down to the floor, which closes the
+wedge-shaped gap of the first version. The slot also sits directly on the table: its lowest corner touches
+the table, and the wedge under its tilted floor is filled solid. That lowers the rack by 3 mm and removes
+the raised gap under the front lip.
 
 | On the universal base | Standing W × D × H | Tip angle front / back, full | Tip angle front / back, empty |
 |---|---|---|---|
-| 3-card rack | 119 × 141 × 178 mm | 26.7° / 51.0° | 34.5° / 57.6° |
-| 5-card rack | 119 × 141 × 253 mm | 20.8° / 36.5° | 27.0° / 43.5° |
+| 3-card rack | 119 × 141 × 175 mm | 27.2° / 51.5° | 35.2° / 58.1° |
+| 5-card rack | 119 × 141 × 250 mm | 21.1° / 36.8° | 27.4° / 43.8° |
 
 Checked (`table_universal_base_report.json`):
 
