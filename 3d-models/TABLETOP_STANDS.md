@@ -1,5 +1,51 @@
 # Tabletop Hot Wheels card stands
 
+## Recommended: card rack + frame-holder base (two simple prints)
+
+| Cards | Rack (prints on its side) | Base (prints upright) | Standing W × D × H | Filament |
+|---|---|---|---|---|
+| 3 | `table_rack_3card.stl`, 185 g | `table_base_3card.stl`, 106 g | 119 × 96 × 178 mm | 291 g |
+| 5 | `table_rack_5card.stl`, 273 g | `table_base_5card.stl`, 129 g | 119 × 150 × 253 mm | 402 g |
+
+**Rack.** The card rack has the same tiers as before: 55 mm pitch with 4.6 mm shingle, solid left stop
+wall, open right end for sliding cards in, and 10 mm corner supports. The back support plates are gone.
+Instead, the 3 mm panel back is stiffened by a grid of 5 mm ribs:
+
+- two 10 mm edge ribs, which rest on the base's back rests,
+- one centre rib,
+- four cross ribs.
+
+The ribs that run up the panel have a 45° chamfer on the side that faces up in the print, so the rack
+prints on its side, stop wall down, with no supports. The STL is already in that orientation.
+
+**Base.** The base follows `reference_FrameHolder.stl` (converted from the FrameHolder.step you shared):
+
+- A slot whose floor is square to the card face, with a low front lip. The lip is in front of the bottom
+  ledge, so it never touches the card path.
+- Two 10 × 6 mm back rests at the ends, leaning back 15° and sitting right behind the rack's edge ribs.
+- Two feet running back, each joined to its back rest with a triangular gusset.
+- The 5-card base has an 8 mm front toe.
+
+It prints upright, as the frame holder does, with no supports. The rack just drops into the slot and
+lifts out to change position or go flat in a drawer.
+
+**Checked** (`table_rack_base_report.json`):
+
+- The rack and base don't overlap, and the rack settles onto the slot and back rests.
+- No card touches the rack or the base.
+- Every card's side-slide path is clear.
+
+| Tip angle front / back | 3 cards | 5 cards |
+|---|---|---|
+| Empty | 27.7° / 43.8° | 27.2° / 45.8° |
+| Full | 21.0° / 37.4° | 21.0° / 38.8° |
+
+Preview: `table_rack_base_preview.png`. Built by `build_table_rack_base.py`.
+
+---
+
+## Other designs
+
 There are three current designs. All of them use the wall rack's card tiers: 55 mm pitch, each tier
 4.6 mm further forward, the 1.8 mm groove narrowing to 1.3 mm behind the 10 mm corner supports, and the
 4 mm front lip. In all three, cards **slide in from the open right end** and stop against a **solid
