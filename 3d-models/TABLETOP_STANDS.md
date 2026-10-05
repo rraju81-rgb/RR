@@ -84,7 +84,37 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
-## Folding easel, 3 cards (print-in-place hinges)
+## Folding easel v4: shorter base, 3 and 5 cards
+
+| File | Cards | Base (behind hinge) | Leg hinge height | Settings | Standing W × D × H | Tip angle forward, loaded |
+|---|---|---|---|---|---|---|
+| `table_easel_3card_folding_v4.stl` | 3 | 114 mm (v3: 154 mm, **40 mm shorter**) | 125 mm | 12.5°, 15°, 17.5°, 20° | 119 × 127 × 168 mm | 18.7–27.1° |
+| `table_easel_5card_folding_v4.stl` | 5 | 149 mm | 160 mm | 15°, 17.5°, 20°, 22.5° | 119 × 162 × 242 mm | 18.8–26.8° |
+
+**Why the hinge moved.** With the leg hinged at the top of the panel, a 40 mm shorter base can't hold the
+grooves for steep tilts. So the leg's hinge moved down the panel (to 125 mm on the 3-card easel) and the
+leg got shorter, which brings the grooves closer together.
+
+**Hinge axis set back.** The hinge axis sits 9.5 mm behind the panel face, and short webs join the
+panel's knuckles to it. That way the hinge cut never goes through the 3 mm panel behind the cards.
+
+**Settings.**
+- The 10° setting was dropped: with the lighter, shorter base it tips forward below the 18° target.
+- 25° no longer fits on the 3-card base.
+- The 5-card easel stands taller, so it uses settings 2.5° steeper.
+
+**Unchanged.** Same print-in-place hinges with 7 knuckles, a fixed pin and 0.4/0.45 mm clearances. It
+prints folded flat on its side, with no supports.
+
+**Checked** (`table_easel_{3,5}card_folding_v4_report.json`):
+- As printed: no contact, even after a 0.3 mm shift in any direction.
+- Unfolding: no collisions while the leg swings out to 110° and the base folds down.
+- At every setting: the base lies flat, the panel's front edge rests on the table, the foot seats in its
+  groove, and no card touches anything.
+
+Preview: `table_easel_folding_v4_preview.png`.
+
+## Folding easel v3, 3 cards (print-in-place hinges)
 
 The mechanism follows the adjustable drawing-pad stand. It has three bodies and two hinges:
 
