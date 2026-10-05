@@ -2,7 +2,7 @@ import trimesh, numpy as np, json, matplotlib; matplotlib.use('Agg'); import mat
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import importlib.util
 spec = importlib.util.spec_from_file_location('ts', 'table_stands.py')
-src = open('table_stands.py').read().split('report = {}')[0]      # reuse helpers without rebuilding
+src = open('table_stands.py').read().split('CONFIG = {')[0]      # reuse helpers without rebuilding
 ns = {}; exec(src, ns)
 CFG = {'A': (4, 3*55.0+22.0), 'B': (3, 232.0)}
 rep = json.load(open('table_stands_report.json'))
@@ -19,11 +19,14 @@ for row, v in enumerate('AB'):
         pc = Poly3DCollection(body.triangles, edgecolor='none'); n = body.face_normals
         sh = 0.4 + 0.6*np.clip(n @ np.array([0.4, -0.6, 0.7]), 0, 1)
         pc.set_facecolor(np.c_[sh*0.25, sh*0.27, sh*0.3, np.ones_like(sh)]); a.add_collection3d(pc)
-        for cdx in cards:
-            cc = Poly3DCollection(cdx.triangles, edgecolor='none'); cc.set_facecolor((0.15, 0.45, 0.9, 0.35)); a.add_collection3d(cc)
-        a.set_xlim(-10, 140); a.set_ylim(-60, 180); a.set_zlim(0, 340); a.set_box_aspect((150, 240, 340))
+        for i, cdx in enumerate(cards):
+            sliding = (i == 1)                      # second card shown half-way through sliding in from the open end
+            cm = trimesh.Trimesh(cdx.vertices + ([75, 0, 0] if sliding else [0, 0, 0]), cdx.faces)
+            cc = Poly3DCollection(cm.triangles, edgecolor='none')
+            cc.set_facecolor((0.95, 0.55, 0.1, 0.55) if sliding else (0.15, 0.45, 0.9, 0.35)); a.add_collection3d(cc)
+        a.set_xlim(-10, 200); a.set_ylim(-60, 180); a.set_zlim(0, 340); a.set_box_aspect((210, 240, 340))
         a.view_init(elev, azim); a.set_axis_off()
-        a.set_title(f"Variant {v}: {'Easel (4 cards)' if v=='A' else 'A-frame, double-sided (6 cards)'}" + (' - front' if col == 0 else ' - rear'))
+        a.set_title(f"Variant {v}: {'Easel (4 cards)' if v=='A' else 'A-frame, double-sided (6 cards)'}" + (' - front' if col == 0 else ' - rear') + '\nsolid stop wall left, open right: orange card sliding in')
     # side profile with CoM
     a = fig.add_subplot(2, 3, row*3 + 3)
     s = body.section(plane_origin=[60, 0, 0], plane_normal=[1, 0, 0])

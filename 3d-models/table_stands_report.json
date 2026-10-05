@@ -1,12 +1,13 @@
 {
  "A": {
+  "side_slide_path_blocked_mm3": 0.0,
   "front_vs_rear_card_clash_mm3": 0.0,
   "tiers_per_face": 4,
   "panel_len_mm": 187.0,
   "watertight": true,
   "parts": 1,
   "size_mm": [
-   121.0,
+   119.0,
    120.9,
    188.8
   ],
@@ -14,82 +15,83 @@
    120.9,
    188.8
   ],
-  "print_height_mm": 121.0,
-  "filament_g_solid": 239.9,
+  "print_height_mm": 119.0,
+  "filament_g_solid": 247.5,
   "cards": 4,
   "card_clash_mm3": 0.0,
   "stability": {
    "empty": {
-    "mass_g": 239.9,
-    "com_Y": 37.4,
-    "com_Z": 71.4,
-    "margin_front_mm": 46.1,
-    "margin_rear_mm": 74.8,
-    "tip_angle_front_deg": 32.8,
-    "tip_angle_rear_deg": 46.4,
-    "push_at_top_to_tip_N": 0.57
+    "mass_g": 247.5,
+    "com_Y": 36.7,
+    "com_Z": 72.8,
+    "margin_front_mm": 45.4,
+    "margin_rear_mm": 75.5,
+    "tip_angle_front_deg": 31.9,
+    "tip_angle_rear_deg": 46.0,
+    "push_at_top_to_tip_N": 0.58
    },
    "full": {
-    "mass_g": 399.9,
-    "com_Y": 29.5,
-    "com_Z": 101.3,
-    "margin_front_mm": 38.2,
-    "margin_rear_mm": 82.7,
-    "tip_angle_front_deg": 20.7,
+    "mass_g": 407.5,
+    "com_Y": 29.3,
+    "com_Z": 101.6,
+    "margin_front_mm": 38.0,
+    "margin_rear_mm": 82.9,
+    "tip_angle_front_deg": 20.5,
     "tip_angle_rear_deg": 39.2,
-    "push_at_top_to_tip_N": 0.79
+    "push_at_top_to_tip_N": 0.8
    }
   }
  },
  "B": {
+  "side_slide_path_blocked_mm3": 0.0,
   "front_vs_rear_card_clash_mm3": 0.0,
   "tiers_per_face": 3,
   "panel_len_mm": 232.0,
   "watertight": true,
   "parts": 1,
   "size_mm": [
-   121.0,
+   119.0,
    141.3,
-   226.4
+   227.4
   ],
   "print_on_side_footprint_mm": [
    141.3,
-   226.4
+   227.4
   ],
-  "print_height_mm": 121.0,
-  "filament_g_solid": 364.2,
+  "print_height_mm": 119.0,
+  "filament_g_solid": 387.3,
   "cards": 6,
   "card_clash_mm3": 0.0,
   "stability": {
    "empty": {
-    "mass_g": 364.2,
+    "mass_g": 387.3,
     "com_Y": 61.9,
-    "com_Z": 82.1,
+    "com_Z": 85.3,
     "margin_front_mm": 70.6,
     "margin_rear_mm": 70.6,
-    "tip_angle_front_deg": 40.7,
-    "tip_angle_rear_deg": 40.7,
-    "push_at_top_to_tip_N": 1.11
+    "tip_angle_front_deg": 39.6,
+    "tip_angle_rear_deg": 39.6,
+    "push_at_top_to_tip_N": 1.18
    },
    "full": {
-    "mass_g": 604.2,
+    "mass_g": 627.3,
     "com_Y": 61.9,
-    "com_Z": 96.8,
+    "com_Z": 98.2,
     "margin_front_mm": 70.6,
     "margin_rear_mm": 70.6,
-    "tip_angle_front_deg": 36.1,
-    "tip_angle_rear_deg": 36.1,
-    "push_at_top_to_tip_N": 1.85
+    "tip_angle_front_deg": 35.7,
+    "tip_angle_rear_deg": 35.7,
+    "push_at_top_to_tip_N": 1.91
    },
    "one side full": {
-    "mass_g": 484.2,
-    "com_Y": 49.8,
-    "com_Z": 91.3,
-    "margin_front_mm": 58.5,
-    "margin_rear_mm": 82.8,
-    "tip_angle_front_deg": 32.6,
-    "tip_angle_rear_deg": 42.2,
-    "push_at_top_to_tip_N": 1.23
+    "mass_g": 507.3,
+    "com_Y": 50.3,
+    "com_Z": 93.3,
+    "margin_front_mm": 59.0,
+    "margin_rear_mm": 82.2,
+    "tip_angle_front_deg": 32.3,
+    "tip_angle_rear_deg": 41.4,
+    "push_at_top_to_tip_N": 1.29
    }
   }
  }

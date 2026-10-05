@@ -9,23 +9,27 @@ on the printed wall rack.
 |---|---|---|
 | Use | Desk against a wall, one viewing side | Free-standing (table centre, shelf), both sides |
 | Cards | 4 (one face, 4 tiers) | 6 (two faces, 3 tiers each) |
-| Size W × D × H | 121 × 121 × 189 mm | 121 × 141 × 226 mm |
-| Filament (solid, PLA) | ~240 g | ~364 g |
+| Size W × D × H | 119 × 121 × 189 mm | 119 × 141 × 227 mm |
+| Filament (solid, PLA) | ~248 g | ~387 g |
+| Card loading | Slide in from the open right end | Slide in from the open right end (both faces) |
 | Card face tilt | 15° back | 15° back on each face |
 
 ## Design decisions
 
-- **Card fits fully inside.** The card is 108 mm wide. The opening between the end walls is 111 mm,
-  leaving 1.5 mm clearance each side. Unlike the wall rack, the ledges are held at both ends, so there is
-  no single-sided cantilever.
+- **Cards slide in from the side.** The right end of every ledge is fully open. A card goes into the
+  groove from the right and slides left until it meets the **solid 8 mm left end wall**, which stops it
+  1.5 mm from home with the 108 mm card fully on the 111 mm ledge. Nothing joins the ledges to the panel
+  at the right end, because any such link would cross the cards' slide path. So each ledge is held from
+  the left wall, the same way the spine holds the ledges on the wall rack.
 - **Face tilt 15°.** Gravity keeps each card seated in its groove and leaning on the card or panel
   behind it. At 0–5° cards can rock forward. Above about 20° the shingled cards slide down onto each
   other and the stand gets deep.
 - **Back panel.** On the wall rack the wall itself holds the card stack. Here a 3 mm panel takes that
   role, sized to cover the bottom card (165 mm). Higher cards lean on the cards below them, as on the
   wall.
-- **How the ledges attach.** The cards pass between each ledge and the panel, so ledges can only attach
-  outside the card width. 5 mm end brackets at both ends tie every ledge to the panel.
+- **How the ledges attach.** The cards pass between each ledge and the panel, so a ledge can only
+  attach outside the card's slide path. The left end wall ties every ledge to the panel. It is stepped to
+  follow each tier's front edge.
 - **Easel support.** Two 22 mm wide rear legs run from just below the panel top to a full-width base
   plate. The panel, legs and base form a rigid triangle. The legs sit only at the ends to save material.
 - **A-frame apex height.** Cards on a leaning face extend past the panel top. If the panels meet too
@@ -41,11 +45,14 @@ angle is how far the stand can be tilted before it falls.
 
 | Case | CoM height | Margin front / rear | Tip angle front / rear | Push at top to tip |
 |---|---|---|---|---|
-| A empty | 71 mm | 46 / 75 mm | 33° / 46° | 0.6 N |
-| A full (4 cards) | 101 mm | 38 / 83 mm | 21° / 39° | 0.8 N |
-| B empty | 82 mm | 71 / 71 mm | 41° / 41° | 1.1 N |
-| B full (6 cards) | 97 mm | 71 / 71 mm | 36° / 36° | 1.9 N |
-| B one face full | 91 mm | 59 / 83 mm | 33° / 42° | 1.2 N |
+| A empty | 73 mm | 46 / 75 mm | 32° / 46° | 0.6 N |
+| A full (4 cards) | 102 mm | 38 / 83 mm | 21° / 39° | 0.8 N |
+| B empty | 85 mm | 71 / 71 mm | 40° / 40° | 1.2 N |
+| B full (6 cards) | 98 mm | 71 / 71 mm | 36° / 36° | 2.0 N |
+| B one face full | 93 mm | 59 / 83 mm | 32° / 41° | 1.3 N |
+
+The exact values are in `table_stands_report.json`. In that file, `side_slide_path_blocked_mm3 = 0`
+confirms that each card's path from 150 mm right of the stand to its stop is clear.
 
 Both pass a 15° tip check, the usual rule of thumb for freestanding furniture items, in every load case.
 The easel's weak direction is forward: that is where the cards are. Its rear foot position (62 mm behind
@@ -54,13 +61,12 @@ Optional: 4 small rubber bumpers under the base corners stop it sliding.
 
 ## Printing
 
-- **Orientation:** on its side (an end wall on the bed), the same way you printed the wall rack. Every
-  panel, ledge, leg and the base runs the full width, so they print as vertical walls. The only overhangs
-  are the end brackets on the top end, which bridge at most about 20 mm between the panel and each
-  ledge. No supports are needed.
+- **Orientation:** on its side, with the solid left end wall on the bed. Every panel, ledge, leg and
+  the base rises straight up from that wall, and the open right end is the top of the print. There are
+  no overhangs or bridges, so no supports are needed.
 - **Bed:** A needs 121 × 189 mm. B needs 141 × 226 mm, which fits a 256 mm bed (Bambu, Prusa XL). On a
   250 × 210 mm bed, place it diagonally.
-- **Print height:** 121 mm for both.
+- **Print height:** 119 mm for both.
 - **Settings:** 3 walls, 15 % infill. The 3 mm panels print essentially solid.
 
 ## Files

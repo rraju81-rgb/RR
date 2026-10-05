@@ -38,8 +38,8 @@ about 33–60 g.
   - Plain: tip angle 30.0° front, 30.8° back, 22.5° sideways.
   - Hinged: tip angle 30.8° front, 31.4° back, 23.8° sideways.
 
-## Why not tabletop stands A and B
+## Feet or tabletop stand?
 
-`table_stand_A_easel.stl` and `table_stand_B_aframe.stl` close both ends of every ledge. That holds the
-card securely, but it means the card can only go in from the top, never from the side. The feet keep
-the wall rack's open-ended grooves, which was the main design goal.
+The tabletop stands (`TABLETOP_STANDS.md`) now also load cards from the side. Use the feet when you want
+one rack that moves between wall and table. Use stand A or B for a dedicated desk piece that leans the
+cards back 15°.

@@ -15,7 +15,8 @@ ALPHA  = np.radians(15.0)              # face tilted back from vertical
 PANEL  = 3.0                           # back panel thickness
 LP     = (N-1)*PITCH + 22.0            # panel length along the face (to the top ledge's back wall)
 BASE_T = 3.0
-X0, X1 = -CHEEK, W_IN + CHEEK
+STOP_T = 8.0                           # solid left end wall: holds every ledge and stops the card
+X0, X1 = -STOP_T, W_IN                 # right end fully open so cards slide in from the side
 
 def tier(k):
     y0 = PITCH*k
@@ -26,12 +27,12 @@ def tier(k):
              box(bounds=[[0, y0, zl], [W_IN, y0+4, zf]]),            # front lip (4 mm)
              box(bounds=[[0, y0, zg+1.3], [9, y0+10, zf]]),          # 10 mm corner supports (groove 1.3 mm here)
              box(bounds=[[W_IN-9, y0, zg+1.3], [W_IN, y0+10, zf]]),
-             box(bounds=[[X0, y0, -PANEL], [0, y0+22, zf]]),         # end brackets tie the ledge to the panel,
-             box(bounds=[[W_IN, y0, -PANEL], [X1, y0+22, zf]])]      # outside the card width
+             box(bounds=[[X0, y0, -PANEL], [0, min(y0+PITCH, LP), zf]])]   # left end wall segment (card stop)
     return parts
 
 def face():
-    return U(box(bounds=[[X0, 0, -PANEL], [X1, LP, 0]]), *[p for k in range(N) for p in tier(k)])
+    return U(box(bounds=[[X0, 0, -PANEL], [X1, LP, 0]]), box(bounds=[[X0, 0, -PANEL], [0, LP, 4.0]]),
+             *[p for k in range(N) for p in tier(k)])
 
 s, c = np.sin(ALPHA), np.cos(ALPHA)
 TILT = np.array([[1,0,0,0],[0,s,-c,0],[0,c,s,0],[0,0,0,1]], float)   # rack (x,y,z) -> world (x,Y,Z)
@@ -120,11 +121,20 @@ for v in 'AB':
     # card clearance: every card slab must be free of the stand
     clash = sum(trimesh.boolean.intersection([body, cs], engine='manifold').volume
                 for sd in sides for cs in card_slabs(lift, yc, sd))
+    slide = 0.0
+    for sd in sides:
+        for k in range(N):
+            zg = 3.7 + STEP*k + 0.3
+            p = box(bounds=[[1.5 - X0, PITCH*k + 3.2, zg], [W_IN - X0 + 150 + CARD_W, PITCH*k + 3.2 + CARD_H, zg + 0.5]])
+            p.apply_transform(TILT); p.apply_translation([0, 0, lift])
+            if sd < 0: p.apply_transform(np.array([[1,0,0,0],[0,-1,0,2*yc],[0,0,1,0],[0,0,0,1]], float))
+            slide += trimesh.boolean.intersection([body, p], engine='manifold').volume
+    stop_gap = None
     cross = 0.0
     if v == 'B':
         fr, rr = card_slabs(lift, yc, +1), card_slabs(lift, yc, -1)
         cross = sum(trimesh.boolean.intersection([a, b], engine='manifold').volume for a in fr for b in rr)
-    report[v] = dict(front_vs_rear_card_clash_mm3=round(cross, 3), tiers_per_face=N, panel_len_mm=LP, watertight=bool(body.is_watertight), parts=len(body.split()),
+    report[v] = dict(side_slide_path_blocked_mm3=round(slide, 3), front_vs_rear_card_clash_mm3=round(cross, 3), tiers_per_face=N, panel_len_mm=LP, watertight=bool(body.is_watertight), parts=len(body.split()),
                      size_mm=[round(e, 1) for e in body.extents], print_on_side_footprint_mm=[round(body.extents[1], 1), round(body.extents[2], 1)],
                      print_height_mm=round(body.extents[0], 1), filament_g_solid=round(stand_g, 1),
                      cards=len(sides)*N, card_clash_mm3=round(clash, 3), stability=res)
