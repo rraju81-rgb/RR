@@ -3,41 +3,27 @@
  "hinge_y": 140.0,
  "lean_deg": 25.0,
  "open_deg": 35.0,
- "assembled_overlap_mm3": 0.0,
- "pin_hole_radial_clearance_mm": 0.25,
- "slide_off_overlap_mm3": {
-  "0deg": [
-   262.75,
-   1138.6,
-   1138.6,
-   1138.6,
-   1138.6
-  ],
-  "20deg": [
-   2.88,
-   12.48,
-   12.48,
-   12.48,
-   12.48
-  ],
-  "30deg": [
-   0.05,
-   0.2,
-   0.2,
-   0.2,
-   0.2
-  ],
-  "34.5deg": [
-   0.0,
-   0.0,
-   0.0,
-   0.0,
-   0.0
-  ]
+ "assembled_overlap_mm3": {
+  "panel_leg": 0.0,
+  "panel_pin": 0.0,
+  "leg_pin": 0.0
  },
- "cleat": {
-  "cleat_top_y": 130.52,
-  "unlock_deg": 31.8
+ "pin_hole_radial_clearance_mm": 0.25,
+ "snap": {
+  "barb_dia": 6.4,
+  "hole_dia": 5.5,
+  "prong_deflection_mm": 0.45,
+  "slot_mm": 1.6
+ },
+ "leg_slide_overlap_mm3": {
+  "0deg": {
+   "minus_1mm": 40.44,
+   "plus_1mm": 4.59
+  },
+  "35deg": {
+   "minus_1mm": 41.2,
+   "plus_1mm": 4.59
+  }
  },
  "sweep_overlap_mm3": {
   "0": 0.0,
@@ -51,19 +37,19 @@
   "34.8": 0.0,
   "36": 10.493,
   "38": 30.845,
-  "-2": 10453.474
+  "-2": 8776.201
  },
  "stop_deg": 35.00474667549133,
  "foot_Z_min": 0.0,
  "panel_Z_min": 0.0,
- "mass_stand_g": 177,
- "mass_loaded_g": 377,
+ "mass_stand_g": 175,
+ "mass_loaded_g": 375,
  "footprint_depth_mm": 83.6,
- "tip_front_deg": 19.4,
+ "tip_front_deg": 19.3,
  "tip_rear_deg": 14.0,
- "tip_sideways_deg": 15.8,
+ "tip_sideways_deg": 8.3,
  "hinge": {
-  "type": "lift-off (LiftOffHinge.stl)",
+  "type": "3-barrel, separate snap pin (barrels as LiftOffHinge.stl)",
   "barrel_dia_mm": 10.0,
   "barrel_len_mm": 15.0,
   "pin_dia_mm": 5.0,
@@ -74,5 +60,7 @@
  "stl_panel_watertight": true,
  "stl_panel_bodies": 1,
  "stl_leg_watertight": true,
- "stl_leg_bodies": 1
+ "stl_leg_bodies": 1,
+ "stl_pin_watertight": true,
+ "stl_pin_bodies": 1
 }
