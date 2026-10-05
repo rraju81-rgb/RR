@@ -84,6 +84,44 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
+## Folding easel v5: 40 mm leg strip, reinforced hinges (recommended easel)
+
+| File | Cards | Leg | Settings | Standing W × D × H | Tip angle forward, loaded | Filament |
+|---|---|---|---|---|---|---|
+| `table_easel_3card_folding_v5.stl` | 3 | 40 mm strip at the stop-wall end, hinge 125 mm up | 15°, 17.5°, 20°, 22.5° | 119 × 127 × 167 mm | 18.4–25.9° | ~235 g |
+| `table_easel_5card_folding_v5.stl` | 5 | 40 mm strip at the stop-wall end, hinge 160 mm up | 17.5°, 20°, 22.5° | 119 × 162 × 241 mm | 19.1–24.1° | ~338 g |
+
+**Narrow leg.** The back leg is now a 40 mm strip, cut down from the full 119 mm width, and its hinge
+spans only that strip. It sits at the solid stop-wall end (on the right when seen from behind), where the
+end wall ties every ledge to the panel. The base and its bottom hinge stay full width.
+
+**Why the v4 hinge failed.** The easel prints on its side, so the hinge pins stand vertical. Between the
+knuckles there were flat 0.4 mm gaps, which means each upper knuckle's flat underside printed over air.
+It sagged onto the knuckle below and fused. In v4 the model had 611 mm² of such flat overhang in the leg
+hinge and 219 mm² in the bottom hinge.
+
+**The v5 hinge.** Every knuckle joint is now a 45° cone fitting into a matching cone-shaped recess, so
+every underside slopes at 45° and prints without sagging. The remaining flat overhang is 1.6 mm² and
+2.9 mm²: thin rings around the pin. The other changes:
+- Every gap is 0.5 mm, measured square to the surface.
+- The leg-hinge pin is 5 mm (was 4 mm). The bottom-hinge pin is 3.2 mm with a 0.5 mm bore clearance.
+- The leg hinge has 5 knuckles over 40 mm, and the bottom hinge has 7 over the full width.
+
+See `table_easel_v5_hinge_section.png`.
+
+**Settings.** Losing the weight of the full-width leg moves the centre of mass forward. To keep every
+setting at 18° or more forward tip angle, the 3-card easel now runs 15–22.5°. The 5-card easel runs
+17.5–22.5°: a 25° groove would need a base too long to fold clear of the leg hinge.
+
+**Checked** (`table_easel_{3,5}card_folding_v5_report.json`):
+- As printed: the parts don't touch, even after a 0.45 mm shift in any direction.
+- Unfolding: no collisions while the leg swings out to 110° and the base folds down.
+- At every setting: the base lies flat, the panel's front edge is on the table, the foot seats in its
+  groove, and no card touches anything.
+- The exported STLs reload as watertight solids.
+
+Preview: `table_easel_folding_v5_preview.png`.
+
 ## Folding easel v4: shorter base, 3 and 5 cards
 
 | File | Cards | Base (behind hinge) | Leg hinge height | Settings | Standing W × D × H | Tip angle forward, loaded |
