@@ -84,9 +84,38 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
-## Your fixed rack + kickstand (no back panel)
+## SlideRack Fold: fixed rack + kickstand, 3 / 5 / 6 cards (recommended)
 
-`right_fixed_rack_kickstand_PRINT.stl` is `reference_right_fixed_rack_PRINT.stl`, your fixed rack, with a
+All three sizes are your fixed rack (`reference_right_fixed_rack_PRINT.stl`), cut to 3, 5 or 6 ledges.
+- The end wall stops flush with the top ledge.
+- Each has the same print-in-place hinge and 80 × 6 mm leg (0° or 35°), on the back of the end wall.
+- Each is one print, end wall down, with no supports.
+
+| File | Cards | Rack height | Hinge axis | Lean | Tip angle fwd / back / side, loaded | Filament |
+|---|---|---|---|---|---|---|
+| `right_fixed_rack_3card_kickstand_PRINT.stl` | 3 | 132 mm | 121 mm | 27.5° | 24.9° / 20.7° / 20.9° | ~103 g |
+| `right_fixed_rack_5card_kickstand_PRINT.stl` | 5 | 242 mm | 176 mm | 25.0° | 22.8° / 19.4° / 15.8° | ~178 g |
+| `right_fixed_rack_6card_kickstand_PRINT.stl` | 6 | 297 mm | 176 mm | 24.5° | 21.5° / 14.6° / 12.5° | ~207 g |
+
+**Hinge position.** The hinge sits on a ledge's base block, where the end wall is 28 mm wide: the 3rd ledge
+on the 3-card, the 4th on the 5- and 6-card.
+
+**Lean.** Each lean is the smallest that keeps the forward tip angle above 18°.
+
+**Checked:** each passes the same checks: 0.6 mm minimum gap, a free swing to 34.8°, a stop at 35.0°,
+and a watertight STL. Reports are in `right_fixed_rack_{3,5,6}card_kickstand_report.json`.
+
+Preview: `fixed_rack_kickstand_family_preview.png`. Built by `build_right_fixed_rack_kickstand.py` with
+`KS_N`, `KS_YH` and `KS_ALPHA` set per size.
+
+**Pitch and drawings.** Sales pitch: `pitch/SlideRack_Fold_Pitch.pdf`. Blueprint: `pitch/SlideRack_Fold_Blueprint.pdf`.
+
+The 6-card file was previously named `right_fixed_rack_kickstand_PRINT.stl`. It is the same model, so the
+old name is removed. The section below has the 6-card details.
+
+## Your fixed rack + kickstand (6-card, no back panel)
+
+`right_fixed_rack_6card_kickstand_PRINT.stl` is `reference_right_fixed_rack_PRINT.stl`, your fixed rack, with a
 print-in-place back stand added. It is one print. It lies in the same position and orientation as your
 file, end wall down, and prints with no supports.
 
@@ -110,7 +139,7 @@ file, end wall down, and prints with no supports.
 |---|---|---|---|
 | 447 g | 21.5° / 14.6° / 12.5° | 136 × 131 × 284 mm | ~207 g |
 
-**Checked** (`right_fixed_rack_kickstand_report.json`):
+**Checked** (`right_fixed_rack_6card_kickstand_report.json`):
 - **Clearance:** the smallest print gap is 0.6 mm. Nothing touches, even with a
   0.45 mm shift in any direction.
 - **Swing:** free from 0° to 34.8°, and the stop catches at 35.0°. The leg is captured with about

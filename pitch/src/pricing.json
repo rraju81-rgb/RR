@@ -79,6 +79,72 @@
     "marketplace_margin": 32
    }
   ],
+  "kickstand": [
+   {
+    "name": "SlideRack Fold 3 (3-card, kickstand)",
+    "price": 499,
+    "gst": 76,
+    "grams": 103,
+    "print_h": 4.1,
+    "filament": 92,
+    "machine": 49,
+    "finishing": 20,
+    "unit_cost": 178,
+    "cost_floor_price": 499,
+    "d2c_profit": 135,
+    "marketplace_profit": 70,
+    "d2c_margin": 32,
+    "marketplace_margin": 17
+   },
+   {
+    "name": "SlideRack Fold 5 (5-card, kickstand)",
+    "price": 649,
+    "gst": 99,
+    "grams": 178,
+    "print_h": 7.1,
+    "filament": 160,
+    "machine": 85,
+    "finishing": 20,
+    "unit_cost": 292,
+    "cost_floor_price": 649,
+    "d2c_profit": 145,
+    "marketplace_profit": 61,
+    "d2c_margin": 26,
+    "marketplace_margin": 11
+   },
+   {
+    "name": "SlideRack Fold 6 (6-card, kickstand)",
+    "price": 749,
+    "gst": 114,
+    "grams": 207,
+    "print_h": 8.3,
+    "filament": 186,
+    "machine": 99,
+    "finishing": 20,
+    "unit_cost": 336,
+    "cost_floor_price": 749,
+    "d2c_profit": 184,
+    "marketplace_profit": 86,
+    "d2c_margin": 29,
+    "marketplace_margin": 14
+   },
+   {
+    "name": "Fold Duo (3 + 5)",
+    "price": 949,
+    "gst": 145,
+    "grams": 280,
+    "print_h": 11.2,
+    "filament": 252,
+    "machine": 135,
+    "finishing": 40,
+    "unit_cost": 470,
+    "cost_floor_price": 949,
+    "d2c_profit": 215,
+    "marketplace_profit": 92,
+    "d2c_margin": 27,
+    "marketplace_margin": 11
+   }
+  ],
   "table": [
    {
     "name": "Tabletop Set 3 (base + 3-card rack)",

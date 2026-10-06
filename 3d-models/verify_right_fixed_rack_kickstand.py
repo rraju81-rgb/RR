@@ -3,10 +3,10 @@ from scipy.optimize import brentq
 from scipy.spatial import ConvexHull
 from trimesh.proximity import signed_distance
 import build_right_fixed_rack_kickstand as E
-cfg = json.load(open('_ks12.json'))
-P = trimesh.load('_ks12_rack.stl'); L = trimesh.load('_ks12_leg.stl'); R0 = E.rack()
+cfg = json.load(open(f'_ks12_{E.N}.json'))
+P = trimesh.load(f'_ks12_{E.N}_rack.stl'); L = trimesh.load(f'_ks12_{E.N}_leg.stl'); R0 = E.rack()
 mv = lambda m, M: trimesh.Trimesh(trimesh.transform_points(m.vertices, M), m.faces)
-r = dict(hinge_y=E.YH, lean_deg=E.ALPHA, open_deg=E.PSI)
+r = dict(N=E.N, hinge_y=E.YH, lean_deg=E.ALPHA, open_deg=E.PSI)
 # the supplied rack is untouched: it lies entirely inside the new rack body, and nothing was cut from it
 r['original_rack_volume_cm3'] = round(trimesh.load(E.SRC).volume/1000, 2); r['rack_after_trim_cm3'] = round(R0.volume/1000, 2); r['end_wall_trimmed_to_y_mm'] = E.YTOP
 r['original_rack_kept_cm3'] = round(E.I(R0, P)/1000, 2)
@@ -27,7 +27,7 @@ r['stop_deg'] = cfg['stop']
 T = E.tilt(E.ALPHA, P); Pw = mv(P, T); Lw = mv(L, T @ E.rot(E.PSI))
 r['foot_Z_min'] = round(Lw.bounds[0][2], 3)
 pts = [(Pw.volume*1.24e-3*0.75, *Pw.center_mass), (Lw.volume*1.24e-3*0.75, *Lw.center_mass)]
-for k in range(6):
+for k in range(E.N):
     zc = 4.6*k + 4.5
     for m, y, z in [(30, 55*k + 53, zc + 12), (10, 55*k + 3 + 82.5, zc)]:
         p = (T @ np.array([28 + 54, y, z, 1]))[:3]; pts.append((m, *p))
@@ -42,6 +42,6 @@ for i in range(len(hull)):
     if abs(e[1]) > 0.3*np.linalg.norm(e): side.append(abs(e[0]*(c2 - a)[1] - e[1]*(c2 - a)[0])/np.linalg.norm(e))
 r['tip_sideways_deg'] = round(np.degrees(np.arctan2(min(side), com[2])), 1)
 r['standing_W_D_H_mm'] = np.round(trimesh.util.concatenate([Pw, Lw]).extents, 1).tolist()
-S = trimesh.load('right_fixed_rack_kickstand_PRINT.stl'); r['stl_watertight'] = bool(S.is_watertight); r['stl_bodies'] = len(S.split())
+S = trimesh.load(f'right_fixed_rack_{E.N}card_kickstand_PRINT.stl'); r['stl_watertight'] = bool(S.is_watertight); r['stl_bodies'] = len(S.split())
 r['stl_bounds_same_as_original'] = [np.round(S.bounds, 1).tolist(), np.round(trimesh.load(E.SRC).bounds, 1).tolist()]
-print(json.dumps(r, indent=1)); json.dump(r, open('right_fixed_rack_kickstand_report.json', 'w'), indent=1)
+print(json.dumps(r, indent=1)); json.dump(r, open(f'right_fixed_rack_{E.N}card_kickstand_report.json', 'w'), indent=1)

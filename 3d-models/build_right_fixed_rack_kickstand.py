@@ -22,9 +22,11 @@ XL = (0.0, LB); XP = (LB + G_CONE, LB + G_CONE + PB)
 LEG_X = (0.0, float(os.environ.get('KS_LW', 80.0))); LT = float(os.environ.get('KS_LT', 6.0))
 L_Z = (-GAP - LT, -GAP); FOOT_R = LT/2; ZM = (L_Z[0] + L_Z[1])/2
 HEAD = (4.0, 1.5)
-TAG = 'fixed_rack'
 
-YTOP = float(os.environ.get('KS_YTOP', 297.0))     # end wall trimmed to the top of the 6th ledge (display height)
+
+N = int(os.environ.get('KS_N', 6))                  # ledges kept from the supplied 6-ledge rack (3, 5 or 6)
+YTOP = float(os.environ.get('KS_YTOP', 55.0*(N - 1) + 22.0))   # end wall cut flush with the top ledge
+TAG = f'fixed_rack_{N}card'
 
 def rack():
     m = trimesh.load(SRC); m.apply_transform(TO_RACK)
@@ -93,9 +95,9 @@ if __name__ == '__main__':
     fixed, leg = build(yf); s = stop_angle(fixed, leg)
     print(f'hinge y={YH}, lean {ALPHA}, foot y={yf:.2f}, stop at {s:.2f} deg')
     for nme, m in [('rack', fixed), ('leg', leg)]:
-        print(nme, m.is_watertight, len(m.split()), np.round(m.bounds, 1).tolist()); m.export(f'_ks12_{nme}.stl')
+        print(nme, m.is_watertight, len(m.split()), np.round(m.bounds, 1).tolist()); m.export(f'_ks12_{N}_{nme}.stl')
     # back to the supplied STL's own frame and placement (prints exactly as the original)
     back = lambda m: clean(m.copy().apply_transform(np.linalg.inv(TO_RACK)))
     allm = trimesh.util.concatenate([back(fixed), back(leg)])
-    allm.export('right_fixed_rack_kickstand_PRINT.stl')
-    json.dump(dict(YH=YH, alpha=ALPHA, psi=PSI, stop=s, foot_y=yf), open('_ks12.json', 'w'))
+    allm.export(f'right_fixed_rack_{N}card_kickstand_PRINT.stl')
+    json.dump(dict(YH=YH, alpha=ALPHA, psi=PSI, stop=s, foot_y=yf), open(f'_ks12_{N}.json', 'w'))

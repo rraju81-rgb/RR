@@ -4,6 +4,8 @@
 |---|---|
 | `SlideRack_Wall_Mount_Pitch.pdf` | 4 pages: wall rack + wall rack on clip-on table feet (+ hinged Pro). Covers design, function, Indian market and pricing. |
 | `SlideRack_Tabletop_Pitch.pdf` | 4 pages: 3- and 5-card racks on the universal base. Covers design, function, Indian market and pricing. |
+| `SlideRack_Fold_Pitch.pdf` | 4 pages: SlideRack Fold 3 / 5 / 6, the one-piece folding rack with a print-in-place kickstand. Covers design, function, comparison, Indian pricing and go-to-market. |
+| `SlideRack_Fold_Blueprint.pdf` | 5 A3 sheets: general arrangement for each size, hinge detail, and a specification / print settings / tolerances sheet (`src/blueprint.py`). |
 | `*.png` | product renders (z-buffer renderer in `src/rlib.py`), annotated design shots, price charts |
 | `src/pricing.py`, `src/pricing.json` | unit-cost and channel-margin model; every price in the pitches comes from here |
 

@@ -1,11 +1,12 @@
 {
+ "N": 5,
  "hinge_y": 176.0,
- "lean_deg": 24.5,
+ "lean_deg": 25.0,
  "open_deg": 35.0,
  "original_rack_volume_cm3": 164.4,
- "rack_after_trim_cm3": 146.2,
- "end_wall_trimmed_to_y_mm": 297.0,
- "original_rack_kept_cm3": 146.2,
+ "rack_after_trim_cm3": 114.69,
+ "end_wall_trimmed_to_y_mm": 242.0,
+ "original_rack_kept_cm3": 114.69,
  "added_hinge_cm3": 1.13,
  "printed_overlap_mm3": 0.0,
  "shift045_overlap_mm3": 0.0,
@@ -27,32 +28,32 @@
   "34.8": 0.0,
   "36": 15.529,
   "38": 45.551,
-  "-2": 8902.767
+  "-2": 8597.248
  },
  "stop_deg": 35.003196865320206,
- "foot_Z_min": 0.0,
- "mass_stand_g": 207,
- "mass_loaded_g": 447,
- "tip_front_deg": 21.5,
- "tip_rear_deg": 14.6,
- "tip_sideways_deg": 12.5,
+ "foot_Z_min": 0.001,
+ "mass_stand_g": 178,
+ "mass_loaded_g": 378,
+ "tip_front_deg": 22.8,
+ "tip_rear_deg": 19.4,
+ "tip_sideways_deg": 15.8,
  "standing_W_D_H_mm": [
   136.0,
-  131.4,
-  283.5
+  115.6,
+  230.9
  ],
  "stl_watertight": true,
  "stl_bodies": 2,
  "stl_bounds_same_as_original": [
   [
    [
-    0.0,
+    4.6,
     0.0,
     -0.0
    ],
    [
     44.6,
-    297.0,
+    242.0,
     136.0
    ]
   ],
