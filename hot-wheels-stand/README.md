@@ -659,3 +659,10 @@ Clip j hangs on lip 1 + 3 j (foot at y = 38.5 + 60 j); 4 cars fit one 240 mm str
 - marketing/sales_pitch.pdf and meta_ad_1..5.png now in INR for India: cost about Rs 425 (4-car) / Rs 640 (7-car);
   prices: STL Rs 499, Starter 4-car Rs 999, Full 7-car Rs 1,499 (launch Rs 1,299), add-on rack Rs 199 (3 for Rs 549),
   free shipping over Rs 999. Competitors from Etsy India (hooks Rs 277-302, 4-car case Rs 1,658, STL Rs 1,188).
+
+## Sales kit + blueprint for SWING / SLIDE racks
+- `marketing/sales_pitch.pdf` + `meta_ad_1..5.png` rewritten for the lift-off SWING rack, the fixed SLIDE rack and the
+  right + left twins (35 cm, 6 cars each), with new costs and INR prices (see marketing/README.md).
+- `blueprint/blueprint.pdf` (2 x A3) now draws these racks: twin front/side elevations, isos with cards, operation
+  sequence, pin-axis and plan sections of the hinge, ledge slot section, SLIDE rack. The old strip + clip blueprint is kept
+  as `blueprint/blueprint_board_v13.pdf` (`build_blueprint_board.py`).

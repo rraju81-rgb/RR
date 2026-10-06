@@ -41,76 +41,76 @@ td{padding:1.4mm 2mm;border-bottom:1px solid #e1e3e8;font-size:8.3pt;vertical-al
 def foot(n): return f'<div class="foot"><span>{TM}</span><span>{n} / 3</span></div>'
 doc = f"""<!doctype html><html><head><meta charset="utf-8"><title>PITLANE sales pitch</title>{FONTS}<style>{DOC}</style></head><body>
 <section class="page"><div class="bar track"></div>
-<div class="top"><div class="logo">PIT<b>LANE</b></div><span>Sales pitch &amp; product analysis<br>Swing-out wall garage for carded 1:64 cars</span></div>
-<h1>Every car gets its own garage.<br><em>Every card stays on show.</em></h1>
-<p class="lead">PITLANE is a 3D-printed wall system for carded die-cast cars. One 40 cm strip holds up to 7 cars, and each card sits in its own swing-out ledge. Lift a ledge, swing it open, slide the card in, swing it shut. The cards step out 7 mm per row, so every name stays visible and no card covers another.</p>
-<div class="quote"><b>The pitch (30 seconds):</b> &ldquo;Collectors keep their best cars carded, then hide them in boxes or crush them on peg hooks. PITLANE gives every card its own swing-out garage on the wall. You can see every name, take any one card out without touching the others, and add racks as your collection grows. It snaps together with no tools. One 40 cm strip holds up to 7 cars, for about the price of one mainline car per slot.&rdquo;</div>
+<div class="top"><div class="logo">PIT<b>LANE</b></div><span>Sales pitch &amp; product analysis<br>Wall racks for carded 1:64 cars &middot; 2026 range</span></div>
+<h1>Every card on show.<br><em>Any card out in seconds.</em></h1>
+<p class="lead">PITLANE is a 3D-printed wall rack for carded die-cast cars. One 35 cm rack holds 6 cards in stepped rows, so every name stays readable. It comes in two models, and each one comes in a right-hand and a left-hand version. Hang one of each back to back and you get a 12-car centrepiece.</p>
+<div class="quote"><b>The pitch (30 seconds):</b> &ldquo;Collectors keep their best cars carded, then hide them in boxes or crush them on peg hooks. PITLANE puts six cards on a 35 cm rail, each row stepped forward so every name shows. On SWING, every card has its own door: swing it out, swap the card, swing it shut, and lift any shelf off its pin to clean it. On SLIDE, every card has its own lane: just slide it in from the side. Add a mirrored left rack and the wall holds twelve.&rdquo;</div>
 <div class="g2" style="margin-top:3mm">
- <div class="img ph"><img src="img/photo_prototype_7rack.jpg"><div class="cap">Real printed prototype loaded with real carded cars (designer&rsquo;s photo).</div></div>
- <div class="img"><img src="img/hero_7.png"><div class="cap">Current design: 7 cars on one 40 cm strip (CAD render, cards shown as blanks).</div></div>
+ <div class="img"><img src="img/v2_swing_open.png" style="height:48mm"><div class="cap">SWING twin (right + left): one door open on each side. CAD render, cards shown as blanks.</div></div>
+ <div class="img"><img src="img/v2_slide_pair.png" style="height:48mm"><div class="cap">SLIDE twin: cards slide in from the right on one rack and from the left on the other.</div></div>
 </div>
-<h2>What&rsquo;s in the box (7-car kit)</h2>
+<h2>The range</h2>
 <div class="g3">
- <div class="card"><b>1&times; wall strip, 40 cm</b><p>One piece, or two halves that lock with a C-interlock. Fixed with 4 screws. Hook-lip pairs every 54 mm.</p></div>
- <div class="card"><b>7&times; hinge clips</b><p>Each clip double-hooks behind two lips, and two solid bumps click into notches in the strip (no springs). Each one sits 7 mm deeper than the one below. No tools.</p></div>
- <div class="card"><b>7&times; swing ledges</b><p>8 mm pin running the full height, a 0&deg; stop, a click detent and 14 mm corner posts that keep the card upright.</p></div>
+ <div class="card"><b>PITLANE SWING (6 cars)</b><p>One 35 cm wall mount (20 mm wide) with 6 hinge pins. Each of the 6 ledges drops onto its own pin. Swing it out to load. Lift 15.5 mm to take it off. It stops at closed and opens to 135&deg;.</p></div>
+ <div class="card"><b>PITLANE SLIDE (6 cars)</b><p>A one-piece rack with no moving parts. Every ledge has a solid end stop, and the card slides into the 1.8 mm slot from the open end. The lowest-cost way to display 6 cards.</p></div>
+ <div class="card"><b>TWIN = right + left (12 cars)</b><p>A mirrored left-hand rack hangs back to back with the right one, half a row (27.5 mm) lower. The shelves alternate, so opening one side never touches the other.</p></div>
 </div>
 <h2>Why it wins</h2>
-<ul><li><b>Grab one, leave the rest:</b> other displays make you unhook the cards in front. Here each card has its own door.</li>
-<li><b>Names stay readable:</b> a 1 mm front lip and stepped rows mean nothing covers the card title.</li>
-<li><b>Built for real prints:</b> every part prints without supports, and every lock was redesigned after real test prints failed.</li>
-<li><b>Grows with the collection:</b> buy the strip once and add racks for &#8377;199 each.</li></ul>
+<ul><li><b>Grab one, leave the rest:</b> on hook displays you unhook the cards in front first. On PITLANE each card has its own door (SWING) or its own lane (SLIDE).</li>
+<li><b>Names stay readable:</b> the rows step out 4.6 mm, and a low front lip with chamfered corner posts keeps the card title clear.</li>
+<li><b>Nothing falls off:</b> the wall mount is one solid piece with the pins built in. There are no clips to come loose while you hang it.</li>
+<li><b>Built for real prints:</b> every part prints without supports. The pins have a chamfered root for strength.</li></ul>
 {foot(1)}</section>
 
 <section class="page"><div class="bar track"></div>
 <div class="top"><div class="logo">PIT<b>LANE</b></div><span>Product analysis</span></div>
 <h2>Market</h2>
-<p>Adult collectors now drive the die-cast market worldwide (an estimated 58% of revenue, a $4.2&ndash;5.8 billion market growing 5&ndash;6% a year). India&rsquo;s collector scene is young and growing fast: mainline cars sell for roughly &#8377;200&ndash;450 each online, and collectors who keep cars <b>carded</b> (mint in package) have few wall options made for cards. That gap is what PITLANE fills.</p>
+<p>Adult collectors now drive the die-cast market worldwide (an estimated 58% of revenue, a $4.2&ndash;5.8 billion market growing 5&ndash;6% a year). India&rsquo;s collector scene is young and growing fast: mainline cars sell for roughly &#8377;200&ndash;450 each online, and collectors who keep cars <b>carded</b> have few wall options made for cards.</p>
 <h2>Competition and prices in India (Oct 2026)</h2>
 <table><tr><th>Product</th><th>What it does</th><th>Price</th><th>PITLANE advantage</th></tr>
-<tr><td>3D-printed card hooks (Etsy India)</td><td>Static hooks; cards hang flat, one behind another</td><td>&#8377;277&ndash;302</td><td>Swing-out access, every card visible, rows step forward</td></tr>
-<tr><td>Wall-mount 1:64 stands (direct sellers)</td><td>Printed stands for loose cars, packs of 12&ndash;48</td><td>&#8377;550&ndash;1,690</td><td>Made for <i>carded</i> cars, double-locked clips</td></tr>
-<tr><td>Modular 3D-printed wall case (Etsy India)</td><td>4 cars per module</td><td>&#8377;1,658+</td><td>7 cars on one 40 cm strip for less</td></tr>
-<tr><td>Display STL files (Etsy India)</td><td>Print-at-home files</td><td>&#8377;1,188</td><td>Our STL pack at &#8377;499</td></tr></table>
+<tr><td>3D-printed card hooks (Etsy India)</td><td>Static hooks; cards hang flat, one behind another</td><td>&#8377;277&ndash;302</td><td>Stepped rows, every name visible, each card on its own</td></tr>
+<tr><td>Wall-mount 1:64 stands (direct sellers)</td><td>Printed stands for loose cars, packs of 12&ndash;48</td><td>&#8377;550&ndash;1,690</td><td>Made for <i>carded</i> cars</td></tr>
+<tr><td>Modular 3D-printed wall case (Etsy India)</td><td>4 cars per module (&asymp; &#8377;415 per car)</td><td>&#8377;1,658+</td><td>6 cars from &#8377;799 (SLIDE, &#8377;133 per car)</td></tr>
+<tr><td>Display STL files (Etsy India)</td><td>Print-at-home files</td><td>&#8377;1,188</td><td>All PITLANE files for &#8377;499</td></tr></table>
 <p class="src" style="font-size:7pt;margin-top:1mm">Sources: <a href="https://www.etsy.com/in-en/market/hot_wheels_display_3d_printed">Etsy India: 3D-printed displays</a>, <a href="https://www.etsy.com/in-en/listing/1855211793/hot-wheels-display-case-3d-printed">Etsy India: modular wall case</a>, <a href="https://www.etsy.com/in-en/listing/4296116586/3d-printing-modular-car-display-hot">Etsy India: display STL</a>, <a href="https://modmusestore.com/products/hot-wheels-wall-mount-3d-printed-display-stand-1-64-scale">ModMuse wall stand</a>, <a href="https://pricehistory.app/p/esun-pla-3d-printing-filament-1-75mm-iblWdqG5">eSUN PLA+ price in India</a>, <a href="https://magicdrop.in/drops/cheap-hot-wheels">Hot Wheels prices in India</a>.</p>
 <h2>SWOT</h2>
 <div class="sw">
- <div class="s"><h3>Strengths</h3><ul><li>A genuinely new mechanism: swing-out door for each card</li><li>Every name visible; rows step out 7 mm</li><li>No supports, low cost per unit, modular</li><li>Designer is a collector, with real-print testing</li></ul></div>
- <div class="w"><h3>Weaknesses</h3><ul><li>Fits standard mainline cards only (~105 &times; 165 mm, blister &le; 42 mm)</li><li>Print time per kit is high (about 16 h for 4 cars, 26 h for 7)</li><li>Ledges above must be opened to load a lower card</li><li>The newest version (solid bump, L-lock) is not yet test-printed</li></ul></div>
- <div class="o"><h3>Opportunities</h3><ul><li>Sell the STL files too: zero marginal cost</li><li>Colour editions (orange track, black and white)</li><li>Premium / long-card ledge, Matchbox and Mini GT variants</li><li>Hobby-shop wall displays (B2B)</li></ul></div>
- <div class="t"><h3>Threats</h3><ul><li>Cheap static hooks at &#8377;277&ndash;302</li><li>Copycats on file marketplaces</li><li>Trademark: never use &ldquo;Hot Wheels&rdquo; as your brand, only &ldquo;fits Hot Wheels&reg; cards&rdquo;</li><li>Courier cost of a 40 cm part (ship the 2-piece strip)</li></ul></div>
+ <div class="s"><h3>Strengths</h3><ul><li>Two models at two price points, from one design</li><li>A one-piece wall mount: nothing comes loose while you hang it</li><li>Ledges come off for cleaning and can be replaced or sold as spares</li><li>Right + left twin: a symmetric 12-car wall feature</li></ul></div>
+ <div class="w"><h3>Weaknesses</h3><ul><li>Fits standard mainline cards only (~105 &times; 165 mm, blister &le; 42 mm)</li><li>Cards on the top rows stand above the 35 cm rack</li><li>SLIDE needs about 11 cm of free wall on its open side to load a card</li><li>The newest pin chamfer and 20 mm wall mount are not yet test-printed</li></ul></div>
+ <div class="o"><h3>Opportunities</h3><ul><li>STL sales: zero marginal cost</li><li>Colour editions (orange track, black and white, a two-colour twin)</li><li>Spare and colour-swap ledges for SWING</li><li>Hobby-shop wall displays (B2B), Matchbox and Mini GT variants</li></ul></div>
+ <div class="t"><h3>Threats</h3><ul><li>Cheap static hooks at &#8377;277&ndash;302</li><li>Copycats on file marketplaces</li><li>Trademark: never use &ldquo;Hot Wheels&rdquo; as your brand, only &ldquo;fits Hot Wheels&reg; cards&rdquo;</li><li>Pins can snap if the ledges are forced (offer spare ledges and wall mounts)</li></ul></div>
 </div>
 <h2>Who buys it</h2>
-<ul><li><b>Adult carded collectors</b> (18&ndash;40, metro and Tier-1 cities) with 20&ndash;200 cards and a wall to fill. This is the main ad audience.</li>
-<li><b>Parents and gift buyers</b>: birthdays, plus the Diwali and Christmas gift season (Oct&ndash;Dec).</li>
-<li><b>Makers</b> with their own 3D printer, who buy the STL files.</li></ul>
+<ul><li><b>Adult carded collectors</b> (18&ndash;40, metro and Tier-1 cities) with 20&ndash;200 cards: SWING and the twins.</li>
+<li><b>Parents and gift buyers</b>: SLIDE at &#8377;799 is an easy gift (Diwali and Christmas, Oct&ndash;Dec).</li>
+<li><b>Makers</b> with their own 3D printer: the STL pack.</li></ul>
 {foot(2)}</section>
 
 <section class="page"><div class="bar track"></div>
 <div class="top"><div class="logo">PIT<b>LANE</b></div><span>Pricing &amp; go-to-market</span></div>
 <h2>Cost to make (estimate, in rupees)</h2>
-<table><tr><th>Item</th><th>4-car kit</th><th>7-car kit</th><th>Basis</th></tr>
-<tr><td>Filament (PLA+ at &#8377;1,500/kg)</td><td>&#8377;297</td><td>&#8377;474</td><td>From the STL files: about 198 g / 316 g printed (70% of fully solid)</td></tr>
-<tr><td>Electricity</td><td>&#8377;20</td><td>&#8377;32</td><td>150 W printer, &#8377;8/kWh, 16 h / 26 h of printing at about 12 g/h</td></tr>
-<tr><td>Failed-print allowance (15%)</td><td>&#8377;48</td><td>&#8377;76</td><td>Reprints, nozzle wear</td></tr>
-<tr><td>Box, 4 screws + wall plugs, label</td><td>&#8377;60</td><td>&#8377;60</td><td>Ship the 2-piece strip to keep the box small</td></tr>
-<tr><td><b>Total cost</b></td><td><b>&asymp; &#8377;425</b></td><td><b>&asymp; &#8377;640</b></td><td>Excludes your time and courier (about &#8377;80&ndash;120 within India)</td></tr></table>
+<table><tr><th>Item</th><th>SLIDE 6</th><th>SWING 6</th><th>SWING twin 12</th><th>Basis</th></tr>
+<tr><td>Filament (PLA+ at &#8377;1,500/kg)</td><td>&#8377;198</td><td>&#8377;225</td><td>&#8377;450</td><td>From the STL files: 132 / 150 / 300 g printed (70% of fully solid)</td></tr>
+<tr><td>Electricity</td><td>&#8377;13</td><td>&#8377;15</td><td>&#8377;30</td><td>150 W printer, &#8377;8/kWh, about 12 g/h: 11 / 12.5 / 25 h of printing</td></tr>
+<tr><td>Failed-print allowance (15%)</td><td>&#8377;32</td><td>&#8377;36</td><td>&#8377;72</td><td>Reprints, nozzle wear</td></tr>
+<tr><td>Box, screws + wall plugs, label</td><td>&#8377;60</td><td>&#8377;60</td><td>&#8377;80</td><td>The 35 cm part fits a standard courier box</td></tr>
+<tr><td><b>Total cost</b></td><td><b>&asymp; &#8377;305</b></td><td><b>&asymp; &#8377;340</b></td><td><b>&asymp; &#8377;630</b></td><td>Excludes your time and courier (about &#8377;80&ndash;120 within India)</td></tr></table>
 <h2>Recommended prices (INR)</h2>
 <div class="g3" style="grid-template-columns:repeat(4,1fr)">
- <div class="tier"><h3>STL files</h3><div class="price">&#8377;499</div><p>All parts and kits, print at home. Launch offer &#8377;399.</p></div>
- <div class="tier"><h3>Starter (4 cars)</h3><div class="price">&#8377;999</div><p>40 cm strip + 4 clips + 4 ledges. Room to add 3 more.</p></div>
- <div class="tier hot"><span class="tag">BEST VALUE</span><h3>Full strip (7 cars)</h3><div class="price">&#8377;1,499</div><p>Fully loaded: &#8377;214 per car. Launch offer &#8377;1,299.</p></div>
- <div class="tier"><h3>Add-on rack</h3><div class="price">&#8377;199</div><p>One clip + one ledge. 3 for &#8377;549.</p></div>
+ <div class="tier"><h3>SLIDE &middot; 6 cars</h3><div class="price">&#8377;799</div><p>One-piece rack, right- or left-hand. &#8377;133 per car.</p></div>
+ <div class="tier"><h3>SWING &middot; 6 cars</h3><div class="price">&#8377;1,199</div><p>Wall mount + 6 lift-off ledges. Launch offer &#8377;999.</p></div>
+ <div class="tier hot"><span class="tag">BEST VALUE</span><h3>SWING twin &middot; 12</h3><div class="price">&#8377;2,199</div><p>Right + left, &#8377;183 per car. SLIDE twin &#8377;1,449.</p></div>
+ <div class="tier"><h3>STL files / spares</h3><div class="price">&#8377;499</div><p>All models, print at home (launch &#8377;399). Spare ledge &#8377;99, or 3 for &#8377;249.</p></div>
 </div>
-<p style="margin-top:2.5mm"><b>Why these prices:</b> static hooks sell for &#8377;277&ndash;302 and a 4-car modular case for &#8377;1,658. PITLANE sits above the hooks as a <i>functional premium</i> product but undercuts the case on price per car. Sell the 7-car strip at &#8377;1,499 with free shipping. Sold direct (Instagram or WhatsApp, paid by UPI), it leaves about <b>&#8377;750 per kit</b> after cost and courier. On Amazon or Flipkart, with about 20% in fees, it leaves about <b>&#8377;460</b>. Don&rsquo;t go below &#8377;1,199 for the full strip: it starts to look like a cheap hook. <b>Free shipping on orders of &#8377;999 and up</b>; &#8377;79 below that.</p>
+<p style="margin-top:2.5mm"><b>Why these prices:</b> static hooks sell for &#8377;277&ndash;302 and a 4-car case for &#8377;1,658. SLIDE takes the gift and entry slot at &#8377;799. SWING is the premium functional product, and the twin is the hero offer. Sold direct (Instagram or WhatsApp, paid by UPI), SWING leaves about <b>&#8377;750</b> after cost and courier, and the SWING twin about <b>&#8377;1,450</b>. On Amazon or Flipkart, with about 20% in fees, SWING leaves about <b>&#8377;520</b>. Don&rsquo;t go below &#8377;999 for SWING or &#8377;699 for SLIDE: it starts to look like a cheap hook. <b>Free shipping on orders of &#8377;999 and up</b>; &#8377;79 below that.</p>
 <h2>Go-to-market plan (India)</h2>
-<ul><li><b>Week 0&ndash;2:</b> test-print the newest parts. Film a 15-second Reel of a ledge swinging open (the hook for every ad) and take photos on a real wall.</li>
-<li><b>Launch:</b> sell direct on Instagram and WhatsApp with UPI payment. Post in Hot Wheels collector groups on Facebook and WhatsApp. Give 3&ndash;5 local collectors and YouTubers a free strip for honest reviews.</li>
-<li><b>Marketplaces:</b> Amazon.in and Flipkart (search reach), Meesho (no commission), Etsy India (STL files and export orders).</li>
-<li><b>Meta ads:</b> &#8377;300&ndash;500/day, ages 18&ndash;40, metro and Tier-1 cities, interests: Hot Wheels, die-cast, Matchbox, car culture. Test the 5 posters for a week, keep the 2 with the cheapest clicks, and retarget profile visitors with the &ldquo;7 cars &#8377;1,499&rdquo; ad. Push hardest from October to December (Diwali and Christmas gifting).</li>
-<li><b>Listing title:</b> &ldquo;PITLANE Swing-Out Wall Display for Carded 1:64 Die-cast Cars, fits Hot Wheels&reg; &amp; Matchbox&reg; mainline cards, 7-car 40 cm strip&rdquo;.</li></ul>
+<ul><li><b>Week 0&ndash;2:</b> test-print the SWING twin. Film a 15-second Reel of one door swinging out and a ledge lifting off, plus a SLIDE card gliding in. Take photos of the twin on a real wall.</li>
+<li><b>Launch:</b> sell direct on Instagram and WhatsApp with UPI payment. Post in Hot Wheels collector groups on Facebook and WhatsApp. Give 3&ndash;5 local collectors and YouTubers a free twin for honest reviews.</li>
+<li><b>Marketplaces:</b> Amazon.in and Flipkart (SLIDE as the entry listing, SWING twin as the hero), Meesho (no commission), Etsy India (STL files and export orders).</li>
+<li><b>Meta ads:</b> &#8377;300&ndash;500/day, ages 18&ndash;40, metro and Tier-1 cities, interests: Hot Wheels, die-cast, Matchbox, car culture. Test the 5 posters for a week, keep the 2 with the cheapest clicks, and retarget profile visitors with the twin ad. Push hardest from October to December.</li>
+<li><b>Listing titles:</b> &ldquo;PITLANE SWING: Swing-Out Wall Rack for 6 Carded 1:64 Die-cast Cars, fits Hot Wheels&reg; &amp; Matchbox&reg; mainline cards, right or left hand&rdquo; and &ldquo;PITLANE SLIDE: 6-Card Slide-In Wall Rack&rdquo;.</li></ul>
 <h2>Name</h2>
-<p><b>PITLANE</b>: every car gets its own garage door, like a pit box in the pit lane at a race, and the strip is the pit wall. The orange stripe nods to the orange track every collector remembers. Backups: <b>CardGarage</b>, <b>Swing Grid</b>. Before you register a name, check trademark and domain availability (India: the IP India trademark search, classes 20 and 28; plus Instagram handle and domain).</p>
+<p><b>PITLANE</b>: every card gets its own pit box, and the wall mount is the pit wall. The model names say what each one does: <b>SWING</b> doors swing out, <b>SLIDE</b> cards slide in. The orange stripe nods to the orange track. Before you register a name, check trademark and domain availability (India: the IP India trademark search, classes 20 and 28).</p>
 {foot(3)}</section></body></html>"""
 
 AD = CSS + """
@@ -134,36 +134,34 @@ def ad(body, light=False):
     return f'<!doctype html><html><head><meta charset="utf-8"><title>ad</title>{FONTS}<style>{AD}</style></head><body><div class="ad"{st}>{body}<div class="trackbar track"></div></div></body></html>'
 FINE = '<div class="fine">Fits standard 1:64 carded cars (Hot Wheels&reg;, Matchbox&reg;). Not affiliated with Mattel.</div>'
 ads = [
-ad(f"""<img src="img/photo_prototype_7rack.jpg" style="position:absolute;left:0;top:0;width:1080px;height:860px;object-fit:cover;object-position:50% 40%">
-<div style="position:absolute;left:0;right:0;top:600px;height:260px;background:linear-gradient(180deg,rgba(27,30,37,0),rgba(27,30,37,1))"></div>
-<div class="pad" style="top:56px"><div class="logo" style="background:rgba(20,22,27,.75);display:inline-block;padding:8px 18px;border-radius:10px">PIT<b>LANE</b></div></div>
-<div class="pad" style="top:820px"><h1>Your cars deserve<br><em>a garage.</em></h1>
-<div class="sub" style="margin-top:20px">A swing-out wall display for carded die-cast. Every name on show.</div>
-<div class="cta" style="margin-top:34px">Shop now &middot; from <b>&#8377;999</b></div></div>{FINE}"""),
-ad(f"""<div class="pad" style="top:64px"><span class="kick">Swing it open</span><h1 style="margin-top:22px">Grab one card.<br><em>Leave the rest.</em></h1></div>
-<div class="tile pad" style="top:400px;height:640px;padding:18px"><img src="img/one_open.png"></div>
+ad(f"""<div class="pad" style="top:56px"><div class="logo">PIT<b>LANE</b></div><h1 style="margin-top:22px">Your cars deserve<br><em>a garage.</em></h1>
+<div class="sub" style="margin-top:16px">12 carded cars, one wall, every name on show.</div></div>
+<div class="tile pad" style="top:470px;height:640px;padding:14px"><img src="img/v2_swing_pair.png"></div>
+<div class="pad" style="top:1150px"><div class="cta">SWING twin &middot; <b>&#8377;2,199</b> &middot; 12 cars</div></div>{FINE}"""),
+ad(f"""<div class="pad" style="top:64px"><span class="kick">PITLANE SWING</span><h1 style="margin-top:22px">Grab one card.<br><em>Leave the rest.</em></h1></div>
+<div class="tile pad" style="top:400px;height:640px;padding:18px"><img src="img/v2_swing_one.png"></div>
 <div class="pad" style="top:1080px;display:flex;gap:18px">
- <div class="chip" style="flex:1"><b>1</b>Lift the ledge 1 mm</div><div class="chip" style="flex:1"><b>2</b>Swing it out</div><div class="chip" style="flex:1"><b>3</b>Slide the card in</div></div>{FINE}"""),
-ad(f"""<div class="pad" style="top:64px"><span class="kick">7 cars &middot; 40 cm</span><h1 style="margin-top:22px">Every name.<br><em>Every car.</em></h1>
-<div class="sub" style="margin-top:16px;max-width:430px">Each row steps out 7 mm, so no card hides the one above it.</div></div>
-<div class="tile" style="position:absolute;right:72px;top:380px;width:470px;height:880px;padding:16px"><img src="img/hero_7.png"></div>
-<div class="pad" style="top:560px;width:430px;display:flex;flex-direction:column;gap:18px">
- <div class="chip"><b>54 mm</b>between racks</div><div class="chip"><b>14 mm</b>corner posts keep cards upright</div><div class="chip"><b>0 tools</b>clips hook on by hand</div></div>{FINE}"""),
-ad(f"""<span></span><div class="pad" style="top:64px"><span class="kick">Engineered to stay put</span><h1 style="margin-top:22px;color:#141414;font-size:92px">Locks twice.<br><em>Lifts off by hand.</em></h1></div>
-<div class="pad" style="top:430px;height:430px;display:grid;grid-template-columns:1fr 1fr;gap:18px"><div class="tile" style="padding:10px;border:2px solid #e3e5ea"><img src="img/hinge_closeup.png"></div><div class="tile" style="padding:10px;border:2px solid #e3e5ea"><img src="img/parts.png"></div></div>
+ <div class="chip" style="flex:1"><b>1</b>Swing the door out</div><div class="chip" style="flex:1"><b>2</b>Slide the card in</div><div class="chip" style="flex:1"><b>3</b>Swing it shut</div></div>{FINE}"""),
+ad(f"""<div class="pad" style="top:64px"><span class="kick">PITLANE SLIDE &middot; &#8377;799</span><h1 style="margin-top:22px">Slide it in.<br><em>Done.</em></h1>
+<div class="sub" style="margin-top:16px;max-width:430px">One piece, no moving parts. Every card in its own lane, every name on show.</div></div>
+<div class="tile" style="position:absolute;right:72px;top:380px;width:470px;height:880px;padding:16px"><img src="img/v2_slide_one.png"></div>
+<div class="pad" style="top:620px;width:430px;display:flex;flex-direction:column;gap:18px">
+ <div class="chip"><b>6 cars</b>on a 35 cm rack</div><div class="chip"><b>&#8377;133</b>per car</div><div class="chip"><b>Right or left</b>hand, or both</div></div>{FINE}"""),
+ad(f"""<span></span><div class="pad" style="top:64px"><span class="kick">Engineered to stay put</span><h1 style="margin-top:22px;color:#141414;font-size:92px">One solid mount.<br><em>Lift-off doors.</em></h1></div>
+<div class="pad" style="top:430px;height:430px;display:grid;grid-template-columns:1fr 1fr;gap:18px"><div class="tile" style="padding:10px;border:2px solid #e3e5ea"><img src="img/v2_liftoff.png"></div><div class="tile" style="padding:10px;border:2px solid #e3e5ea"><img src="img/v2_parts.png"></div></div>
 <div class="pad" style="top:900px;display:flex;gap:18px">
- <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">2&times;</b>L-hooks behind two lips</div>
- <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">Click</b>solid bump clicks into the strip</div>
- <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">0</b>supports needed to print</div></div>
-<div class="pad" style="top:1130px;font-size:28px;font-weight:700;color:#141414">Strip + clips + ledges. Real parts, printed and tested with real cars.</div>
+ <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">0</b>clips to fall off</div>
+ <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">15 mm</b>lift and the door comes off</div>
+ <div class="chip" style="flex:1;background:#fff;color:#141414;border-color:#e3e5ea"><b style="color:var(--orange)">135&deg;</b>swing, stops at closed</div></div>
+<div class="pad" style="top:1130px;font-size:28px;font-weight:700;color:#141414">Wall mount with pins built in, plus 6 drop-on ledges. No supports to print.</div>
 <div class="fine" style="color:#6b7180">Fits standard 1:64 carded cars (Hot Wheels&reg;, Matchbox&reg;). Not affiliated with Mattel.</div>""", light=True),
 ad(f"""<div class="pad" style="top:64px"><div class="logo">PIT<b>LANE</b></div><h1 style="margin-top:26px">Pick your<br><em>pit lane.</em></h1></div>
 <div class="pad" style="top:430px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
- <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Starter &middot; 4 cars</span><b style="font-size:72px;margin-top:6px">&#8377;999</b>40 cm strip, room for 3 more</div>
- <div class="chip" style="padding:28px;border:3px solid var(--orange)"><span style="font-size:24px;color:var(--orange);font-weight:800">BEST VALUE &middot; 7 cars</span><b style="font-size:72px;margin-top:6px">&#8377;1,499</b>Fully loaded 40 cm strip</div>
- <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Add-on rack</span><b style="font-size:72px;margin-top:6px">&#8377;199</b>One clip + one ledge</div>
+ <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">SLIDE &middot; 6 cars</span><b style="font-size:72px;margin-top:6px">&#8377;799</b>One piece, slide-in lanes</div>
+ <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">SWING &middot; 6 cars</span><b style="font-size:72px;margin-top:6px">&#8377;1,199</b>Swing-out lift-off doors</div>
+ <div class="chip" style="padding:28px;border:3px solid var(--orange)"><span style="font-size:24px;color:var(--orange);font-weight:800">BEST VALUE &middot; SWING twin</span><b style="font-size:72px;margin-top:6px">&#8377;2,199</b>12 cars, right + left</div>
  <div class="chip" style="padding:28px"><span style="font-size:24px;color:#c9ccd3">Print it yourself</span><b style="font-size:72px;margin-top:6px">&#8377;499</b>All STL files</div></div>
-<div class="tile pad" style="top:950px;height:200px;padding:8px"><img src="img/photo_prototype_7rack.jpg" style="object-fit:cover"></div>
+<div class="tile pad" style="top:950px;height:200px;padding:8px"><img src="img/v2_slide_pair.png"></div>
 <div class="pad" style="top:1185px"><span class="cta" style="font-size:26px;padding:12px 24px">DM to order &middot; UPI &middot; free shipping over <b>&#8377;999</b></span></div>"""),
 ]
 def run(a): subprocess.run([CHROME, "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--virtual-time-budget=8000"] + a, check=True, capture_output=True)
