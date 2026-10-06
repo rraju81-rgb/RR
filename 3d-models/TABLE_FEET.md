@@ -43,3 +43,11 @@ about 33–60 g.
 The tabletop stands (`TABLETOP_STANDS.md`) now also load cards from the side. Use the feet when you want
 one rack that moves between wall and table. Use stand A or B for a dedicated desk piece that leans the
 cards back 15°.
+
+## Wall strip height (both wall racks)
+
+The wall strip on `rack_6ledge_130_3mmholes.stl` and `rack_v2_hinged_134.stl` now ends at 445 mm (was 449 mm).
+That is 2 mm above the top of the top card: the 6th ledge's floor starts at 275 mm, the card stands 3 mm up and is
+165 mm tall, so it reaches 443 mm. Only the bare strip above the ledges was cut, so the ledges, the three 3 mm screw
+holes (28, 138 and 303 mm) and the bottom end the feet clip onto are unchanged. To reproduce it, run
+`trim_wall_racks_to_card_height.py` after the rack build scripts.

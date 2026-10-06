@@ -100,7 +100,7 @@ s += bl(['<b>One ledge profile, six times.</b> Each ledge has a 22 mm back wall,
          '<b>Shingled tiers.</b> Each ledge sits 55 mm higher and 4.6 mm further out than the one below, so each card passes 0.4 mm behind the next ledge.',
          '<b>Strong mount.</b> A 6 mm wall strip with three 3 mm screw holes. All the load goes into the wall through the strip.',
          '<b>Made to print at home.</b> One piece with no supports. It was refined over several test prints: ledge length, corner-support height and hole size all came from real measurements.'])
-s += [tbl([['Specification', 'Value'], ['Overall size', '130 × 449 × 34 mm (W × H × D)'], ['Capacity', '6 standard carded cars'],
+s += [tbl([['Specification', 'Value'], ['Overall size', '130 × 445 × 34 mm (W × H × D)'], ['Capacity', '6 standard carded cars'],
            ['Material and mass', f"PLA, about {round(155*A['printed_mass_factor'])} g printed"], ['Mounting', '3 × 3 mm screws (M3 / #4), 6 mm strip'],
            ['Table feet', f"2 clip-on feet, 195 mm deep; tips at {ft['plain']['stability_full']['tip_front_deg']}° forward with 6 cards"]], [45*mm, 133*mm]),
       PageBreak()]
