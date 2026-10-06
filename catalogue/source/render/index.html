@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="fonts/raw.css">
+<style>
+  html,body{margin:0;padding:0;background:#fff;overflow:hidden}
+  #wrap{position:relative;width:1200px;height:900px}
+  canvas{display:block}
+  svg#ov{position:absolute;left:0;top:0;width:1200px;height:900px;pointer-events:none}
+  .t{font-family:'Archivo',sans-serif}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "./node_modules/three/build/three.module.js",
+  "three/addons/": "./node_modules/three/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<div id="wrap"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<script type="module" src="scene.js"></script>
+</body>
+</html>
