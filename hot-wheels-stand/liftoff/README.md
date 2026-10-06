@@ -1,26 +1,27 @@
-# PITLANE lift-off rack (separate ledges)
+# PITLANE lift-off rack (separate ledges) — right + left hand
 
-Same rack as `fused/reference/rack_6ledge_130_3mmholes.stl` (130 mm wide, 6 ledges, 55 mm pitch, same ledge profile and card slot,
-3 mm screw holes, chamfered front corner posts), but the **ledges are printed separately** and drop onto hinge pins taken from
-`reference/LiftOffHinge.stl`:
+Same rack as `fused/reference/rack_6ledge_130_3mmholes.stl` (6 ledges, 55 mm pitch, same ledge profile and card slot,
+chamfered front corner posts), ledges printed separately and dropped onto hinge pins from `reference/LiftOffHinge.stl`.
 
-* **Wall body** (`wall_body_PRINT.stl`, 464 x 17 x 36.6 mm, one piece): spine + stand-offs + the hinge's **pin half**
-  (Ø10 x 15 knuckle with Ø5 x 15 pin) fused under every ledge. The spine is 15 mm taller than your STL (bottom ledge needs its
-  knuckle below it). Screw holes moved up 15 mm with everything else (y = 43 / 153 / 318 from the bottom).
-* **Ledges** (`ledge_1..6_PRINT.stl` or all on one plate `ledges_all_6_PRINT.stl`): your ledge + the hinge's **socket half**
-  (Ø10.2 x 15 ring, Ø5.5 hole = 0.25 mm clearance on the pin). The STL's flat screw leaves are replaced by a solid web.
+## v2 changes
+* **Pin-root chamfer** (1 mm x 45°) where the pin meets the knuckle; the ledge ring has a matching chamfer in its hole.
+* **Print fin under the pin removed** (the pin prints horizontal without it).
+* **Wall mount 20 mm wide** (was 14): widened 6 mm on the back edge, ledges unchanged. Screw holes on the spine centre line.
+* **Left-hand version** (`left_*`): mirror image, cards load from the left. Mount the two spines back to back with the
+  left rack **27.5 mm (half a pitch) lower** than the right one, so the ledges alternate as in your sketch.
+
+## Files
+| file | what |
+|---|---|
+| `right_wall_body_PRINT.stl` / `left_wall_body_PRINT.stl` | wall mount with 6 pins, 464 x 20 mm (+ brackets), print on its flat back edge |
+| `right_ledge_N_PRINT.stl`, `right_ledges_all_6_PRINT.stl` (and `left_…`) | ledges, print standing on their bottom face, no supports |
+| `pair_assembled_demo.stl` | both racks mounted as intended (check only, don't print) |
 
 ## Use
-Mount the wall body, then lower each ledge's ring over its pin until it sits on the knuckle. To remove: swing closed,
-**lift 15.5 mm, pull forward**. Ledges swing open up to 135°; they stop at closed against the stand-off (bottom ledge against the spine).
-
-## Print
-* Ledges: as exported, standing on their bottom face — ring vertical like your hinge STL, no supports.
-* Wall body: as exported, lying on its side. Pins print horizontal on a thin snap-off fin (break it off / file flush).
-  Only small bridges (cradle arches); no supports needed.
+Lower each ledge's ring over its pin. Remove: close it, lift 15.5 mm, pull forward. Opens to 135°, stops ~3° past closed.
 
 ## Checked (boolean collision tests)
-No overlap wall/ledges or ledge/ledge assembled; swing 0 → 135° free on all ledges, stop ~3° past closed; lift path free to
-15.5 mm (+ ~1.5 mm spare), then straight pull-out free; pins fully clear of rings after the lift.
-
-Rebuild: `python3 build_liftoff.py`
+* each rack: no overlaps; swing 0–135° free; lift + pull-out path free; cards in place clear.
+* pair (spines touching, half-pitch stagger), ledge **and loaded card**: opening any ledge on one side, at any angle up to
+  120°, never touches the other side. Opening one on each side at the same time is clear up to 75°; at 90° both the blisters
+  meet in the middle — leave a 20 mm gap between the two spines if you want both fully open together.
