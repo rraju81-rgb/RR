@@ -8,7 +8,7 @@ P = trimesh.load('_ks12_rack.stl'); L = trimesh.load('_ks12_leg.stl'); R0 = E.ra
 mv = lambda m, M: trimesh.Trimesh(trimesh.transform_points(m.vertices, M), m.faces)
 r = dict(hinge_y=E.YH, lean_deg=E.ALPHA, open_deg=E.PSI)
 # the supplied rack is untouched: it lies entirely inside the new rack body, and nothing was cut from it
-r['original_rack_volume_cm3'] = round(R0.volume/1000, 2)
+r['original_rack_volume_cm3'] = round(trimesh.load(E.SRC).volume/1000, 2); r['rack_after_trim_cm3'] = round(R0.volume/1000, 2); r['end_wall_trimmed_to_y_mm'] = E.YTOP
 r['original_rack_kept_cm3'] = round(E.I(R0, P)/1000, 2)
 r['added_hinge_cm3'] = round((P.volume - R0.volume)/1000, 2)
 # print-in-place clearance

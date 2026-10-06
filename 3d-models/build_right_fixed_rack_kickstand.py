@@ -1,4 +1,4 @@
-"""Fixed-rack kickstand v12: the user's right_fixed_rack_PRINT.stl, unchanged, + ONE print-in-place hinge and a
+"""Fixed-rack kickstand v12: the user's right_fixed_rack_PRINT.stl (end wall trimmed to the display height, 297 mm) + ONE print-in-place hinge and a
 solid kickstand strip on the back of its end wall. Single print, on its side (end wall on the bed, as supplied).
 Rack frame: x = along the ledges from the end wall (print height), y = up the rack, z = forward from the back face.
 Hinge (as v11): leg barrel on the bed, the rack's pin rises from the bed through it (0.7 mm gap) into a rack barrel
@@ -24,8 +24,13 @@ L_Z = (-GAP - LT, -GAP); FOOT_R = LT/2; ZM = (L_Z[0] + L_Z[1])/2
 HEAD = (4.0, 1.5)
 TAG = 'fixed_rack'
 
+YTOP = float(os.environ.get('KS_YTOP', 297.0))     # end wall trimmed to the top of the 6th ledge (display height)
+
 def rack():
-    m = trimesh.load(SRC); m.apply_transform(TO_RACK); return m
+    m = trimesh.load(SRC); m.apply_transform(TO_RACK)
+    if YTOP < m.bounds[1][1]:
+        m = trimesh.boolean.intersection([m, box(bounds=[[-1, -1, -1], [200, YTOP, 50]])], engine='manifold')
+    return m
 
 def xcyl(r, y, z, xa, xb, sec=96):
     c = cylinder(radius=r, height=xb - xa, sections=sec)

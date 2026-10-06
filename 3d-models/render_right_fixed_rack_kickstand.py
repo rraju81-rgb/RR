@@ -36,7 +36,7 @@ ax.set_title(f'section at the hinge, rack leaning {E.ALPHA:g}°', fontsize=8); a
 plt.tight_layout(); plt.savefig('_ks12_section.png'); plt.close()
 f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 22)
 fs = ['_ks12_print.png', '_ks12_front.png', '_ks12_back.png', '_ks12_section.png']
-caps = ['one print, as supplied + stand', f'open, {E.ALPHA:g}° lean, 6 cards', 'from behind', 'hinge section']
+caps = ['one print (end wall cut to 297 mm)', f'open, {E.ALPHA:g}° lean, 6 cards', 'from behind', 'hinge section']
 ims = [Image.open(x).convert('RGB') for x in fs]; hh = 760; ims = [im.resize((int(im.width*hh/im.height), hh)) for im in ims]
 row = Image.new('RGB', (sum(i.width for i in ims) + 10*len(ims), hh + 44), 'white'); x = 0; d = ImageDraw.Draw(row)
 for im, c in zip(ims, caps): row.paste(im, (x, 44)); d.text((x + 10, 10), c, fill=(29, 36, 51), font=f); x += im.width + 10
