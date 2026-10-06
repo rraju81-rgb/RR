@@ -1,13 +1,13 @@
-/* PrintBig — site interactions. No dependencies. */
+/* pi.XL 3D Printing — site interactions. No dependencies. */
 (() => {
   'use strict';
 
   // ============ EDIT YOUR CONTACT DETAILS HERE (one place only) ============
   const CONFIG = {
-    brand: 'PrintBig',
-    instagram: 'printbig.in',   // handle without the @
-    whatsapp: '919999999999',   // country code + number, digits only  ⚠️ REPLACE with your real number
-    email: 'rraju382@gmail.com',
+    brand: 'pi.XL 3D Printing',
+    instagram: 'pi.xl3dprinting', // handle without the @
+    whatsapp: '919999999999',     // country code + number, digits only  ⚠️ REPLACE with your real number
+    email: 'pixldprinting@gmail.com',
   };
   // Build volumes in mm, used by the "Will it fit?" checker
   const OUR_BED = [420, 420, 500];
@@ -24,7 +24,8 @@
   $$('[data-wa]').forEach((a) => { a.href = waLink(`Hi ${CONFIG.brand}! I'd like to place an order / get a quote.`); });
   $$('[data-ig]').forEach((a) => { a.href = `https://instagram.com/${CONFIG.instagram}`; if (a.textContent.startsWith('@')) a.textContent = '@' + CONFIG.instagram; });
   $$('[data-ig-dm]').forEach((a) => { a.href = `https://ig.me/m/${CONFIG.instagram}`; });
-  $$('[data-ig-label]').forEach((el) => { el.textContent = `@${CONFIG.instagram} · free quotes`; });
+  $$('[data-ig-label]').forEach((el) => { el.textContent = '@' + CONFIG.instagram; });
+  $$('[data-mail-label]').forEach((el) => { el.textContent = CONFIG.email; });
   $$('[data-mail]').forEach((a) => { a.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent('Order / quote request — ' + CONFIG.brand)}`; });
 
   // ---- Header + mobile nav ----
@@ -118,34 +119,6 @@
     fit.addEventListener('input', update);
     fit.addEventListener('submit', (e) => e.preventDefault());
     update();
-  }
-
-  // ---- Instagram carousel ----
-  const car = $('[data-carousel]');
-  if (car) {
-    const track = $('[data-slides]', car);
-    const slides = $$('img', track);
-    const dots = $('[data-dots]', car);
-    const prev = $('[data-prev]', car);
-    const next = $('[data-next]', car);
-    slides.forEach(() => dots.appendChild(document.createElement('i')));
-    const step = () => slides[1].offsetLeft - slides[0].offsetLeft;
-    const current = () => Math.round(track.scrollLeft / step());
-    const sync = () => {
-      const i = current();
-      $$('i', dots).forEach((d, j) => d.classList.toggle('on', j === i));
-      prev.disabled = track.scrollLeft <= 2;
-      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
-    };
-    prev.addEventListener('click', () => track.scrollBy({ left: -step() }));
-    next.addEventListener('click', () => track.scrollBy({ left: step() }));
-    track.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); next.click(); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); prev.click(); }
-    });
-    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
-    window.addEventListener('resize', sync);
-    sync();
   }
 
   // ---- Display shelf field guide ----
