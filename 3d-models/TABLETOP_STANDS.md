@@ -84,6 +84,44 @@ side with the left end wall on the bed, and need no supports.
 | `table_onesided_3card.stl` | 3 | 119 × 113 × 170 mm | ~269 g |
 | `table_onesided_5card.stl` | 5 | 119 × 132 × 245 mm | ~378 g |
 
+## Your fixed rack + kickstand (no back panel)
+
+`right_fixed_rack_kickstand_PRINT.stl` is `reference_right_fixed_rack_PRINT.stl`, your fixed rack, with a
+print-in-place back stand added. It is one print. It lies in the same position and orientation as your
+file, end wall down, and prints with no supports.
+
+- **Height cut to the display.** The end wall now stops at 297 mm, flush with the top of the 6th ledge.
+  The 152 mm above it carried nothing: cards stop against the ledge bases, not that part of the wall.
+  This removes 18.2 cm³. Below 297 mm, your rack
+  is unchanged (146.2 cm³ kept).
+- **The hinge is on the back of the end wall,** 176 mm up, beside the 4th ledge, where the
+  wall is 28 mm wide.
+  - The leg barrel (12 mm across, 18 mm long) starts on the bed.
+  - The rack's 5 mm pin rises from the bed through it, with a 0.7 mm gap, into a 9 mm rack barrel.
+  - The pin's cone foot is the end stop.
+  - The gaps are 0.8 mm on the 45° cones and 0.6 mm from the leg to the rack.
+  - Nothing prints flat over a gap.
+- **The leg** is a solid 80 × 6 mm strip.
+  - At 40 mm wide, the 6-card rack tipped sideways at only about 4°.
+  - It has only two positions: 0° (folded) and 35°, where a stop tab lands flat on the end wall's back.
+  - At 35° the rack leans back 24.5°.
+
+| Loaded (6 cars + cards) | Tip angle forward / back / sideways | Stand W × D × H (without cards) | Filament |
+|---|---|---|---|
+| 447 g | 21.5° / 14.6° / 12.5° | 136 × 131 × 284 mm | ~207 g |
+
+**Checked** (`right_fixed_rack_kickstand_report.json`):
+- **Clearance:** the smallest print gap is 0.6 mm. Nothing touches, even with a
+  0.45 mm shift in any direction.
+- **Swing:** free from 0° to 34.8°, and the stop catches at 35.0°. The leg is captured with about
+  1.1–1.6 mm of play along the pin.
+- **Printing:** the leg has no overhang steeper than 45°.
+- **Standing:** when open, the foot and the rack's bottom ledge both sit on the table.
+- **STL:** watertight, two bodies (rack and leg).
+
+Preview: `right_fixed_rack_kickstand_preview.png`. Built by `build_right_fixed_rack_kickstand.py`.
+`KS_YTOP` sets the end-wall height (449 keeps the full wall) and `KS_LW` the strip width.
+
 ## Kickstand easel v9: v8 + short foot on the leg (recommended easel)
 
 v9 is v8 with a short foot added to the bottom of the leg strip. The foot runs from the strip toward the
