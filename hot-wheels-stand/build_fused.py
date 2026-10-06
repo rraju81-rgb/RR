@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "leg
 from build_simple import box, cylz, cyly, union, diff, inter, hull, prism_z
 
 REF = "fused/reference/rack_6ledge_130_3mmholes.stl"
-H, W = 449.0, 130.0                       # overall height / width (as the reference)
+H, W = 350.0, 130.0                       # overall height 35 cm (reference was 449), width as the reference
 spine_w, spine_t = 14.0, 6.0              # spine 14 x 6 (as the reference)
 holes = [(7.0, 28.0), (7.0, 138.0), (7.0, 303.0)]; hole_d = 3.0
 n, pitch, led_h = 6, 55.0, 22.0           # 6 ledges, 55 mm apart, 22 mm tall (as the reference)

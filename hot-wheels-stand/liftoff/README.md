@@ -13,7 +13,7 @@ chamfered front corner posts), ledges printed separately and dropped onto hinge 
 ## Files
 | file | what |
 |---|---|
-| `right_wall_body_PRINT.stl` / `left_wall_body_PRINT.stl` | wall mount with 6 pins, 464 x 20 mm (+ brackets), print on its flat back edge |
+| `right_wall_body_PRINT.stl` / `left_wall_body_PRINT.stl` | wall mount with 6 pins, 350 x 20 mm (+ brackets), print on its flat back edge |
 | `right_ledge_N_PRINT.stl`, `right_ledges_all_6_PRINT.stl` (and `left_…`) | ledges, print standing on their bottom face, no supports |
 | `pair_assembled_demo.stl` | both racks mounted as intended (check only, don't print) |
 

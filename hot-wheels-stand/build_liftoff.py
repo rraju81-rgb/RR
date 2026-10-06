@@ -12,7 +12,7 @@ from build_simple import box, cylz, cyly, union, diff, inter, hull, prism_z
 REF, HINGE = "fused/reference/rack_6ledge_130_3mmholes.stl", "liftoff/reference/LiftOffHinge.stl"
 W, H0 = 130.0, 449.0                      # reference width / height
 Y0 = 15.0                                 # everything moved up 15 mm: the bottom ledge gets a pin knuckle below it
-H = H0 + Y0                               # 464 mm spine
+H = 350.0                                 # 35 cm wall mount (ledges + knuckles end at 312 mm)
 SPX, spine_w, spine_t = -6.0, 14.0, 6.0   # spine x[-6, 14] = 20 mm wide (widened 6 mm towards the back edge, ledges unchanged)
 holes = [(4.0, 28.0 + Y0), (4.0, 138.0 + Y0), (4.0, 303.0 + Y0)]; hole_d = 3.0
 pin_r, pch = 2.5, 1.0                     # pin radius (STL), pin-root chamfer

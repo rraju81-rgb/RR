@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "leg
 from build_simple import box, cylz, union, diff, inter, prism_z
 from build_liftoff import REF, W, SPX, spine_t, n, pitch, led_h, step, ch, front_ref, rear_ref, mirror, to_print_wall, LEFT_DY
 
-H = 449.0                                                     # same height as the reference (no hinge knuckles)
+H = 350.0                                                     # 35 cm wall mount (reference was 449)
 holes = [(4.0, 28.0), (4.0, 138.0), (4.0, 303.0)]; hole_d = 3.0
 blk = 21.6                                                    # end block (closed end of the card slot) = reference hinge block
 

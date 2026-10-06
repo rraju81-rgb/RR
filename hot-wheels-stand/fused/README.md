@@ -1,7 +1,7 @@
 # PITLANE fused rack (one-piece wall rack with working hinges)
 Built from the reference `reference/rack_6ledge_130_3mmholes.stl` by `python3 build_fused.py`.
 
-- pitlane_fused_rack.stl: same frame as the reference (x right, y up, z out of the wall). 130 x 449 x 36.9 mm.
+- pitlane_fused_rack.stl: same frame as the reference (x right, y up, z out of the wall). 130 x 350 x 36.9 mm (wall mount cut to 35 cm; ledges as the reference).
 - pitlane_fused_rack_PRINT.stl: the same part laid on its LEFT SIDE (the spine's side face) on the bed. Print this one.
 
 What changed vs the reference
