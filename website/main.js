@@ -1,27 +1,33 @@
-/* PiXL 3D Printing — site interactions. No dependencies. */
+/* PrintBig — site interactions. No dependencies. */
 (() => {
   'use strict';
 
-  // ---- Business settings: edit these ----
+  // ============ EDIT YOUR CONTACT DETAILS HERE (one place only) ============
   const CONFIG = {
-    email: 'hello@pixl3d.example',
-    // Paste a Formspree / Web3Forms / Getform endpoint here to receive submissions
-    // (with file attachments) directly. Leave empty to fall back to the visitor's email app.
-    formEndpoint: '',
-    currency: 'INR',
-    locale: 'en-IN',
-    // Estimator pricing (per cm³ of printed material, plus fixed costs)
-    ratePerCm3: { pla: 6, petg: 7, abs: 8, tpu: 11, nylon: 16, resin: 18 },
-    setupFee: 150,
-    minPerPart: 99,
-    finishPerPart: 120,
+    brand: 'PrintBig',
+    instagram: 'printbig.in',   // handle without the @
+    whatsapp: '919999999999',   // country code + number, digits only  ⚠️ REPLACE with your real number
+    email: 'rraju382@gmail.com',
   };
+  // Build volumes in mm, used by the "Will it fit?" checker
+  const OUR_BED = [420, 420, 500];
+  const STD_BED = 256;
+  // =========================================================================
 
   document.documentElement.classList.add('js');
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---- Header: shadow on scroll + mobile nav ----
+  // ---- Contact links ----
+  const waLink = (text) => `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`;
+  $$('[data-wa]').forEach((a) => { a.href = waLink(`Hi ${CONFIG.brand}! I'd like to place an order / get a quote.`); });
+  $$('[data-ig]').forEach((a) => { a.href = `https://instagram.com/${CONFIG.instagram}`; if (a.textContent.startsWith('@')) a.textContent = '@' + CONFIG.instagram; });
+  $$('[data-ig-dm]').forEach((a) => { a.href = `https://ig.me/m/${CONFIG.instagram}`; });
+  $$('[data-ig-label]').forEach((el) => { el.textContent = `@${CONFIG.instagram} · free quotes`; });
+  $$('[data-mail]').forEach((a) => { a.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent('Order / quote request — ' + CONFIG.brand)}`; });
+
+  // ---- Header + mobile nav ----
   const header = $('[data-header]');
   const nav = $('[data-nav]');
   const toggle = $('[data-nav-toggle]');
@@ -31,215 +37,186 @@
 
   const setNav = (open) => {
     nav.classList.toggle('open', open);
-    toggle.setAttribute('aria-expanded', String(open));
     header.classList.toggle('menu-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
     document.body.style.overflow = open ? 'hidden' : '';
   };
   toggle.addEventListener('click', () => setNav(!nav.classList.contains('open')));
   nav.addEventListener('click', (e) => { if (e.target.closest('a')) setNav(false); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && nav.classList.contains('open')) { setNav(false); toggle.focus(); } });
-  window.matchMedia('(min-width: 881px)').addEventListener('change', (m) => { if (m.matches) setNav(false); });
+  window.matchMedia('(min-width: 901px)').addEventListener('change', (m) => { if (m.matches) setNav(false); });
 
-  // ---- Active nav link while scrolling ----
-  const links = $$('.nav a[href^="#"]:not(.btn)');
-  const sections = links.map((a) => $(a.getAttribute('href'))).filter(Boolean);
-  if ('IntersectionObserver' in window) {
-    const spy = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (!en.isIntersecting) return;
-        links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    sections.forEach((s) => spy.observe(s));
-
-    // ---- Reveal on scroll ----
-    const rev = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (en.isIntersecting) { en.target.classList.add('in'); rev.unobserve(en.target); }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    $$('.reveal').forEach((el, i) => {
-      el.style.transitionDelay = `${(i % 3) * 70}ms`;
-      rev.observe(el);
-    });
-  } else {
-    $$('.reveal').forEach((el) => el.classList.add('in'));
-  }
-
-  // ---- Accessible tabs (materials) ----
-  $$('[data-tabs]').forEach((root) => {
-    const tabs = $$('[role="tab"]', root);
-    const select = (tab, focus) => {
-      tabs.forEach((t) => {
-        const on = t === tab;
-        t.setAttribute('aria-selected', String(on));
-        t.tabIndex = on ? 0 : -1;
-        $('#' + t.getAttribute('aria-controls')).hidden = !on;
-      });
-      if (focus) tab.focus();
-    };
-    tabs.forEach((t, i) => {
-      t.addEventListener('click', () => select(t));
-      t.addEventListener('keydown', (e) => {
-        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (d) { e.preventDefault(); select(tabs[(i + d + tabs.length) % tabs.length], true); }
-      });
-    });
-  });
-
-  // ---- FAQ: keep one open at a time ----
-  const faqs = $$('.faq details');
-  faqs.forEach((d) => d.addEventListener('toggle', () => {
-    if (d.open) faqs.forEach((o) => { if (o !== d) o.open = false; });
-  }));
-
-  // ---- Price estimator ----
-  const money = new Intl.NumberFormat(CONFIG.locale, { style: 'currency', currency: CONFIG.currency, maximumFractionDigits: 0 });
-  const est = $('[data-estimator]');
-  let lastEstimate = '';
-  if (est) {
-    const qty = $('#est-qty', est);
-    const sizeOut = $('[data-size-out]', est);
-    const totalEl = $('[data-est-total]', est);
-    const eachEl = $('[data-est-each]', est);
-
-    const clampQty = () => {
-      const n = Math.round(Number(qty.value));
-      qty.value = Number.isFinite(n) ? Math.min(999, Math.max(1, n)) : 1;
-    };
-
-    const calc = () => {
-      const f = new FormData(est);
-      const material = f.get('material');
-      const size = Number(f.get('size'));
-      const infill = Number(f.get('infill'));
-      const n = Math.min(999, Math.max(1, Math.round(Number(f.get('qty'))) || 1));
-      const finish = f.get('finish') === 'on';
-
-      // Rough printed volume: bounding cube of the longest side, ~18% solid at standard infill.
-      const cm = size / 10;
-      const volume = Math.pow(cm, 3) * 0.18 * infill;
-      let each = Math.max(CONFIG.minPerPart, volume * CONFIG.ratePerCm3[material]);
-      if (finish) each += CONFIG.finishPerPart;
-
-      // Volume discount: up to 25% off at 50+ units
-      const discount = n >= 50 ? 0.25 : n >= 25 ? 0.18 : n >= 10 ? 0.12 : 0;
-      each *= 1 - discount;
-      const total = Math.round(each * n + CONFIG.setupFee);
-
-      sizeOut.textContent = `${size} mm`;
-      totalEl.textContent = money.format(total);
-      eachEl.textContent = n > 1
-        ? `${money.format(Math.round(each))} each${discount ? ` · ${Math.round(discount * 100)}% volume discount` : ''}`
-        : 'Includes setup';
-
-      const matLabel = $('#est-material', est).selectedOptions[0].textContent;
-      const infLabel = $(`input[name="infill"]:checked + label`, est).textContent;
-      lastEstimate = `${n} × ${matLabel}, ~${size} mm, ${infLabel.toLowerCase()} infill${finish ? ', post-processed' : ''}. Online estimate: ${money.format(total)}.`;
-    };
-
-    est.addEventListener('input', calc);
-    est.addEventListener('submit', (e) => e.preventDefault());
-    qty.addEventListener('change', () => { clampQty(); calc(); });
-    $$('[data-qty]', est).forEach((b) => b.addEventListener('click', () => {
-      qty.value = Number(qty.value || 1) + Number(b.dataset.qty);
-      clampQty(); calc();
-    }));
-
-    // Carry the estimate into the contact form
-    $('[data-est-cta]', est).addEventListener('click', () => {
-      const msg = $('#c-msg');
-      if (msg && !msg.value.trim()) msg.value = lastEstimate + '\n\n';
-      setTimeout(() => $('#c-name')?.focus({ preventScroll: true }), 600);
-    });
-    calc();
-  }
-
-  // ---- File drop zone ----
-  const drop = $('[data-drop]');
-  const fileInput = $('#c-file');
-  const dropText = $('[data-drop-text]');
-  const MAX_MB = 25;
-  const showFile = () => {
-    const file = fileInput.files[0];
-    if (!file) { drop.classList.remove('has-file'); dropText.innerHTML = 'Drop STL / STEP / OBJ here or <u>browse</u>'; return; }
-    if (file.size > MAX_MB * 1024 * 1024) {
-      fileInput.value = '';
-      drop.classList.remove('has-file');
-      dropText.textContent = `That file is over ${MAX_MB} MB. Please share a link in the message instead.`;
-      return;
-    }
-    drop.classList.add('has-file');
-    dropText.textContent = `${file.name} (${(file.size / 1048576).toFixed(1)} MB)`;
+  // ---- Scroll effects ----
+  const once = (els, fn, opts) => {
+    if (!('IntersectionObserver' in window)) { els.forEach(fn); return; }
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) { fn(en.target); io.unobserve(en.target); }
+    }), opts);
+    els.forEach((el) => io.observe(el));
   };
-  if (drop && fileInput) {
-    fileInput.addEventListener('change', showFile);
-    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('drag'); }));
-    ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('drag'); }));
-    drop.addEventListener('drop', (e) => {
-      if (e.dataTransfer?.files?.length) { fileInput.files = e.dataTransfer.files; showFile(); }
-    });
+
+  $$('.reveal').forEach((el, i) => { el.style.transitionDelay = `${(i % 4) * 60}ms`; });
+  once($$('.reveal'), (el) => el.classList.add('in'), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  once($$('[data-bars]'), (el) => el.classList.add('in-view'), { threshold: 0.3 });
+
+  // Count-up numbers (the HTML already holds the final values, so nothing breaks without JS)
+  once($$('[data-count]'), (el) => {
+    if (reduceMotion) return;
+    const target = parseFloat(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const decimals = (el.dataset.count.split('.')[1] || '').length;
+    const t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min((t - t0) / 1200, 1);
+      el.textContent = (target * (1 - Math.pow(1 - p, 3))).toFixed(decimals) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, { threshold: 0.6 });
+
+  // Active nav link
+  const links = $$('.nav a[href^="#"]:not(.btn)');
+  if ('IntersectionObserver' in window) {
+    const spy = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
+    }), { rootMargin: '-45% 0px -50% 0px' });
+    links.map((a) => $(a.getAttribute('href'))).filter(Boolean).forEach((s) => spy.observe(s));
   }
 
-  // ---- Contact form ----
-  const form = $('[data-contact-form]');
-  if (form) {
-    const status = $('[data-form-status]', form);
-    const submitBtn = $('button[type="submit"]', form);
-    const required = $$('[required]', form);
+  // Hide the floating WhatsApp button while the order form (which has its own) is on screen
+  const fab = $('.fab');
+  const orderCard = $('#order');
+  if (fab && orderCard && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([en]) => fab.classList.toggle('hide', en.isIntersecting), { threshold: 0.1 }).observe(orderCard);
+  }
 
-    const validate = (el) => {
-      const ok = el.type === 'email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim()) : el.value.trim().length > 0;
-      el.closest('.field').classList.toggle('invalid', !ok);
-      el.setAttribute('aria-invalid', String(!ok));
-      const err = $(`[data-err-for="${el.id}"]`, form);
-      if (err) { err.id = err.id || `${el.id}-err`; el.setAttribute('aria-describedby', err.id); }
-      return ok;
+  // ---- "Will it fit?" checker ----
+  const fit = $('[data-fit]');
+  if (fit) {
+    const ours = $('[data-fit-ours]', fit);
+    const std = $('[data-fit-std]', fit);
+    const piecesFor = (dims, bed) => {
+      // try each axis as the vertical one and keep the orientation needing the fewest pieces
+      const [x, y, z] = bed;
+      const orientations = [[dims[0], dims[1], dims[2]], [dims[0], dims[2], dims[1]], [dims[1], dims[2], dims[0]]];
+      return Math.min(...orientations.map(([a, b, c]) =>
+        Math.min(Math.ceil(a / x) * Math.ceil(b / y), Math.ceil(b / x) * Math.ceil(a / y)) * Math.ceil(c / z)));
     };
-    required.forEach((el) => {
-      el.addEventListener('blur', () => { if (el.value) validate(el); });
-      el.addEventListener('input', () => { if (el.closest('.field').classList.contains('invalid')) validate(el); });
-    });
-
-    const setStatus = (text, cls) => { status.textContent = text; status.className = `form-status ${cls || ''}`; };
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const bad = required.filter((el) => !validate(el));
-      if (bad.length) { bad[0].focus(); setStatus('Please fix the highlighted fields.', 'bad'); return; }
-
-      const data = new FormData(form);
-
-      if (!CONFIG.formEndpoint) {
-        // No backend configured: open the visitor's email app with everything filled in.
-        const body = `Name: ${data.get('name')}\nEmail: ${data.get('email')}\nProject: ${data.get('type')}\n\n${data.get('message')}` +
-          (fileInput.files[0] ? `\n\n(I'll attach my file: ${fileInput.files[0].name})` : '');
-        window.location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent('3D print request: ' + data.get('type'))}&body=${encodeURIComponent(body)}`;
-        setStatus('Opening your email app… If nothing happens, email us at ' + CONFIG.email, 'ok');
+    const show = (box, n, extra) => {
+      box.classList.toggle('bad', n > 1);
+      $('b', box).textContent = n === 1 ? '✓ One piece' : `${n} pieces${extra}`;
+    };
+    const update = () => {
+      const dims = ['l', 'w', 'h'].map((k) => Number(fit.elements[k].value));
+      if (dims.some((d) => !(d > 0))) {
+        $$('.fit-box', fit).forEach((b) => { b.classList.remove('bad'); $('b', b).textContent = 'Enter all 3 sizes'; });
         return;
       }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending…';
-      setStatus('');
-      try {
-        const res = await fetch(CONFIG.formEndpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
-        if (!res.ok) throw new Error(String(res.status));
-        form.reset();
-        showFile();
-        setStatus('Thanks! We got your request and will reply with a quote shortly.', 'ok');
-      } catch {
-        setStatus(`Something went wrong. Please email us at ${CONFIG.email}.`, 'bad');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send request';
-      }
-    });
+      show(ours, piecesFor(dims, OUR_BED), '');
+      show(std, piecesFor(dims, [STD_BED, STD_BED, STD_BED]), ' + glue');
+    };
+    fit.addEventListener('input', update);
+    fit.addEventListener('submit', (e) => e.preventDefault());
+    update();
   }
 
-  // ---- Keep contact details in sync with CONFIG ----
-  $$('a[href^="mailto:"]').forEach((a) => { a.href = `mailto:${CONFIG.email}`; if (a.textContent.includes('@')) a.textContent = CONFIG.email; });
+  // ---- Instagram carousel ----
+  const car = $('[data-carousel]');
+  if (car) {
+    const track = $('[data-slides]', car);
+    const slides = $$('img', track);
+    const dots = $('[data-dots]', car);
+    const prev = $('[data-prev]', car);
+    const next = $('[data-next]', car);
+    slides.forEach(() => dots.appendChild(document.createElement('i')));
+    const step = () => slides[1].offsetLeft - slides[0].offsetLeft;
+    const current = () => Math.round(track.scrollLeft / step());
+    const sync = () => {
+      const i = current();
+      $$('i', dots).forEach((d, j) => d.classList.toggle('on', j === i));
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -step() }));
+    next.addEventListener('click', () => track.scrollBy({ left: step() }));
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); next.click(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prev.click(); }
+    });
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  }
 
-  const y = $('[data-year]');
-  if (y) y.textContent = new Date().getFullYear();
+  // ---- Display shelf field guide ----
+  const guide = $('[data-guide]');
+  const guideBody = $('[data-guide-body]');
+  const fields = $('#fields');
+  if (guide && typeof guide.showModal === 'function') {
+    let opener = null;
+    $$('[data-field]').forEach((card) => card.addEventListener('click', () => {
+      const src = fields.content.querySelector(`[data-field-id="${card.dataset.field}"]`);
+      if (!src) return;
+      guideBody.replaceChildren(src.cloneNode(true));
+      opener = card;
+      guide.showModal();
+    }));
+    $('[data-guide-close]').addEventListener('click', () => guide.close());
+    guide.addEventListener('click', (e) => { if (e.target === guide) guide.close(); });
+    guide.addEventListener('close', () => opener?.focus());
+  } else {
+    // very old browsers: send people to the order form instead
+    $$('[data-field]').forEach((card) => card.addEventListener('click', () => { location.hash = '#order'; }));
+  }
+
+  // ---- Order form → WhatsApp (pre-typed) or Instagram DM (copied) ----
+  const form = $('[data-order]');
+  if (form) {
+    const status = $('[data-status]', form);
+    const nameField = $('#o-name', form);
+    const setStatus = (text, bad) => { status.textContent = text; status.classList.toggle('bad', !!bad); };
+
+    const valid = () => {
+      const ok = nameField.value.trim().length > 0;
+      nameField.closest('.field').classList.toggle('invalid', !ok);
+      nameField.setAttribute('aria-invalid', String(!ok));
+      if (!ok) nameField.setAttribute('aria-describedby', 'o-name-err');
+      return ok;
+    };
+    nameField.addEventListener('input', () => { if (nameField.closest('.field').classList.contains('invalid')) valid(); });
+
+    const message = () => {
+      const f = new FormData(form);
+      const line = (label, v) => (v && String(v).trim() ? `${label}: ${String(v).trim()}\n` : '');
+      return `Hi ${CONFIG.brand}! I'd like to place an order / get a quote.\n` +
+        line('Name', f.get('name')) + line('Category', f.get('category')) + line('Size', f.get('size')) +
+        (line('Material', f.get('material')) + line('Details', f.get('details'))).trimEnd();
+    };
+
+    const copy = async (text) => {
+      try { await navigator.clipboard.writeText(text); return true; } catch {
+        const ta = Object.assign(document.createElement('textarea'), { value: text });
+        ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta); ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch { /* ignore */ }
+        ta.remove();
+        return ok;
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!valid()) { nameField.focus(); setStatus('Please add your name so we know who to reply to.', true); return; }
+      window.open(waLink(message()), '_blank', 'noopener');
+      setStatus('✅ WhatsApp opened with your order typed in. Just hit send.');
+    });
+
+    $('[data-send="ig"]', form).addEventListener('click', async () => {
+      if (!valid()) { nameField.focus(); setStatus('Please add your name so we know who to reply to.', true); return; }
+      const copied = await copy(message());
+      window.open(`https://ig.me/m/${CONFIG.instagram}`, '_blank', 'noopener');
+      setStatus(copied ? '✅ Message copied. Paste it into the Instagram chat that just opened.' : 'Instagram opened. Tell us your project in the chat.');
+    });
+  }
 })();

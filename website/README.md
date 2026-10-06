@@ -1,6 +1,20 @@
-# PiXL 3D Printing — website
+# PrintBig — website
 
-A fast, dependency-free static site (HTML + CSS + vanilla JS). No build step.
+Large format 3D printing, Bangalore. A fast, dependency-free static site (HTML + CSS + vanilla JS). No build step.
+
+The design follows the PrintBig Instagram carousel and the "One Print vs Many Prints" poster:
+
+| Section | Source |
+| --- | --- |
+| Hero: "How big can one print be?" with the 5.2× cubes | Carousel slide 1 |
+| The Volume Gap: litre bars + big 5.2× | Carousel slide 2 |
+| Will it fit? checker | New: visitors enter L × W × H and see one piece vs. pieces on a 256 mm printer |
+| One Print Beats Many, 5 steps vs 2, head-to-head table | Carousel slide 3 + poster pages 1–3 |
+| Display Shelf with ideas pop-up | Carousel slide 4 + previous site's field guides |
+| Swipe the story (the carousel itself) | `assets/carousel/slide-1…5.webp` |
+| Ready to Print Big? 10% off, 4 steps, order form | Carousel slide 5 |
+
+The poster is downloadable from the site at `assets/printbig-one-print-vs-many-poster.pdf`.
 
 ## Preview locally
 
@@ -11,29 +25,18 @@ python3 -m http.server 8000   # then open http://localhost:8000
 
 ## Deploy to Vercel
 
-1. In Vercel, import this repo (or point your existing `pi-xl-static-website` project at it).
+1. In your Vercel project, connect this repo.
 2. Set **Root Directory** to `website`. Framework preset: **Other**. Leave the build command empty.
 3. Deploy. `vercel.json` adds security headers and caching.
 
-## Before launch: replace the placeholders
+## Before launch
 
-| What | Where |
-| --- | --- |
-| Email address | `main.js` → `CONFIG.email` (the page's email links update automatically) and the JSON-LD block in `index.html` |
-| WhatsApp number | `index.html`, the two `https://wa.me/910000000000` links (format: country code + number, no `+`) |
-| Phone and city | `index.html`, the contact list and the JSON-LD block |
-| Prices | `main.js` → `CONFIG.ratePerCm3`, `setupFee`, `minPerPart`, `finishPerPart` |
-| Gallery tiles | `index.html` `#work` section. Swap each `<div class="tile-art">` for an `<img src="assets/…" alt="…" loading="lazy" width="800" height="600">` |
-| Testimonials | `index.html` `#reviews`. Use real reviews, then remove the "Sample testimonials" note |
-| Domain | `index.html` canonical/OG URLs, `robots.txt`, `sitemap.xml` |
+- **WhatsApp number**: `main.js` → `CONFIG.whatsapp` is still the placeholder `919999999999`. Use country code + number, digits only.
+- Instagram handle and email are also in `CONFIG`; every link on the page updates from there.
+- **Domain**: once you have one, update the canonical/OG URLs in `index.html`, plus `robots.txt` and `sitemap.xml`.
+- **Updating the carousel**: replace the files in `assets/carousel/` (keep the names) and update each image's `alt` text in `index.html`.
 
-## Receiving quote requests (with file uploads)
+## How ordering works
 
-Out of the box, the contact form opens the visitor's email app with the details filled in.
-To receive submissions directly, including the uploaded STL/STEP file:
-
-1. Create a free form at [Formspree](https://formspree.io) (or Web3Forms / Getform).
-2. Paste its endpoint into `main.js` → `CONFIG.formEndpoint`.
-
-These three services are already allowed in the Content-Security-Policy in `vercel.json`.
-If you use a different one, add its domain to `connect-src`.
+Nothing is stored on the site. **Order on WhatsApp** opens WhatsApp with the customer's name, category, size, material and details already typed.
+**DM @printbig.in** copies the same message and opens an Instagram chat for them to paste it into.
