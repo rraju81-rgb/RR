@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pi-xl-static-website.vercel.app/sitemap.xml
