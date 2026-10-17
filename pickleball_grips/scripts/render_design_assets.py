@@ -5,6 +5,7 @@ per design -> brochure/assets/<id>/
     hero_a..d.png   transparent full-length renders, four turns (az 32, 125, 215, 305)   [a, b come from render_brochure_assets.py]
     surface.png     mid-body close-up                                                      [from render_brochure_assets.py]
     surface2.png    lower-body close-up in raking light
+    butt.png        the butt seen from below: the 3.5 mm screw hole
     rim.png         neck, rim and bore seen from above
     cutaway.png     quadrant cutaway - the solid wall as a section
     swatch.png      the unrolled surface as a lit relief
@@ -12,7 +13,7 @@ per design -> brochure/assets/<id>/
     paddle.png      the grip fitted to an illustrative generic paddle (transparent)
 and brochure/assets/paddle.bin (the shared paddle mesh).
 
-usage: python3 render_design_assets.py [--only 01 07 ...] [--skip hero rim surface2 cutaway swatch row paddle]
+usage: python3 render_design_assets.py [--only 01 07 ...] [--skip hero rim surface2 butt cutaway swatch row paddle]
 """
 import argparse
 import shutil
@@ -75,8 +76,8 @@ def main(only=None, skip=()):
                 G.make_swatch(name, SWATCH_TINT.get(name, tint), d / "swatch.png", exag=SWATCH_EXAG.get(name, 1.0))
             if "rim" not in skip:
                 shot(name, f"mode=macro&zc=126&span=54&az=25&el=58&tx=0&tint={tint}&bg={BG_TILE}", 1000, 1000, d / "rim.png", exp=1.5 if dark else 1.0)
-            if name.startswith("07") and "surface" not in skip:                 # windows: a dark-backed close-up for the dark page
-                shot(name, f"mode=macro&zc=62&span=34&az=18&el=8&tx=0&tint={tint}&bg=1A212C", 1000, 1000, d / "surface_dark.png")
+            if "butt" not in skip:                                                # looking up at the butt: the screw hole
+                shot(name, f"mode=macro&zc=2&span=62&az=14&el=-64&tx=0&tint={tint}&bg={BG_TILE}", 1000, 1000, d / "butt.png", exp=1.9 if dark else 1.4)
             if "surface2" not in skip:
                 shot(name, f"mode=macro&zc=50&span=30&az=-55&el=3&tx=0&tint={tint}&bg={BG_TILE}", 1000, 1000, d / "surface2.png", exp=1.7 if dark else 1.0)
             if "cutaway" not in skip:

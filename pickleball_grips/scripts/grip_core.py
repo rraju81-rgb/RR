@@ -187,6 +187,70 @@ def build_mesh(F, z, H):
     return V, np.vstack(faces).astype(np.int32)
 
 
+# --- solid body with the paddle slot and screw hole ------------------------------
+# Revision 3: the grip is a SOLID sleeve; the only cavities are the paddle slot and the screw hole.
+PADDLE_W, PADDLE_T = 30.0, 16.0        # mm - flat handle (tongue) of the paddle, measured on the real paddle
+SLOT_CLEAR = 0.2                       # mm - total clearance added to each slot dimension (FDM holes print slightly small)
+SLOT_R = 0.3                           # mm - slot corner radius (a 0.4 mm nozzle cannot print sharper)
+HOLE_D = 3.5                           # mm - screw hole through the butt for an M3 (3 mm) socket-head screw
+
+
+def bore_centre(F):
+    r = F.ring
+    return (r[:, 0].min() + r[:, 0].max()) / 2, (r[:, 1].min() + r[:, 1].max()) / 2
+
+
+def slot_polygon(F, w=PADDLE_W + SLOT_CLEAR, t=PADDLE_T + SLOT_CLEAR, r=SLOT_R):
+    """Rounded-rectangle paddle slot, centred on the old bore: wide axis along x (the reference's wide axis)."""
+    from shapely.geometry import box
+    cx, cy = bore_centre(F)
+    return box(cx - w / 2 + r, cy - t / 2 + r, cx + w / 2 - r, cy + t / 2 - r).buffer(r, 16)
+
+
+def build_mesh_solid(F, z, H):
+    """Watertight SOLID sleeve (no cavity): foot/skin rings + flat top + butt cap."""
+    M, N = H.shape
+    out = np.empty((M, N, 3))
+    out[..., :2] = F.c[None] + F.n[None] * H[..., None]
+    out[..., 2] = z[:, None]
+    ctr = F.c.mean(0)
+    bc = np.r_[ctr, 0.0]
+    V = np.vstack([out.reshape(-1, 3), bc])
+    iBc = M * N
+    i = np.arange(N)
+    i1 = (i + 1) % N
+    faces = []
+    for j in range(M - 1):
+        a, b, c, d = j * N + i, j * N + i1, (j + 1) * N + i1, (j + 1) * N + i
+        ac = np.linalg.norm(V[a] - V[c], axis=1) <= np.linalg.norm(V[b] - V[d], axis=1)
+        faces += [np.where(ac[:, None], np.c_[a, b, c], np.c_[a, b, d]), np.where(ac[:, None], np.c_[a, c, d], np.c_[b, c, d])]
+    top = (M - 1) * N + i
+    tri = _earcut(out[M - 1, :, :2])                                        # flat top cap
+    nz = np.cross(V[(M - 1) * N + tri[:, 1]] - V[(M - 1) * N + tri[:, 0]], V[(M - 1) * N + tri[:, 2]] - V[(M - 1) * N + tri[:, 0]])[:, 2]
+    tri = np.where((nz < 0)[:, None], tri[:, ::-1], tri)
+    faces += [(M - 1) * N + tri]
+    faces += [np.c_[np.full(N, iBc), i1, i]]                                # butt cap (ring 0 = z 0)
+    return V, np.vstack(faces).astype(np.int32)
+
+
+def carve_cavity(F, V, Fc, hole_d=HOLE_D):
+    """Subtract the paddle slot (z_floor .. top) and the screw hole (butt .. floor) from the solid sleeve."""
+    import manifold3d as m3d
+    import trimesh
+    slot = slot_polygon(F)
+    pm = trimesh.creation.extrude_polygon(slot, F.z_top + 2.0 - F.z_floor)
+    pv = np.asarray(pm.vertices).copy()
+    pv[:, 2] += F.z_floor
+    cx, cy = bore_centre(F)
+    base = m3d.Manifold(m3d.Mesh(np.asarray(V, np.float32), np.asarray(Fc, np.uint32)))
+    slot_m = m3d.Manifold(m3d.Mesh(pv.astype(np.float32), np.asarray(pm.faces, np.uint32)))
+    hole = m3d.Manifold.cylinder(F.z_floor + 2.0, hole_d / 2, hole_d / 2, 48).translate((cx, cy, -1.0))
+    res = (base - slot_m - hole)
+    res = res.simplify(0.002)
+    m = res.to_mesh()
+    return np.asarray(m.vert_properties[:, :3], np.float64), np.asarray(m.tri_verts, np.int32)
+
+
 # --- hole cutting (through-windows) ---------------------------------------------
 def _earcut(pts2d):
     import mapbox_earcut as ec
@@ -289,6 +353,11 @@ class _SubFrame:
 def build_mesh_reduced(F, z, H, eps=0.004):
     rows, cols = reduce_grid(F, z, H, eps=eps, protect=(0, len(z) - 1))
     return build_mesh(_SubFrame(F, cols), z[rows], H[np.ix_(rows, cols)])
+
+
+def build_mesh_solid_reduced(F, z, H, eps=0.004):
+    rows, cols = reduce_grid(F, z, H, eps=eps, protect=(0, len(z) - 1))
+    return build_mesh_solid(_SubFrame(F, cols), z[rows], H[np.ix_(rows, cols)])
 
 
 def write_stl(path, V, Fc):

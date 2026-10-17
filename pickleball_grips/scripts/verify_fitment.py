@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Check every generated STL against the reference 3MF.
+"""Check every generated STL against the reference 3MF and the paddle specification (revision 3).
 
 For each grip:
   * mesh is a closed, consistently wound manifold, positive volume
   * height / footprint equal the reference (z 0..132.823)
-  * BORE: the cavity is identical to the reference's - measured by sampling the reference
-    cavity wall at many heights and finding the distance to the grip surface (must be ~0
-    wherever the wall is not deliberately windowed), and by probing points 0.15 mm inside
-    the bore to confirm no material intrudes
-  * FLOOR at z=5.0 and open top
-  * OUTER envelope never exceeds the reference envelope (cavity offset E(z)) by more than 0.05 mm
+  * OUTER envelope never exceeds the reference envelope (reference bore line offset by E(z)) by more than 0.05 mm
     - except the deliberate rim thickening (reference tapers to 0.36 mm; grips keep >= 0.8 mm), reported separately
   * FOOT (z<20) and TOP TAPER (z>112) outer profile equals the reference
+  * SOLID: at every height there is exactly one cavity - the 30 x 16 mm paddle slot (+0.2 mm clearance), z 5 .. top -
+    and nothing else; no material inside the slot
+  * SCREW HOLE: one 3.5 mm hole through the butt (z 0 .. 5) on the slot axis; floor solid around it
+  * OPEN TOP: the slot is open at z = top
 
 Writes ../fitment_report.json and prints a markdown table.
 """
@@ -25,13 +24,19 @@ import trimesh
 from shapely.geometry import Polygon, Point, LineString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from grip_core import Frame  # noqa: E402
+from grip_core import Frame, slot_polygon, bore_centre, HOLE_D, PADDLE_W, PADDLE_T, SLOT_CLEAR  # noqa: E402
 from designs import DESIGNS  # noqa: E402
 
 warnings.filterwarnings("ignore")
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from extract_reference_profile import load_3mf_mesh, section_polys  # noqa: E402
+
+
+def holes_of(solid):
+    """Interior rings of an even-odd section as polygons (the cavities)."""
+    gs = list(solid.geoms) if hasattr(solid, "geoms") else [solid]
+    return [Polygon(i) for g in gs for i in g.interiors]
 
 
 def section_solid(mesh, z):
@@ -49,8 +54,11 @@ def section_solid(mesh, z):
 def main():
     F = Frame()
     ref = load_3mf_mesh(ROOT / "reference" / "PickleballGrip_1.3mf")
-    cav = Polygon(F.ring)
+    cav = Polygon(F.ring)                       # the reference bore: the datum the outer skin is measured from
     ring = cav.exterior
+    slot = slot_polygon(F)
+    cx, cy = bore_centre(F)
+    hole_area = np.pi * (HOLE_D / 2) ** 2
     rb = ref.bounds
     rows = []
     for name, label, _ in DESIGNS:
@@ -77,7 +85,7 @@ def main():
                 rim_min = min(rim_min, d.min())
             if 23 <= z <= 110:
                 peak = max(peak, d.max())
-            if 21 <= z <= 118 and not name.startswith("07"):      # VORONOI-CORE has through-windows by design
+            if 21 <= z <= 118:
                 min_wall = min(min_wall, d.min())
             if z < 20:
                 foot_err = max(foot_err, abs(d.mean() - E_des))
@@ -90,35 +98,50 @@ def main():
         r["rim_min_wall_mm"] = round(rim_min, 3)
         r["rim_added_vs_reference_mm"] = round(rim_add, 3)
         r["peak_texture_height_above_bore_mm"] = round(peak, 2)
-        # ---- bore: reference wall must lie on the grip's boundary (except deliberate windows)
-        # and nothing may intrude into the bore (probe region = bore shrunk by 0.1 mm)
-        probe = cav.buffer(-0.1)
-        wall_pts = [ring.interpolate(t) for t in np.linspace(0, ring.length, 90, endpoint=False)]
-        dists, intr = [], 0.0
+        # ---- paddle slot: exactly one cavity from the floor to the top, equal to the slot polygon, nothing inside it
+        xor_max, intr, n_holes_bad = 0.0, 0.0, 0
+        probe = slot.buffer(-0.05)
         for z in np.linspace(5.4, 132.6, 40):
             solid, _ = section_solid(m, float(z))
-            bd = solid.boundary
-            dists += [bd.distance(q) for q in wall_pts]
+            hs = holes_of(solid)
+            if len(hs) != 1:
+                n_holes_bad += 1
+                continue
+            xor_max = max(xor_max, hs[0].symmetric_difference(slot).area)
             intr = max(intr, solid.intersection(probe).area)
-        dists = np.array(dists)
-        r["bore_wall_dist_p50_mm"] = round(float(np.percentile(dists, 50)), 4)
-        r["bore_wall_on_surface_pct"] = round(float((dists < 0.01).mean() * 100), 1)
-        r["bore_intrusion_mm2"] = round(float(intr), 5)
-        # ---- floor at z=5 and open top
-        c = Point(*F.center)
-        r["floor_solid_z4.8"] = bool(section_solid(m, 4.8)[0].contains(c))
-        r["floor_empty_z5.2"] = bool(not section_solid(m, 5.2)[0].contains(c))
-        r["open_top"] = bool(not section_solid(m, 132.7)[0].contains(c))
+        r["slot_w_mm"], r["slot_t_mm"] = [round(float(v), 3) for v in (slot.bounds[2] - slot.bounds[0], slot.bounds[3] - slot.bounds[1])]
+        s60, _ = section_solid(m, 60.0)
+        h60 = holes_of(s60)
+        r["slot_measured_w_mm"] = round(float(h60[0].bounds[2] - h60[0].bounds[0]), 3) if len(h60) == 1 else None
+        r["slot_measured_t_mm"] = round(float(h60[0].bounds[3] - h60[0].bounds[1]), 3) if len(h60) == 1 else None
+        r["slot_levels_without_single_cavity"] = n_holes_bad
+        r["slot_xor_max_mm2"] = round(float(xor_max), 4)
+        r["slot_intrusion_mm2"] = round(float(intr), 5)
+        # ---- screw hole through the butt: one round 3.5 mm hole on the slot axis for z 0.4 .. 4.6, floor solid around it
+        hole_ok, hole_d = True, []
+        for z in np.arange(0.4, 4.7, 0.5):
+            solid, _ = section_solid(m, float(z))
+            hs = holes_of(solid)
+            if len(hs) != 1 or abs(hs[0].area - hole_area) > 0.25 or np.hypot(hs[0].centroid.x - cx, hs[0].centroid.y - cy) > 0.05:
+                hole_ok = False
+            else:
+                hole_d.append(2 * np.sqrt(hs[0].area / np.pi))
+        r["screw_hole_ok"] = bool(hole_ok)
+        r["screw_hole_dia_mm"] = round(float(np.mean(hole_d)), 3) if hole_d else None
+        r["floor_solid_z4.8"] = bool(section_solid(m, 4.8)[0].contains(Point(cx + 6.0, cy)))
+        r["slot_empty_z5.2"] = bool(not section_solid(m, 5.2)[0].contains(Point(cx + 6.0, cy)))
+        r["open_top"] = bool(not section_solid(m, 132.7)[0].contains(Point(cx, cy)))
         r["pass"] = bool(r["watertight"] and r["winding_ok"] and r["height_err_mm"] < 0.01 and
-                         r["max_over_reference_envelope_mm"] < 0.05 and r["bore_intrusion_mm2"] < 0.01 and
+                         r["max_over_reference_envelope_mm"] < 0.05 and r["slot_intrusion_mm2"] < 0.01 and
+                         r["slot_levels_without_single_cavity"] == 0 and r["slot_xor_max_mm2"] < 1.0 and r["screw_hole_ok"] and
                          (r["min_wall_textured_zone_mm"] is None or r["min_wall_textured_zone_mm"] >= F.wall - 0.03) and r["rim_min_wall_mm"] >= F.min_rim - 0.03 and
-                         r["floor_solid_z4.8"] and r["floor_empty_z5.2"] and r["open_top"] and
+                         r["floor_solid_z4.8"] and r["slot_empty_z5.2"] and r["open_top"] and
                          r["foot_profile_err_mm"] < 0.06 and r["taper_profile_err_mm"] < 0.06)
         rows.append(r)
         print(f"{name:18s} pass={r['pass']} watertight={r['watertight']} over_env={r['max_over_reference_envelope_mm']:+.3f} "
-              f"bore_on_surface={r['bore_wall_on_surface_pct']}% intrusion={r['bore_intrusion_mm2']} "
-              f"foot_err={r['foot_profile_err_mm']} taper_err={r['taper_profile_err_mm']} min_wall={r['min_wall_textured_zone_mm']} "
-              f"rim_min={r['rim_min_wall_mm']} rim_added={r['rim_added_vs_reference_mm']}", flush=True)
+              f"slot={r['slot_measured_w_mm']}x{r['slot_measured_t_mm']} xor={r['slot_xor_max_mm2']} intrusion={r['slot_intrusion_mm2']} "
+              f"hole={r['screw_hole_dia_mm']} ok={r['screw_hole_ok']} foot_err={r['foot_profile_err_mm']} taper_err={r['taper_profile_err_mm']} "
+              f"min_relief_base={r['min_wall_textured_zone_mm']} rim_min={r['rim_min_wall_mm']}", flush=True)
     (ROOT / "fitment_report.json").write_text(json.dumps(rows, indent=1))
     return rows
 

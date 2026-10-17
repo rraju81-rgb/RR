@@ -212,7 +212,7 @@ BLURB = {
     "04_logic_grip": "Seamlessly interlocking jigsaw\nergonomic puzzle pieces.",
     "05_neuro_tread": "Bio-inspired raised neural network\nover a dimpled adaptive base.",
     "06_carbon_matrix": "2/2 twill weave with smooth\nselective reinforcement patches.",
-    "07_voronoi_core": "Voronoi rib lattice, windows cut\nthrough for weight saving and airflow.",
+    "07_voronoi_core": "Voronoi rib lattice with recessed\ncells between rounded ribs.",
     "08_topo_flow": "Continuous undulating contour ridges\nmimicking wood grain and terrain.",
     "09_ergo_contour": "Palm swell, four finger flutes and a\nthumb rest for hand conformance.",
     "10_hexa_mod": "Modular hex pads on four height\nlevels, colour-coded (red = tallest).",
@@ -225,9 +225,9 @@ def catalog(names, suffix="hero", out_name="catalog.png", subtitle=None):
     W, Hh = cw * 5, 150 + 2 * (ch + 250)
     sheet = Image.new("RGB", (W, Hh), (233, 230, 225))
     d = ImageDraw.Draw(sheet)
-    title = "PICKLEBALL PADDLE GRIPS - ONE FITMENT, TEN SURFACES"
+    title = "PICKLEBALL PADDLE GRIPS - ONE SLOT, TEN SURFACES"
     d.text((W // 2, 62), title, fill=(20, 20, 20), font=font(58), anchor="mm")
-    d.text((W // 2, 118), subtitle or "All ten share the reference cavity (32.06 x 26.04 mm bore, 5 mm floor, 132.82 mm tall), foot flare and top taper",
+    d.text((W // 2, 118), subtitle or "All ten: solid body, 30 x 16 mm paddle slot, 3.5 mm screw hole in the butt, reference outer envelope (132.82 mm tall)",
            fill=(70, 70, 70), font=font(26, False), anchor="mm")
     label = {n: l for n, l, _ in DESIGNS}
     for k, name in enumerate(names):

@@ -81,37 +81,27 @@ def _extrude_xz(poly, y0, y1, xm, ym):
     return V, Fc
 
 
-def make_paddle(out, width=190.0, top=402.0):
-    """Generic paddle: handle = the bore polygon, loft into a neck, rounded face with an edge guard."""
+def make_paddle(out, width=190.0, top=402.0, tongue_w=30.0, thick=16.0):
+    """Illustrative paddle matching the measured one: a flat 16 mm slab whose handle is a 30 mm wide tongue that slides
+    into the grip slot, flaring into a rounded face.  Light core edge, dark face plates on the face only."""
     F = Frame()
     xm, ym = bore_centre(F)
-    bore = Polygon(F.ring).buffer(-0.12)
-    ring = np.asarray(bore.exterior.coords)[:-1]
+    z0 = F.z_floor                                                  # the tongue sits on the slot floor
+    face = box(xm - width / 2, 176.0, xm + width / 2, top).buffer(-46).buffer(46)             # rounded face
+    tongue = box(xm - tongue_w / 2, z0, xm + tongue_w / 2, 200.0)
+    outline = unary_union([face, tongue]).buffer(26).buffer(-26)                              # smooth flare where they meet
+    core_rgb, plate_rgb = (232, 229, 222), (46, 54, 66)
     parts = []
-    # handle prism (starts inside the grip, pokes 6 mm out of the open throat)
-    hv = trimesh.creation.extrude_polygon(bore, Z_TOP + 6.0 - 5.2)
-    V = np.asarray(hv.vertices).copy()
-    V[:, 2] += 5.2
-    parts.append((V, np.asarray(hv.faces), np.array([92, 101, 114], np.uint8)))
-    # throat: convex loft from the handle outline to a flat neck section
-    z_a, z_b, neck_w, neck_t = Z_TOP + 1.0, 170.0, 40.0, 11.0
-    pts = [(x, y, z_a) for x, y in ring]
-    pts += [(xm + sx * neck_w / 2, ym + sy * neck_t / 2, z_b) for sx in (-1, 1) for sy in (-1, 1)]
-    hull = trimesh.convex.convex_hull(np.array(pts))
-    parts.append((np.asarray(hull.vertices), np.asarray(hull.faces), np.array([92, 101, 114], np.uint8)))
-    # face outline (x, z): neck + rounded rectangle, concave joins rounded off
-    face = box(xm - width / 2, 176.0, xm + width / 2, top)
-    face = face.buffer(-46).buffer(46)                                    # round all corners
-    neck = box(xm - neck_w / 2, 150.0, xm + neck_w / 2, 200.0)
-    outline = unary_union([face, neck]).buffer(24).buffer(-24)
-    rim = outline.difference(outline.buffer(-9.0))
-    plate = outline.buffer(-9.0)
-    for poly, t, rgb in ((rim, 15.4, (126, 136, 150)), (plate, 12.8, (46, 54, 66))):
-        for g in (poly.geoms if hasattr(poly, "geoms") else [poly]):
-            if g.is_empty or g.geom_type != "Polygon":
-                continue
-            V, Fc = _extrude_xz(g, -t / 2, t / 2, xm, ym)
-            parts.append((V, Fc, np.array(rgb, np.uint8)))
+    for g in (outline.geoms if hasattr(outline, "geoms") else [outline]):
+        V, Fc = _extrude_xz(g, -thick / 2, thick / 2, xm, ym)
+        parts.append((V, Fc, np.array(core_rgb, np.uint8)))
+    plate = outline.buffer(-0.9).intersection(box(xm - 300, 166.0, xm + 300, top + 10))        # printed face starts at the throat
+    for g in (plate.geoms if hasattr(plate, "geoms") else [plate]):
+        if g.is_empty or g.geom_type != "Polygon":
+            continue
+        for y0, y1 in ((-thick / 2 - 0.5, -thick / 2 + 0.05), (thick / 2 - 0.05, thick / 2 + 0.5)):
+            V, Fc = _extrude_xz(g, y0, y1, xm, ym)
+            parts.append((V, Fc, np.array(plate_rgb, np.uint8)))
     _pack(out, parts)
     return outline.bounds
 
@@ -134,6 +124,7 @@ def make_swatch(name, tint_hex, out, px_per_mm=10.0, size_mm=86.0, s_start=10.0,
     """Unrolled surface (S around, z up) as a lit relief picture: Lambert + cavity shading in the PLA tint, specular
     glints, and through-windows painted dark.  Returns the image size."""
     Hp, z0, z1, L, holes = relief_grid(name)
+    holes = []                                                              # revision 3: no through-windows any more
     nz, nS = Hp.shape
     ds, dz = L / nS, (z1 - z0) / (nz - 1)
     gz, gS = np.gradient(Hp, dz, ds)                                      # dH/dz (up), dH/dS (mm per mm)

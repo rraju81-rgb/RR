@@ -39,7 +39,7 @@ INSPIRE = {
     "04_logic_grip": "Jigsaw puzzles: interlocking pieces with mushroom knobs, every row locked to the next.",
     "05_neuro_tread": "Neural networks: nodes joined by curved ridges that rise above a field of fine bumps.",
     "06_carbon_matrix": "Carbon-fibre cloth: a real over-under twill, the finest texture in the set, with smooth patches.",
-    "07_voronoi_core": "Dragonfly wings and cracked earth: a rib lattice with open windows. The lightest of the ten.",
+    "07_voronoi_core": "Dragonfly wings and cracked earth: a lattice of rounded ribs around recessed cells.",
     "08_topo_flow": "Contour maps and tree rings: flowing ridges that wrap the handle around four wood-grain knots.",
     "09_ergo_contour": "A river-worn pebble: a smooth swell with finger flutes and a thumb rest shaped for the hand.",
     "10_hexa_mod": "Honeycomb: individual hex pads on four height levels, a pattern you can feel as well as see.",
@@ -176,11 +176,11 @@ def page_one(c, pg, hero):
     yb = 217.0
     heading(pg, 12, yb, "The handle", LIME, WHITE, 90, "#2A3442")
     wts = [PRT[n]["weight_g"]["PLA"] for n in NAMES]
-    note = ("A slim sleeve that slides over your paddle handle: closed at the butt, open at the throat, 132.8 mm long and cut to "
-            "the exact 32.06 × 26.04 mm bore of the reference handle. The fit is identical on all ten designs, only the surface "
-            "changes, so you can swap textures freely. A smooth collar at each end keeps the edges kind to your hand.")
+    note = ("A solid sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
+            "closed at the butt with a 3.5 mm hole for an M3 screw, 132.8 mm long. The fit is identical on all ten designs, only the "
+            "surface changes, so you can swap textures freely. A smooth collar at each end keeps the edges kind to your hand.")
     yy = pg.para(12, yb + 3.6, note, 88, F_R, 8.3, "#C5CDD8", leading=11.0)
-    tiles = [(f"{min(wts):.0f}–{max(wts):.0f} g", "PER GRIP, SOLID"), ("100 %", "INFILL"), ("0.20 mm", "LAYER HEIGHT"), ("1 colour", "PLA, NO SWAPS")]
+    tiles = [(f"{min(wts):.0f}–{max(wts):.0f} g", "PER GRIP, SOLID"), ("100 %", "INFILL"), ("Ø 3.5 mm", "SCREW HOLE"), ("1 colour", "PLA, NO SWAPS")]
     tw, gap = 20.5, 2.0
     ty = yy + 4.0
     for i, (big, small) in enumerate(tiles):

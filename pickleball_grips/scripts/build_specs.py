@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "specs" / "assets"
 OUTDIR = ROOT / "specs"
 TODAY = date.today().isoformat()
-REV = "2"
+REV = "3"
 LIMIT_G = 50.0
 
 FIT = {r["name"]: r for r in json.loads((ROOT / "fitment_report.json").read_text())}
@@ -104,7 +104,7 @@ def furniture(cx, rec, section, sheet_no):
     pg.line(12, 14.6, 198, 14.6, HAIR, 0.2)
     pg.rect(12, 14.1, 26, 1.0, fill=acc)
     pg.line(12, 283.5, 198, 283.5, HAIR, 0.2)
-    pg.text(12, 287.6, "Fitted to PickleballGrip_1.3mf  ·  dimensions in mm unless noted  ·  measured from the STL files", F_R, 6.2, SUBTLE)
+    pg.text(12, 287.6, "Slot sized to the measured paddle (30 × 16 mm)  ·  dimensions in mm unless noted  ·  measured from the STL files", F_R, 6.2, SUBTLE)
     lab = f"Page {cx.page_no} of {cx.total}" if cx.book else f"Sheet {sheet_no} of {cx.sheet_of}"
     pg.text(198, 287.6, lab, F_R, 6.2, SUBTLE, anchor="r")
 
@@ -147,7 +147,7 @@ def page_overview(cx, rec):
     w_pla = ov["weight_g"]["PLA"]
     pg.text(172, 35.2, f"{w_pla:.1f} g", F_B, 25, INK, anchor="c")
     pg.text(172, 40.2, "PLA · 100 % infill · solid", F_R, 6.6, MUTED, anchor="c")
-    pill(pg, 150.2, 42.0, "UNDER 50 G IN ALL 4 MATERIALS", GREEN, 5.4, 2.0)
+    pill(pg, 150.2, 42.0, "SOLID  ·  SLOT + SCREW HOLE", GREEN, 5.4, 2.0)
 
     # ---- hero
     hx, hy, hw = 12, 52.5, 88.0
@@ -161,17 +161,17 @@ def page_overview(cx, rec):
     y = heading(pg, x0, y, "At a glance", acc, wcol)
     rows = [("Overall height", f"{ov['z']:.2f} mm"),
             ("Max footprint (foot)", f"{ov['x']:.2f} × {ov['y']:.2f} mm"),
-            ("Bore", f"{br['x']:.2f} × {br['y']:.2f} mm, {br['depth']:.1f} deep"),
+            ("Paddle slot", f"{br['x']:.1f} × {br['y']:.1f} mm, {br['depth']:.1f} deep"),
             ("Textured band", f"z {zn['tex_lo']:.1f} – {zn['tex_hi']:.1f} mm ({zn['tex_hi'] - zn['tex_lo']:.1f} tall)"),
             ("Outer size in band (max)", f"{pk['max_w']:.1f} × {pk['max_d']:.1f} mm"),
-            ("Peak texture height", f"{pk['peak_offset']:.2f} mm above bore"),
-            ("Base wall / min rim", f"{zn['base_wall']:.1f} mm / {zn['rim_wall']:.1f} mm"),
+            ("Peak texture height", f"{pk['peak_offset']:.2f} mm above base"),
+            ("Screw hole (butt)", f"Ø {br['hole_d']:.1f} mm, through z 0 – 5"),
             ("Volume / surface area", f"{ov['volume_cm3']:.2f} cm³ / {ov['surface_area_cm2']:.0f} cm²")]
     y = table(pg, x0, y, [42, 52], rows, row_h=5.5, size=7.6, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False) + 4.6
 
     y = heading(pg, x0, y, "Weight · 100 % infill", acc, wcol)
     bar0, barw = 145.0, 40.0
-    track = 60.0
+    track = 120.0
     for mat, dens in (("PLA", 1.24), ("PETG", 1.27), ("TPU", 1.21), ("ABS", 1.04)):
         wg = ov["weight_g"][mat]
         pg.text(x0 + 1, y + 4.0, mat, F_B, 7.4, INK)
@@ -180,9 +180,8 @@ def page_overview(cx, rec):
         pg.rect(bar0, y + 1.2, barw * wg / track, 3.0, fill=bar_col(acc), r=0.8)
         pg.text(x0 + wcol - 0.5, y + 4.0, f"{wg:.1f} g", F_B, 7.6, INK, anchor="r")
         y += 6.1
-    lx = bar0 + barw * LIMIT_G / track
-    pg.line(lx, y - 24.6, lx, y - 0.6, RED, 0.25, dash=[0.8, 0.6])
-    pg.text(lx, y + 2.3, "50 g limit", F_R, 5.6, RED, anchor="c")
+    pg.text(bar0, y + 2.3, "0", F_R, 5.4, SUBTLE, anchor="c")
+    pg.text(bar0 + barw, y + 2.3, "120 g", F_R, 5.4, SUBTLE, anchor="c")
     y += 6.3
 
     y = heading(pg, x0, y, "Colourway", acc, wcol)
@@ -210,14 +209,13 @@ def page_overview(cx, rec):
     # verification summary (left, under the intent text)
     fit, prt = rec["fit"], rec["prt"]
     yv0 = yy + 4.2
-    yv0 = heading(pg, 12, yv0, "Verified against the reference", acc, 88)
-    win = rec["name"].startswith("07")
-    rows = [("Bore vs reference", "identical" + ("; 54 windows open the wall" if win else "")),
+    yv0 = heading(pg, 12, yv0, "Verified on the STL", acc, 88)
+    rows = [("Paddle slot", f"{br['x']:.1f} × {br['y']:.1f} mm (30 × 16 + 0.2)"),
+            ("Screw hole", f"Ø {br['hole_d']:.1f} mm through the butt"),
             ("Outer envelope vs reference", f"{fit['max_over_reference_envelope_mm']:+.3f} mm at most"),
-            ("Rim vs reference", f"{fit['rim_added_vs_reference_mm']:+.2f} mm (deliberate, ≥ 0.8 mm wall)"),
             ("Bodies / enclosed voids", f"{prt['bodies']} / none"),
             ("Material under 0.4 mm wide", f"{prt['thin_lt_0.4mm_pct_of_volume']:.3f} % of volume"),
-            ("Longest bridge", "none" if prt["max_bridge_span_mm"] < 0.05 else f"{prt['max_bridge_span_mm']:.1f} mm")]
+            ("Overhangs / bridges", "none" if prt["max_bridge_span_mm"] < 0.05 else f"bridge {prt['max_bridge_span_mm']:.1f} mm")]
     rh_v = max(4.0, min(4.8, (271.0 - yv0) / len(rows)))
     table(pg, 12, yv0, [46, 42], rows, row_h=rh_v, size=6.9, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False)
     heading(pg, 104, yb, "Key features", acc, wcol)
@@ -235,7 +233,7 @@ def page_overview(cx, rec):
     # ---- verification pills
     yv = 274.0
     x = 12
-    for txt in ("FITMENT VERIFIED", "SOLID · ONE CLOSED BODY", "PRINT-READY · 0.20 MM LAYERS", "3MF VALIDATED"):
+    for txt in ("SLOT & HOLE VERIFIED", "SOLID · ONE CLOSED BODY", "PRINT-READY · 0.20 MM LAYERS", "3MF VALIDATED"):
         x += pill(pg, x, yv, txt, GREEN, 5.6, 2.2) + 2.4
 
 
@@ -293,7 +291,7 @@ def page_drawing(cx, rec):
             x, y = Xc - wmm / 2, Ycp - hmm / 2
         pg.image(rec["dir"] / f"{view}.png", x, y, wmm, hmm, quality=92)
 
-    # ---- hidden bore lines (dashed) in front and side
+    # ---- hidden slot lines (dashed) in front and side, plus the screw hole through the butt
     bx0, bx1, by0, by1 = br["x_min"], br["x_max"], br["y_min"], br["y_max"]
     for (xa, xb, mapper) in ((bx0, bx1, front_pt), (by0, by1, side_pt)):
         for xx in (xa, xb):
@@ -301,10 +299,15 @@ def page_drawing(cx, rec):
             pg.line(p1[0], p1[1], p2[0], p2[1], "#2B303B", 0.15, dash=[1.3, 0.9], alpha=0.75)
         p1, p2 = mapper(xa, br["floor_z"]), mapper(xb, br["floor_z"])
         pg.line(p1[0], p1[1], p2[0], p2[1], "#2B303B", 0.15, dash=[1.3, 0.9], alpha=0.75)
+    hxm, hym = (bx0 + bx1) / 2, (by0 + by1) / 2
+    for mapper, c0 in ((front_pt, hxm), (side_pt, hym)):
+        for sgn in (-1, 1):
+            p1, p2 = mapper(c0 + sgn * br["hole_d"] / 2, 0.0), mapper(c0 + sgn * br["hole_d"] / 2, br["floor_z"])
+            pg.line(p1[0], p1[1], p2[0], p2[1], "#2B303B", 0.15, dash=[1.0, 0.7], alpha=0.75)
 
     # ---- datum levels between front and side
     rz = rim_start_z()
-    levels = [(br["floor_z"], "z 5.0", "bore floor"), (20.0, "z 20.0", "foot top"), (zn["tex_hi"], f"z {zn['tex_hi']:.1f}", "texture ends"),
+    levels = [(br["floor_z"], "z 5.0", "slot floor"), (20.0, "z 20.0", "foot top"), (zn["tex_hi"], f"z {zn['tex_hi']:.1f}", "texture ends"),
               (rz, f"z {rz:.1f}", "rim 0.8"), (z_top, f"z {z_top:.2f}", "top")]
     xr = Xc + ov["x"] / 2 + 1.6
     xl = Xs - ov["y"] / 2 - 1.6
@@ -356,9 +359,11 @@ def page_drawing(cx, rec):
     # bore inside plan
     b0, b1 = plan_pt(br["x_min"], 0)[0], plan_pt(br["x_max"], 0)[0]
     yb_in = plan_pt(0, br["y_min"])[1] - 3.0
-    pg.dim_h(b0, b1, yb_in, f"bore {br['x']:.2f}", size=6.2)
+    pg.dim_h(b0, b1, yb_in, f"slot {br['x']:.2f}", size=6.2)
     d0, d1 = plan_pt(0, br["y_max"])[1], plan_pt(0, br["y_min"])[1]
-    pg.dim_v(d0, d1, plan_pt(br["x_min"], 0)[0] + 4.0, f"bore {br['y']:.2f}", size=6.2, left=False, halo=True)
+    pg.dim_v(d0, d1, plan_pt(br["x_min"], 0)[0] + 4.0, f"slot {br['y']:.2f}", size=6.2, left=False, halo=True)
+    hp = plan_pt(hxm, hym)
+    pg.leader(hp[0] - 0.9, hp[1] + 0.9, px0 - 4.0, hp[1] + 10.5, f"Ø{br['hole_d']:.1f} screw hole", color=DIM, size=6.0, anchor="r")
     pg.text(Xc, ybot_edge + 8.6, "TOP VIEW  (from +Z)", F_B, 7, INK, anchor="c")
 
     foot20 = min(rec["profile"], key=lambda p: abs(p["z"] - 20.0))
@@ -367,15 +372,15 @@ def page_drawing(cx, rec):
     yk = heading(pg, x0, 19.0, "Key dimensions", acc, 90)
     rows = [("Overall height", f"{ov['z']:.2f}"),
             ("Overall width × depth (foot)", f"{ov['x']:.2f} × {ov['y']:.2f}"),
-            ("Bore width × depth", f"{br['x']:.2f} × {br['y']:.2f}"),
-            ("Bore depth (floor at z 5.0)", f"{br['depth']:.2f}"),
+            ("Paddle slot width × depth", f"{br['x']:.2f} × {br['y']:.2f}"),
+            ("Slot depth (floor at z 5.0)", f"{br['depth']:.2f}"),
             ("Outer W × D, textured band (max)", f"{pk['max_w']:.2f} × {pk['max_d']:.2f}"),
             ("Foot top (z 20)", f"{foot20['w']:.2f} × {foot20['d']:.2f}"),
             ("Butt face (z 0)", f"{pk['butt_w']:.2f} × {pk['butt_d']:.2f}"),
-            ("Peak texture height above bore", f"{pk['peak_offset']:.2f}"),
-            ("Base wall / minimum rim wall", f"{zn['base_wall']:.2f} / {zn['rim_wall']:.2f}")]
+            ("Peak texture height above base", f"{pk['peak_offset']:.2f}"),
+            ("Screw hole through butt (z 0 – 5)", f"Ø {br['hole_d']:.2f}")]
     table(pg, x0, yk, [58, 32], rows, row_h=5.2, size=7.2, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False)
-    pg.para(122.0, yk + 9 * 5.2 + 0.6, "All values in mm. Dashed lines: bore (hidden edges). Renders are the actual STL surface.", 76, F_I, 6.0, MUTED, leading=7.6)
+    pg.para(122.0, yk + 9 * 5.2 + 0.6, "All values in mm. Dashed lines: paddle slot and screw hole (hidden edges). Renders are the actual STL surface.", 76, F_I, 6.0, MUTED, leading=7.6)
 
     # ---- scale bar
     sx = 14.0
@@ -399,8 +404,8 @@ def page_drawing(cx, rec):
     pg.text(11, ty + 24.0, "GENERAL NOTES", F_R, 5.2, MUTED)
     notes = ["1. Views are true size: print this sheet at 100 %, do not fit to page.",
              "2. Dimensions are measured from the STL, not nominal.",
-             "3. Bore, floor and outer envelope match the reference PickleballGrip_1.3mf.",
-             f"4. Rim is held at a minimum of {zn['rim_wall']:.1f} mm (reference tapers to 0.36 mm)."]
+             f"3. Solid body: only the {br['x']:.1f} × {br['y']:.1f} mm paddle slot and the Ø{br['hole_d']:.1f} mm screw hole are open.",
+             "4. Outer envelope matches the reference PickleballGrip_1.3mf (rim held ≥ 0.8 mm)."]
     for i, t in enumerate(notes):
         pg.text(11, ty + 28.4 + i * 3.1, t, F_R, 6.0, INK)
     # right grid 3 x 4
@@ -458,16 +463,16 @@ def section_cell(cx, rec, key, letter, name, x0, y0, wcell):
     rx = P(s["xmax"], 0)[0]
     pg.dim_v(P(0, s["ymax"])[1], P(0, s["ymin"])[1], rx + 4.6, f"{s['d']:.2f}", ext1=rx, ext2=rx, size=6.4, left=False)
     b0, b1 = P(br["x_min"], 0)[0], P(br["x_max"], 0)[0]
-    pg.dim_h(b0, b1, P(0, br["y_min"])[1] - 3.2, f"bore {br['x']:.2f}", size=5.8)
+    pg.dim_h(b0, b1, P(0, br["y_min"])[1] - 3.2, f"slot {br['x']:.2f}", size=5.8)
     d0, d1 = P(0, br["y_max"])[1], P(0, br["y_min"])[1]
-    pg.dim_v(d0, d1, b0 + 3.6, f"bore {br['y']:.2f}", size=5.8, left=False)
+    pg.dim_v(d0, d1, b0 + 3.6, f"slot {br['y']:.2f}", size=5.8, left=False)
     # data caption
     prof = interp_prof(rec, z)
     yt = y0 + 32 + 21.5
     if prof["off_min"] is None:
-        cap = f"Wall: cut through by windows   ·   peak offset {prof['off_max']:.2f} mm"
+        cap = f"Skin offset   max {prof['off_max']:.2f} mm"
     else:
-        cap = f"Wall (offset from bore)   min {prof['off_min']:.2f}   max {prof['off_max']:.2f} mm"
+        cap = f"Skin offset   min {prof['off_min']:.2f}   max {prof['off_max']:.2f} mm"
     pg.text(x0 + 2.0, yt, cap, F_R, 6.5, INK)
     pg.text(x0 + 2.0, yt + 3.6, f"Area {s['area']:,.0f} mm²   ·   outer perimeter {s['perim']:.1f} mm", F_R, 6.5, MUTED)
 
@@ -511,7 +516,7 @@ def page_sections(cx, rec):
     eref = np.where(zref <= 20, np.interp(zref, fz, fe), np.where(zref < tz[0], 3.5, np.interp(zref, tz, te)))
 
     cw, chh = 76.0, 33.0
-    for k, (title, xx) in enumerate((("Outer offset from the bore vs height", 21.0), ("Material cross-section area vs height", 115.0))):
+    for k, (title, xx) in enumerate((("Outer offset from the reference outline vs height", 21.0), ("Material cross-section area vs height", 115.0))):
         heading(pg, xx - 9.0, yc, title, acc, cw + 14)
     # chart 1
     x1, y1 = 21.0, yc + 5.0
@@ -533,7 +538,7 @@ def page_sections(cx, rec):
             seg.append((mx(z), my(o)))
     pg.polyline([(mx(z), my(1.2)) for z in (0, ov["z"])], RED, 0.15, dash=[0.6, 0.6]) if False else None
     ly = y1 + chh + 10.6
-    for i, (lab, col, dash) in enumerate((("reference envelope", "#7A8494", True), ("grip: outer peak", acc, False), ("grip: wall, closed rings" if any(o is None for o in off_min) else "grip: wall (min offset)", shade(acc, 0.35), False))):
+    for i, (lab, col, dash) in enumerate((("reference envelope", "#7A8494", True), ("grip: outer peak", acc, False), ("grip: skin floor (min)", shade(acc, 0.35), False))):
         lx = x1 + i * 27.0 - 1.5 + (2 if i == 0 else 0)
         pg.line(lx, ly - 0.9, lx + 5.0, ly - 0.9, col, 0.5 if i == 1 else 0.3, dash=[1.4, 0.8] if dash else None)
         pg.text(lx + 6.2, ly, lab, F_R, 5.6, MUTED)
@@ -559,13 +564,13 @@ def page_sections(cx, rec):
 
     # ---- tables
     yt = 154.0
-    heading(pg, 12, yt, "Overall & bore", acc, 88)
+    heading(pg, 12, yt, "Overall & slot", acc, 88)
     rows = [("Overall length (Z)", f"{ov['z']:.2f} mm"), ("Overall width (X)", f"{ov['x']:.2f} mm"), ("Overall depth (Y)", f"{ov['y']:.2f} mm"),
-            ("Bore width × depth", f"{br['x']:.2f} × {br['y']:.2f} mm"), ("Bore area / perimeter", f"{br['area']:.1f} mm² / {br['perimeter']:.1f} mm"),
-            ("Bore depth (floor at z 5.0)", f"{br['depth']:.2f} mm"),
+            ("Slot width × depth", f"{br['x']:.2f} × {br['y']:.2f} mm"), ("Slot area / perimeter", f"{br['area']:.1f} mm² / {br['perimeter']:.1f} mm"),
+            ("Slot depth (floor at z 5.0)", f"{br['depth']:.2f} mm"),
+            ("Screw hole (butt, z 0 – 5)", f"Ø {br['hole_d']:.2f} mm"),
             ("Butt face (z 0)", f"{pk['butt_w']:.2f} × {pk['butt_d']:.2f} mm"),
             ("Outer W × D in band (max)", f"{pk['max_w']:.2f} × {pk['max_d']:.2f} mm"),
-            ("Circumference in band", f"{pk['perim_min']:.1f} – {pk['perim_max']:.1f} mm"),
             ("Volume / surface area", f"{ov['volume_cm3']:.2f} cm³ / {ov['surface_area_cm2']:.1f} cm²")]
     table(pg, 12, yt + 3.0, [44, 44], rows, row_h=4.9, size=7.0, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False)
 
@@ -576,13 +581,13 @@ def page_sections(cx, rec):
             ("Smooth collar", "20.0", f"{zn['tex_lo']:.1f}", f"{zn['tex_lo'] - 20:.1f}"),
             ("Textured band", f"{zn['tex_lo']:.1f}", f"{zn['tex_hi']:.1f}", f"{zn['tex_hi'] - zn['tex_lo']:.1f}"),
             ("Smooth neck (taper)", f"{zn['tex_hi']:.1f}", f"{rz:.1f}", f"{rz - zn['tex_hi']:.1f}"),
-            ("Rim (0.8 mm wall)", f"{rz:.1f}", f"{ov['z']:.2f}", f"{ov['z'] - rz:.1f}")]
+            ("Rim (flat top, slot opening)", f"{rz:.1f}", f"{ov['z']:.2f}", f"{ov['z'] - rz:.1f}")]
     yy = table(pg, 104, yt + 3.0, [42, 17, 17, 18], rows, header=["Zone", "z from", "z to", "height"], row_h=4.9, size=7.0,
                aligns=["l", "r", "r", "r"], fonts=[F_R, F_R, F_R, F_B], zebra=False, hsize=5.8)
     wl = pk["min_wall"]
-    rows = [("Base wall (design / measured min)", f"{zn['base_wall']:.2f} / " + ("windows" if wl is None else f"{wl:.2f} mm")),
-            ("Rim wall (design / measured min)", f"{zn['rim_wall']:.2f} / {rec['fit']['rim_min_wall_mm']:.2f} mm"),
-            ("Peak texture height above bore", f"{pk['peak_offset']:.2f} mm")]
+    rows = [("Relief floor above reference line (design / min)", f"{zn['base_wall']:.2f} / " + ("n/a" if wl is None else f"{wl:.2f} mm")),
+            ("Min skin at the neck (design / measured)", f"{zn['rim_wall']:.2f} / {rec['fit']['rim_min_wall_mm']:.2f} mm"),
+            ("Peak texture height above base", f"{pk['peak_offset']:.2f} mm")]
     table(pg, 104, yy + 3.0, [64, 30], rows, row_h=4.9, size=7.0, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False)
 
     # ---- by-height table
@@ -594,7 +599,7 @@ def page_sections(cx, rec):
         p_ = interp_prof(rec, float(zt))
         rows.append([f"{p_['z']:.1f}", f"{p_['w']:.2f}", f"{p_['d']:.2f}", f"{p_['perim']:.1f}", f"{p_['area']:,.0f}", ("open" if p_["off_min"] is None else f"{p_['off_min']:.2f}"), f"{p_['off_max']:.2f}"])
     table(pg, 12, yh + 3.0, [26, 26, 26, 28, 26, 26, 28], rows,
-          header=["z (mm)", "outer W", "outer D", "perimeter", "area mm²", "wall min", "peak offset"], row_h=4.55, size=6.9,
+          header=["z (mm)", "outer W", "outer D", "perimeter", "area mm²", "skin min", "peak offset"], row_h=4.55, size=6.9,
           aligns=["r"] * 7, fonts=[F_B] + [F_R] * 6, zebra=True, hsize=5.6, pad=3.0)
 
 
@@ -603,7 +608,7 @@ def page_sections(cx, rec):
 # ------------------------------------------------------------------------------------------------
 def page_surface(cx, rec):
     pg, ct, acc = cx.pg, rec["content"], rec["content"]["accent"]
-    ov, pk = rec["overall"], rec["peaks"]
+    ov, pk, br = rec["overall"], rec["peaks"], rec["bore"]
     furniture(cx, rec, "Views & surface", 4)
     page_title(pg, 17.0, "Views & surface", "Four-way turntable, close-ups of the surface, and the unrolled height map with the design parameters.")
     # lineup (cropped to the content)
@@ -617,7 +622,7 @@ def page_surface(cx, rec):
     dw = 91.0
     dcrop = (0.0, 0.14, 1.0, 0.86)
     dh = dw * 1200 / 1700 * (dcrop[3] - dcrop[1])
-    for i, (fn, cap) in enumerate((("detail1.png", "Surface close-up · mid body (z 62 mm)"), ("detail2.png", "Neck, rim and bore · from above (z 119 mm)"))):
+    for i, (fn, cap) in enumerate((("detail1.png", "Surface close-up · mid body (z 62 mm)"), ("detail2.png", "Neck, rim and slot · from above (z 119 mm)"))):
         xx = 12 + i * (dw + 4.0)
         pg.image(rec["dir"] / fn, xx, y2, dw, dh, quality=88, round_=2.5, max_px=1700, crop=dcrop)
         pg.rect(xx + 2.2, y2 + 2.2, sw(cap, F_B, 6.2) / MM + 4.0, 5.0, fill=WHITE, r=1.2)
@@ -627,7 +632,7 @@ def page_surface(cx, rec):
     rm_w = 80.0
     rel = rec["relief"]
     rm_h = rm_w * (rel["z1"] - rel["z0"]) / rel["L"]
-    heading(pg, 12, y3, "Unrolled surface · height above bore", acc, rm_w + 6)
+    heading(pg, 12, y3, "Unrolled surface · height above base", acc, rm_w + 6)
     ry = y3 + 3.6
     pg.image(rec["dir"] / "relief.png", 12 + 6.5, ry, rm_w - 6.5, rm_h, jpeg=False)
     mw = rm_w - 6.5
@@ -658,13 +663,12 @@ def page_surface(cx, rec):
     yp = table(pg, xr, yp + 0.4, [40, 54], [[dash(q) for q in p_] for p_ in ct["params"]], row_h=5.0, size=6.9, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False)
     yv = heading(pg, xr, yp + 5.0, "Print & verification", acc, 94)
     fit, prt = rec["fit"], rec["prt"]
-    win = rec["name"].startswith("07")
-    rows = [("Result: fitment / print-ready", "PASS / PASS"),
-            ("Bodies · genus", f"{prt['bodies']} · {prt['genus']}" + ("  (54 windows)" if win else "")),
-            ("Bore vs reference", "identical" if not win else "identical (windows open wall)"),
+    rows = [("Result: slot & hole / print-ready", "PASS / PASS"),
+            ("Bodies · genus", f"{prt['bodies']} · {prt['genus']}  (screw hole)"),
+            ("Paddle slot", f"{br['x']:.1f} × {br['y']:.1f} mm"),
             ("Envelope over reference", f"{fit['max_over_reference_envelope_mm']:+.3f} mm"),
             ("Material under 0.4 mm wide", f"{prt['thin_lt_0.4mm_pct_of_volume']:.3f} %"),
-            ("Longest bridge", "none" if prt["max_bridge_span_mm"] < 0.05 else f"{prt['max_bridge_span_mm']:.1f} mm")]
+            ("Overhangs / bridges", "none" if prt["max_bridge_span_mm"] < 0.05 else f"bridge {prt['max_bridge_span_mm']:.1f} mm")]
     table(pg, xr, yv + 0.4, [48, 46], rows, row_h=5.0, size=6.9, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False,
           colors=[[None, GREEN]] + [None] * 5)
 
@@ -697,7 +701,7 @@ def page_cover(cx, recs):
     spaced(pg, 196, 22, f"REVISION {REV}  ·  {TODAY}", F_R, 7.4, "#9AA5B4", 0.9, anchor="r")
     pg.text(14, 50, "Pickleball", F_B, 46, WHITE)
     pg.text(14, 68, "Paddle Grips", F_B, 46, WHITE)
-    pg.text(14, 80, "Ten designs. One fitment.", F_R, 16, "#C5CCD6")
+    pg.text(14, 80, "Ten designs. One paddle slot.", F_R, 16, "#C5CCD6")
     pg.text(14, 88, "Full specifications, true-size drawings and dimension data for every grip.", F_R, 9.4, "#8F9AAB")
     # hero grid on a warm panel
     py, ph = 100.0, 137.0
@@ -713,14 +717,16 @@ def page_cover(cx, recs):
         pg.text(12 + c_ * cw + cw / 2, y + hh + 6.6, rec["label"], F_B, 6.6, INK, anchor="c")
         pg.text(12 + c_ * cw + cw / 2, y + hh + 10.4, f"{rec['content']['id']}  ·  {rec['overall']['weight_g']['PLA']:.1f} g PLA", F_R, 5.8, MUTED, anchor="c")
     # fact strip
-    facts = [("132.82 mm", "overall height"), ("32.06 × 26.04 mm", "bore, identical on all ten"), ("40 – 49 g", "solid, 100 % infill, any material"), ("0.20 mm", "layer height, no supports")]
+    plas = [r["overall"]["weight_g"]["PLA"] for r in recs]
+    facts = [("132.82 mm", "overall height"), (f"{recs[0]['bore']['x']:.1f} × {recs[0]['bore']['y']:.1f} mm", "paddle slot, identical on all ten"),
+             (f"{min(plas):.0f} – {max(plas):.0f} g", "solid, 100 % infill, in PLA"), ("Ø 3.5 mm", "screw hole through the butt")]
     fx = 14.0
     for big, small in facts:
         pg.text(fx, 256.0, big, F_B, 13.5, WHITE)
         pg.text(fx, 262.0, small, F_R, 7.0, "#8F9AAB")
         fx += 47.5
     pg.line(14, 270.5, 196, 270.5, "#2A313C", 0.25)
-    pg.text(14, 277.2, "Fitted to PickleballGrip_1.3mf  ·  measured from the STL files  ·  colours are preview only", F_R, 7.0, "#8F9AAB")
+    pg.text(14, 277.2, "Slot sized to the measured paddle  ·  measured from the STL files  ·  colours are preview only", F_R, 7.0, "#8F9AAB")
     pg.text(196, 277.2, "10 specification sheets · 40 pages", F_R, 7.0, "#8F9AAB", anchor="r")
 
 
@@ -757,7 +763,7 @@ def page_contents(cx, recs):
     pg.text(12, y - 4.5, "FRONT MATTER", F_B, 6.8, SUBTLE)
     y += 3.0
     entry(y, "All ten at a glance", 3, "Weight, size and print-readiness compared", key="p3"); y += 13.0
-    entry(y, "The reference fitment", 4, "What is identical on every grip, and the two deliberate deviations", key="p4"); y += 16.0
+    entry(y, "The paddle slot and the reference", 4, "What is identical on every grip, and what changed from the reference sleeve", key="p4"); y += 16.0
     pg.text(12, y - 4.5, "SPECIFICATION SHEETS  ·  4 PAGES EACH", F_B, 6.8, SUBTLE)
     y += 3.5
     for i, rec in enumerate(recs):
@@ -780,7 +786,7 @@ def page_contents(cx, recs):
 def page_compare(cx, recs):
     pg = cx.pg
     book_furniture(cx, "All ten at a glance")
-    page_title(pg, 17.0, "All ten at a glance", "Same bore, same foot, same envelope; ten different surfaces, all under 50 g.")
+    page_title(pg, 17.0, "All ten at a glance", "Same paddle slot, same foot, same envelope; ten different surfaces, all solid.")
     x0, y0 = 12.0, 34.0
     cols = [("", 13), ("DESIGN", 33), ("VOLUME", 16), ("PLA g", 15), ("PETG g", 15), ("TPU g", 15), ("ABS g", 15), ("PEAK", 16), ("BAND W×D", 24), ("BRIDGE", 12), ("COLOURS", 12)]
     xs = [x0]
@@ -812,15 +818,15 @@ def page_compare(cx, recs):
             px += 2.05
         pg.line(x0, y + rh, xs[-1], y + rh, HAIR, 0.15)
     yb = y0 + 6.2 + 10 * rh + 4.0
-    pg.text(x0, yb, "Volume and weights: 100 % infill, volume × density (g/cm³: PLA 1.24, PETG 1.27, TPU 1.21, ABS 1.04).  Peak = tallest texture above the bore, mm.  Bridge = longest unsupported run, mm.", F_I, 5.8, MUTED)
+    pg.text(x0, yb, "Volume and weights: 100 % infill, volume × density (g/cm³: PLA 1.24, PETG 1.27, TPU 1.21, ABS 1.04).  Peak = tallest texture above the base line, mm.  Bridge = longest unsupported run, mm.", F_I, 5.8, MUTED)
 
     # weight chart
     cy0 = yb + 9.0
-    heading(pg, 12, cy0, "Weight against the 50 g limit", INK, 186)
+    heading(pg, 12, cy0, "Weight at 100 % infill", INK, 186)
     cx0, cwid, chh = 52.0, 130.0, 58.0
     top = cy0 + 6.0
-    gmax = 60.0
-    for g in range(0, 61, 10):
+    gmax = 120.0
+    for g in range(0, 121, 20):
         xg = cx0 + g / gmax * cwid
         pg.line(xg, top, xg, top + chh, HAIR, 0.12)
         pg.text(xg, top + chh + 3.4, str(g), F_R, 5.6, MUTED, anchor="c")
@@ -834,9 +840,6 @@ def page_compare(cx, recs):
             bw = cwid * wg / gmax
             pg.rect(cx0, yy + 0.6 + k * 2.55, bw, 2.35, fill=(bar_col(rec["content"]["accent"]) if k == 0 else tint(bar_col(rec["content"]["accent"]), 0.5)))
             pg.text(cx0 + bw - 1.0, yy + 2.3 + k * 2.55, f"{wg:.1f}", F_B if k == 0 else F_R, 4.8, WHITE if k == 0 else INK, anchor="r")
-    xl = cx0 + LIMIT_G / gmax * cwid
-    pg.line(xl, top - 1.5, xl, top + chh, RED, 0.3, dash=[1.0, 0.7])
-    pg.text(xl, top - 2.6, "50 g limit", F_B, 6.0, RED, anchor="c")
     lgx = 12 + 186 - 41.0
     pg.rect(lgx, cy0 - 2.4, 2.6, 1.6, fill=INK)
     pg.text(lgx + 3.6, cy0 - 1.0, "PLA", F_R, 5.6, MUTED)
@@ -846,8 +849,15 @@ def page_compare(cx, recs):
 
 def page_reference(cx, recs):
     pg = cx.pg
-    book_furniture(cx, "The reference fitment")
-    page_title(pg, 17.0, "The reference fitment", "Measured from PickleballGrip_1.3mf.  Everything below is identical on all ten grips except where marked.")
+    book_furniture(cx, "The paddle slot and the reference")
+    page_title(pg, 17.0, "The paddle slot and the reference", "Outer envelope measured from PickleballGrip_1.3mf; the interior is now a solid body with a slot for the paddle.")
+    from grip_core import Frame, slot_polygon, bore_centre
+    F = Frame()
+    slot = slot_polygon(F)
+    scx, scy = bore_centre(F)
+    sb = slot.bounds
+    sw_mm, st_mm = sb[2] - sb[0], sb[3] - sb[1]
+    hole_d = recs[0]["bore"]["hole_d"]
     ring = np.array(REF["cavity_ring"])
     bx0, bx1, by0, by1 = ring[:, 0].min(), ring[:, 0].max(), ring[:, 1].min(), ring[:, 1].max()
     tz, te = np.array(REF["taper_table"]).T
@@ -856,32 +866,31 @@ def page_reference(cx, recs):
     zz = np.linspace(0, ztop, 500)
     E = np.where(zz <= 20, np.interp(zz, fz, fe), np.where(zz < tz[0], 3.5, np.interp(zz, tz, te)))
     E08 = np.maximum(E, 0.8)
-    # ---- elevation (1:1, left)
+    # ---- elevation (1:1, left): envelope, the reference bore ghosted, the slot and the screw hole
     ex, ez0 = 51.0, 190.0
     xm = (bx0 + bx1) / 2
     left = [(ex + (bx0 - xm) - e, ez0 - z) for z, e in zip(zz, E)]
     right = [(ex + (bx1 - xm) + e, ez0 - z) for z, e in zip(zz, E)]
-    poly = left + right[::-1]
-    pg.polygon(poly, fill="#EEF0F3", stroke=INK, sw_=0.35)
-    # bore
-    pg.rect(ex + (bx0 - xm), ez0 - ztop, bx1 - bx0, ztop - 5.0, fill=WHITE, stroke=INK, sw_=0.2, dash=[1.3, 0.9])
-    # rim deviation (thickened to 0.8) highlighted
+    pg.polygon(left + right[::-1], fill="#EEF0F3", stroke=INK, sw_=0.35)
+    pg.rect(ex + (bx0 - xm), ez0 - ztop, bx1 - bx0, ztop - 5.0, stroke="#9AA3AF", sw_=0.2, dash=[1.0, 1.0])          # reference bore, now solid
+    pg.rect(ex + (sb[0] - scx), ez0 - ztop, sw_mm, ztop - 5.0, fill=WHITE, stroke=INK, sw_=0.3)                        # paddle slot
+    pg.rect(ex - hole_d / 2, ez0 - 5.0, hole_d, 5.0, fill=WHITE, stroke=INK, sw_=0.3)                                  # screw hole
     zr = np.array([z for z, e in zip(zz, E) if e < 0.8])
     if len(zr):
         pg.polygon([(ex + (bx0 - xm) - 0.8, ez0 - z) for z in zr] + [(ex + (bx0 - xm) - e, ez0 - z) for z, e in list(zip(zz, E))[::-1] if e < 0.8], fill=tint(RED, 0.4), stroke=None)
         pg.polygon([(ex + (bx1 - xm) + 0.8, ez0 - z) for z in zr] + [(ex + (bx1 - xm) + e, ez0 - z) for z, e in list(zip(zz, E))[::-1] if e < 0.8], fill=tint(RED, 0.4), stroke=None)
-    # dims
     xe = ex + (bx0 - xm) - 5.0
     for z0, z1 in ((0, 5.0), (5.0, 20.0), (20.0, tz[0]), (tz[0], ztop)):
         pg.dim_v(ez0 - z1, ez0 - z0, xe - 7.0, f"{z1 - z0:.2f}" if z1 - z0 > 0 else "", ext1=xe + 1.0, ext2=xe + 1.0, size=6.0)
     pg.dim_v(ez0 - ztop, ez0, xe - 15.0, f"{ztop:.2f}", ext1=xe + 1.0, ext2=xe + 1.0, size=6.4)
-    pg.dim_h(ex + (bx0 - xm), ex + (bx1 - xm), ez0 + 7.0, f"{bx1 - bx0:.2f}  bore", size=6.4)
+    pg.dim_h(ex + (sb[0] - scx), ex + (sb[2] - scx), ez0 + 7.0, f"{sw_mm:.2f}  slot", size=6.4)
     pg.dim_h(ex + (bx0 - xm) - fe.max(), ex + (bx1 - xm) + fe.max(), ez0 + 14.0, f"{bx1 - bx0 + 2 * fe.max():.2f}  foot", size=6.4)
     pg.text(ex, ez0 + 22.0, "FRONT ELEVATION OF THE ENVELOPE (1 : 1)", F_B, 6.4, INK, anchor="c")
-    pg.leader(ex + (bx1 - xm) + 0.5, ez0 - ztop + 2.6, ex + (bx1 - xm) + 9.0, ez0 - ztop + 2.6, "rim 0.8 mm min", color=RED, size=5.8)
-    pg.leader(ex + (bx1 - xm) - 0.2, ez0 - 5.0, ex + (bx1 - xm) + 9.0, ez0 - 5.0 - 6.0, "bore floor, z 5.0", color=MUTED, size=5.8)
+    pg.leader(ex + (bx1 - xm) + 0.5, ez0 - ztop + 2.6, ex + (bx1 - xm) + 9.0, ez0 - ztop + 2.6, "neck ≥ 0.8 mm", color=RED, size=5.8)
+    pg.leader(ex + sw_mm / 2 - 0.2, ez0 - 5.0, ex + (bx1 - xm) + 9.0, ez0 - 5.0 - 6.0, "slot floor, z 5.0", color=MUTED, size=5.8)
+    pg.leader(ex + hole_d / 2, ez0 - 2.5, ex + (bx1 - xm) + 9.0, ez0 - 2.5 + 4.0, f"Ø{hole_d:.1f} hole", color=MUTED, size=5.8)
 
-    # ---- plan (right, top): bore + crest envelope + foot
+    # ---- plan (right, top): reference bore, crest envelope, foot, slot, screw hole
     from shapely.geometry import Polygon as SP
     bore = SP(ring)
     crest, foot = bore.buffer(3.5, 24), bore.buffer(float(fe.max()), 24)
@@ -890,28 +899,33 @@ def page_reference(cx, recs):
 
     def P(x, y):
         return px + (x - xm), py - (y - ym)
-    for shp, fillc, st, dsh in ((foot, "#F3F4F6", INK, [1.4, 0.9]), (crest, "#E4E8ED", INK, None), (bore, WHITE, INK, None)):
-        pg.multipath([[P(*q) for q in shp.exterior.coords]], fill=fillc, stroke=st, sw_=0.3 if dsh is None else 0.2, dash=dsh)
-    pg.dim_h(P(bx0, 0)[0], P(bx1, 0)[0], py + 1.5, f"{bx1 - bx0:.2f}", size=6.2)
-    pg.dim_v(P(0, by1)[1], P(0, by0)[1], P(bx0, 0)[0] + 4.5, f"{by1 - by0:.2f}", size=6.2, left=False)
+    for shp, fillc, st, dsh, wlw in ((foot, "#F3F4F6", INK, [1.4, 0.9], 0.2), (crest, "#E4E8ED", INK, None, 0.3), (bore, "#E4E8ED", "#9AA3AF", [1.0, 1.0], 0.2),
+                                     (slot, WHITE, INK, None, 0.3)):
+        pg.multipath([[P(*q) for q in shp.exterior.coords]], fill=fillc, stroke=st, sw_=wlw, dash=dsh)
+    hc = P(scx, scy)
+    pg.circle(hc[0], hc[1], hole_d / 2, fill="#CBD1D9", stroke=INK, sw_=0.3)
+    pg.dim_h(P(sb[0], 0)[0], P(sb[2], 0)[0], P(0, sb[1])[1] + 3.8, f"{sw_mm:.2f}", ext1=P(0, sb[1])[1], ext2=P(0, sb[1])[1], size=6.2)
+    pg.dim_v(P(0, sb[3])[1], P(0, sb[1])[1], P(sb[0], 0)[0] + 4.5, f"{st_mm:.2f}", size=6.2, left=False)
     fx0, fx1 = P(foot.bounds[0], 0)[0], P(foot.bounds[2], 0)[0]
     pg.dim_h(fx0, fx1, P(0, foot.bounds[3])[1] - 4.5, f"{foot.bounds[2] - foot.bounds[0]:.2f}  foot max", ext1=P(0, foot.bounds[3])[1], ext2=P(0, foot.bounds[3])[1], size=6.2)
     cx0_, cx1_ = P(crest.bounds[0], 0)[0], P(crest.bounds[2], 0)[0]
     pg.dim_h(cx0_, cx1_, P(0, foot.bounds[1])[1] + 5.0, f"{crest.bounds[2] - crest.bounds[0]:.2f}  crest envelope", ext1=P(0, crest.bounds[1])[1], ext2=P(0, crest.bounds[1])[1], size=6.2)
-    pg.text(px, py + 33.5, "PLAN: BORE, CREST ENVELOPE, FOOT (1 : 1)", F_B, 6.4, INK, anchor="c")
+    pg.text(px, py + 33.5, "PLAN: SLOT, SCREW HOLE, REFERENCE BORE (DASHED), CREST ENVELOPE, FOOT (1 : 1)", F_B, 5.6, INK, anchor="c")
 
-    # ---- what is identical
+    # ---- what is identical / what changed
     yt = 104.0
     heading(pg, 92, yt, "Identical on all ten", INK, 106)
-    rows = [("Bore", f"{bx1 - bx0:.2f} × {by1 - by0:.2f} mm, octagonal"), ("Bore polygon", f"{len(ring) - 1} vertices, verbatim"),
-            ("Bore depth / floor", f"{ztop - REF['z_floor']:.2f} mm / z {REF['z_floor']:.1f}"), ("Overall height", f"{ztop:.3f} mm"),
-            ("Foot flare", "z 0 – 20, max 42.63 × 36.61"), ("Bottom fillet", "about 2 mm, flat closed butt"),
-            ("Crest envelope", "3.5 mm from the bore"), ("Outer skin", "never exceeds the reference")]
+    rows = [("Paddle slot", f"{sw_mm:.1f} × {st_mm:.1f} mm, corner radius 0.3"), ("Slot depth / floor", f"{ztop - REF['z_floor']:.2f} mm / z {REF['z_floor']:.1f}"),
+            ("Screw hole", f"Ø {hole_d:.1f} mm, z 0 – 5, on the slot axis"), ("Overall height", f"{ztop:.3f} mm"),
+            ("Foot flare", "z 0 – 20, max 42.63 × 36.61"), ("Bottom fillet", "about 2 mm"),
+            ("Crest envelope", "3.5 mm from the reference bore line"), ("Outer skin", "never exceeds the reference")]
     yy = table(pg, 92, yt + 3.0, [38, 68], rows, row_h=5.1, size=7.0, aligns=["l", "r"], fonts=[F_R, F_B], zebra=False)
-    yy = heading(pg, 92, yy + 5.0, "Deliberate deviations", RED, 106)
-    dev = [("Rim wall", "≥ 0.8 mm (reference tapers to 0.36 mm)", "Under one nozzle line, would print as a lone thin line or be dropped."),
-           ("Base wall", "1.2 mm (reference 1.5 mm)", "Three 0.4 mm perimeters; saves about 1.4 cm³ (1.7 g)."),
-           ("Texture heights", "2.7 – 3.1 mm on six designs", "Lowered plateaus keep every grip at or under 50 g.")]
+    yy = heading(pg, 92, yy + 5.0, "Changed from the reference sleeve", RED, 106)
+    plas = [r["overall"]["weight_g"]["PLA"] for r in recs]
+    dev = [("Interior", f"solid, slot {sw_mm:.1f} × {st_mm:.1f} mm", "Replaces the 32.06 × 26.04 mm bore. Slot = measured paddle tongue 30 × 16 mm + 0.2 mm."),
+           ("Screw hole", f"Ø {hole_d:.1f} mm through the butt", "Clearance for an M3 socket-head screw into the paddle. No counterbore."),
+           ("Weight", f"{min(plas):.0f} – {max(plas):.0f} g in PLA (was 40 – 49 g)", "Filling the old bore adds about 33 cm³ per grip. At 15 % infill with 4 walls expect roughly 57 – 61 g (estimate)."),
+           ("Voronoi-Core", "no through-windows", "The cells stay as recesses about 1 mm deep between the ribs; the body is solid like the others.")]
     for a_, b_, c_ in dev:
         pg.rect(92, yy + 0.4, 1.3, 9.6, fill=RED)
         pg.text(95, yy + 3.4, a_, F_B, 7.4, INK)
@@ -923,23 +937,24 @@ def page_reference(cx, recs):
     cyy = 232.0
     heading(pg, 12, cyy, "Envelope vs height: reference and grips", INK, 186)
     x1, y1, cw, chh = 22.0, cyy + 5.5, 100.0, 34.0
-    mx, my = chart_frame(pg, x1, y1, cw, chh, (0, ztop), (0, 6.0), (0, 20, 40, 60, 80, 100, 120), (0, 1, 2, 3, 4, 5, 6), "height z, mm", "offset from bore, mm", "{:g}")
+    mx, my = chart_frame(pg, x1, y1, cw, chh, (0, ztop), (0, 6.0), (0, 20, 40, 60, 80, 100, 120), (0, 1, 2, 3, 4, 5, 6), "height z, mm", "offset from reference bore line, mm", "{:g}")
     pg.polygon([(mx(z), my(e)) for z, e in zip(zz, E08)] + [(mx(z), my(e)) for z, e in list(zip(zz, E))[::-1]], fill=tint(RED, 0.5), stroke=None)
     pg.polyline([(mx(z), my(e)) for z, e in zip(zz, E)], INK, 0.4)
     pg.polyline([(mx(z), my(e)) for z, e in zip(zz, E08)], RED, 0.3, dash=[1.2, 0.7])
     pg.text(x1 + 24.0, y1 + 21.0, "reference envelope (solid line)", F_R, 5.8, INK)
-    pg.text(x1 + 24.0, y1 + 25.0, "grips: rim held at 0.8 mm (dashed red)", F_R, 5.8, RED)
+    pg.text(x1 + 24.0, y1 + 25.0, "grips: neck held at 0.8 mm (dashed red)", F_R, 5.8, RED)
     pg.text(x1 + 24.0, y1 + 29.0, "elsewhere the grip surface never exceeds the solid line", F_R, 5.8, MUTED)
-    # method box
+    worst = max(r["fit"]["max_over_reference_envelope_mm"] for r in recs)
     heading(pg, 132, cyy, "How it was verified", INK, 66)
-    steps = ["Every STL is cross-sectioned at 40+ heights and compared with this profile.",
-             "Bore: reference wall points must lie on the grip surface; nothing may enter the bore (0.000 mm²).",
-             "Envelope: outer skin measured against the reference, worst case +0.001 mm.",
-             "Print check: every 0.20 mm layer sliced; one closed body, no void, no material under 0.4 mm wide."]
+    steps = ["Every STL is cross-sectioned at 40+ heights.",
+             f"Slot: exactly one cavity from z 5 to the top, equal to the slot outline; no material inside it (0.000 mm²).",
+             f"Screw hole: one round Ø {hole_d:.1f} mm hole on the axis through the butt, floor solid around it.",
+             f"Envelope: outer skin vs the reference, worst case {worst:+.3f} mm.",
+             "Print check: every 0.20 mm layer sliced; one closed body, no enclosed void, no material under 0.4 mm wide."]
     yy = cyy + 4.0
     for s_ in steps:
         pg.rect(132.2, yy + 1.5, 1.4, 1.4, fill=INK)
-        yy = pg.para(135.4, yy, s_, 62, F_R, 6.9, INK, leading=8.6) + 1.3
+        yy = pg.para(135.4, yy, s_, 62, F_R, 6.7, INK, leading=8.2) + 1.0
 
 
 def page_notes(cx, recs):
@@ -950,6 +965,7 @@ def page_notes(cx, recs):
     y = heading(pg, 12, y, "About these sheets", INK, 88)
     notes = ["All dimensions and volumes are measured directly from the STL files; design-intent values are only used for descriptions.",
              "Weight = volume × density at 100 % infill.  Slicers land within a few percent, so budget ±3 %.",
+             "“Above base” heights are measured outward from the reference bore line (the 32.06 × 26.04 mm octagon of PickleballGrip_1.3mf), which is now inside the solid body.",
              "Assumed: 0.4 mm nozzle, 1.75 mm filament, printed upright with the butt on the bed.  Not sliced or printed yet.",
              "Renders and colours are a preview.  The STLs are single-material; the 3MFs carry a small print palette per triangle.",
              "Sheet numbering: PG-01 to PG-10.  Drawings are third-angle, true size at 100 % print scale."]
@@ -958,14 +974,15 @@ def page_notes(cx, recs):
         y = pg.para(15.5, y, n, 82, F_R, 7.4, INK, leading=9.4) + 1.6
     y += 3.0
     y = heading(pg, 12, y, "Revision history", INK, 88)
-    rows = [("1", "Initial ten designs, STL + colour 3MF"), ("2", "Smooth finish, solid 1.2 mm walls, ≤ 50 g each, specification sheets")]
+    rows = [("1", "Initial ten designs, STL + colour 3MF"), ("2", "Smooth finish, solid 1.2 mm walls, ≤ 50 g each, specification sheets"),
+            ("3", "Solid body, 30 × 16 mm paddle slot, Ø3.5 mm screw hole; Voronoi windows removed")]
     table(pg, 12, y, [10, 78], rows, header=["Rev", "Change"], row_h=5.3, size=7.0, aligns=["l", "l"], fonts=[F_B, F_R], zebra=False, hsize=5.8)
     x2 = 104.0
     y = heading(pg, x2, 36.0, "Densities used (g/cm³)", INK, 94)
     y = table(pg, x2, y, [24, 70], [(m, f"{d:.2f}") for m, d in DENS], row_h=5.2, size=7.2, aligns=["l", "r"], fonts=[F_B, F_R], zebra=False)
     y = heading(pg, x2, y + 6.0, "Files", INK, 94)
     rows = [("stl/", "ten single-material STLs"), ("3mf/", "ten colour 3MFs (materials extension)"), ("specs/", "ten sheets + this book"),
-            ("renders/", "catalog and fitment overlay"), ("scripts/", "generator, verifiers, PDF builder")]
+            ("renders/", "catalog renders and fitment overlay"), ("scripts/", "generator, verifiers, PDF builder")]
     table(pg, x2, y, [24, 70], rows, row_h=5.2, size=7.2, aligns=["l", "l"], fonts=[F_B, F_R], zebra=False)
     # manifest
     ym = 128.0
@@ -980,7 +997,7 @@ def page_notes(cx, recs):
     pg.rect(12, yb, 186, 24.0, fill=PANEL, r=2.5)
     pg.text(16, yb + 5.6, "LIMITS OF THIS DOCUMENT", F_B, 6.4, INK)
     pg.para(16, yb + 7.6, "These sheets describe the geometry and its measured properties.  They are not a print guarantee: material, printer, cooling and slicer settings all "
-            "affect the result.  Do a preview slice before committing filament.  The reference sleeve remains the authority for fit on your paddle.", 178, F_R, 7.2, MUTED, leading=9.4)
+            "affect the result.  Do a preview slice before committing filament.  The slot is sized to a ruler measurement of 30 × 16 mm: check your paddle with calipers and adjust PADDLE_W / PADDLE_T in grip_core.py if it differs.", 178, F_R, 7.2, MUTED, leading=9.4)
 
 
 # ------------------------------------------------------------------------------------------------
@@ -1027,7 +1044,7 @@ def build_book(path):
     front("Cover", page_cover)
     front("Contents", page_contents)
     front("All ten at a glance", page_compare)
-    front("The reference fitment", page_reference)
+    front("The paddle slot and the reference", page_reference)
     for rec in recs:
         key = f"p{cx.page_no}"
         c.bookmarkPage(key)

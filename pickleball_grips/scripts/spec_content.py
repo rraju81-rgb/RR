@@ -9,7 +9,7 @@ ZLO, ZHI = 21.5, 116.0
 HZ = ZHI - ZLO                   # 94.5 mm textured band
 
 
-def h(t):                        # height above the bore for relief fraction t
+def h(t):                        # height above the base for relief fraction t
     return BASE + REL * t
 
 
@@ -24,7 +24,7 @@ CONTENT = {
                   "Valleys drop to about the 1.2 mm base wall, which keeps the mass low"],
         params=[("Straps", "8 + 8, counter-wound"), ("Helix angle", "36 deg from vertical"),
                 ("Strap pitch (around)", f"{L / 8:.2f} mm"), ("Strap width", f"{0.40 * L / 8:.1f} mm around / {0.40 * L / 8 * 0.809:.1f} mm across"),
-                ("Strap top height", f"{h(.50):.2f} - {h(.72):.2f} mm above bore"), ("Valley floor", f"{h(.04):.2f} mm above bore"),
+                ("Strap top height", f"{h(.50):.2f} - {h(.72):.2f} mm above base"), ("Valley floor", f"{h(.04):.2f} mm above base"),
                 ("Over/under step", f"{.16 * REL:.2f} mm")],
         print_note="Straps rise no faster than 45 degrees, so no supports are needed."),
     "02_cellular_mod": dict(
@@ -37,7 +37,7 @@ CONTENT = {
                   "About 22% of cells are recessed 0.7 - 1.2 mm as insert pockets"],
         params=[("Rows x cells", "10 x 8 (staggered)"), ("Row pitch", f"{HZ / 10:.2f} mm"),
                 ("Cell size", f"{L / 8:.2f} x {HZ / 10 - 1.4:.2f} mm"), ("Gap between cells", "1.4 mm"),
-                ("Cell heights", f"{h(.6):.2f} / {h(.7):.2f} / {h(.8):.2f} mm"), ("Pocket floor", f"{h(.28):.2f} mm above bore"),
+                ("Cell heights", f"{h(.6):.2f} / {h(.7):.2f} / {h(.8):.2f} mm"), ("Pocket floor", f"{h(.28):.2f} mm above base"),
                 ("Groove floor", f"{BASE:.2f} mm (base wall)")],
         print_note="Cell edges are chamfered; nothing overhangs beyond 45 degrees."),
     "03_tessel_block": dict(
@@ -47,10 +47,10 @@ CONTENT = {
                "up-pointing pyramids stand taller than down-pointing ones, giving a two-level, gem-like surface.",
         features=["11 rows x 24 triangles (12 up + 12 down per row)",
                   "Sharp V-grooves between facets",
-                  "Up-pyramids 3.44 mm, down-pyramids 3.04 mm above the bore"],
+                  "Up-pyramids 3.44 mm, down-pyramids 3.04 mm above the base"],
         params=[("Rows", "11"), ("Triangles per row", "24 (12 up + 12 down)"), ("Triangle base", f"{L / 12:.2f} mm"),
-                ("Row height", f"{HZ / 11:.2f} mm"), ("Up-pyramid apex", "3.44 mm above bore"),
-                ("Down-pyramid apex", f"{h(.8):.2f} mm above bore"), ("Groove floor", "about 1.4 mm above bore")],
+                ("Row height", f"{HZ / 11:.2f} mm"), ("Up-pyramid apex", "3.44 mm above base"),
+                ("Down-pyramid apex", f"{h(.8):.2f} mm above base"), ("Groove floor", "about 1.4 mm above base")],
         print_note="Facet slopes stay below 45 degrees; rim rows are flat grey bands in the colourway."),
     "04_logic_grip": dict(
         id="04", accent="#2A3C8A",
@@ -62,7 +62,7 @@ CONTENT = {
                   "0.84 mm grooves cut down to the base wall"],
         params=[("Pieces", "8 x 7 = 56"), ("Piece size", f"{L / 8:.2f} x {HZ / 7:.2f} mm"), ("Knob neck / head", "2.9 mm / dia 4.2 mm"),
                 ("Knob reach", "5.1 mm"), ("Groove width", "0.84 mm"), ("Groove floor", f"{BASE:.2f} mm (base wall)"),
-                ("Piece top height", f"up to {h(.70):.2f} mm above bore")],
+                ("Piece top height", f"up to {h(.70):.2f} mm above base")],
         print_note="Grooves are 0.84 mm wide, about two nozzle widths, and 1.6 mm deep."),
     "05_neuro_tread": dict(
         id="05", accent="#CE1820",
@@ -73,8 +73,8 @@ CONTENT = {
                   "Bump field on a 2.66 mm hex pitch",
                   "Network and somas reach the full 3.5 mm crest"],
         params=[("Neurons (somas)", "48 (8 x 6)"), ("Axon ridge width", "about 1.5 mm"), ("Soma diameter", "about 4.2 mm"),
-                ("Network height", f"{CREST:.2f} mm above bore"), ("Bump pitch", f"{L / 46:.2f} mm (hex)"),
-                ("Bump field height", "1.4 - 2.4 mm above bore"), ("Ridge / bump colours", "red / black")],
+                ("Network height", f"{CREST:.2f} mm above base"), ("Bump pitch", f"{L / 46:.2f} mm (hex)"),
+                ("Bump field height", "1.4 - 2.4 mm above base"), ("Ridge / bump colours", "red / black")],
         print_note="Ridges and bumps are gentle slopes; the network is printed in the same material as the base."),
     "06_carbon_matrix": dict(
         id="06", accent="#5C6670",
@@ -85,31 +85,31 @@ CONTENT = {
                   "Weave relief about 0.4 mm; every tow is a rounded ridge",
                   "Smooth reinforcement patches stand about 0.5 mm above the weave"],
         params=[("Tows around", "60 (2/2 twill)"), ("Tow pitch", f"{L / 60:.2f} mm"),
-                ("Weave heights", "1.7 - 2.2 mm above bore"), ("Patch heights", "2.3 - 2.7 mm above bore"),
+                ("Weave heights", "1.7 - 2.2 mm above base"), ("Patch heights", "2.3 - 2.7 mm above base"),
                 ("Patch coverage", "about 23% of the band"), ("Weave / patch colours", "carbon / grey"), ("Textured band", f"{HZ:.1f} mm tall")],
         print_note="The weave is the finest texture in the set (0.4 mm relief on a 2 mm pitch)."),
     "07_voronoi_core": dict(
         id="07", accent="#8A54E4",
-        tagline="Voronoi rib lattice, windows cut through the wall for weight saving and airflow.",
-        intent="Irregular Voronoi cells become 2.6 mm ribs with rounded crests, and the cells themselves are open windows through the "
-               "wall - so the grip is ventilated and the lightest of the ten. The lattice is relaxed for even cells but keeps a natural irregularity.",
-        features=["54 through-windows in the band z 27.5 - 103.5 mm",
+        tagline="Voronoi rib lattice with recessed cells between rounded ribs.",
+        intent="Irregular Voronoi cells become 2.6 mm ribs with rounded crests, and the cells between the ribs are recessed about "
+               "1 mm. The lattice is relaxed for even cells but keeps a natural irregularity. Like the other nine it is a solid body.",
+        features=["54 recessed cells in the band z 27.5 - 103.5 mm",
                   "2.6 mm ribs standing at the full 3.5 mm crest",
-                  "Window roofs trimmed to 60 degrees, longest bridge 3.8 mm"],
-        params=[("Windows", "54, through the wall"), ("Rib width", "2.6 mm"), ("Rib height", f"{CREST:.2f} mm above bore"),
-                ("Windowed band", "z 27.5 - 103.5 mm (76 mm)"), ("Window corner radius", "1.0 mm"),
-                ("Roof limit", "60 deg overhang, 4 mm flat"), ("Open area", "about 64% of the band")],
-        print_note="Window roofs are trimmed; the longest bridge is 3.8 mm."),
+                  "Cell floors 2.46 mm above base, about 1 mm below the rib crests"],
+        params=[("Cells", "54, recessed about 1 mm"), ("Rib width", "2.6 mm"), ("Rib height", f"{CREST:.2f} mm above base"),
+                ("Textured band", "z 27.5 - 103.5 mm (76 mm)"), ("Cell corner radius", "1.0 mm"),
+                ("Cell floor", "2.46 mm above base"), ("Recessed area", "about 64% of the band")],
+        print_note="Rib flanks rise at no more than 45 degrees, so no supports are needed."),
     "08_topo_flow": dict(
         id="08", accent="#A8744E",
         tagline="Continuous undulating contours mimicking wood grain and terrain.",
         intent="The surface is a contour map of terrain with four wood-like knots. Ridges follow the contours so the lines flow around the "
                "handle like grain in a cut log, giving directional grip that is softer on the hand than sharp knurling.",
         features=["Four knots, contour ridges spaced about 2.5 - 7 mm",
-                  "Rounded ridges: crests about 3.1 mm, valleys 1.66 mm above the bore",
+                  "Rounded ridges: crests about 3.1 mm, valleys 1.66 mm above the base",
                   "Three-tone wood colourway (light / mid / dark)"],
-        params=[("Knots", "4"), ("Ridge spacing", "about 2.5 - 7 mm"), ("Ridge crest", "about 3.1 mm above bore"),
-                ("Valley floor", f"{h(.20):.2f} mm above bore"), ("Relief", "about 1.4 mm"),
+        params=[("Knots", "4"), ("Ridge spacing", "about 2.5 - 7 mm"), ("Ridge crest", "about 3.1 mm above base"),
+                ("Valley floor", f"{h(.20):.2f} mm above base"), ("Relief", "about 1.4 mm"),
                 ("Textured band", f"z {ZLO} - {ZHI} mm"), ("Colourway", "3 wood tones")],
         print_note="Ridge flanks are rounded and below 45 degrees; the grain is geometry, not colour alone."),
     "09_ergo_contour": dict(
@@ -122,7 +122,7 @@ CONTENT = {
                   "Hourglass swell 1.73 - 2.33 mm, peaking at about 2.8 mm on the palm pad"],
         params=[("Finger flutes", "4, at z 44 / 58 / 72 / 86"), ("Flute width / depth", "about 9 mm / 0.8 mm"),
                 ("Thumb dish", "z 97 mm, depth 0.6 mm"), ("Palm pad", "back face, z 62 mm, +1.0 mm"),
-                ("Hourglass swell", f"{h(.23):.2f} - {h(.49):.2f} mm above bore"), ("Peak height", "about 2.8 mm above bore"),
+                ("Hourglass swell", f"{h(.23):.2f} - {h(.49):.2f} mm above base"), ("Peak height", "about 2.8 mm above base"),
                 ("Surface", "smooth, no sharp edges")],
         print_note="The smoothest surface in the set; it prints with the least visible layer texture."),
     "10_hexa_mod": dict(
@@ -131,7 +131,7 @@ CONTENT = {
         intent="A honeycomb of individual hex pads, each separated by a 1.7 mm gap and set at one of four heights. The height map is "
                "pseudo-random with a gentle swell along the handle; the tallest pads (red) reach the full 3.5 mm crest.",
         features=["12 columns x 11 rows of pads, 10.2 mm across flats",
-                  "Four levels: 2.35 / 2.76 / 3.13 / 3.50 mm above the bore",
+                  "Four levels: 2.35 / 2.76 / 3.13 / 3.50 mm above the base",
                   "Red pads mark the tallest level (about 6% of the band)"],
         params=[("Pad grid", "12 x 11 (pointy-top hex)"), ("Pad across flats", f"{L / 12:.2f} mm"), ("Gap between pads", "1.7 mm"),
                 ("Levels", f"{h(.5):.2f} / {h(.68):.2f} / {h(.84):.2f} / {h(1):.2f} mm"), ("Gap floor", f"{BASE:.2f} mm (base wall)"),

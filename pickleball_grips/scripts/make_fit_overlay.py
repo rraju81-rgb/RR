@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """renders/fit_overlay.png - cross-sections of every grip over the reference outlines.
 
-black  : reference bore (from the 3MF)            -> identical for all ten grips
+black  : the measured paddle tongue, 30 x 16 mm   -> sits inside the 30.2 x 16.2 mm slot of every grip
+grey   : the reference bore (from the 3MF)        -> now solid
 dashed : reference crest envelope (bore + 3.5 mm)  -> no grip exceeds it
 colour : the grip's section at mid-height (z = 64)
 """
@@ -12,7 +13,7 @@ from pathlib import Path
 import matplotlib
 import numpy as np
 import trimesh
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, box
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -47,7 +48,9 @@ def main():
                 ax.fill(*h.xy, color="white", lw=0)
                 ax.plot(*h.xy, color=cols[k], lw=1.0)
         ax.plot(*env.exterior.xy, "k--", lw=0.8, label="reference crest envelope")
-        ax.plot(*ref_polys[1].exterior.xy, "k-", lw=1.6, label="reference bore")
+        ax.plot(*ref_polys[1].exterior.xy, color="#8A93A0", ls=(0, (3, 2)), lw=1.0, label="reference bore (now solid)")
+        tongue = box(-15.0, -8.0, 15.0, 8.0)
+        ax.plot(*tongue.exterior.xy, "k-", lw=1.6, label="paddle tongue 30 x 16 mm")
         ax.set_aspect("equal")
         ax.set_xlim(-22, 22)
         ax.set_ylim(-19.5, 19.5)
@@ -55,7 +58,7 @@ def main():
         ax.grid(alpha=0.25)
         if k == 0:
             ax.legend(loc="lower left", fontsize=7)
-    fig.suptitle("Fitment overlay - every grip keeps the reference bore (black) and stays inside the reference envelope (dashed)",
+    fig.suptitle("Fitment overlay - a solid body with the paddle slot (white) around the 30 x 16 mm tongue (black); the outer skin stays inside the reference envelope (dashed)",
                  fontsize=14)
     plt.tight_layout()
     out = ROOT / "renders" / "fit_overlay.png"

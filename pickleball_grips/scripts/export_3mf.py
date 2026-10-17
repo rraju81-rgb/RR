@@ -4,7 +4,7 @@
 Each triangle carries a colour from the design's print palette via the 3MF Materials
 extension (<m:colorgroup> + per-triangle pid/p1 - the same mechanism the reference
 PickleballGrip_1.3mf uses).  Geometry is identical to stl/<id>.stl (same coordinates,
-millimetres, z up, bore centred near the origin).  The bore, floor and butt take the
+millimetres, z up, slot centred near the origin).  The slot, floor, screw hole and butt take the
 design's collar colour so no colour change is buried inside the part.
 
 usage: python3 export_3mf.py [--only 01 07 ...]
@@ -63,7 +63,7 @@ def write_3mf(path, V, faces, cls, palette, title, thumb):
     hexes = [hexes[int(u)] for u in used]
     out = ['<?xml version="1.0" encoding="utf-8"?>\n<model unit="millimeter" xml:lang="en-US" ' + NS + '>\n',
            f'<metadata name="Title">{title}</metadata>\n'
-           '<metadata name="Description">Pickleball paddle grip sleeve - fitment matched to PickleballGrip_1.3mf. '
+           '<metadata name="Description">Pickleball paddle grip sleeve - solid body, 30 x 16 mm paddle slot, 3.5 mm screw hole in the butt. '
            'Colours are per-triangle (3MF Materials extension).</metadata>\n'
            '<metadata name="Designer">Claude Code</metadata>\n',
            '<resources>\n<m:colorgroup id="2">\n']

@@ -24,7 +24,7 @@ from shapely.geometry import Polygon
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from designs import DESIGNS, Ctx  # noqa: E402
-from grip_core import Frame, ZONE_LO, ZONE_HI  # noqa: E402
+from grip_core import Frame, ZONE_LO, ZONE_HI, slot_polygon, HOLE_D  # noqa: E402
 from generate_grips import evaluate  # noqa: E402
 from verify_fitment import section_solid  # noqa: E402
 
@@ -85,10 +85,12 @@ def main(only=None):
                               weight_g={k: vol * v for k, v in DENSITY.items()},
                               filament_1p75_m=float(m.volume / (np.pi * (FILAMENT_D / 2) ** 2) / 1000),
                               layers_0p2=int(np.ceil((hi[2] - lo[2]) / 0.2)))
-        rec["bore"] = dict(x=float(F.ring[:, 0].max() - F.ring[:, 0].min()), y=float(F.ring[:, 1].max() - F.ring[:, 1].min()),
-                           area=float(cav.area), perimeter=float(ring.length), floor_z=float(F.z_floor),
-                           depth=float(F.z_top - F.z_floor), x_min=float(F.ring[:, 0].min()), x_max=float(F.ring[:, 0].max()),
-                           y_min=float(F.ring[:, 1].min()), y_max=float(F.ring[:, 1].max()))
+        sl = slot_polygon(F)                                  # revision 3: the cavity is the paddle slot (key kept as "bore")
+        sb = sl.bounds
+        rec["bore"] = dict(x=float(sb[2] - sb[0]), y=float(sb[3] - sb[1]), area=float(sl.area), perimeter=float(sl.exterior.length),
+                           floor_z=float(F.z_floor), depth=float(F.z_top - F.z_floor), x_min=float(sb[0]), x_max=float(sb[2]),
+                           y_min=float(sb[1]), y_max=float(sb[3]), hole_d=float(HOLE_D),
+                           ref_x=float(F.ring[:, 0].max() - F.ring[:, 0].min()), ref_y=float(F.ring[:, 1].max() - F.ring[:, 1].min()))
         # ---- per-z profile
         zs = np.round(np.arange(0.25, hi[2], 0.5), 3)
         prof = []

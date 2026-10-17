@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the ten pickleball grip STLs (fitment identical to PickleballGrip_1.3mf).
+"""Generate the ten pickleball grip STLs: reference outer envelope, solid body, 30 x 16 mm paddle slot, 3.5 mm screw hole.
 
 usage:  python3 generate_grips.py [--only 01 07 ...] [--res 0.25]
 Outputs ../stl/<id>.stl and ../data/<id>_colors.npz (render-only colour map).
@@ -15,7 +15,7 @@ import trimesh
 from scipy.ndimage import gaussian_filter
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from grip_core import Frame, build_mesh_reduced, cut_windows, write_stl  # noqa: E402
+from grip_core import Frame, build_mesh_solid_reduced, carve_cavity, write_stl  # noqa: E402
 from designs import DESIGNS, Ctx  # noqa: E402
 
 warnings.filterwarnings("ignore")
@@ -50,9 +50,10 @@ def generate(F, name, label, fn, res):
     t0 = time.time()
     ctx, d = evaluate(F, fn, res)
     z, H, _ = F.skin(d["t"], res)
-    V, Fc = build_mesh_reduced(F, z, H)
-    if d.get("holes"):
-        V, Fc = cut_windows(F, V, Fc, d["holes"])
+    # Revision 3: SOLID sleeve - the only cavities are the 30 x 16 mm paddle slot and the 3.5 mm screw hole in the butt.
+    # (VORONOI-CORE's through-windows are not cut any more: its cells stay as 2.3 mm recesses between the ribs.)
+    V, Fc = build_mesh_solid_reduced(F, z, H)
+    V, Fc = carve_cavity(F, V, Fc)
     m = trimesh.Trimesh(V, Fc, process=False)
     (ROOT / "stl").mkdir(exist_ok=True)
     write_stl(ROOT / "stl" / f"{name}.stl", V, Fc)

@@ -9,9 +9,9 @@ ACCENT = {
     "10_hexa_mod": ("#3FD0C2", "#14857C"),
 }
 
-HANDLE_NOTE = ("A slim sleeve that slides over your paddle handle: closed at the butt, open at the throat, 132.8 mm long and cut to "
-               "the exact 32.06 × 26.04 mm bore of the reference handle. The fit is identical on all ten designs, so you can swap "
-               "textures freely. A smooth collar at each end keeps the edges kind to your hand.")
+HANDLE_NOTE = ("A solid sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
+               "closed at the butt with a 3.5 mm hole for an M3 screw, 132.8 mm long. The outer shape is the same on all ten designs, so you "
+               "can swap textures freely. A smooth collar at each end keeps the edges kind to your hand.")
 
 CONTENT = {
     "01_vortex_grip": dict(
@@ -75,15 +75,15 @@ CONTENT = {
                     "woven, so it feels like a fine fabric under the hand.",
         tip="The weave is the finest texture in the set: 0.4 mm of relief on a 2 mm pitch.", motif="twill"),
     "07_voronoi_core": dict(
-        tagline="A Voronoi rib lattice with windows cut through the wall.",
-        story="Irregular Voronoi cells become 2.6 mm ribs with rounded crests, and the cells themselves are open windows "
-              "through the wall. The grip is ventilated, and the lightest of the ten.",
-        features=["54 through-windows in a 76 mm band", "2.6 mm ribs standing at the full 3.5 mm crest",
-                  "Window roofs trimmed to 60°, longest bridge 3.8 mm"],
-        stats=[("54", "WINDOWS"), ("64 %", "OPEN AREA")],
+        tagline="A Voronoi rib lattice with recessed cells.",
+        story="Irregular Voronoi cells become 2.6 mm ribs with rounded crests, and the cells between the ribs are recessed "
+              "about 1 mm. The result is a net of ridges your fingers can follow, with no sharp edge anywhere.",
+        features=["54 recessed cells in a 76 mm band", "2.6 mm ribs standing at the full 3.5 mm crest",
+                  "Cell floors sit about 1 mm below the rib crests"],
+        stats=[("54", "CELLS"), ("64 %", "RECESSED AREA")],
         inspiration="Dragonfly wings, leaf veins and cracked earth: the same branching cells appear wherever nature needs "
-                    "strength without weight. Here they let air reach your palm and make this about six grams lighter than any other design.",
-        tip="Window roofs are trimmed so the longest unsupported bridge is 3.8 mm.", motif="wing"),
+                    "strength with little material. Here the ribs give your fingers a net of ridges to hold.",
+        tip="Rib flanks rise at no more than 45°, so no supports are needed.", motif="wing"),
     "08_topo_flow": dict(
         tagline="Continuous undulating contours, like wood grain and terrain.",
         story="The surface is a contour map with four wood-like knots. Ridges follow the contours so the lines flow around "

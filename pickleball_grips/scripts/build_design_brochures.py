@@ -364,7 +364,7 @@ def page_one(pg, n, cur, art):
     yh = cy + cr + 5.2 + gap_b
     y = heading(pg, x0, yh, "The handle", acc, WHITE, w0, "#2A3442")
     yy = pg.para(x0, y + 1.0, HANDLE_NOTE, w0, F_R, 7.9, "#C5CDD8", leading=10.2)
-    tiles = [("132.8 mm", "LENGTH"), ("32 × 26 mm", "BORE"), ("100 %", "INFILL"), ("0.20 mm", "LAYERS")]
+    tiles = [("132.8 mm", "LENGTH"), ("30 × 16 mm", "PADDLE SLOT"), ("Ø 3.5 mm", "SCREW HOLE"), ("100 %", "INFILL")]
     tw, gp = 19.5, 2.0
     ty = yy + 3.4
     for i, (big, small) in enumerate(tiles):
@@ -405,13 +405,13 @@ def page_two(pg, n, cur, art):
     # views
     yb = 45.0
     for x, key, label in zip(xs, ("a", "b", "cutaway", "paddle"),
-                             ("3/4 VIEW  ·  TURN 0°", "SIDE VIEW  ·  TURN 90°", "CUTAWAY  ·  SOLID WALL", "ON A PADDLE  ·  ILLUSTRATION")):
+                             ("3/4 VIEW  ·  TURN 0°", "SIDE VIEW  ·  TURN 90°", "CUTAWAY  ·  SOLID CORE", "ON A PADDLE  ·  ILLUSTRATION")):
         pg.image(art["view_" + key], x, yb, 43.5, 76.0, quality=92, round_=2.4)
         cap(x, yb + 79.6, label)
     # surfaces
     yc = 131.0
-    for x, key, label in zip(xs, ("surface", "rim", "swatch", "surface2"),
-                             ("CLOSE-UP  ·  MID BODY", "RIM & BORE  ·  FROM ABOVE", "UNROLLED  ·  RELIEF ×4" if n == "09_ergo_contour" else "UNROLLED  ·  LIT RELIEF", "RAKING LIGHT  ·  LOW BODY")):
+    for x, key, label in zip(xs, ("surface", "rim", "swatch", "butt"),
+                             ("CLOSE-UP  ·  MID BODY", "RIM & SLOT  ·  FROM ABOVE", "UNROLLED  ·  RELIEF ×4" if n == "09_ergo_contour" else "UNROLLED  ·  LIT RELIEF", "BUTT  ·  Ø3.5 SCREW HOLE")):
         pg.image(ASSETS / n / f"{key}.png", x, yc, 43.5, 43.5, quality=90, round_=2.4)
         cap(x, yc + 47.2, label)
     # inspiration + why it grips
@@ -443,8 +443,8 @@ def page_two(pg, n, cur, art):
         pg.text(cx_, ey + 49.4, SHORT[nn], F_B if cur_ else F_R, 4.9, INK if cur_ else MUTED, anchor="c")
         if cur_:
             pg.rect(12 + i * pitch + 0.6, ey + 0.8, pitch - 1.2, 50.4, stroke=acc, sw_=0.5, r=2.0)
-    pg.text(12, 289.6, "The paddle in the illustration is generic, not your paddle.   Every design prints in any of the ten PLA colours "
-            "shown on page 1.   100 % infill  ·  0.20 mm layers  ·  upright, butt end down.", F_R, 5.4, SUBTLE)
+    pg.text(12, 289.6, "The paddle in the illustration is generic, drawn with your 30 × 16 mm handle.   Every design prints in any of the ten PLA "
+            "colours shown on page 1.   100 % infill  ·  0.20 mm layers  ·  upright, butt end down.", F_R, 5.4, SUBTLE)
 
 
 def build(n):

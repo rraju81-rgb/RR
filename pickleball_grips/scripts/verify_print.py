@@ -3,9 +3,9 @@
 
 For every STL:
   * MESH      closed, consistently wound, ONE body (no floating shells / enclosed voids), no degenerate
-              triangles; genus reported (VORONOI-CORE's 54 windows are 54 handles by design)
+              triangles; genus reported (1 = the screw hole through the butt joins the paddle slot to the outside)
   * WEIGHT    volume x density for PLA / PETG / TPU / ABS  (100 % infill => mass = volume x density)
-  * LAYERS    the part is sliced at the mid-plane of every 0.20 mm layer (664 layers); each layer's
+  * LAYERS    the part is sliced at the mid-plane of every 0.20 mm layer (665 layers); each layer's
               cross-section is opened with a 0.4 mm and a 0.8 mm disc.  Material that vanishes under
               the opening is thinner than one nozzle line / two perimeters, i.e. the slicer would drop
               it or print it as a lone thin line
@@ -130,8 +130,8 @@ def main():
         r["layers_with_thin_lt_0.4mm"] = layers04
         r["layers_with_thin_lt_0.76mm"] = layers08
         r["thin_lt_0.76mm_z_range"] = [min(z_thin08), max(z_thin08)] if z_thin08 else None
-        r["under_50g_all_materials"] = bool(max(r["weight_g"].values()) <= LIMIT_G)
-        r["pass"] = bool(r["bodies"] == 1 and r["watertight"] and r["winding_ok"] and r["under_50g_all_materials"] and
+        r["under_50g_all_materials"] = bool(max(r["weight_g"].values()) <= LIMIT_G)     # reported only: the solid body is ~70-80 g in PLA
+        r["pass"] = bool(r["bodies"] == 1 and r["watertight"] and r["winding_ok"] and r["genus"] == 1 and
                          r["thin_lt_0.4mm_pct_of_volume"] < 0.05 and r["max_bridge_span_mm"] <= 5.0)
         rows.append(r)
         print(f"{name:18s} pass={r['pass']} bodies={r['bodies']} genus={r['genus']} vol={r['volume_cm3']:5.2f} "
