@@ -192,7 +192,9 @@ def build_mesh(F, z, H):
 PADDLE_W, PADDLE_T = 30.0, 16.0        # mm - flat handle (tongue) of the paddle, measured on the real paddle
 SLOT_CLEAR = 0.2                       # mm - total clearance added to each slot dimension (FDM holes print slightly small)
 SLOT_R = 0.3                           # mm - slot corner radius (a 0.4 mm nozzle cannot print sharper)
-HOLE_D = 3.5                           # mm - screw hole through the butt for an M3 (3 mm) socket-head screw
+HOLE_D = 3.5                           # mm - screw hole through the butt for an M3 (3 mm) screw
+HEAD_D = 6.4                           # mm - 90 degree countersink (chamfer) diameter at the butt face: an ISO 10642 M3 flat-head
+CSINK_ANGLE = 90.0                     #      (allen) screw has dk <= 6.3 mm, so it sits flush; the cone is 1.45 mm deep
 
 
 def bore_centre(F):
@@ -233,8 +235,8 @@ def build_mesh_solid(F, z, H):
     return V, np.vstack(faces).astype(np.int32)
 
 
-def carve_cavity(F, V, Fc, hole_d=HOLE_D):
-    """Subtract the paddle slot (z_floor .. top) and the screw hole (butt .. floor) from the solid sleeve."""
+def carve_cavity(F, V, Fc, hole_d=HOLE_D, head_d=HEAD_D):
+    """Subtract the paddle slot (z_floor .. top), the screw hole (butt .. floor) and the countersink chamfer at the butt face."""
     import manifold3d as m3d
     import trimesh
     slot = slot_polygon(F)
@@ -245,7 +247,11 @@ def carve_cavity(F, V, Fc, hole_d=HOLE_D):
     base = m3d.Manifold(m3d.Mesh(np.asarray(V, np.float32), np.asarray(Fc, np.uint32)))
     slot_m = m3d.Manifold(m3d.Mesh(pv.astype(np.float32), np.asarray(pm.faces, np.uint32)))
     hole = m3d.Manifold.cylinder(F.z_floor + 2.0, hole_d / 2, hole_d / 2, 48).translate((cx, cy, -1.0))
-    res = (base - slot_m - hole)
+    t = np.tan(np.radians(CSINK_ANGLE / 2))
+    depth = (head_d - hole_d) / 2 / t                                          # cone depth below the butt face
+    # cylinder(height, radius_at_bottom, radius_at_top): wide at the butt face (z = 0), narrowing to the hole radius at z = depth
+    cone = m3d.Manifold.cylinder(depth + 0.5, head_d / 2 + 0.5 * t, hole_d / 2, 48).translate((cx, cy, -0.5))
+    res = (base - slot_m - hole - cone)
     res = res.simplify(0.002)
     m = res.to_mesh()
     return np.asarray(m.vert_properties[:, :3], np.float64), np.asarray(m.tri_verts, np.int32)

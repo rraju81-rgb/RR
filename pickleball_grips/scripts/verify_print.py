@@ -2,16 +2,18 @@
 """Print-readiness check for a solid part: 100 % infill, 0.20 mm layers, 0.4 mm nozzle.
 
 For every STL:
-  * MESH      closed, consistently wound, ONE body (no floating shells / enclosed voids), no degenerate
-              triangles; genus reported (1 = the screw hole through the butt joins the paddle slot to the outside)
+  * MESH      closed, consistently wound, ONE outer body, no degenerate triangles; genus of the outer body
+              (1 = the screw hole through the butt joins the paddle slot to the outside); the sealed lightening cavity is
+              a separate inward-facing shell, counted as a cavity, whose wall is measured in 3D (cavity surface -> nearest
+              outer surface)
   * WEIGHT    volume x density for PLA / PETG / TPU / ABS  (100 % infill => mass = volume x density)
   * LAYERS    the part is sliced at the mid-plane of every 0.20 mm layer (665 layers); each layer's
               cross-section is opened with a 0.4 mm and a 0.8 mm disc.  Material that vanishes under
               the opening is thinner than one nozzle line / two perimeters, i.e. the slicer would drop
               it or print it as a lone thin line
   * SUPPORT   layer-to-layer: material more than 0.35 mm (a 60 degree overhang at 0.2 mm layers) beyond
-              the layer below is unsupported; the longest such run is the bridge span (must be <= 5 mm,
-              the reliable bridging length for PLA/PETG).  Also reports the share of downward-facing
+              the layer below is unsupported; the widest such patch (its short side - the distance a bridge must span)
+              is the bridge width (must be <= 5 mm, the reliable bridging length for PLA/PETG).  Also reports the share of downward-facing
               surface steeper than 45 / 60 degrees from vertical (first mm, bed flare, excluded)
 
 Writes ../print_report.json
@@ -60,7 +62,7 @@ def bridge_span(cur, below, tol=0.35):
         r = g.minimum_rotated_rectangle
         xs, ys = r.exterior.coords.xy
         e = [np.hypot(xs[i + 1] - xs[i], ys[i + 1] - ys[i]) for i in range(2)]
-        best = max(best, max(e))
+        best = max(best, min(e))                 # span across the supports, not along a long narrow strip
     return best
 
 
@@ -83,11 +85,24 @@ def main():
         m.merge_vertices()
         r = dict(name=name, label=label)
         # ---- mesh
-        bodies = m.split(only_watertight=False)
+        shells = m.split(only_watertight=False)
+        bodies = [s for s in shells if s.volume > 0]
+        cavities = [s for s in shells if s.volume < 0]
         r["bodies"] = len(bodies)
+        r["sealed_cavities"] = len(cavities)
+        r["cavity_volume_cm3"] = round(-sum(s.volume for s in cavities) / 1000, 2)
         r["watertight"] = bool(m.is_watertight)
         r["winding_ok"] = bool(m.is_winding_consistent)
-        r["genus"] = int(round((2 - m.euler_number) / 2)) if len(bodies) == 1 else None
+        r["genus"] = int(round((2 - bodies[0].euler_number) / 2)) if len(bodies) == 1 else None
+        # ---- wall around the cavity, in 3D: cavity surface samples -> nearest point on the outer body
+        if cavities:
+            from trimesh.proximity import closest_point
+            cav = trimesh.util.concatenate(cavities)               # every cavity piece
+            pts, _ = trimesh.sample.sample_surface_even(cav, 60000)
+            dist = np.concatenate([closest_point(bodies[0], pts[i:i + 20000])[1] for i in range(0, len(pts), 20000)])
+            r["cavity_wall_min_mm"] = round(float(dist.min()), 2)
+            r["cavity_wall_p1_mm"] = round(float(np.percentile(dist, 1)), 2)
+            r["cavity_wall_median_mm"] = round(float(np.median(dist)), 2)
         r["degenerate_tris"] = int((m.area_faces < 1e-9).sum())
         r["volume_cm3"] = round(m.volume / 1000, 2)
         r["weight_g"] = {k: round(m.volume / 1000 * d, 1) for k, d in DENSITY.items()}
@@ -121,7 +136,7 @@ def main():
                 layers08 += 1
                 z_thin08.append(round(float(z), 1))
             worst04, worst08 = max(worst04, t04), max(worst08, t08)
-        r["max_bridge_span_mm"] = round(span_max, 1)
+        r["max_bridge_span_mm"] = round(span_max, 1)           # bridge width
         r["max_bridge_span_at_z"] = round(span_z, 1)
         r["layers"] = len(heights)
         r["sliced_volume_cm3"] = round(vol_total / 1000, 2)
@@ -130,12 +145,13 @@ def main():
         r["layers_with_thin_lt_0.4mm"] = layers04
         r["layers_with_thin_lt_0.76mm"] = layers08
         r["thin_lt_0.76mm_z_range"] = [min(z_thin08), max(z_thin08)] if z_thin08 else None
-        r["under_50g_all_materials"] = bool(max(r["weight_g"].values()) <= LIMIT_G)     # reported only: the solid body is ~70-80 g in PLA
+        r["under_50g_all_materials"] = bool(max(r["weight_g"].values()) <= LIMIT_G)     # reported only: PLA lands at ~50-56 g, PETG a little above
         r["pass"] = bool(r["bodies"] == 1 and r["watertight"] and r["winding_ok"] and r["genus"] == 1 and
+                         (not cavities or r["cavity_wall_min_mm"] >= 1.05) and
                          r["thin_lt_0.4mm_pct_of_volume"] < 0.05 and r["max_bridge_span_mm"] <= 5.0)
         rows.append(r)
         print(f"{name:18s} pass={r['pass']} bodies={r['bodies']} genus={r['genus']} vol={r['volume_cm3']:5.2f} "
-              f"PLA={r['weight_g']['PLA']:5.1f}g PETG={r['weight_g']['PETG']:5.1f}g TPU={r['weight_g']['TPU']:5.1f}g "
+              f"cav={r['sealed_cavities']}x{r['cavity_volume_cm3']:.1f}cm3 wall_min={r.get('cavity_wall_min_mm')} PLA={r['weight_g']['PLA']:5.1f}g PETG={r['weight_g']['PETG']:5.1f}g TPU={r['weight_g']['TPU']:5.1f}g "
               f"thin<0.4={r['thin_lt_0.4mm_pct_of_volume']:.3f}% thin<0.76={r['thin_lt_0.76mm_pct_of_volume']:.3f}% "
               f"bridge={r['max_bridge_span_mm']:.1f}mm@z{r['max_bridge_span_at_z']:.0f} down>45={r['downfacing_gt45deg_pct_of_surface']:.2f}%", flush=True)
     (ROOT / "print_report.json").write_text(json.dumps(rows, indent=1))

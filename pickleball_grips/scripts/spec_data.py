@@ -100,15 +100,12 @@ def main(only=None):
                 prof.append(None)
                 continue
             polys = list(solid.geoms) if hasattr(solid, "geoms") else [solid]
-            npts = 600 if len(polys) == 1 else 90              # fragmented section (through-windows): fewer samples each
-            dd = []
-            for pl in polys:
-                bd = pl.exterior
-                dd += [ring.distance(bd.interpolate(t)) for t in np.linspace(0, bd.length, npts, endpoint=False)]
-            dd = np.array(dd)
+            outer = max(polys, key=lambda p: (p.bounds[2] - p.bounds[0]) * (p.bounds[3] - p.bounds[1]))   # outer wall; an inner island can appear where the sealed cavity wraps the slot
+            bd = outer.exterior
+            dd = np.array([ring.distance(bd.interpolate(t)) for t in np.linspace(0, bd.length, 600, endpoint=False)])
             xmin, ymin, xmax, ymax = solid.bounds
             hull = solid.convex_hull
-            is_open = len(polys) > 1 or dd.min() < 0.05      # ring broken by windows -> wall thickness undefined
+            is_open = dd.min() < 0.05                         # (no through-windows any more; kept for old data files)
             prof.append(dict(z=float(z), area=float(solid.area), w=float(xmax - xmin), d=float(ymax - ymin),
                              perim=float(hull.exterior.length), off_max=float(dd.max()),
                              off_min=(None if is_open else float(dd.min())), open=bool(is_open)))

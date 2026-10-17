@@ -16,6 +16,7 @@ from scipy.ndimage import gaussian_filter
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from grip_core import Frame, build_mesh_solid_reduced, carve_cavity, write_stl  # noqa: E402
+from lighten import lighten  # noqa: E402
 from designs import DESIGNS, Ctx  # noqa: E402
 
 warnings.filterwarnings("ignore")
@@ -46,7 +47,7 @@ def evaluate(F, fn, res, ss=SUPERSAMPLE):
     return ctx, dict(d0, t=t, rgb=rgb, cls=d0["cls"])
 
 
-def generate(F, name, label, fn, res):
+def generate(F, name, label, fn, res, light=True):
     t0 = time.time()
     ctx, d = evaluate(F, fn, res)
     z, H, _ = F.skin(d["t"], res)
@@ -54,13 +55,17 @@ def generate(F, name, label, fn, res):
     # (VORONOI-CORE's through-windows are not cut any more: its cells stay as 2.3 mm recesses between the ribs.)
     V, Fc = build_mesh_solid_reduced(F, z, H)
     V, Fc = carve_cavity(F, V, Fc)
+    # Revision 4: a sealed lightening cavity (>= 1.2 mm of material all round) brings the weight to about 50 g; --solid skips it
+    info = {}
+    if light:
+        V, Fc, info = lighten(V, Fc)
     m = trimesh.Trimesh(V, Fc, process=False)
     (ROOT / "stl").mkdir(exist_ok=True)
     write_stl(ROOT / "stl" / f"{name}.stl", V, Fc)
     np.savez_compressed(ROOT / "data" / f"{name}_colors.npz", rgb=np.clip(d["rgb"], 0, 255).astype(np.uint8), z=ctx.Z,
                         cls=d["cls"].astype(np.uint8), palette=np.array(d["palette"], np.uint8), collar=d["collar"])
     print(f"{name:18s} tris={len(Fc):7d} watertight={m.is_watertight} vol={m.volume/1000:6.2f} cm3 "
-          f"bbox={np.round(m.extents, 2).tolist()} {time.time() - t0:5.1f}s", flush=True)
+          f"bbox={np.round(m.extents, 2).tolist()} cavity={info.get('cavity_cm3', 0):.1f} cm3 PLA={m.volume / 1000 * 1.24:.1f} g {time.time() - t0:5.1f}s", flush=True)
     return m
 
 
@@ -68,10 +73,11 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", nargs="*", default=None)
     ap.add_argument("--res", type=float, default=0.25, help="surface sampling step in mm")
+    ap.add_argument("--solid", action="store_true", help="no lightening cavity (fully solid body, ~88-98 g in PLA)")
     a = ap.parse_args()
     F = Frame(ds=a.res)
     print(f"crest perimeter L={F.L:.2f} mm, {F.N} columns")
     for name, label, fn in DESIGNS:
         if a.only and not any(name.startswith(o) for o in a.only):
             continue
-        generate(F, name, label, fn, a.res)
+        generate(F, name, label, fn, a.res, light=not a.solid)

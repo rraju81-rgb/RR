@@ -37,11 +37,12 @@ for n, (lab, txt) in DESC.items():
     w = p["weight_g"]
     rows.append(f"| {n[:2]} | **{lab}** | `stl/{n}.stl` | {txt} | {f['peak_texture_height_above_bore_mm']:.2f} |")
     wrows.append(f"| {lab} | {p['volume_cm3']:.1f} | **{w['PLA']:.1f}** | {w['PETG']:.1f} | {w['TPU']:.1f} | {w['ABS']:.1f} |")
-    prow.append(f"| {lab} | {'PASS' if p['pass'] else 'FAIL'} | {p['bodies']} | {p['genus']} | {p['thin_lt_0.4mm_pct_of_volume']:.3f}% | "
-                f"{p['max_bridge_span_mm']:.1f} mm | {p['downfacing_gt45deg_pct_of_surface']:.2f}% |")
+    prow.append(f"| {lab} | {'PASS' if p['pass'] else 'FAIL'} | {p['bodies']} | {p['genus']} | {p['sealed_cavities']} x {p['cavity_volume_cm3']:.1f} cm3 | "
+                f"{p['cavity_wall_min_mm']:.2f} / {p['cavity_wall_median_mm']:.2f} | {p['thin_lt_0.4mm_pct_of_volume']:.3f}% | "
+                f"{p['max_bridge_span_mm']:.1f} mm |")
     vrows.append(f"| {lab} | {'PASS' if f['pass'] else 'FAIL'} | {f['z_max']:.3f} | {f['max_over_reference_envelope_mm']:+.3f} | "
                  f"{f['foot_profile_err_mm']:.3f} | {'-' if f['min_wall_textured_zone_mm'] is None else format(f['min_wall_textured_zone_mm'], '.2f')} | "
-                 f"{f['rim_min_wall_mm']:.2f} | {f['slot_measured_w_mm']:.2f} x {f['slot_measured_t_mm']:.2f} | {f['slot_intrusion_mm2']:.3f} | {f['screw_hole_dia_mm']:.2f} |")
+                 f"{f['rim_min_wall_mm']:.2f} | {f['slot_measured_w_mm']:.2f} x {f['slot_measured_t_mm']:.2f} | {f['slot_intrusion_mm2']:.3f} | {f['screw_hole_dia_mm']:.2f} / {f['countersink_dia_at_face_mm']:.2f} |")
     pl = pal3mf(n)
     c3.append(f"| {lab} | `3mf/{n}.3mf` | {(ROOT / '3mf' / f'{n}.3mf').stat().st_size / 1e6:.1f} MB | {len(pl)} | " + " ".join(f"`#{h}`" for h in pl) + " |")
 
@@ -55,8 +56,9 @@ wpmax = max(prt[n]["weight_g"]["PLA"] for n in DESC)
 txt = f"""# Pickleball paddle grips - ten designs, one paddle slot
 
 Ten printable grip sleeves generated from the catalog image.  The outer envelope comes from `reference/PickleballGrip_1.3mf`; only the
-outer surface differs between designs.  **Revision 3: every grip is a solid body whose only cavities are a 30.2 x 16.2 mm paddle slot
-(the measured 30 x 16 mm flat handle of your paddle + 0.2 mm) and a 3.5 mm screw hole through the butt (M3 allen / socket-head screw).**
+outer surface differs between designs.  **Revision 4:** every grip has a 30.2 x 16.2 mm paddle slot (the measured 30 x 16 mm flat handle of
+your paddle + 0.2 mm), a 3.5 mm screw hole through the butt with a **90 degree countersink** (6.4 mm at the face) so an M3 flat-head allen
+screw sits flush, and a **sealed hollow core** in the thick side walls that brings the weight to about 50 g.  The outside is unchanged.
 
 ![catalog](renders/catalog.png)
 
@@ -66,10 +68,11 @@ outer surface differs between designs.  **Revision 3: every grip is a solid body
 |---|---|---|---|---|---|
 {chr(10).join(wrows)}
 
-All ten are **{wmin:.0f}-{wpmax:.0f} g in PLA** (up to {wmax:.0f} g in PETG; densities in g/cm3).  Slicers land within a few percent of volume x density,
-so budget +-3 %.  **This is about twice the revision-2 weight (40-49 g):** filling the old 32 x 26 mm bore down to a 30 x 16 mm slot adds about 33 cm3
-per grip.  Lowering the infill helps only so far: with 4 perimeters the shell alone is about 52 g, so 15-25 % infill still lands around 57-61 g
-(rough estimate from layer sections, not a slicer result).  A <= 50 g part would also need fewer perimeters or a smaller outer envelope.
+All ten are **{wmin:.0f}-{wpmax:.0f} g in PLA** (up to {wmax:.0f} g in PETG; densities in g/cm3).  Slicers land within a few percent of
+(outer volume - sealed core) x density, so budget +-3 %.  History: rev 2 was 40-49 g (a bore, no paddle slot), rev 3 filled the bore down to the slot
+(88-98 g), rev 4 hollows the walls again.  The hollow core is **sealed**: nothing can be seen or reached from outside, and you cannot
+get at it to clean it - it is just air.  Walls around it are about 1.2 mm (3 x 0.4 mm perimeters; measured 3D median 1.2 mm, minimum 1.10 mm - table below).
+Generate the fully solid version with `python3 scripts/generate_grips.py --solid` (88-98 g).
 
 ## What is identical on all ten
 
@@ -77,8 +80,8 @@ per grip.  Lowering the infill helps only so far: with 4 perimeters the shell al
 |---|---|
 | Overall height | **{P['z_top']} mm** (flat top, slot opening) |
 | Paddle slot | **30.2 x 16.2 mm** rounded rectangle (corner radius 0.3 mm) = measured tongue 30 x 16 mm + 0.2 mm clearance; wide axis along x; floor at **z = {P['z_floor']}** mm; open at the top |
-| Screw hole | **3.5 mm** round, on the slot axis, through the 5 mm butt (z 0 - 5) for an M3 socket-head (allen) screw; no counterbore |
-| Body | solid - no other cavity, no through-windows |
+| Screw hole | **3.5 mm** round, on the slot axis, through the 5 mm butt (z 0 - 5), with a **90 degree countersink (chamfer), 6.4 mm at the butt face, 1.45 mm deep** - an ISO 10642 M3 flat-head (countersunk) allen screw sits flush |
+| Hollow core | a sealed cavity inside the thick side walls (about 29-36 cm3; one connected piece on most designs, a few pieces on NEURO-TREAD, VORONOI-CORE and HEXA-MOD), walls about 1.1-1.2 mm or more to every outer surface, the slot, the hole and the floor (measured in 3D, table below); roofs at <= 45 degrees (flat bridges <= 4 mm) so it prints without supports; none under the slot floor, where the screw bears; no through-windows |
 | Foot / butt flare | z 0-20: outer skin {np.interp(2.0, fz, fe):.2f} (at z = 2) -> {fe[-1]:.2f} mm from the reference bore line (at z = 20), ~2 mm bottom fillet, flat closed butt (max 42.6 x 36.6 mm) - unchanged |
 | Outer envelope | no grip ever exceeds the reference's own outer envelope (crest {P['crest_offset']} mm from the reference bore line) |
 
@@ -87,15 +90,20 @@ octagonal bore outline, which is now inside the solid body and only serves as th
 
 **The slot size is a ruler measurement.**  Measure your paddle's handle with calipers; if it is not 30 x 16 mm change `PADDLE_W`, `PADDLE_T`
 (and `SLOT_CLEAR`, 0.2 mm in total) in `scripts/grip_core.py` and run `generate_grips.py` again.  Printed holes come out slightly small, so
-test-print one grip before the rest.  The screw hole has no counterbore: the head of an M3 screw (5.5 mm) will stand 3 mm proud of the butt unless you add one.
+test-print one grip before the rest.  The countersink fits a **flat-head** M3 screw.  A standard cap-head (socket-head) screw has a 5.5 mm x 3 mm head and would stand proud; for that
+replace the cone in `carve_cavity` (`scripts/grip_core.py`) with a 6 mm x 3.2 mm counterbore.  Your paddle's handle looks like
+a hollow honeycomb core (your cross-section photo), so a screw into its end face may not hold well - consider a threaded insert or epoxy.
 
-## What changed in revision 3
+## What changed in revisions 3 and 4
 
 * **Interior:** the 32.06 x 26.04 mm octagonal bore is filled; the only cavity is the 30.2 x 16.2 mm slot (z 5 to the top), so the grip no longer
   rattles on your flat paddle handle (the gaps marked on your photos).
 * **Screw hole:** one 3.5 mm hole through the butt on the slot axis, to pin the grip to the paddle with an M3 allen screw.
 * **VORONOI-CORE:** with a solid body its through-windows are gone; its 54 cells stay as recesses about 1 mm deep between the rounded ribs (floors 2.46 mm above the base line, crests 3.5 mm).
-* **Weight:** roughly doubled (see above).
+* **Rev 3 weight:** roughly doubled (88-98 g), which rev 4 fixes.
+* **Rev 4 - countersink:** the screw hole gets a 90 degree chamfer, 6.4 mm at the butt face, so the screw head sits flush with the base.
+* **Rev 4 - hollow core:** a sealed, support-free cavity hollowed from the thick side walls (the 15 mm-thick region either side of the slot);
+  walls about 1.2 mm all round (minimum 1.10 mm); weight back to about 50-54 g.  Nothing outside changes.
 * Unchanged from revision 2: the outer skin of every design (smooth finish, textures, heights), the reference envelope, one closed body per grip.
 
 Earlier revisions: rev 1 = ten designs + colour 3MFs; rev 2 = smooth finish, 1.2 mm base walls, <= 50 g each.
@@ -160,14 +168,16 @@ python3 build_design_brochures.py   # -> brochure/designs/<id>_brochure.pdf
 
 Each STL is sliced at the mid-plane of every 0.20 mm layer (665 layers).
 
-| Design | Result | Bodies | Genus | Material < 0.4 mm wide | Longest bridge | Down-facing > 45 deg |
-|---|---|---|---|---|---|---|
+| Design | Result | Outer bodies | Genus | Sealed cavity | Wall around cavity, min / median mm | Material < 0.4 mm wide | Widest flat bridge |
+|---|---|---|---|---|---|---|---|
 {chr(10).join(prow)}
 
-* *Bodies / genus* - one closed body each, no enclosed voids; genus 1 = the screw hole joining the slot to the outside.
+* *Outer bodies / genus* - one closed outer body each; genus 1 = the screw hole joining the slot to the outside.  *Sealed cavity* = the hollow core (volume), an inward-facing shell inside the part.
+* *Wall around cavity* - 3D distance from 40 000 points on the cavity surface to the nearest outer surface.
 * *Material < 0.4 mm wide* - share of volume that a 0.4 mm nozzle line cannot hold (opening test on every layer; corner tips under 0.02 mm2 ignored).
-* *Longest bridge* - the widest unsupported run in any layer (material more than 0.35 mm past the layer below).  The textured skins are limited to
-  45 degrees so they never bridge, and the slot and screw hole are vertical, so nothing needs support.
+* *Widest flat bridge* - the short side of the widest patch of material that sits more than 0.35 mm past the layer below, over all 665 layers
+  (cavity ceilings are limited to 45 degrees or flat strips <= 4 mm).  The textured skins are limited to 45 degrees too, and the slot is
+  vertical, so nothing needs support.
 
 ## Colored 3MF (`3mf/`)
 
@@ -189,7 +199,7 @@ differ in how they import per-triangle colour, so expect to assign or paint fila
 
 Every STL is cross-sectioned at 40+ heights against the reference profile.
 
-| Design | Result | Height mm | Max outside ref. envelope mm | Foot profile err mm | Min relief floor, textured zone mm | Min skin at the neck mm | Slot measured mm | Material inside slot mm2 | Screw hole mm |
+| Design | Result | Height mm | Max outside ref. envelope mm | Foot profile err mm | Min relief floor, textured zone mm | Min skin at the neck mm | Slot measured mm | Material inside slot mm2 | Screw hole / countersink at face mm |
 |---|---|---|---|---|---|---|---|---|---|
 {chr(10).join(vrows)}
 
@@ -197,14 +207,14 @@ Every STL is cross-sectioned at 40+ heights against the reference profile.
   exception is the neck, below.
 * *Slot measured* - width x depth of the single cavity at z = 60; it must be one cavity at all 40 sampled heights and equal the slot outline.
 * *Material inside slot* - area of material within the slot shrunk by 0.05 mm, worst case over 40 heights (must be 0).
-* *Screw hole* - mean diameter over z 0.4 - 4.6 (must be round, on the slot axis, with the floor solid around it).
+* *Screw hole / countersink* - mean hole diameter over z 1.9 - 4.9 (round, on the slot axis, floor solid around it) and the cone diameter at the butt face (90 degrees, 6.4 mm).
 * *Min relief floor* - lowest the textured skin ever gets above the reference bore line (design value 1.2 mm).
 
 ![fit overlay](renders/fit_overlay.png)
 
 ## Printing notes
 
-* Print **upright, butt-end down**, 100 % infill, 0.20 mm layers (as planned).  Nothing needs supports.  Each grip is {min(prt[n]['weight_g']['PLA'] for n in DESC):.0f}-{wpmax:.0f} g in PLA.
+* Print **upright, butt-end down**, 100 % infill, 0.20 mm layers (as planned).  Nothing needs supports.  The sealed core is part of the model, so the slicer prints its walls with your perimeter count: use 3 perimeters (1.2 mm) or let gap-fill close the 1.2 mm walls; more perimeters would leave no room for the core's walls.  Each grip is {min(prt[n]['weight_g']['PLA'] for n in DESC):.0f}-{wpmax:.0f} g in PLA.
 * **Deliberate deviation from your reference - the neck outline.**  Your 3MF tapers to a 0.36 mm rim, thinner than one 0.4 mm line.  All ten keep the
   reference taper curve down to 0.8 mm and then hold 0.8 mm, so the
   top ~7 mm of the neck is up to **{fit['01_vortex_grip']['rim_added_vs_reference_mm']:.2f} mm larger** than the reference at the very rim.  If that

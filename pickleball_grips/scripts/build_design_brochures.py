@@ -326,7 +326,7 @@ def page_one(pg, n, cur, art):
     pg.rect(0, 0, 210, 297, fill=BG1)
     colour_strip(pg)
     spaced(pg, 12, 15.0, f"PG-{cur + 1:02d}  ·  THE GRIP COLLECTION", F_B, 7.0, "#9AA5B4", 1.4)
-    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  100 % SOLID", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
+    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  ABOUT 50 G", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
     spaced(pg, 12, 29.0, f"DESIGN {cur + 1:02d} OF 10", F_B, 7.2, acc, 1.5)
     title = LABEL[n].upper()
     size = 38.0
@@ -354,7 +354,7 @@ def page_one(pg, n, cur, art):
     pg.circle(cx, cy, cr, stroke=acc, sw_=0.7)
     pg.circle(cx, cy, cr + 1.6, stroke=acc, sw_=0.15)
     spaced(pg, cx, cy + cr + 5.2, CIRCLE_CAP.get(n, "CLOSE-UP  ·  MID BODY"), F_R, 4.8, "#8F9BAB", 0.6, anchor="c")
-    stats = [(f"{PRT[n]['weight_g']['PLA']:.1f} g", "PLA, SOLID")] + list(C["stats"])
+    stats = [(f"{PRT[n]['weight_g']['PLA']:.1f} g", "PLA, SEALED CORE")] + list(C["stats"])
     sx = x0 + 2 * cr + 7.0
     for i, (big, small) in enumerate(stats):
         ty = cy - cr + 5.0 + i * 15.8
@@ -405,13 +405,13 @@ def page_two(pg, n, cur, art):
     # views
     yb = 45.0
     for x, key, label in zip(xs, ("a", "b", "cutaway", "paddle"),
-                             ("3/4 VIEW  ·  TURN 0°", "SIDE VIEW  ·  TURN 90°", "CUTAWAY  ·  SOLID CORE", "ON A PADDLE  ·  ILLUSTRATION")):
+                             ("3/4 VIEW  ·  TURN 0°", "SIDE VIEW  ·  TURN 90°", "CUTAWAY  ·  HOLLOW CORE", "ON A PADDLE  ·  ILLUSTRATION")):
         pg.image(art["view_" + key], x, yb, 43.5, 76.0, quality=92, round_=2.4)
         cap(x, yb + 79.6, label)
     # surfaces
     yc = 131.0
     for x, key, label in zip(xs, ("surface", "rim", "swatch", "butt"),
-                             ("CLOSE-UP  ·  MID BODY", "RIM & SLOT  ·  FROM ABOVE", "UNROLLED  ·  RELIEF ×4" if n == "09_ergo_contour" else "UNROLLED  ·  LIT RELIEF", "BUTT  ·  Ø3.5 SCREW HOLE")):
+                             ("CLOSE-UP  ·  MID BODY", "RIM & SLOT  ·  FROM ABOVE", "UNROLLED  ·  RELIEF ×4" if n == "09_ergo_contour" else "UNROLLED  ·  LIT RELIEF", "BUTT  ·  Ø3.5 HOLE + CSK")):
         pg.image(ASSETS / n / f"{key}.png", x, yc, 43.5, 43.5, quality=90, round_=2.4)
         cap(x, yc + 47.2, label)
     # inspiration + why it grips

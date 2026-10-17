@@ -9,9 +9,9 @@ ACCENT = {
     "10_hexa_mod": ("#3FD0C2", "#14857C"),
 }
 
-HANDLE_NOTE = ("A solid sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
-               "closed at the butt with a 3.5 mm hole for an M3 screw, 132.8 mm long. The outer shape is the same on all ten designs, so you "
-               "can swap textures freely. A smooth collar at each end keeps the edges kind to your hand.")
+HANDLE_NOTE = ("A sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
+               "closed at the butt with a countersunk 3.5 mm hole so an M3 flat-head screw sits flush. About 1.2 mm of solid wall all round a sealed "
+               "hollow core keeps it near 50 g. The outer shape is the same on all ten designs, so you can swap textures freely.")
 
 CONTENT = {
     "01_vortex_grip": dict(

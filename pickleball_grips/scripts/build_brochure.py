@@ -159,7 +159,7 @@ def page_one(c, pg, hero):
     for i, (_, hx) in enumerate(PALETTE):
         pg.rect(i * 21, 0, 21.05, 3.2, fill="#" + hx)
     spaced(pg, 12, 15.0, "THE GRIP COLLECTION", F_B, 7.2, "#9AA5B4", 1.5)
-    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  100 % SOLID", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
+    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  ABOUT 50 G", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
     pg.text(11.4, 38.0, "Ten grips.", F_B, 46, WHITE)
     pg.text(11.4, 55.4, "One perfect fit.", F_B, 46, LIME)
     pg.para(12, 61.4, "Ten 3D-printed grip sleeves for your pickleball paddle: one shape underneath, ten different "
@@ -176,11 +176,11 @@ def page_one(c, pg, hero):
     yb = 217.0
     heading(pg, 12, yb, "The handle", LIME, WHITE, 90, "#2A3442")
     wts = [PRT[n]["weight_g"]["PLA"] for n in NAMES]
-    note = ("A solid sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
-            "closed at the butt with a 3.5 mm hole for an M3 screw, 132.8 mm long. The fit is identical on all ten designs, only the "
-            "surface changes, so you can swap textures freely. A smooth collar at each end keeps the edges kind to your hand.")
+    note = ("A sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
+            "closed at the butt with a countersunk 3.5 mm hole so an M3 flat-head screw sits flush. About 1.2 mm of solid wall all round a sealed "
+            "hollow core keeps it near 50 g. The fit is identical on all ten designs, only the surface changes, so you can swap textures freely.")
     yy = pg.para(12, yb + 3.6, note, 88, F_R, 8.3, "#C5CDD8", leading=11.0)
-    tiles = [(f"{min(wts):.0f}–{max(wts):.0f} g", "PER GRIP, SOLID"), ("100 %", "INFILL"), ("Ø 3.5 mm", "SCREW HOLE"), ("1 colour", "PLA, NO SWAPS")]
+    tiles = [(f"{min(wts):.0f}–{max(wts):.0f} g", "PER GRIP, PLA"), ("100 %", "INFILL"), ("Ø 3.5 mm", "SCREW HOLE"), ("1 colour", "PLA, NO SWAPS")]
     tw, gap = 20.5, 2.0
     ty = yy + 4.0
     for i, (big, small) in enumerate(tiles):

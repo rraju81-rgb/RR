@@ -92,7 +92,7 @@ CONTENT = {
         id="07", accent="#8A54E4",
         tagline="Voronoi rib lattice with recessed cells between rounded ribs.",
         intent="Irregular Voronoi cells become 2.6 mm ribs with rounded crests, and the cells between the ribs are recessed about "
-               "1 mm. The lattice is relaxed for even cells but keeps a natural irregularity. Like the other nine it is a solid body.",
+               "1 mm. The lattice is relaxed for even cells but keeps a natural irregularity. Like the other nine it is filled, with a sealed hollow core in the walls.",
         features=["54 recessed cells in the band z 27.5 - 103.5 mm",
                   "2.6 mm ribs standing at the full 3.5 mm crest",
                   "Cell floors 2.46 mm above base, about 1 mm below the rib crests"],

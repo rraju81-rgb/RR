@@ -51,7 +51,15 @@ def triangle_classes(F, V, faces, d):
     c = cls[j, i].astype(int)
     in_zone = (z >= zr[0]) & (z <= zr[-1]) & (F.zone_window(np.clip(z, zr[0], zr[-1])) > 0.5)
     c = np.where(in_zone, c, collar)              # foot, collars, taper, butt
-    c = np.where(off < 0.03, collar, c)           # bore wall and floor
+    c = np.where(off < 0.03, collar, c)           # slot wall and floor
+    # sealed lightening cavity (inward-facing shell, negative volume): never visible, take the collar colour
+    import trimesh
+    comp = trimesh.graph.connected_components(trimesh.Trimesh(V, faces, process=False).face_adjacency, nodes=np.arange(len(faces)))
+    tri = V[faces]
+    for nodes in comp:
+        t = tri[nodes]
+        if np.einsum("ij,ij->", t[:, 0], np.cross(t[:, 1], t[:, 2])) / 6 < 0:
+            c[nodes] = collar
     return c
 
 
