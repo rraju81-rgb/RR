@@ -74,7 +74,7 @@ All ten are **{wmin:.0f}-{wpmax:.0f} g in PLA** (up to {wmax:.0f} g in PETG; den
 (outer volume - sealed core) x density, so budget +-3 %.  History: rev 2 was 40-49 g (a bore, no paddle slot), rev 3 filled the bore down to the slot
 (88-98 g), rev 4 hollowed the walls (50-54 g) but the hollow head cracked, rev 5 made the head solid again (about 5 g heavier), rev 6 thickens the head wall and the base is 1.6 mm thinner.
 The hollow core is **sealed**: nothing can be seen or reached from outside - it is just air.  Walls around it are about 1.2 mm (3 x 0.4 mm
-perimeters; measured 3D median 1.2 mm, minimum 1.10 mm - table below).  Generate the fully solid version with
+perimeters; measured 3D median 1.2 mm, minimum about 1.1 mm - table below).  Generate the fully solid version with
 `python3 scripts/generate_grips.py --solid` (about 90-100 g).
 
 ## What is identical on all ten
@@ -85,7 +85,7 @@ perimeters; measured 3D median 1.2 mm, minimum 1.10 mm - table below).  Generate
 | Paddle slot | **30.2 x 16.2 mm** rounded rectangle (corner radius 0.3 mm) = measured tongue 30 x 16 mm + 0.2 mm clearance; wide axis along x; floor at **z = 3.4** mm (a **3.4 mm base**; the reference's was {P['z_floor']} mm); open at the top with a **0.5 mm 45 degree lead-in chamfer** |
 | Screw hole | **3.5 mm** round, on the slot axis, through the 3.4 mm butt (z 0 - 3.4), with a **6.2 mm x 2.2 mm counterbore** at the butt face: a **low-head** M3 cap screw (DIN 7984: 5.5 mm x 2.0 mm head) sits flush, with 1.2 mm of floor left under its head - use an M3 x 12-16 mm low-head screw (a standard 3.0 mm head would stand 0.8 mm proud) |
 | Head | **solid from z 100 up**; the wall between the slot and the outside grows smoothly from z 90 and is **at least 3.5 mm from z 112 up** (the neck is about 1.8 mm wider at each slot end than the reference); **both short side walls (the 30 mm-direction ends of the slot) are slit open over the top 20 mm (z 113.4 to 133.4)**, as wide as the slot is thick, so the flared throat of the paddle passes; what is left above the slits is two separate long-wall plates, about 5.7 mm thick |
-| Hollow core | a sealed cavity in the thick side walls below z 100 (about 24-30 cm3; one connected piece on most designs, a few pieces on NEURO-TREAD, VORONOI-CORE and HEXA-MOD), walls about 1.1-1.2 mm or more to every outer surface, the slot, the hole and the floor (measured in 3D, table below); roofs at <= 45 degrees (flat bridges <= 4 mm) so it prints without supports; none under the slot floor, where the screw bears; no through-windows |
+| Hollow core | a sealed cavity in the thick side walls below z 100 (about 24-29 cm3; one connected piece on most designs, a few pieces on NEURO-TREAD, VORONOI-CORE and HEXA-MOD), walls about 1.1-1.2 mm or more to every outer surface, the slot, the hole and the floor (measured in 3D, table below); roofs at <= 45 degrees (flat bridges <= 4 mm) so it prints without supports; none under the slot floor, where the screw bears; no through-windows |
 | Foot / butt flare | z 0-20: outer skin {np.interp(2.0, fz, fe):.2f} (at z = 2) -> {fe[-1]:.2f} mm from the reference bore line (at z = 20), ~2 mm bottom fillet, flat closed butt (max 42.6 x 36.6 mm) - unchanged |
 | Outer envelope | below z 90 no grip exceeds the reference's own outer envelope (crest {P['crest_offset']} mm from the reference bore line); the head above is thicker, see above |
 

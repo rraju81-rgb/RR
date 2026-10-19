@@ -796,7 +796,7 @@ def page_contents(cx, recs):
 def page_compare(cx, recs):
     pg = cx.pg
     book_furniture(cx, "All ten at a glance")
-    page_title(pg, 17.0, "All ten at a glance", "Same paddle slot, same foot, same envelope; ten different surfaces, all close to 50 g.")
+    page_title(pg, 17.0, "All ten at a glance", "Same paddle slot, same foot, same envelope; ten different surfaces, all 56 to 61 g in PLA.")
     x0, y0 = 12.0, 34.0
     cols = [("", 13), ("DESIGN", 33), ("VOLUME", 16), ("PLA g", 15), ("PETG g", 15), ("TPU g", 15), ("ABS g", 15), ("PEAK", 16), ("BAND W×D", 24), ("BRIDGE", 12), ("COLOURS", 12)]
     xs = [x0]
@@ -951,7 +951,7 @@ def page_reference(cx, recs):
     cavs = [r["prt"]["cavity_volume_cm3"] for r in recs]
     dev = [("Interior", f"filled; slot {sw_mm:.1f} × {st_mm:.1f} mm", "Replaces the 32.06 × 26.04 mm bore. Slot = measured paddle tongue 30 × 16 mm + 0.2 mm."),
            ("Screw hole", f"Ø {hole_d:.1f} mm + Ø {HEAD_D:.1f} × {HEAD_H:.1f} counterbore", f"A low-head M3 cap screw (head 5.5 × 2.0 mm) sits flush with the butt; {zf - HEAD_H:.1f} mm of floor is left under its head."),
-           ("Head", f"slot wall ≥ {HEAD_WALL:.1f} mm, end slits {SLIT_DEPTH:.0f} mm", "Rev 5 had 1.1 mm at the slot corners and cracked where the paddle throat flares. Both end walls are now slit open over the top 20 mm so the throat passes; walls ≥ 3.5 mm below, solid from z 100."),
+           ("Head", f"slot wall ≥ {HEAD_WALL:.1f} mm, end slits {SLIT_DEPTH:.0f} mm", "Rev 5 cracked at the slot corners (1.1 mm wall). Both end walls are now slit open over the top 20 mm for the paddle throat; walls ≥ 3.5 mm below."),
            ("Hollow core", f"sealed, {min(cavs):.0f} – {max(cavs):.0f} cm³, {min(plas):.0f} – {max(plas):.0f} g PLA", "Only in the thick side walls, z 1 – 100, walls ≈ 1.2 mm. Roofs ≤ 45°, no supports. (Rev 3 fully solid: 88 – 98 g.)"),
            ("Length", f"{ztop:.1f} mm = {zf:.1f} base + {ztop - zf:.1f} slot", "Rev 5 had a 5.0 mm base (135.0 mm); the base is now 1.6 mm thinner and the slot depth is unchanged.")]
     for a_, b_, c_ in dev:
