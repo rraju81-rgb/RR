@@ -82,19 +82,24 @@ def _extrude_xz(poly, y0, y1, xm, ym):
 
 def make_paddle(out, width=190.0, top=402.0, tongue_w=30.0, thick=16.0):
     """Illustrative paddle matching the measured one: a flat 16 mm slab whose handle is a 30 mm wide tongue that slides
-    into the grip slot, flaring into a rounded face.  Light core edge, dark face plates on the face only."""
+    into the grip slot, flaring into a rounded face.  The face widens right at the rim of the grip (as on the real paddle),
+    so the throat passes through the slits in the two end walls.  Light core edge, dark face plates on the face only."""
+    from shapely.geometry import Polygon
     F = Frame()
     xm, ym = bore_centre(F)
     z0 = F.z_floor                                                  # the tongue sits on the slot floor
-    face = box(xm - width / 2, 176.0, xm + width / 2, top).buffer(-46).buffer(46)             # rounded face
-    tongue = box(xm - tongue_w / 2, z0, xm + tongue_w / 2, 200.0)
-    outline = unary_union([face, tongue]).buffer(26).buffer(-26)                              # smooth flare where they meet
+    zr = F.z_top                                                    # the throat starts at the rim of the grip
+    h = (width / 2 - tongue_w / 2) * 0.9                            # about 42 degrees from the horizontal
+    face = box(xm - width / 2, zr + h - 1.0, xm + width / 2, top).buffer(-46).buffer(46)      # rounded face
+    wedge = Polygon([(xm - tongue_w / 2, zr), (xm + tongue_w / 2, zr), (xm + width / 2, zr + h), (xm - width / 2, zr + h)])
+    tongue = box(xm - tongue_w / 2, z0, xm + tongue_w / 2, zr + 2.0)
+    outline = unary_union([face, wedge, tongue]).buffer(12).buffer(-12)                       # small fillet where throat meets tongue
     core_rgb, plate_rgb = (232, 229, 222), (46, 54, 66)
     parts = []
     for g in (outline.geoms if hasattr(outline, "geoms") else [outline]):
         V, Fc = _extrude_xz(g, -thick / 2, thick / 2, xm, ym)
         parts.append((V, Fc, np.array(core_rgb, np.uint8)))
-    plate = outline.buffer(-0.9).intersection(box(xm - 300, 166.0, xm + 300, top + 10))        # printed face starts at the throat
+    plate = outline.buffer(-0.9).intersection(box(xm - 300, zr + 3.0, xm + 300, top + 10))      # printed face starts at the throat
     for g in (plate.geoms if hasattr(plate, "geoms") else [plate]):
         if g.is_empty or g.geom_type != "Polygon":
             continue

@@ -248,6 +248,7 @@ BASE = 3.4                             # mm - base (butt) thickness = height of 
 SLOT_DEPTH = 130.0                     # mm - paddle handle covered by the grip (13.0 cm)
 Z_TOP = BASE + SLOT_DEPTH              # mm - overall length 133.4 mm (the reference sleeve was 132.823 mm)
 HEAD_WALL = 3.5                        # mm - minimum wall between the paddle slot and the outside over the head (the slot mouth cracked at 1.1 mm)
+SLIT_DEPTH = 20.0                      # mm - both short (30 mm direction) side walls of the slot are open from the top down this far, so the flared throat of the paddle passes
 HEAD_RAMP = (90.0, 112.0)              # mm - the wall requirement grows smoothly from 0 at z = 90 to HEAD_WALL at z = 112 and stays up to the top
 MOUTH_CHAMFER = 0.5                    # mm - 45 degree lead-in at the slot mouth, so the flare of the paddle neck does not pry the rim
 
@@ -291,8 +292,8 @@ def build_mesh_solid(F, z, H):
 
 
 def carve_cavity(F, V, Fc, hole_d=HOLE_D, head_d=HEAD_D, head_h=HEAD_H, chamfer=MOUTH_CHAMFER):
-    """Subtract the paddle slot (z_floor .. top, with a 45 degree lead-in chamfer at its mouth), the screw hole (butt .. floor)
-    and the counterbore for the screw head at the butt face."""
+    """Subtract the paddle slot (z_floor .. top, with a 45 degree lead-in chamfer at its mouth), the screw hole (butt .. floor),
+    the counterbore for the screw head at the butt face and the two side slits through the end walls of the slot at the head."""
     import manifold3d as m3d
     import trimesh
     slot = slot_polygon(F)
@@ -304,13 +305,18 @@ def carve_cavity(F, V, Fc, hole_d=HOLE_D, head_d=HEAD_D, head_h=HEAD_H, chamfer=
     slot_m = m3d.Manifold(m3d.Mesh(pv.astype(np.float32), np.asarray(pm.faces, np.uint32)))
     hole = m3d.Manifold.cylinder(F.z_floor + 2.0, hole_d / 2, hole_d / 2, 48).translate((cx, cy, -1.0))
     cbore = m3d.Manifold.cylinder(head_h + 0.5, head_d / 2, head_d / 2, 64).translate((cx, cy, -0.5))   # counterbore: flat floor at z = head_h
-    # lead-in chamfer: hull of the slot outline raised 0.1 mm above the top (grown by chamfer + 0.1) and the slot outline at z_top - chamfer
-    outer = slot.buffer(chamfer + 0.1, 16)
-    pts = np.vstack([np.c_[np.asarray(outer.exterior.coords)[:-1], np.full(len(outer.exterior.coords) - 1, F.z_top + 0.1)],
-                     np.c_[np.asarray(slot.exterior.coords)[:-1], np.full(len(slot.exterior.coords) - 1, F.z_top - chamfer)]])
-    hull = trimesh.convex.convex_hull(pts)
-    mouth = m3d.Manifold(m3d.Mesh(np.asarray(hull.vertices, np.float32), np.asarray(hull.faces, np.uint32)))
-    res = (base - slot_m - hole - cbore - mouth)
+    # lead-in chamfer on the top edge of the two long walls (the end walls are slit away): a 45 degree wedge along each inner face
+    sb = slot.bounds
+    wedges = []
+    for y_in, sg in ((sb[1], 1.0), (sb[3], -1.0)):                      # inner face of the wall on the -y / +y side; wall material lies at sg * (y - y_in) < 0
+        tri_yz = [(y_in + sg * 1.0, F.z_top - chamfer - 1.0), (y_in - sg * (chamfer + 0.1), F.z_top + 0.1), (y_in + sg * 1.0, F.z_top + 0.1)]
+        pts = np.array([[cx - 40.0, y, z] for y, z in tri_yz] + [[cx + 40.0, y, z] for y, z in tri_yz])
+        w = trimesh.convex.convex_hull(pts)
+        wedges.append(m3d.Manifold(m3d.Mesh(np.asarray(w.vertices, np.float32), np.asarray(w.faces, np.uint32))))
+    mouth = wedges[0] + wedges[1]
+    # side slits: the two end walls of the slot are cut away over the top SLIT_DEPTH mm, the full slot thickness wide (flush with the long walls)
+    slits = m3d.Manifold.cube((80.0, sb[3] - sb[1], SLIT_DEPTH + 2.0)).translate((cx - 40.0, sb[1], F.z_top - SLIT_DEPTH))
+    res = (base - slot_m - hole - cbore - mouth - slits)
     res = res.simplify(0.002)
     m = res.to_mesh()
     return np.asarray(m.vert_properties[:, :3], np.float64), np.asarray(m.tri_verts, np.int32)

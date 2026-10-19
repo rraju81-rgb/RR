@@ -58,8 +58,8 @@ txt = f"""# Pickleball paddle grips - ten designs, one paddle slot
 Ten printable grip sleeves generated from the catalog image.  The outer envelope comes from `reference/PickleballGrip_1.3mf`; only the
 outer surface differs between designs.  **Revision 6:** every grip is **133.4 mm (13.3 cm) long** - a **3.4 mm base** under a **130 mm deep** paddle slot
 of 30.2 x 16.2 mm (the measured 30 x 16 mm flat handle + 0.2 mm) - so the paddle seats fully and its neck flare no longer rests on the rim; the
-**head (z 100 up) is solid and the wall around the slot is at least 3.5 mm thick from z 112 to the top** (it was 1.1 mm at the slot corners, where it cracked), with a
-0.5 mm lead-in chamfer at the slot mouth; the 3.5 mm screw hole in the butt has a **6.2 x 2.2 mm counterbore** so a low-head M3 cap screw (DIN 7984, 2.0 mm head)
+**head (z 100 up) is solid; the wall around the slot is at least 3.5 mm thick from z 112 up** (it was 1.1 mm at the slot corners, where it cracked), and
+**both short side walls of the slot are slit open over the top 20 mm** so the flared throat of the paddle slides in smoothly, with a 0.5 mm lead-in chamfer at the slot mouth; the 3.5 mm screw hole in the butt has a **6.2 x 2.2 mm counterbore** so a low-head M3 cap screw (DIN 7984, 2.0 mm head)
 sits flush; the rest of the walls keep a sealed hollow core.
 
 ![catalog](renders/catalog.png)
@@ -84,7 +84,7 @@ perimeters; measured 3D median 1.2 mm, minimum 1.10 mm - table below).  Generate
 | Overall length | **133.4 mm = 13.3 cm**: 3.4 mm base + 130.0 mm slot (the reference sleeve was {P['z_top']} mm; the 0.6 mm extension continues the neck straight up) |
 | Paddle slot | **30.2 x 16.2 mm** rounded rectangle (corner radius 0.3 mm) = measured tongue 30 x 16 mm + 0.2 mm clearance; wide axis along x; floor at **z = 3.4** mm (a **3.4 mm base**; the reference's was {P['z_floor']} mm); open at the top with a **0.5 mm 45 degree lead-in chamfer** |
 | Screw hole | **3.5 mm** round, on the slot axis, through the 3.4 mm butt (z 0 - 3.4), with a **6.2 mm x 2.2 mm counterbore** at the butt face: a **low-head** M3 cap screw (DIN 7984: 5.5 mm x 2.0 mm head) sits flush, with 1.2 mm of floor left under its head - use an M3 x 12-16 mm low-head screw (a standard 3.0 mm head would stand 0.8 mm proud) |
-| Head | **solid from z 100 up**, and the wall between the slot and the outside grows smoothly from z 90 and is **at least 3.5 mm from z 112 to the top** (the neck is about 1.8 mm wider at each slot end than the reference); it carries the pry of the paddle neck when the paddle is slid in |
+| Head | **solid from z 100 up**; the wall between the slot and the outside grows smoothly from z 90 and is **at least 3.5 mm from z 112 up** (the neck is about 1.8 mm wider at each slot end than the reference); **both short side walls (the 30 mm-direction ends of the slot) are slit open over the top 20 mm (z 113.4 to 133.4)**, as wide as the slot is thick, so the flared throat of the paddle passes; what is left above the slits is two separate long-wall plates, about 5.7 mm thick |
 | Hollow core | a sealed cavity in the thick side walls below z 100 (about 24-30 cm3; one connected piece on most designs, a few pieces on NEURO-TREAD, VORONOI-CORE and HEXA-MOD), walls about 1.1-1.2 mm or more to every outer surface, the slot, the hole and the floor (measured in 3D, table below); roofs at <= 45 degrees (flat bridges <= 4 mm) so it prints without supports; none under the slot floor, where the screw bears; no through-windows |
 | Foot / butt flare | z 0-20: outer skin {np.interp(2.0, fz, fe):.2f} (at z = 2) -> {fe[-1]:.2f} mm from the reference bore line (at z = 20), ~2 mm bottom fillet, flat closed butt (max 42.6 x 36.6 mm) - unchanged |
 | Outer envelope | below z 90 no grip exceeds the reference's own outer envelope (crest {P['crest_offset']} mm from the reference bore line); the head above is thicker, see above |
@@ -113,8 +113,10 @@ a hollow honeycomb core (your cross-section photo), so a screw into its end face
 * **Rev 5 - counterbore** instead of the countersink, for cap-head screws.
 * **Rev 6 - base:** 3.4 mm instead of 5.0 mm (slot depth unchanged at 130 mm, so the grip is 133.4 mm long and the assembled paddle is 1.6 mm shorter).  The
   counterbore is 6.2 x 2.2 mm for a low-head M3 cap screw; the floor under the screw head stays 1.2 mm.
-* **Rev 6 - head wall:** the wall between the slot and the outside is at least 3.5 mm from z 112 to the top (was 1.1 mm at the slot corners and 1.7 mm at the slot ends in
-  rev 5, where the head cracked); it grows smoothly from z 90, the head is solid from z 100.  Weight now {wmin:.0f}-{wpmax:.0f} g in PLA.
+* **Rev 6 - head wall:** the wall between the slot and the outside is at least 3.5 mm from z 112 up (was 1.1 mm at the slot corners and 1.7 mm at the slot ends in
+  rev 5, where the head cracked); it grows smoothly from z 90, the head is solid from z 100.
+* **Rev 6 - side slits:** both short side walls of the slot are slit open over the top 20 mm (`SLIT_DEPTH` in `scripts/grip_core.py`), as wide as the slot is thick, so the
+  flared throat of the paddle (where the face widens into the handle) has room and cannot pry the end walls off, as it did in your photos.  Weight now {wmin:.0f}-{wpmax:.0f} g in PLA.
 
 Earlier revisions: rev 1 = ten designs + colour 3MFs; rev 2 = smooth finish, 1.2 mm base walls, <= 50 g each.
 
@@ -215,7 +217,8 @@ Every STL is cross-sectioned at 40+ heights against the reference profile.
 
 * *Max outside ref. envelope* - how far the outer skin ever exceeds the reference's own outer envelope below z 90 (must be ~0).  The deliberate
   exceptions are the thickened head and the neck rim, below.
-* *Min slot wall, head* - the least distance from the slot outline to the outer surface over z 112 to just under the mouth chamfer (must be >= 3.5 mm).
+* *Min slot wall, head* - the least distance from the slot outline to the outer surface from z 112 to the slits, and the thickness of the two long-wall plates above them (must be >= 3.5 mm).
+* Slits are also checked: nothing inside the slot + slit strip over the top 20 mm, exactly two separate plates, end wall still present just below the slit and gone just above it.
 * *Slot measured* - width x depth of the single cavity at z = 60; it must be one cavity at all 40 sampled heights and equal the slot outline.
 * *Material inside slot* - area of material within the slot shrunk by 0.05 mm, worst case over 40 heights (must be 0).
 * *Screw hole / counterbore* - mean hole diameter over z 2.5 - 3.3 (round, on the slot axis, floor solid around it) and the counterbore diameter at z 0.1 / 1.0 / 2.0 (6.2 mm, flat floor at 2.2 mm).

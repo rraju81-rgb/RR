@@ -178,7 +178,7 @@ def page_one(c, pg, hero):
     wts = [PRT[n]["weight_g"]["PLA"] for n in NAMES]
     note = ("A sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
             "130 mm deep so the paddle seats fully, with a thin 3.4 mm base and a counterbored 3.5 mm hole that takes a low-head M3 cap screw flush. "
-            "The head is solid with walls at least 3.5 mm thick around the slot; a sealed hollow core lightens the rest. The fit is identical on all ten designs, only the surface changes.")
+            "The head is solid, with both short side walls of the slot slit open at the top so the flared throat of the paddle slides in smoothly; a sealed hollow core lightens the rest. The fit is identical on all ten designs, only the surface changes.")
     yy = pg.para(12, yb + 3.6, note, 88, F_R, 8.3, "#C5CDD8", leading=11.0)
     tiles = [(f"{min(wts):.0f}–{max(wts):.0f} g", "PER GRIP, PLA"), ("13.3 cm", "LENGTH"), ("M3 low-head", "SCREW, FLUSH"), ("1 colour", "PLA, NO SWAPS")]
     tw, gap = 20.5, 2.0

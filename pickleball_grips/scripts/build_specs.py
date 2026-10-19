@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pdfkit import *  # noqa: E402,F401,F403
 from pdfkit import MM, PAGE_W, PAGE_H  # noqa: E402
 from spec_content import CONTENT  # noqa: E402
-from grip_core import HEAD_D, HEAD_H, HEAD_WALL, HEAD_RAMP, BASE  # noqa: E402
+from grip_core import HEAD_D, HEAD_H, HEAD_WALL, HEAD_RAMP, BASE, SLIT_DEPTH  # noqa: E402
 from designs import DESIGNS  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -413,7 +413,7 @@ def page_drawing(cx, rec):
     pg.text(11, ty + 24.0, "GENERAL NOTES", F_R, 5.2, MUTED)
     notes = ["1. Views are true size: print this sheet at 100 %, do not fit to page.",
              "2. Dimensions are measured from the STL, not nominal.",
-             "3. Sealed hollow core, walls ≈ 1.2 mm; head above z 100 is solid, slot wall ≥ 3.5 mm.",
+             "3. Sealed hollow core, walls ≈ 1.2 mm; head above z 100 solid, end walls slit 20 mm.",
              "4. Outer envelope matches PickleballGrip_1.3mf below z 90; head thickened."]
     for i, t in enumerate(notes):
         pg.text(11, ty + 28.4 + i * 3.1, t, F_R, 6.0, INK)
@@ -728,7 +728,7 @@ def page_cover(cx, recs):
         pg.text(12 + c_ * cw + cw / 2, y + hh + 10.4, f"{rec['content']['id']}  ·  {rec['overall']['weight_g']['PLA']:.1f} g PLA", F_R, 5.8, MUTED, anchor="c")
     # fact strip
     plas = [r["overall"]["weight_g"]["PLA"] for r in recs]
-    facts = [(f"{recs[0]['overall']['z']:.1f} mm", "overall length, 13.5 cm"), (f"{recs[0]['bore']['x']:.1f} × {recs[0]['bore']['y']:.1f} mm", "paddle slot, identical on all ten"),
+    facts = [(f"{recs[0]['overall']['z']:.1f} mm", "overall length, 13.3 cm"), (f"{recs[0]['bore']['x']:.1f} × {recs[0]['bore']['y']:.1f} mm", "paddle slot, identical on all ten"),
              (f"{min(plas):.0f} – {max(plas):.0f} g", "in PLA, sealed hollow core"), ("Ø 3.5 mm", "screw hole through the butt")]
     fx = 14.0
     for big, small in facts:
@@ -899,6 +899,12 @@ def page_reference(cx, recs):
         Ez, E8z = np.interp(zr, zz, E), np.interp(zr, zz, E08)
         pg.polygon([(ex + (bx0 - xm) - g, ez0 - z) for z, g in zip(zr, E8z)] + [(ex + (bx0 - xm) - e, ez0 - z) for z, e in list(zip(zr, Ez))[::-1]], fill=tint(RED, 0.4), stroke=None)
         pg.polygon([(ex + (bx1 - xm) + g, ez0 - z) for z, g in zip(zr, E8z)] + [(ex + (bx1 - xm) + e, ez0 - z) for z, e in list(zip(zr, Ez))[::-1]], fill=tint(RED, 0.4), stroke=None)
+    zs_ = np.linspace(ztop - SLIT_DEPTH, ztop, 12)
+    for sgn, xs in ((-1, ex + (sb[0] - scx)), (1, ex + (sb[2] - scx))):                       # the two end-wall slits (white windows)
+        xb = ex + (bx0 - xm) if sgn < 0 else ex + (bx1 - xm)
+        outer = [(xb + sgn * float(np.interp(z, zz, E08)), ez0 - z) for z in zs_]
+        pg.polygon([(xs, ez0 - zs_[0])] + outer + [(xs, ez0 - zs_[-1])], fill=WHITE, stroke=INK, sw_=0.3)
+    pg.leader(ex + (bx1 - xm) + float(np.interp(ztop - SLIT_DEPTH / 2, zz, E08)) - 0.2, ez0 - (ztop - SLIT_DEPTH / 2), ex + (bx1 - xm) + 9.0, ez0 - (ztop - SLIT_DEPTH / 2) + 8.0, "end slit, 20 deep", color=MUTED, size=5.8)
     xe = ex + (bx0 - xm) - 5.0
     for z0, z1 in ((0, zf), (zf, 20.0), (20.0, tz[0]), (tz[0], ztop)):
         pg.dim_v(ez0 - z1, ez0 - z0, xe - 7.0, f"{z1 - z0:.2f}" if z1 - z0 > 0 else "", ext1=xe + 1.0, ext2=xe + 1.0, size=6.0)
@@ -945,7 +951,7 @@ def page_reference(cx, recs):
     cavs = [r["prt"]["cavity_volume_cm3"] for r in recs]
     dev = [("Interior", f"filled; slot {sw_mm:.1f} × {st_mm:.1f} mm", "Replaces the 32.06 × 26.04 mm bore. Slot = measured paddle tongue 30 × 16 mm + 0.2 mm."),
            ("Screw hole", f"Ø {hole_d:.1f} mm + Ø {HEAD_D:.1f} × {HEAD_H:.1f} counterbore", f"A low-head M3 cap screw (head 5.5 × 2.0 mm) sits flush with the butt; {zf - HEAD_H:.1f} mm of floor is left under its head."),
-           ("Head wall", f"≥ {HEAD_WALL:.1f} mm slot → outside, z 112 – top", "Rev 5 had only 1.1 mm at the slot corners and cracked there. The neck now keeps a 3.5 mm wall (about 1.8 mm more at each slot end), solid from z 100; 0.5 mm lead-in at the mouth."),
+           ("Head", f"slot wall ≥ {HEAD_WALL:.1f} mm, end slits {SLIT_DEPTH:.0f} mm", "Rev 5 had 1.1 mm at the slot corners and cracked where the paddle throat flares. Both end walls are now slit open over the top 20 mm so the throat passes; walls ≥ 3.5 mm below, solid from z 100."),
            ("Hollow core", f"sealed, {min(cavs):.0f} – {max(cavs):.0f} cm³, {min(plas):.0f} – {max(plas):.0f} g PLA", "Only in the thick side walls, z 1 – 100, walls ≈ 1.2 mm. Roofs ≤ 45°, no supports. (Rev 3 fully solid: 88 – 98 g.)"),
            ("Length", f"{ztop:.1f} mm = {zf:.1f} base + {ztop - zf:.1f} slot", "Rev 5 had a 5.0 mm base (135.0 mm); the base is now 1.6 mm thinner and the slot depth is unchanged.")]
     for a_, b_, c_ in dev:
@@ -968,9 +974,9 @@ def page_reference(cx, recs):
     pg.text(x1 + 24.0, y1 + 29.0, "below z 90 the grip never exceeds the solid line", F_R, 5.8, MUTED)
     worst = max(r["fit"]["max_over_reference_envelope_mm"] for r in recs)
     heading(pg, 132, cyy, "How it was verified", INK, 66)
-    steps = [f"Slot: the cavity around the axis from z {zf:.1f} to the top equals the slot outline; no material inside it (0.000 mm²).",
+    steps = [f"Slot: the cavity around the axis from z {zf:.1f} to the slits equals the slot outline; no material inside it or inside the slits (0.000 mm²).",
              f"Screw hole: one round Ø {hole_d:.1f} mm hole on the axis, Ø {HEAD_D:.1f} × {HEAD_H:.1f} counterbore at the butt face, floor solid around it.",
-             f"Envelope: outer skin vs the reference below z 90, worst case {worst:+.3f} mm; head wall ≥ {HEAD_WALL:.1f} mm from z 112 (min {min(r['fit']['head_wall_min_mm'] for r in recs):.2f} mm).",
+             f"Envelope: outer skin vs the reference below z 90, worst case {worst:+.3f} mm; head wall ≥ {HEAD_WALL:.1f} mm from z 112 and long walls ≥ {HEAD_WALL:.1f} mm in the slit zone (min {min(r['fit']['head_wall_min_mm'] for r in recs):.2f} mm).",
              "Hollow core: wall to the nearest outer surface measured in 3D (median 1.2 mm, min 1.1 mm); no cavity above z 100.",
              "Print check: every 0.20 mm layer sliced; one outer body, no material under 0.4 mm wide, flat bridges ≤ 4 mm."]
     yy = cyy + 4.0
@@ -1000,7 +1006,7 @@ def page_notes(cx, recs):
             ("3", "Solid body, 30 × 16 mm paddle slot, Ø3.5 mm screw hole; Voronoi windows removed"),
             ("4", "Sealed hollow core (≈ 50 g), 90° countersink on the screw hole"),
             ("5", "135 mm long (130 mm slot, 5 mm base), cap-head counterbore, solid head above z 110, 0.5 mm slot lead-in"),
-            ("6", "3.4 mm base (low-head M3 counterbore 6.2 × 2.2), 3.5 mm slot wall over the head, solid above z 100")]
+            ("6", "3.4 mm base (low-head M3 counterbore 6.2 × 2.2), 3.5 mm slot wall over the head, solid above z 100, both end walls slit 20 mm")]
     table(pg, 12, y, [10, 78], rows, header=["Rev", "Change"], row_h=5.3, size=7.0, aligns=["l", "l"], fonts=[F_B, F_R], zebra=False, hsize=5.8)
     x2 = 104.0
     y = heading(pg, x2, 36.0, "Densities used (g/cm³)", INK, 94)

@@ -8,7 +8,10 @@ For each grip:
     - except the deliberate rim thickening (reference tapers to 0.36 mm; grips keep >= 0.8 mm) and the head thickening
       (z >= 90: the wall between the paddle slot and the outside grows to 3.5 mm), both reported separately
   * FOOT (z<20) outer profile equals the reference
-  * HEAD WALL: from z = 112 to the mouth chamfer the outer surface is >= 3.5 mm from the slot all round
+  * HEAD WALL: from z = 112 up to the slits the outer surface is >= 3.5 mm from the slot all round; above the slits the two
+    long walls are >= 3.5 mm thick
+  * SIDE SLITS: over the top 20 mm both end walls of the slot are cut away, as wide as the slot is thick: nothing inside the
+    slot + slit region, and both long walls stay as separate plates
   * SLOT: at every height the cavity around the axis is the 30 x 16 mm paddle slot (+0.2 mm clearance), z 5 .. top;
     no material inside the slot (the sealed lightening cavity in the side walls is checked in verify_print.py)
   * SCREW HOLE: one 3.5 mm hole through the butt (z 0 .. 3.4) on the slot axis with a 6.2 mm x 2.2 mm counterbore for a low-head
@@ -28,7 +31,7 @@ import trimesh
 from shapely.geometry import Polygon, Point, LineString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from grip_core import Frame, slot_polygon, bore_centre, HOLE_D, HEAD_D, HEAD_H, BASE, HEAD_WALL, HEAD_RAMP, MOUTH_CHAMFER, PADDLE_W, PADDLE_T, SLOT_CLEAR  # noqa: E402
+from grip_core import Frame, slot_polygon, bore_centre, HOLE_D, HEAD_D, HEAD_H, BASE, HEAD_WALL, HEAD_RAMP, SLIT_DEPTH, MOUTH_CHAMFER, PADDLE_W, PADDLE_T, SLOT_CLEAR  # noqa: E402
 from lighten import HEAD_SOLID_FROM  # noqa: E402
 from designs import DESIGNS  # noqa: E402
 
@@ -70,6 +73,7 @@ def main():
     ring = cav.exterior
     slot = slot_polygon(F)
     cx, cy = bore_centre(F)
+    sb_ = slot.bounds
     hole_area = np.pi * (HOLE_D / 2) ** 2
     rb = ref.bounds
     rows = []
@@ -84,8 +88,16 @@ def main():
         over = foot_err = rim_add = head_add = 0.0
         min_wall = rim_min = head_wall = 9.0
         peak = 0.0
-        for z in list(np.arange(0.5, 20, 1.5)) + list(np.arange(21, 111, 6.0)) + list(np.arange(112, F.z_top - 0.2, 2.0)):
+        for z in list(np.arange(0.5, 20, 1.5)) + list(np.arange(21, 111, 6.0)) + [112.0, 113.0] + list(np.arange(114, F.z_top - 0.2, 2.0)):
             solid, loops = section_solid(m, float(z))
+            if z >= F.z_top - SLIT_DEPTH + 0.3:                      # slit zone: the section is two separate plates (long walls); measure their thickness
+                if z <= F.z_top - MOUTH_CHAMFER - 0.2:
+                    for xx in np.linspace(cx - 13.0, cx + 13.0, 9):
+                        for sgn in (-1, 1):
+                            y0 = sb_[3] if sgn > 0 else sb_[1]
+                            ln = LineString([(xx, y0), (xx, y0 + sgn * 30.0)]).intersection(solid)
+                            head_wall = min(head_wall, ln.length if not ln.is_empty else 0.0)
+                continue
             b = loops[0].exterior
             d = np.array([ring.distance(b.interpolate(t)) for t in np.linspace(0, b.length, 700, endpoint=False)])
             E_ref = float(F.E_foot(z)) if z < 20 else float(F.E_ref_upper(z))
@@ -94,7 +106,7 @@ def main():
                 head_add = max(head_add, d.max() - E_ref)            # deliberate head thickening (wall slot -> outside >= 3.5 mm)
                 if E_ref < F.min_rim - 1e-9:
                     rim_min = min(rim_min, d.min())
-                if z >= HEAD_RAMP[1] and z <= F.z_top - MOUTH_CHAMFER - 0.2:
+                if HEAD_RAMP[1] <= z < F.z_top - SLIT_DEPTH - 0.2:
                     head_wall = min(head_wall, min(slot.exterior.distance(Point(q)) for q in b.coords[::4]))
             elif E_ref >= F.min_rim - 1e-9:
                 over = max(over, d.max() - E_ref)                    # must never exceed the reference
@@ -119,7 +131,7 @@ def main():
         xor_max, intr, n_holes_bad = 0.0, 0.0, 0
         axis = Point(cx, cy)
         probe = slot.buffer(-0.05)
-        for z in np.linspace(BASE + 0.4, F.z_top - 1.0, 40):                         # stop below the 0.5 mm mouth chamfer
+        for z in np.linspace(BASE + 0.4, F.z_top - SLIT_DEPTH - 0.3, 40):                # below the side slits
             solid, _ = section_solid(m, float(z))
             h = hole_at(solid, axis)
             if h is None:
@@ -135,6 +147,20 @@ def main():
         r["slot_levels_without_single_cavity"] = n_holes_bad
         r["slot_xor_max_mm2"] = round(float(xor_max), 4)
         r["slot_intrusion_mm2"] = round(float(intr), 5)
+        # ---- side slits: over the top SLIT_DEPTH mm nothing inside slot + slit strip, two separate long-wall plates, floor of the slit flat
+        from shapely.geometry import box as _box
+        strip = _box(cx - 40.0, sb_[1], cx + 40.0, sb_[3]).buffer(-0.05)
+        slit_intr, plates_ok = 0.0, True
+        for z in np.linspace(F.z_top - SLIT_DEPTH + 0.5, F.z_top - 1.0, 12):
+            solid, _ = section_solid(m, float(z))
+            slit_intr = max(slit_intr, solid.intersection(strip).area)
+            parts = list(solid.geoms) if hasattr(solid, "geoms") else [solid]
+            plates_ok &= (len([g for g in parts if g.area > 20.0]) == 2)
+        r["slit_intrusion_mm2"] = round(float(slit_intr), 5)
+        r["slit_two_plates_ok"] = bool(plates_ok)
+        r["slit_depth_mm"] = SLIT_DEPTH
+        r["slit_floor_solid"] = bool(section_solid(m, F.z_top - SLIT_DEPTH - 0.3)[0].contains(Point(cx + 16.5, cy)))      # end wall still there just below the slit
+        r["slit_floor_open"] = bool(not section_solid(m, F.z_top - SLIT_DEPTH + 0.3)[0].contains(Point(cx + 16.5, cy)))     # and gone just above it
         # ---- screw hole through the butt: round 3.5 mm on the slot axis between the counterbore and the slot floor, centred; counterbore below
         hole_ok, hole_d = True, []
         for z in np.arange(HEAD_H + 0.3, BASE - 0.05, 0.4):
@@ -158,7 +184,8 @@ def main():
         r["open_top"] = bool(not section_solid(m, F.z_top - 0.1)[0].contains(Point(cx, cy)))
         r["pass"] = bool(r["watertight"] and r["winding_ok"] and r["height_err_mm"] < 0.01 and
                          r["max_over_reference_envelope_mm"] < 0.05 and r["slot_intrusion_mm2"] < 0.01 and
-                         r["slot_levels_without_single_cavity"] == 0 and r["slot_xor_max_mm2"] < 1.0 and r["screw_hole_ok"] and r["counterbore_ok"] and
+                         r["slot_levels_without_single_cavity"] == 0 and r["slot_xor_max_mm2"] < 1.0 and
+                         r["slit_intrusion_mm2"] < 0.01 and r["slit_two_plates_ok"] and r["slit_floor_solid"] and r["slit_floor_open"] and r["screw_hole_ok"] and r["counterbore_ok"] and
                          (r["min_wall_textured_zone_mm"] is None or r["min_wall_textured_zone_mm"] >= F.wall - 0.03) and r["rim_min_wall_mm"] >= F.min_rim - 0.03 and
                          r["floor_solid"] and r["slot_empty_above_floor"] and r["open_top"] and
                          r["foot_profile_err_mm"] < 0.06 and r["head_wall_min_mm"] >= HEAD_WALL - 0.05)
