@@ -37,7 +37,8 @@ class Frame:
     def __init__(self, ds=0.25, dense=0.05, wall=BASE_WALL, rim=MIN_RIM):
         P = json.loads((DATA / "reference_profile.json").read_text())
         self.P = P
-        self.z_top = P["z_top"]
+        self.z_ref_top = P["z_top"]            # the reference sleeve's top (132.823); the taper tables end here
+        self.z_top = Z_TOP                     # this design is longer: the neck just continues straight up at the minimum rim offset
         self.z_floor = P["z_floor"]
         self.z_foot = P["z_foot_top"]
         self.crest = P["crest_offset"]
@@ -117,7 +118,7 @@ class Frame:
         """Ring heights.  Foot rows | pattern rows (from z=20) | taper rows."""
         foot = np.array([0, .05, .1, .2, .3, .45, .6, .8, 1.0, 1.25, 1.5, 1.8, 2.2, 3, 4.5, 7, 10, 13, 16, 18.5, 19.5])
         pat = np.arange(20.0, 118.0 + 1e-9, res)
-        tap = np.r_[np.arange(118.5, 124.0, 0.5), np.arange(124.0, 132.0, 1.0), self.z_top]
+        tap = np.r_[np.arange(118.5, 124.0, 0.5), np.arange(124.0, 132.0, 1.0), self.z_ref_top, self.z_top]
         return foot, pat, tap
 
     def zone_window(self, z, lo=ZONE_LO, hi=ZONE_HI, ramp=1.5):
@@ -193,8 +194,10 @@ PADDLE_W, PADDLE_T = 30.0, 16.0        # mm - flat handle (tongue) of the paddle
 SLOT_CLEAR = 0.2                       # mm - total clearance added to each slot dimension (FDM holes print slightly small)
 SLOT_R = 0.3                           # mm - slot corner radius (a 0.4 mm nozzle cannot print sharper)
 HOLE_D = 3.5                           # mm - screw hole through the butt for an M3 (3 mm) screw
-HEAD_D = 6.4                           # mm - 90 degree countersink (chamfer) diameter at the butt face: an ISO 10642 M3 flat-head
-CSINK_ANGLE = 90.0                     #      (allen) screw has dk <= 6.3 mm, so it sits flush; the cone is 1.45 mm deep
+HEAD_D = 6.2                           # mm - counterbore for an M3 socket-head (cap) screw: head 5.5 mm dia x 3.0 mm tall, +0.2 mm for print tolerance
+HEAD_H = 3.2                           # mm - counterbore depth, so the screw head sits flush with (just below) the butt face
+Z_TOP = 135.0                          # mm - overall length 13.5 cm: 5.0 mm base + 130.0 mm slot (the reference sleeve was 132.823 mm)
+MOUTH_CHAMFER = 0.5                    # mm - 45 degree lead-in at the slot mouth, so the flare of the paddle neck does not pry the rim
 
 
 def bore_centre(F):
@@ -235,8 +238,9 @@ def build_mesh_solid(F, z, H):
     return V, np.vstack(faces).astype(np.int32)
 
 
-def carve_cavity(F, V, Fc, hole_d=HOLE_D, head_d=HEAD_D):
-    """Subtract the paddle slot (z_floor .. top), the screw hole (butt .. floor) and the countersink chamfer at the butt face."""
+def carve_cavity(F, V, Fc, hole_d=HOLE_D, head_d=HEAD_D, head_h=HEAD_H, chamfer=MOUTH_CHAMFER):
+    """Subtract the paddle slot (z_floor .. top, with a 45 degree lead-in chamfer at its mouth), the screw hole (butt .. floor)
+    and the counterbore for the screw head at the butt face."""
     import manifold3d as m3d
     import trimesh
     slot = slot_polygon(F)
@@ -247,11 +251,14 @@ def carve_cavity(F, V, Fc, hole_d=HOLE_D, head_d=HEAD_D):
     base = m3d.Manifold(m3d.Mesh(np.asarray(V, np.float32), np.asarray(Fc, np.uint32)))
     slot_m = m3d.Manifold(m3d.Mesh(pv.astype(np.float32), np.asarray(pm.faces, np.uint32)))
     hole = m3d.Manifold.cylinder(F.z_floor + 2.0, hole_d / 2, hole_d / 2, 48).translate((cx, cy, -1.0))
-    t = np.tan(np.radians(CSINK_ANGLE / 2))
-    depth = (head_d - hole_d) / 2 / t                                          # cone depth below the butt face
-    # cylinder(height, radius_at_bottom, radius_at_top): wide at the butt face (z = 0), narrowing to the hole radius at z = depth
-    cone = m3d.Manifold.cylinder(depth + 0.5, head_d / 2 + 0.5 * t, hole_d / 2, 48).translate((cx, cy, -0.5))
-    res = (base - slot_m - hole - cone)
+    cbore = m3d.Manifold.cylinder(head_h + 0.5, head_d / 2, head_d / 2, 64).translate((cx, cy, -0.5))   # counterbore: flat floor at z = head_h
+    # lead-in chamfer: hull of the slot outline raised 0.1 mm above the top (grown by chamfer + 0.1) and the slot outline at z_top - chamfer
+    outer = slot.buffer(chamfer + 0.1, 16)
+    pts = np.vstack([np.c_[np.asarray(outer.exterior.coords)[:-1], np.full(len(outer.exterior.coords) - 1, F.z_top + 0.1)],
+                     np.c_[np.asarray(slot.exterior.coords)[:-1], np.full(len(slot.exterior.coords) - 1, F.z_top - chamfer)]])
+    hull = trimesh.convex.convex_hull(pts)
+    mouth = m3d.Manifold(m3d.Mesh(np.asarray(hull.vertices, np.float32), np.asarray(hull.faces, np.uint32)))
+    res = (base - slot_m - hole - cbore - mouth)
     res = res.simplify(0.002)
     m = res.to_mesh()
     return np.asarray(m.vert_properties[:, :3], np.float64), np.asarray(m.tri_verts, np.int32)

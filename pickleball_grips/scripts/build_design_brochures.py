@@ -326,7 +326,7 @@ def page_one(pg, n, cur, art):
     pg.rect(0, 0, 210, 297, fill=BG1)
     colour_strip(pg)
     spaced(pg, 12, 15.0, f"PG-{cur + 1:02d}  ·  THE GRIP COLLECTION", F_B, 7.0, "#9AA5B4", 1.4)
-    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  ABOUT 50 G", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
+    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  13.5 CM", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
     spaced(pg, 12, 29.0, f"DESIGN {cur + 1:02d} OF 10", F_B, 7.2, acc, 1.5)
     title = LABEL[n].upper()
     size = 38.0
@@ -364,7 +364,7 @@ def page_one(pg, n, cur, art):
     yh = cy + cr + 5.2 + gap_b
     y = heading(pg, x0, yh, "The handle", acc, WHITE, w0, "#2A3442")
     yy = pg.para(x0, y + 1.0, HANDLE_NOTE, w0, F_R, 7.9, "#C5CDD8", leading=10.2)
-    tiles = [("132.8 mm", "LENGTH"), ("30 × 16 mm", "PADDLE SLOT"), ("Ø 3.5 mm", "SCREW HOLE"), ("100 %", "INFILL")]
+    tiles = [("135 mm", "LENGTH"), ("30 × 16 mm", "PADDLE SLOT"), ("130 mm", "SLOT DEPTH"), ("M3 cap", "SCREW, FLUSH")]
     tw, gp = 19.5, 2.0
     ty = yy + 3.4
     for i, (big, small) in enumerate(tiles):
@@ -411,7 +411,7 @@ def page_two(pg, n, cur, art):
     # surfaces
     yc = 131.0
     for x, key, label in zip(xs, ("surface", "rim", "swatch", "butt"),
-                             ("CLOSE-UP  ·  MID BODY", "RIM & SLOT  ·  FROM ABOVE", "UNROLLED  ·  RELIEF ×4" if n == "09_ergo_contour" else "UNROLLED  ·  LIT RELIEF", "BUTT  ·  Ø3.5 HOLE + CSK")):
+                             ("CLOSE-UP  ·  MID BODY", "RIM & SLOT  ·  FROM ABOVE", "UNROLLED  ·  RELIEF ×4" if n == "09_ergo_contour" else "UNROLLED  ·  LIT RELIEF", "BUTT  ·  Ø3.5 HOLE + CBORE")):
         pg.image(ASSETS / n / f"{key}.png", x, yc, 43.5, 43.5, quality=90, round_=2.4)
         cap(x, yc + 47.2, label)
     # inspiration + why it grips

@@ -227,7 +227,7 @@ def catalog(names, suffix="hero", out_name="catalog.png", subtitle=None):
     d = ImageDraw.Draw(sheet)
     title = "PICKLEBALL PADDLE GRIPS - ONE SLOT, TEN SURFACES"
     d.text((W // 2, 62), title, fill=(20, 20, 20), font=font(58), anchor="mm")
-    d.text((W // 2, 118), subtitle or "All ten: 30 x 16 mm paddle slot, countersunk 3.5 mm screw hole, sealed hollow core (about 50 g), reference outer envelope (132.82 mm tall)",
+    d.text((W // 2, 118), subtitle or "All ten: 30 x 16 mm paddle slot, counterbored 3.5 mm screw hole, solid head, sealed hollow core, 135 mm long",
            fill=(70, 70, 70), font=font(26, False), anchor="mm")
     label = {n: l for n, l, _ in DESIGNS}
     for k, name in enumerate(names):

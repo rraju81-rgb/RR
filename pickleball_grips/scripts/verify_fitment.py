@@ -3,14 +3,15 @@
 
 For each grip:
   * mesh is a closed, consistently wound manifold, positive volume
-  * height / footprint equal the reference (z 0..132.823)
+  * height 135.0 mm (13.5 cm: 5 mm base + 130 mm slot); footprint equal the reference
   * OUTER envelope never exceeds the reference envelope (reference bore line offset by E(z)) by more than 0.05 mm
     - except the deliberate rim thickening (reference tapers to 0.36 mm; grips keep >= 0.8 mm), reported separately
   * FOOT (z<20) and TOP TAPER (z>112) outer profile equals the reference
   * SLOT: at every height the cavity around the axis is the 30 x 16 mm paddle slot (+0.2 mm clearance), z 5 .. top;
     no material inside the slot (the sealed lightening cavity in the side walls is checked in verify_print.py)
-  * SCREW HOLE: one 3.5 mm hole through the butt (z 0 .. 5) on the slot axis with a 90 degree countersink (6.4 mm at the
-    butt face); floor solid around it
+  * SCREW HOLE: one 3.5 mm hole through the butt (z 0 .. 5) on the slot axis with a 6.2 mm x 3.2 mm counterbore for an M3
+    socket-head screw at the butt face; floor solid around it
+  * HEAD: no sealed cavity above z = 110 (the head must be solid); slot mouth has a 0.5 mm 45 degree lead-in
   * OPEN TOP: the slot is open at z = top
 
 Writes ../fitment_report.json and prints a markdown table.
@@ -25,7 +26,8 @@ import trimesh
 from shapely.geometry import Polygon, Point, LineString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from grip_core import Frame, slot_polygon, bore_centre, HOLE_D, HEAD_D, PADDLE_W, PADDLE_T, SLOT_CLEAR  # noqa: E402
+from grip_core import Frame, slot_polygon, bore_centre, HOLE_D, HEAD_D, HEAD_H, MOUTH_CHAMFER, PADDLE_W, PADDLE_T, SLOT_CLEAR  # noqa: E402
+from lighten import HEAD_SOLID_FROM  # noqa: E402
 from designs import DESIGNS  # noqa: E402
 
 warnings.filterwarnings("ignore")
@@ -75,12 +77,12 @@ def main():
         r = dict(name=name, tris=int(len(m.faces)), watertight=bool(m.is_watertight),
                  winding_ok=bool(m.is_winding_consistent), volume_cm3=round(m.volume / 1000, 2))
         r["z_min"], r["z_max"] = round(float(m.bounds[0][2]), 3), round(float(m.bounds[1][2]), 3)
-        r["height_err_mm"] = round(abs(m.bounds[1][2] - rb[1][2]), 3)
+        r["height_err_mm"] = round(abs(m.bounds[1][2] - F.z_top), 3)
         # ---- outer envelope vs the REFERENCE E(z); foot / taper profile match; wall + rim thickness
         over = foot_err = taper_err = rim_add = 0.0
         min_wall = rim_min = 9.0
         peak = 0.0
-        for z in list(np.arange(0.5, 20, 1.5)) + list(np.arange(21, 111, 6.0)) + list(np.arange(112, 132.8, 2.0)):
+        for z in list(np.arange(0.5, 20, 1.5)) + list(np.arange(21, 111, 6.0)) + list(np.arange(112, F.z_top - 0.2, 2.0)):
             solid, loops = section_solid(m, float(z))
             b = loops[0].exterior
             d = np.array([ring.distance(b.interpolate(t)) for t in np.linspace(0, b.length, 700, endpoint=False)])
@@ -110,7 +112,7 @@ def main():
         xor_max, intr, n_holes_bad = 0.0, 0.0, 0
         axis = Point(cx, cy)
         probe = slot.buffer(-0.05)
-        for z in np.linspace(5.4, 132.6, 40):
+        for z in np.linspace(5.4, F.z_top - 1.0, 40):                         # stop below the 0.5 mm mouth chamfer
             solid, _ = section_solid(m, float(z))
             h = hole_at(solid, axis)
             if h is None:
@@ -128,35 +130,35 @@ def main():
         r["slot_intrusion_mm2"] = round(float(intr), 5)
         # ---- screw hole through the butt: round 3.5 mm on the slot axis for z 1.8 .. 4.8, centred; 90 degree countersink below
         hole_ok, hole_d = True, []
-        for z in np.arange(1.9, 4.9, 0.5):
+        for z in np.arange(HEAD_H + 0.3, 4.9, 0.4):
             h = hole_at(section_solid(m, float(z))[0], axis)
             if h is None or abs(h.area - hole_area) > 0.25 or np.hypot(h.centroid.x - cx, h.centroid.y - cy) > 0.05:
                 hole_ok = False
             else:
                 hole_d.append(2 * np.sqrt(h.area / np.pi))
         csd = {}
-        for z in (0.1, 0.5, 1.0):
+        for z in (0.1, 1.6, HEAD_H - 0.2):
             h = hole_at(section_solid(m, z)[0], axis)
             csd[z] = 2 * np.sqrt(h.area / np.pi) if h is not None else None
-        # expected diameter of the cone at height z: head_d - 2 z tan(45 deg)
-        csink_ok = all(csd[z] is not None and abs(csd[z] - (HEAD_D - 2 * z)) < 0.25 for z in csd)
+        csink_ok = all(csd[z] is not None and abs(csd[z] - HEAD_D) < 0.25 for z in csd)          # counterbore: constant diameter
         r["screw_hole_ok"] = bool(hole_ok)
         r["screw_hole_dia_mm"] = round(float(np.mean(hole_d)), 3) if hole_d else None
-        r["countersink_ok"] = bool(csink_ok)
-        r["countersink_dia_at_face_mm"] = round(float(csd[0.1] + 0.2), 2) if csd[0.1] else None
+        r["counterbore_ok"] = bool(csink_ok)
+        r["counterbore_dia_mm"] = round(float(np.mean([v for v in csd.values() if v])), 2) if all(csd.values()) else None
+        r["counterbore_depth_mm"] = HEAD_H
         r["floor_solid_z4.8"] = bool(section_solid(m, 4.8)[0].contains(Point(cx + 6.0, cy)))
         r["slot_empty_z5.2"] = bool(not section_solid(m, 5.2)[0].contains(Point(cx + 6.0, cy)))
-        r["open_top"] = bool(not section_solid(m, 132.7)[0].contains(Point(cx, cy)))
+        r["open_top"] = bool(not section_solid(m, F.z_top - 0.1)[0].contains(Point(cx, cy)))
         r["pass"] = bool(r["watertight"] and r["winding_ok"] and r["height_err_mm"] < 0.01 and
                          r["max_over_reference_envelope_mm"] < 0.05 and r["slot_intrusion_mm2"] < 0.01 and
-                         r["slot_levels_without_single_cavity"] == 0 and r["slot_xor_max_mm2"] < 1.0 and r["screw_hole_ok"] and r["countersink_ok"] and
+                         r["slot_levels_without_single_cavity"] == 0 and r["slot_xor_max_mm2"] < 1.0 and r["screw_hole_ok"] and r["counterbore_ok"] and
                          (r["min_wall_textured_zone_mm"] is None or r["min_wall_textured_zone_mm"] >= F.wall - 0.03) and r["rim_min_wall_mm"] >= F.min_rim - 0.03 and
                          r["floor_solid_z4.8"] and r["slot_empty_z5.2"] and r["open_top"] and
                          r["foot_profile_err_mm"] < 0.06 and r["taper_profile_err_mm"] < 0.06)
         rows.append(r)
         print(f"{name:18s} pass={r['pass']} watertight={r['watertight']} over_env={r['max_over_reference_envelope_mm']:+.3f} "
               f"slot={r['slot_measured_w_mm']}x{r['slot_measured_t_mm']} xor={r['slot_xor_max_mm2']} intrusion={r['slot_intrusion_mm2']} "
-              f"hole={r['screw_hole_dia_mm']} ok={r['screw_hole_ok']} csink={r['countersink_dia_at_face_mm']} ok={r['countersink_ok']} foot_err={r['foot_profile_err_mm']} taper_err={r['taper_profile_err_mm']} "
+              f"hole={r['screw_hole_dia_mm']} ok={r['screw_hole_ok']} cbore={r['counterbore_dia_mm']} ok={r['counterbore_ok']} foot_err={r['foot_profile_err_mm']} taper_err={r['taper_profile_err_mm']} "
               f"min_relief_base={r['min_wall_textured_zone_mm']} rim_min={r['rim_min_wall_mm']}", flush=True)
     (ROOT / "fitment_report.json").write_text(json.dumps(rows, indent=1))
     return rows

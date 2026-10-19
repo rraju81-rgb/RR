@@ -7,13 +7,13 @@ For every STL:
               a separate inward-facing shell, counted as a cavity, whose wall is measured in 3D (cavity surface -> nearest
               outer surface)
   * WEIGHT    volume x density for PLA / PETG / TPU / ABS  (100 % infill => mass = volume x density)
-  * LAYERS    the part is sliced at the mid-plane of every 0.20 mm layer (665 layers); each layer's
+  * LAYERS    the part is sliced at the mid-plane of every 0.20 mm layer (675 layers); each layer's
               cross-section is opened with a 0.4 mm and a 0.8 mm disc.  Material that vanishes under
               the opening is thinner than one nozzle line / two perimeters, i.e. the slicer would drop
               it or print it as a lone thin line
   * SUPPORT   layer-to-layer: material more than 0.35 mm (a 60 degree overhang at 0.2 mm layers) beyond
-              the layer below is unsupported; the widest such patch (its short side - the distance a bridge must span)
-              is the bridge width (must be <= 5 mm, the reliable bridging length for PLA/PETG).  Also reports the share of downward-facing
+              the layer below is unsupported; the widest such patch (diameter of the largest circle inside it - the
+              distance a printed line must bridge) is the bridge width (must be <= 5 mm, the reliable bridging length for PLA/PETG).  Also reports the share of downward-facing
               surface steeper than 45 / 60 degrees from vertical (first mm, bed flare, excluded)
 
 Writes ../print_report.json
@@ -49,7 +49,11 @@ def layer_solids(mesh, heights):
 
 
 def bridge_span(cur, below, tol=0.35):
-    """Longest unsupported run in this layer: material farther than `tol` mm from the layer below."""
+    """Widest flat bridge in this layer: material farther than `tol` mm from the layer below is unsupported; for every such
+    patch take the diameter of the largest circle that fits inside it (a 1.35 mm ring ledge round a counterbore -> 1.35 mm,
+    a 4 mm wide flat ceiling strip -> 4 mm), i.e. the distance a printed line has to bridge."""
+    from shapely.geometry import Point
+    from shapely.ops import polylabel
     if cur.is_empty:
         return 0.0
     uns = cur.difference(below.buffer(tol)) if not below.is_empty else cur
@@ -57,12 +61,10 @@ def bridge_span(cur, below, tol=0.35):
         return 0.0
     best = 0.0
     for g in (uns.geoms if hasattr(uns, "geoms") else [uns]):
-        if g.area < 0.3:
+        if g.area < 0.3 or g.geom_type != "Polygon":
             continue
-        r = g.minimum_rotated_rectangle
-        xs, ys = r.exterior.coords.xy
-        e = [np.hypot(xs[i + 1] - xs[i], ys[i + 1] - ys[i]) for i in range(2)]
-        best = max(best, min(e))                 # span across the supports, not along a long narrow strip
+        c = polylabel(g, tolerance=0.05)
+        best = max(best, 2 * g.boundary.distance(c))
     return best
 
 
@@ -79,10 +81,11 @@ def thin_stats(solid, r, min_piece=0.02):
 
 def main():
     rows = []
-    heights = np.arange(LAYER / 2, 132.82, LAYER)
+    heights = None
     for name, label, _ in DESIGNS:
         m = trimesh.load(ROOT / "stl" / f"{name}.stl", process=True)
         m.merge_vertices()
+        heights = np.arange(LAYER / 2, m.bounds[1][2], LAYER)
         r = dict(name=name, label=label)
         # ---- mesh
         shells = m.split(only_watertight=False)
@@ -103,6 +106,8 @@ def main():
             r["cavity_wall_min_mm"] = round(float(dist.min()), 2)
             r["cavity_wall_p1_mm"] = round(float(np.percentile(dist, 1)), 2)
             r["cavity_wall_median_mm"] = round(float(np.median(dist)), 2)
+            r["cavity_top_z_mm"] = round(float(max(c.bounds[1][2] for c in cavities)), 1)     # the head above 110 must be solid
+            r["cavity_bottom_z_mm"] = round(float(min(c.bounds[0][2] for c in cavities)), 1)
         r["degenerate_tris"] = int((m.area_faces < 1e-9).sum())
         r["volume_cm3"] = round(m.volume / 1000, 2)
         r["weight_g"] = {k: round(m.volume / 1000 * d, 1) for k, d in DENSITY.items()}
@@ -147,7 +152,7 @@ def main():
         r["thin_lt_0.76mm_z_range"] = [min(z_thin08), max(z_thin08)] if z_thin08 else None
         r["under_50g_all_materials"] = bool(max(r["weight_g"].values()) <= LIMIT_G)     # reported only: PLA lands at ~50-56 g, PETG a little above
         r["pass"] = bool(r["bodies"] == 1 and r["watertight"] and r["winding_ok"] and r["genus"] == 1 and
-                         (not cavities or r["cavity_wall_min_mm"] >= 1.05) and
+                         (not cavities or (r["cavity_wall_min_mm"] >= 1.05 and r["cavity_top_z_mm"] <= 110.3)) and
                          r["thin_lt_0.4mm_pct_of_volume"] < 0.05 and r["max_bridge_span_mm"] <= 5.0)
         rows.append(r)
         print(f"{name:18s} pass={r['pass']} bodies={r['bodies']} genus={r['genus']} vol={r['volume_cm3']:5.2f} "

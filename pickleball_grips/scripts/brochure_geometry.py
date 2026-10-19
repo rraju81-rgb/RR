@@ -17,10 +17,9 @@ from shapely.ops import unary_union
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import render_grips as R  # noqa: E402
-from grip_core import Frame  # noqa: E402
+from grip_core import Frame, Z_TOP  # noqa: E402
 
 ROOT = R.ROOT
-Z_TOP = 132.823
 
 
 def bore_centre(F):

@@ -22,6 +22,7 @@ OPEN_R = 1.0          # mm: cavity at least 2 mm thick
 BRIDGE = 4.0          # mm: widest flat (unsloped) ceiling allowed
 MARGIN = 0.10         # mm: extra erosion that absorbs voxel / smoothing error (measured 3D wall ends up >= ~1.15 mm)
 KEEP_Z, KEEP_Y = 8.0, 9.8   # mm: no cavity under the slot floor (z < KEEP_Z, |y| < KEEP_Y): the screw head bears on that floor
+HEAD_SOLID_FROM = 110.0     # mm: no cavity above this height - the head (top 25 mm) is fully solid; it cracked when hollow as the paddle neck pried it
 
 
 def occupancy(mesh, vox=VOX):
@@ -77,6 +78,7 @@ def core_mask(occ, origin=None, vox=VOX, wall=CORE_WALL):
         ys = origin[1] + np.arange(occ.shape[1]) * vox
         zs = (np.arange(occ.shape[0]) - 0.5) * vox
         cand[np.ix_(zs < KEEP_Z, np.abs(ys) < KEEP_Y)] = False
+        cand[zs >= HEAD_SOLID_FROM] = False
     core = ndi.distance_transform_edt(cand, sampling=vox) >= OPEN_R        # opening: drop cavity thinner than 2 x OPEN_R
     cand &= ndi.distance_transform_edt(~core, sampling=vox) <= OPEN_R
     return limit_roofs(cand, vox)
