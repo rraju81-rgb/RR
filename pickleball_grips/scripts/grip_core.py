@@ -33,13 +33,20 @@ MIN_RIM = 0.8       # thinnest skin anywhere (2 x 0.4 mm); the reference tapers 
 POST_SIGMA = 0.20   # mm - rounding applied after the overhang limiter
 
 
+def _smax(a, b, k=0.12):
+    """Smooth maximum a (+) b: >= max(a, b) to within a few micrometres, no crease, and exactly `a` where b = 0 (the sides, which keep
+    the reference envelope).  The wall requirement is met and the outline stays smooth."""
+    sp = lambda x: k * np.logaddexp(0.0, x / k)
+    return a + sp(b - a) - sp(-a)
+
+
 class Frame:
     def __init__(self, ds=0.25, dense=0.05, wall=BASE_WALL, rim=MIN_RIM):
         P = json.loads((DATA / "reference_profile.json").read_text())
         self.P = P
         self.z_ref_top = P["z_top"]            # the reference sleeve's top (132.823); the taper tables end here
         self.z_top = Z_TOP                     # this design is longer: the neck just continues straight up at the minimum rim offset
-        self.z_floor = P["z_floor"]
+        self.z_floor = BASE                    # slot floor: the reference's was 5.0; this design has a thinner base
         self.z_foot = P["z_foot_top"]
         self.crest = P["crest_offset"]
         self.wall = wall                       # base wall of the textured zone (reference: 1.5)
@@ -126,6 +133,45 @@ class Frame:
         s = lambda x: np.clip(x, 0, 1) ** 2 * (3 - 2 * np.clip(x, 0, 1))
         return s((z - lo) / ramp) * (1 - s((z - hi + ramp) / ramp))
 
+    # --- minimum wall over the head ----------------------------------------------
+    def wall_req(self, T):
+        """(N,) smallest outer offset h (from the bore line, along the wall normal) that keeps the outer skin at least T mm from the
+        paddle slot.  0 where the reference envelope is already that far away (the sides)."""
+        import shapely
+        key = round(float(T), 3)
+        if not hasattr(self, "_wr"):
+            self._wr = {}
+        if key not in self._wr:
+            slot = slot_polygon(self)
+            hs = np.arange(0.0, 9.0 + 1e-9, 0.02)
+            P = self.c[:, None, :] + self.n[:, None, :] * hs[None, :, None]              # (N, K, 2)
+            d = shapely.distance(shapely.points(P.reshape(-1, 2)), slot).reshape(P.shape[:2])
+            ok = d >= key - 1e-9
+            # first h beyond which every point on the ray is clear of the slot by T
+            bad_last = np.where(~ok, np.arange(len(hs))[None, :], -1).max(1)
+            self._wr[key] = hs[np.minimum(bad_last + 1, len(hs) - 1)] * (bad_last >= 0)
+        return self._wr[key]
+
+    def wall_T(self, z):
+        """Required slot-to-outside wall at height z: 0 below HEAD_RAMP[0], smooth ramp, HEAD_WALL from HEAD_RAMP[1] up."""
+        u = np.clip((np.asarray(z, float) - HEAD_RAMP[0]) / (HEAD_RAMP[1] - HEAD_RAMP[0]), 0, 1)
+        return HEAD_WALL * u * u * (3 - 2 * u)
+
+    def h_min(self, z):
+        """(len(z), N) lower bound of the outer offset that keeps the slot wall >= wall_T(z) (interpolated between precomputed T levels)."""
+        z = np.asarray(z, float)
+        T = self.wall_T(z)
+        levels = np.linspace(0.0, HEAD_WALL, 15)
+        tab = np.array([self.wall_req(t) if t > 0 else np.zeros(self.N) for t in levels])      # (15, N)
+        out = np.zeros((len(z), self.N))
+        for j, t in enumerate(T):
+            if t <= 0:
+                continue
+            k = min(int(t / levels[1]), len(levels) - 2)
+            f = (t - levels[k]) / (levels[k + 1] - levels[k])
+            out[j] = tab[k] * (1 - f) + tab[k + 1] * f
+        return out
+
     # --- assembling the outer skin ---------------------------------------------
     def skin(self, t, res=0.25):
         """t: (Mp, N) texture in [0,1] on the pattern rows -> (z rows, H offsets, n_foot)."""
@@ -133,8 +179,10 @@ class Frame:
         assert t.shape == (len(pat), self.N), (t.shape, len(pat), self.N)
         w = self.zone_window(pat)[:, None]
         t = np.clip(t * w + (1 - w), 0, 1)
-        Eu = self.E_upper(pat)[:, None]
-        B = np.minimum(self.wall, Eu)
+        Hm = self.h_min(pat)                                      # head: the slot wall must stay >= wall_T(z); the texture relief gives way to it
+        Eu = _smax(self.E_upper(pat)[:, None], Hm)
+        B = _smax(np.minimum(self.wall, Eu), Hm)
+        B = np.minimum(B, Eu)
         Hp = B + (Eu - B) * t
         # 45-degree overhang limiter (first row is the flush start of the textured zone)
         dz = np.diff(pat)[:, None]
@@ -147,7 +195,7 @@ class Frame:
         Hp = gaussian_filter(Hp, (POST_SIGMA / res, POST_SIGMA / ds), mode=("nearest", "wrap"))
         Hp = np.clip(Hp, B, Eu)
         Hf = np.repeat(self.E_foot(foot)[:, None], self.N, 1)
-        Ht = np.repeat(self.E_upper(tap)[:, None], self.N, 1)
+        Ht = _smax(self.E_upper(tap)[:, None], self.h_min(tap))
         z = np.r_[foot, pat, tap]
         H = np.vstack([Hf, Hp, Ht])
         return z, H, len(foot)
@@ -194,9 +242,13 @@ PADDLE_W, PADDLE_T = 30.0, 16.0        # mm - flat handle (tongue) of the paddle
 SLOT_CLEAR = 0.2                       # mm - total clearance added to each slot dimension (FDM holes print slightly small)
 SLOT_R = 0.3                           # mm - slot corner radius (a 0.4 mm nozzle cannot print sharper)
 HOLE_D = 3.5                           # mm - screw hole through the butt for an M3 (3 mm) screw
-HEAD_D = 6.2                           # mm - counterbore for an M3 socket-head (cap) screw: head 5.5 mm dia x 3.0 mm tall, +0.2 mm for print tolerance
-HEAD_H = 3.2                           # mm - counterbore depth, so the screw head sits flush with (just below) the butt face
-Z_TOP = 135.0                          # mm - overall length 13.5 cm: 5.0 mm base + 130.0 mm slot (the reference sleeve was 132.823 mm)
+HEAD_D = 6.2                           # mm - counterbore for a low-head M3 cap screw (DIN 7984: head 5.5 mm dia x 2.0 mm tall), +0.2 mm for print tolerance / depth
+HEAD_H = 2.2                           # mm - counterbore depth, so the screw head sits flush with (just below) the butt face
+BASE = 3.4                             # mm - base (butt) thickness = height of the slot floor; the floor under the screw head is BASE - HEAD_H = 1.2 mm
+SLOT_DEPTH = 130.0                     # mm - paddle handle covered by the grip (13.0 cm)
+Z_TOP = BASE + SLOT_DEPTH              # mm - overall length 133.4 mm (the reference sleeve was 132.823 mm)
+HEAD_WALL = 3.5                        # mm - minimum wall between the paddle slot and the outside over the head (the slot mouth cracked at 1.1 mm)
+HEAD_RAMP = (90.0, 112.0)              # mm - the wall requirement grows smoothly from 0 at z = 90 to HEAD_WALL at z = 112 and stays up to the top
 MOUTH_CHAMFER = 0.5                    # mm - 45 degree lead-in at the slot mouth, so the flare of the paddle neck does not pry the rim
 
 

@@ -30,6 +30,7 @@ from shapely.ops import unary_union
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from designs import DESIGNS  # noqa: E402
+from lighten import HEAD_SOLID_FROM  # noqa: E402
 
 warnings.filterwarnings("ignore")
 ROOT = Path(__file__).resolve().parent.parent
@@ -106,7 +107,7 @@ def main():
             r["cavity_wall_min_mm"] = round(float(dist.min()), 2)
             r["cavity_wall_p1_mm"] = round(float(np.percentile(dist, 1)), 2)
             r["cavity_wall_median_mm"] = round(float(np.median(dist)), 2)
-            r["cavity_top_z_mm"] = round(float(max(c.bounds[1][2] for c in cavities)), 1)     # the head above 110 must be solid
+            r["cavity_top_z_mm"] = round(float(max(c.bounds[1][2] for c in cavities)), 1)     # the head above HEAD_SOLID_FROM must be solid
             r["cavity_bottom_z_mm"] = round(float(min(c.bounds[0][2] for c in cavities)), 1)
         r["degenerate_tris"] = int((m.area_faces < 1e-9).sum())
         r["volume_cm3"] = round(m.volume / 1000, 2)
@@ -152,7 +153,7 @@ def main():
         r["thin_lt_0.76mm_z_range"] = [min(z_thin08), max(z_thin08)] if z_thin08 else None
         r["under_50g_all_materials"] = bool(max(r["weight_g"].values()) <= LIMIT_G)     # reported only: PLA lands at ~50-56 g, PETG a little above
         r["pass"] = bool(r["bodies"] == 1 and r["watertight"] and r["winding_ok"] and r["genus"] == 1 and
-                         (not cavities or (r["cavity_wall_min_mm"] >= 1.05 and r["cavity_top_z_mm"] <= 110.3)) and
+                         (not cavities or (r["cavity_wall_min_mm"] >= 1.05 and r["cavity_top_z_mm"] <= HEAD_SOLID_FROM + 0.3)) and
                          r["thin_lt_0.4mm_pct_of_volume"] < 0.05 and r["max_bridge_span_mm"] <= 5.0)
         rows.append(r)
         print(f"{name:18s} pass={r['pass']} bodies={r['bodies']} genus={r['genus']} vol={r['volume_cm3']:5.2f} "

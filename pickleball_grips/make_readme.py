@@ -42,7 +42,7 @@ for n, (lab, txt) in DESC.items():
                 f"{p['max_bridge_span_mm']:.1f} mm |")
     vrows.append(f"| {lab} | {'PASS' if f['pass'] else 'FAIL'} | {f['z_max']:.3f} | {f['max_over_reference_envelope_mm']:+.3f} | "
                  f"{f['foot_profile_err_mm']:.3f} | {'-' if f['min_wall_textured_zone_mm'] is None else format(f['min_wall_textured_zone_mm'], '.2f')} | "
-                 f"{f['rim_min_wall_mm']:.2f} | {f['slot_measured_w_mm']:.2f} x {f['slot_measured_t_mm']:.2f} | {f['slot_intrusion_mm2']:.3f} | {f['screw_hole_dia_mm']:.2f} / {f['counterbore_dia_mm']:.2f} |")
+                 f"{f['head_wall_min_mm']:.2f} | {f['slot_measured_w_mm']:.2f} x {f['slot_measured_t_mm']:.2f} | {f['slot_intrusion_mm2']:.3f} | {f['screw_hole_dia_mm']:.2f} / {f['counterbore_dia_mm']:.2f} |")
     pl = pal3mf(n)
     c3.append(f"| {lab} | `3mf/{n}.3mf` | {(ROOT / '3mf' / f'{n}.3mf').stat().st_size / 1e6:.1f} MB | {len(pl)} | " + " ".join(f"`#{h}`" for h in pl) + " |")
 
@@ -56,10 +56,11 @@ wpmax = max(prt[n]["weight_g"]["PLA"] for n in DESC)
 txt = f"""# Pickleball paddle grips - ten designs, one paddle slot
 
 Ten printable grip sleeves generated from the catalog image.  The outer envelope comes from `reference/PickleballGrip_1.3mf`; only the
-outer surface differs between designs.  **Revision 5:** every grip is **135 mm (13.5 cm) long** - a 5 mm base under a **130 mm deep** paddle slot
+outer surface differs between designs.  **Revision 6:** every grip is **133.4 mm (13.3 cm) long** - a **3.4 mm base** under a **130 mm deep** paddle slot
 of 30.2 x 16.2 mm (the measured 30 x 16 mm flat handle + 0.2 mm) - so the paddle seats fully and its neck flare no longer rests on the rim; the
-**top 25 mm (the head) is solid** and has a 0.5 mm lead-in chamfer at the slot mouth (it cracked when hollow); the 3.5 mm screw hole in the
-butt has a **6.2 x 3.2 mm counterbore** so an M3 cap-head (socket-head, allen) screw sits flush; the rest of the walls keep a sealed hollow core.
+**head (z 100 up) is solid and the wall around the slot is at least 3.5 mm thick from z 112 to the top** (it was 1.1 mm at the slot corners, where it cracked), with a
+0.5 mm lead-in chamfer at the slot mouth; the 3.5 mm screw hole in the butt has a **6.2 x 2.2 mm counterbore** so a low-head M3 cap screw (DIN 7984, 2.0 mm head)
+sits flush; the rest of the walls keep a sealed hollow core.
 
 ![catalog](renders/catalog.png)
 
@@ -71,7 +72,7 @@ butt has a **6.2 x 3.2 mm counterbore** so an M3 cap-head (socket-head, allen) s
 
 All ten are **{wmin:.0f}-{wpmax:.0f} g in PLA** (up to {wmax:.0f} g in PETG; densities in g/cm3).  Slicers land within a few percent of
 (outer volume - sealed core) x density, so budget +-3 %.  History: rev 2 was 40-49 g (a bore, no paddle slot), rev 3 filled the bore down to the slot
-(88-98 g), rev 4 hollowed the walls (50-54 g) but the hollow head cracked, rev 5 makes the head solid again (about 5 g heavier) and is 2 mm longer.
+(88-98 g), rev 4 hollowed the walls (50-54 g) but the hollow head cracked, rev 5 made the head solid again (about 5 g heavier), rev 6 thickens the head wall and the base is 1.6 mm thinner.
 The hollow core is **sealed**: nothing can be seen or reached from outside - it is just air.  Walls around it are about 1.2 mm (3 x 0.4 mm
 perimeters; measured 3D median 1.2 mm, minimum 1.10 mm - table below).  Generate the fully solid version with
 `python3 scripts/generate_grips.py --solid` (about 90-100 g).
@@ -80,15 +81,15 @@ perimeters; measured 3D median 1.2 mm, minimum 1.10 mm - table below).  Generate
 
 | Feature | Value |
 |---|---|
-| Overall length | **135.0 mm = 13.5 cm**: 5.0 mm base + 130.0 mm slot (the reference sleeve was {P['z_top']} mm; the 2.2 mm extension continues the neck straight up) |
-| Paddle slot | **30.2 x 16.2 mm** rounded rectangle (corner radius 0.3 mm) = measured tongue 30 x 16 mm + 0.2 mm clearance; wide axis along x; floor at **z = {P['z_floor']}** mm (a **5 mm base**, the most the base may be); open at the top with a **0.5 mm 45 degree lead-in chamfer** |
-| Screw hole | **3.5 mm** round, on the slot axis, through the 5 mm butt (z 0 - 5), with a **6.2 mm x 3.2 mm counterbore** at the butt face: an M3 socket-head (cap) screw (5.5 mm x 3.0 mm head) sits flush, with 1.8 mm of floor left under its head - use an M3 x 12-16 mm screw |
-| Head | the **top 25 mm (z 110-135) is solid** - no cavity there; it carries the pry of the paddle neck when the paddle is slid in |
-| Hollow core | a sealed cavity in the thick side walls below z 110 (about 25-31 cm3; one connected piece on most designs, a few pieces on NEURO-TREAD, VORONOI-CORE and HEXA-MOD), walls about 1.1-1.2 mm or more to every outer surface, the slot, the hole and the floor (measured in 3D, table below); roofs at <= 45 degrees (flat bridges <= 4 mm) so it prints without supports; none under the slot floor, where the screw bears; no through-windows |
+| Overall length | **133.4 mm = 13.3 cm**: 3.4 mm base + 130.0 mm slot (the reference sleeve was {P['z_top']} mm; the 0.6 mm extension continues the neck straight up) |
+| Paddle slot | **30.2 x 16.2 mm** rounded rectangle (corner radius 0.3 mm) = measured tongue 30 x 16 mm + 0.2 mm clearance; wide axis along x; floor at **z = 3.4** mm (a **3.4 mm base**; the reference's was {P['z_floor']} mm); open at the top with a **0.5 mm 45 degree lead-in chamfer** |
+| Screw hole | **3.5 mm** round, on the slot axis, through the 3.4 mm butt (z 0 - 3.4), with a **6.2 mm x 2.2 mm counterbore** at the butt face: a **low-head** M3 cap screw (DIN 7984: 5.5 mm x 2.0 mm head) sits flush, with 1.2 mm of floor left under its head - use an M3 x 12-16 mm low-head screw (a standard 3.0 mm head would stand 0.8 mm proud) |
+| Head | **solid from z 100 up**, and the wall between the slot and the outside grows smoothly from z 90 and is **at least 3.5 mm from z 112 to the top** (the neck is about 1.8 mm wider at each slot end than the reference); it carries the pry of the paddle neck when the paddle is slid in |
+| Hollow core | a sealed cavity in the thick side walls below z 100 (about 24-30 cm3; one connected piece on most designs, a few pieces on NEURO-TREAD, VORONOI-CORE and HEXA-MOD), walls about 1.1-1.2 mm or more to every outer surface, the slot, the hole and the floor (measured in 3D, table below); roofs at <= 45 degrees (flat bridges <= 4 mm) so it prints without supports; none under the slot floor, where the screw bears; no through-windows |
 | Foot / butt flare | z 0-20: outer skin {np.interp(2.0, fz, fe):.2f} (at z = 2) -> {fe[-1]:.2f} mm from the reference bore line (at z = 20), ~2 mm bottom fillet, flat closed butt (max 42.6 x 36.6 mm) - unchanged |
-| Outer envelope | no grip ever exceeds the reference's own outer envelope (crest {P['crest_offset']} mm from the reference bore line) |
+| Outer envelope | below z 90 no grip exceeds the reference's own outer envelope (crest {P['crest_offset']} mm from the reference bore line); the head above is thicker, see above |
 
-Reference bounding box 42.64 x 36.62 x 132.823 mm; all ten grips: 42.63 x 36.61 x 135.0 mm (2.2 mm longer).  "Base line" below = the reference's 32.06 x 26.04 mm
+Reference bounding box 42.64 x 36.62 x 132.823 mm; all ten grips: 42.63 x 36.61 x 133.4 mm (0.6 mm longer).  "Base line" below = the reference's 32.06 x 26.04 mm
 octagonal bore outline, which is now inside the solid body and only serves as the datum the outer skin is measured from.
 
 **The slot size is a ruler measurement.**  Measure your paddle's handle with calipers; if it is not 30 x 16 mm change `PADDLE_W`, `PADDLE_T`
@@ -97,9 +98,9 @@ test-print one grip before the rest.  The counterbore is sized for an M3 **cap-h
 not seat on the flat counterbore floor - for those, swap the counterbore for a 90 degree cone in `carve_cavity` (`scripts/grip_core.py`).  Your paddle's handle looks like
 a hollow honeycomb core (your cross-section photo), so a screw into its end face may not hold well - consider a threaded insert or epoxy.
 
-## What changed in revisions 3 and 4
+## What changed in revisions 3 to 6
 
-* **Interior:** the 32.06 x 26.04 mm octagonal bore is filled; the only cavity is the 30.2 x 16.2 mm slot (z 5 to the top), so the grip no longer
+* **Interior:** the 32.06 x 26.04 mm octagonal bore is filled; the only cavity is the 30.2 x 16.2 mm slot (z 3.4 to the top), so the grip no longer
   rattles on your flat paddle handle (the gaps marked on your photos).
 * **Screw hole:** one 3.5 mm hole through the butt on the slot axis, to pin the grip to the paddle with an M3 allen screw.
 * **VORONOI-CORE:** with a solid body its through-windows are gone; its 54 cells stay as recesses about 1 mm deep between the rounded ribs (floors 2.46 mm above the base line, crests 3.5 mm).
@@ -109,7 +110,11 @@ a hollow honeycomb core (your cross-section photo), so a screw into its end face
   grip) seats fully on the floor.  With the old 127.8 mm slot the neck flare stopped on the rim, the grip stood about 7 mm proud of the paddle end and the flare
   pried the thin rim open.
 * **Rev 5 - solid head:** no cavity above z 110 and a 0.5 mm 45 degree lead-in chamfer at the slot mouth; the hollow head had cracked on every print.
-* **Rev 5 - counterbore** (6.2 x 3.2 mm) instead of the countersink, for cap-head screws.  Weight 50-54 -> {wmin:.0f}-{wpmax:.0f} g in PLA.
+* **Rev 5 - counterbore** instead of the countersink, for cap-head screws.
+* **Rev 6 - base:** 3.4 mm instead of 5.0 mm (slot depth unchanged at 130 mm, so the grip is 133.4 mm long and the assembled paddle is 1.6 mm shorter).  The
+  counterbore is 6.2 x 2.2 mm for a low-head M3 cap screw; the floor under the screw head stays 1.2 mm.
+* **Rev 6 - head wall:** the wall between the slot and the outside is at least 3.5 mm from z 112 to the top (was 1.1 mm at the slot corners and 1.7 mm at the slot ends in
+  rev 5, where the head cracked); it grows smoothly from z 90, the head is solid from z 100.  Weight now {wmin:.0f}-{wpmax:.0f} g in PLA.
 
 Earlier revisions: rev 1 = ten designs + colour 3MFs; rev 2 = smooth finish, 1.2 mm base walls, <= 50 g each.
 
@@ -204,15 +209,16 @@ differ in how they import per-triangle colour, so expect to assign or paint fila
 
 Every STL is cross-sectioned at 40+ heights against the reference profile.
 
-| Design | Result | Height mm | Max outside ref. envelope mm | Foot profile err mm | Min relief floor, textured zone mm | Min skin at the neck mm | Slot measured mm | Material inside slot mm2 | Screw hole / counterbore mm |
+| Design | Result | Height mm | Max outside ref. envelope (z < 90) mm | Foot profile err mm | Min relief floor, textured zone mm | Min slot wall, head (z 112 up) mm | Slot measured mm | Material inside slot mm2 | Screw hole / counterbore mm |
 |---|---|---|---|---|---|---|---|---|---|
 {chr(10).join(vrows)}
 
-* *Max outside ref. envelope* - how far the outer skin ever exceeds the reference's own outer envelope (must be ~0).  The one deliberate
-  exception is the neck, below.
+* *Max outside ref. envelope* - how far the outer skin ever exceeds the reference's own outer envelope below z 90 (must be ~0).  The deliberate
+  exceptions are the thickened head and the neck rim, below.
+* *Min slot wall, head* - the least distance from the slot outline to the outer surface over z 112 to just under the mouth chamfer (must be >= 3.5 mm).
 * *Slot measured* - width x depth of the single cavity at z = 60; it must be one cavity at all 40 sampled heights and equal the slot outline.
 * *Material inside slot* - area of material within the slot shrunk by 0.05 mm, worst case over 40 heights (must be 0).
-* *Screw hole / counterbore* - mean hole diameter over z 3.5 - 4.9 (round, on the slot axis, floor solid around it) and the counterbore diameter at z 0.1 / 1.6 / 3.0 (6.2 mm, flat floor at 3.2 mm).
+* *Screw hole / counterbore* - mean hole diameter over z 2.5 - 3.3 (round, on the slot axis, floor solid around it) and the counterbore diameter at z 0.1 / 1.0 / 2.0 (6.2 mm, flat floor at 2.2 mm).
 * *Min relief floor* - lowest the textured skin ever gets above the reference bore line (design value 1.2 mm).
 
 ![fit overlay](renders/fit_overlay.png)
@@ -220,10 +226,9 @@ Every STL is cross-sectioned at 40+ heights against the reference profile.
 ## Printing notes
 
 * Print **upright, butt-end down**, 100 % infill, 0.20 mm layers (as planned).  Nothing needs supports.  The sealed core is part of the model, so the slicer prints its walls with your perimeter count: use 3 perimeters (1.2 mm) or let gap-fill close the 1.2 mm walls; more perimeters would leave no room for the core's walls.  Each grip is {min(prt[n]['weight_g']['PLA'] for n in DESC):.0f}-{wpmax:.0f} g in PLA.
-* **Deliberate deviation from your reference - the neck outline.**  Your 3MF tapers to a 0.36 mm rim, thinner than one 0.4 mm line.  All ten keep the
-  reference taper curve down to 0.8 mm and then hold 0.8 mm, so the
-  top ~7 mm of the neck is up to **{fit['01_vortex_grip']['rim_added_vs_reference_mm']:.2f} mm larger** than the reference at the very rim.  If that
-  region must match your paddle exactly, change `MIN_RIM` in `scripts/grip_core.py` (the weight change is ~0.2 cm3).
+* **Deliberate deviation from your reference - the head outline.**  Your 3MF tapers to a 0.36 mm rim, thinner than one 0.4 mm line, and that rim cracked.  All ten now keep a
+  slot wall of at least **3.5 mm** from z 112 to the top (`HEAD_WALL`, `HEAD_RAMP` in `scripts/grip_core.py`), so the head is up to **{fit['01_vortex_grip']['head_added_vs_reference_mm']:.2f} mm larger** than the reference
+  (at the slot ends and corners; the long flat sides are unchanged).  If that region must match your paddle's outer shape exactly, lower `HEAD_WALL`.
 * Weights are volume x density; the STLs are {min(sizes):.0f}-{max(sizes):.0f} MB each ({sum(sizes):.0f} MB total).  `python3 scripts/generate_grips.py --res 0.35` makes lighter files.
 * These are geometry-verified but I have not run them through a slicer or printed them - do a preview slice before committing filament.
 

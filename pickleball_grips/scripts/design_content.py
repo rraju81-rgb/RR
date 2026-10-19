@@ -10,8 +10,8 @@ ACCENT = {
 }
 
 HANDLE_NOTE = ("A sleeve that slides over your paddle's flat handle: a 30.2 × 16.2 mm slot (the measured 30 × 16 mm tongue plus 0.2 mm), "
-               "130 mm deep so the paddle seats fully, with a 5 mm base and a counterbored 3.5 mm hole that takes an M3 cap-head screw flush. "
-               "The top 25 mm is solid; a sealed hollow core lightens the rest. The outer shape is the same on all ten designs.")
+               "130 mm deep so the paddle seats fully, with a thin 3.4 mm base and a counterbored 3.5 mm hole that takes a low-head M3 cap screw flush. "
+               "The head is solid with walls at least 3.5 mm thick around the slot; a sealed hollow core lightens the rest. The outer shape is the same on all ten designs.")
 
 CONTENT = {
     "01_vortex_grip": dict(

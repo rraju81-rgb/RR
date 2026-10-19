@@ -21,8 +21,8 @@ CORE_WALL = 1.2       # mm of material kept around the cavity (3 x 0.4 mm perime
 OPEN_R = 1.0          # mm: cavity at least 2 mm thick
 BRIDGE = 4.0          # mm: widest flat (unsloped) ceiling allowed
 MARGIN = 0.10         # mm: extra erosion that absorbs voxel / smoothing error (measured 3D wall ends up >= ~1.15 mm)
-KEEP_Z, KEEP_Y = 8.0, 9.8   # mm: no cavity under the slot floor (z < KEEP_Z, |y| < KEEP_Y): the screw head bears on that floor
-HEAD_SOLID_FROM = 110.0     # mm: no cavity above this height - the head (top 25 mm) is fully solid; it cracked when hollow as the paddle neck pried it
+KEEP_Z, KEEP_Y = 6.4, 9.8   # mm: no cavity under the slot floor (z < KEEP_Z = base + 3, |y| < KEEP_Y): the screw head bears on that floor
+HEAD_SOLID_FROM = 100.0     # mm: no cavity above this height - the head (top ~33 mm) is fully solid; it cracked when hollow as the paddle neck pried it
 
 
 def occupancy(mesh, vox=VOX):
