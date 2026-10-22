@@ -3,7 +3,7 @@
 
 For each grip:
   * mesh is a closed, consistently wound manifold, positive volume
-  * height 133.4 mm (3.4 mm base + 130 mm slot); footprint equal the reference
+  * height 135.0 mm (5 mm solid base + 130 mm slot); footprint equal the reference
   * OUTER envelope never exceeds the reference envelope (reference bore line offset by E(z)) by more than 0.05 mm
     - except the deliberate rim thickening (reference tapers to 0.36 mm; grips keep >= 0.8 mm) and the head thickening
       (z >= 90: the wall between the paddle slot and the outside grows to 3.5 mm), both reported separately
@@ -12,11 +12,11 @@ For each grip:
     long walls are >= 3.5 mm thick
   * SIDE SLITS: over the top 20 mm both end walls of the slot are cut away, as wide as the slot is thick: nothing inside the
     slot + slit region, and both long walls stay as separate plates
-  * SLOT: at every height the cavity around the axis is the 30 x 16 mm paddle slot (+0.2 mm clearance), z 5 .. top;
+  * SLOT: at every height the cavity around the axis is the 30 x 12 mm paddle slot (+0.2 mm clearance), z 5 .. top;
     no material inside the slot (the sealed lightening cavity in the side walls is checked in verify_print.py)
-  * SCREW HOLE: one 3.5 mm hole through the butt (z 0 .. 3.4) on the slot axis with a 6.2 mm x 2.2 mm counterbore for a low-head
-    M3 cap screw at the butt face (1.2 mm floor under the head); floor solid around it
-  * HEAD: no sealed cavity above z = 100 (the head must be solid); slot mouth has a 0.5 mm 45 degree lead-in
+  * SCREW HOLE: one 3.5 mm hole through the butt (z 0 .. 5) on the slot axis with a 6.2 mm x 2.2 mm counterbore for a low-head
+    M3 cap screw at the butt face (2.8 mm floor under the head); floor solid around it
+  * HEAD: no sealed cavity above z = 100 (the head must be solid); slot mouth has a 1 mm 45 degree lead-in
   * OPEN TOP: the slot is open at z = top
 
 Writes ../fitment_report.json and prints a markdown table.

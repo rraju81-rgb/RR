@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "specs" / "assets"
 OUTDIR = ROOT / "specs"
 TODAY = date.today().isoformat()
-REV = "6"
+REV = "7"
 LIMIT_G = 50.0
 
 FIT = {r["name"]: r for r in json.loads((ROOT / "fitment_report.json").read_text())}
@@ -105,7 +105,7 @@ def furniture(cx, rec, section, sheet_no):
     pg.line(12, 14.6, 198, 14.6, HAIR, 0.2)
     pg.rect(12, 14.1, 26, 1.0, fill=acc)
     pg.line(12, 283.5, 198, 283.5, HAIR, 0.2)
-    pg.text(12, 287.6, "Slot sized to the measured paddle (30 × 16 mm)  ·  dimensions in mm unless noted  ·  measured from the STL files", F_R, 6.2, SUBTLE)
+    pg.text(12, 287.6, "Slot sized to the measured paddle (30 × 12 mm)  ·  dimensions in mm unless noted  ·  measured from the STL files", F_R, 6.2, SUBTLE)
     lab = f"Page {cx.page_no} of {cx.total}" if cx.book else f"Sheet {sheet_no} of {cx.sheet_of}"
     pg.text(198, 287.6, lab, F_R, 6.2, SUBTLE, anchor="r")
 
@@ -216,7 +216,7 @@ def page_overview(cx, rec):
     fit, prt = rec["fit"], rec["prt"]
     yv0 = yy + 4.2
     yv0 = heading(pg, 12, yv0, "Verified on the STL", acc, 88)
-    rows = [("Paddle slot", f"{br['x']:.1f} × {br['y']:.1f} mm (30 × 16 + 0.2)"),
+    rows = [("Paddle slot", f"{br['x']:.1f} × {br['y']:.1f} mm (30 × 12 + 0.2)"),
             ("Screw hole + counterbore", f"Ø {br['hole_d']:.1f} mm + Ø {HEAD_D:.1f} × {HEAD_H:.1f}"),
             ("Outer envelope vs reference", f"{fit['max_over_reference_envelope_mm']:+.3f} mm at most"),
             ("Outer body / sealed cavity", f"{prt['bodies']} / {prt['sealed_cavities']}"),
@@ -366,7 +366,7 @@ def page_drawing(cx, rec):
     pg.dim_v(ytop_edge, ybot_edge, pxr, f"{ov['y']:.2f}", ext1=px1, ext2=px1, left=False)
     # bore inside plan
     b0, b1 = plan_pt(br["x_min"], 0)[0], plan_pt(br["x_max"], 0)[0]
-    yb_in = plan_pt(0, br["y_min"])[1] - 3.0
+    yb_in = plan_pt(0, br["y_min"])[1] + 2.6                     # just outside the (12.2 mm) slot, in the wall
     pg.dim_h(b0, b1, yb_in, f"slot {br['x']:.2f}", size=6.2)
     d0, d1 = plan_pt(0, br["y_max"])[1], plan_pt(0, br["y_min"])[1]
     pg.dim_v(d0, d1, plan_pt(br["x_min"], 0)[0] + 4.0, f"slot {br['y']:.2f}", size=6.2, left=False, halo=True)
@@ -728,7 +728,7 @@ def page_cover(cx, recs):
         pg.text(12 + c_ * cw + cw / 2, y + hh + 10.4, f"{rec['content']['id']}  ·  {rec['overall']['weight_g']['PLA']:.1f} g PLA", F_R, 5.8, MUTED, anchor="c")
     # fact strip
     plas = [r["overall"]["weight_g"]["PLA"] for r in recs]
-    facts = [(f"{recs[0]['overall']['z']:.1f} mm", "overall length, 13.3 cm"), (f"{recs[0]['bore']['x']:.1f} × {recs[0]['bore']['y']:.1f} mm", "paddle slot, identical on all ten"),
+    facts = [(f"{recs[0]['overall']['z']:.1f} mm", "overall length, 13.5 cm"), (f"{recs[0]['bore']['x']:.1f} × {recs[0]['bore']['y']:.1f} mm", "paddle slot, identical on all ten"),
              (f"{min(plas):.0f} – {max(plas):.0f} g", "in PLA, sealed hollow core"), ("Ø 3.5 mm", "screw hole through the butt")]
     fx = 14.0
     for big, small in facts:
@@ -875,7 +875,7 @@ def page_reference(cx, recs):
     bx0, bx1, by0, by1 = ring[:, 0].min(), ring[:, 0].max(), ring[:, 1].min(), ring[:, 1].max()
     tz, te = np.array(REF["taper_table"]).T
     fz, fe = np.array(REF["foot_table"]).T
-    ztop = recs[0]["overall"]["z"]                   # 133.4: 3.4 mm base + 130 mm slot (the reference sleeve was 132.823)
+    ztop = recs[0]["overall"]["z"]                   # 135.0: 5 mm solid base + 130 mm slot (the reference sleeve was 132.823)
     zf = F.z_floor
     zz = np.linspace(0, ztop, 500)
     E = np.where(zz <= 20, np.interp(zz, fz, fe), np.where(zz < tz[0], 3.5, np.interp(zz, tz, te)))
@@ -949,11 +949,11 @@ def page_reference(cx, recs):
     yy = heading(pg, 92, yy + 5.0, "Changed from the reference sleeve", RED, 106)
     plas = [r["overall"]["weight_g"]["PLA"] for r in recs]
     cavs = [r["prt"]["cavity_volume_cm3"] for r in recs]
-    dev = [("Interior", f"filled; slot {sw_mm:.1f} × {st_mm:.1f} mm", "Replaces the 32.06 × 26.04 mm bore. Slot = measured paddle tongue 30 × 16 mm + 0.2 mm."),
+    dev = [("Interior", f"filled; slot {sw_mm:.1f} × {st_mm:.1f} mm", "Replaces the 32.06 × 26.04 mm bore. Slot = paddle handle 30 × 12 mm + 0.2 mm (rev 6: 16.2 mm, about 2 mm of play per side)."),
            ("Screw hole", f"Ø {hole_d:.1f} mm + Ø {HEAD_D:.1f} × {HEAD_H:.1f} counterbore", f"A low-head M3 cap screw (head 5.5 × 2.0 mm) sits flush with the butt; {zf - HEAD_H:.1f} mm of floor is left under its head."),
            ("Head", f"slot wall ≥ {HEAD_WALL:.1f} mm, end slits {SLIT_DEPTH:.0f} mm", "Rev 5 cracked at the slot corners (1.1 mm wall). Both end walls are now slit open over the top 20 mm for the paddle throat; walls ≥ 3.5 mm below."),
-           ("Hollow core", f"sealed, {min(cavs):.0f} – {max(cavs):.0f} cm³, {min(plas):.0f} – {max(plas):.0f} g PLA", "Only in the thick side walls, z 1 – 100, walls ≈ 1.2 mm. Roofs ≤ 45°, no supports. (Rev 3 fully solid: 88 – 98 g.)"),
-           ("Length", f"{ztop:.1f} mm = {zf:.1f} base + {ztop - zf:.1f} slot", "Rev 5 had a 5.0 mm base (135.0 mm); the base is now 1.6 mm thinner and the slot depth is unchanged.")]
+           ("Hollow core", f"sealed, {min(cavs):.0f} – {max(cavs):.0f} cm³, {min(plas):.0f} – {max(plas):.0f} g PLA", "Only in the thick side walls, z 5 – 100, walls ≈ 1.2 mm; the bottom 5 mm is solid. Roofs ≤ 45°, no supports. (Rev 3 fully solid: 88 – 98 g.)"),
+           ("Length", f"{ztop:.1f} mm = {zf:.1f} base + {ztop - zf:.1f} slot", "Rev 6 had a 3.4 mm base; it is back to a solid 5 mm (no hollow core below z 5), slot depth unchanged.")]
     for a_, b_, c_ in dev:
         pg.rect(92, yy + 0.4, 1.3, 9.6, fill=RED)
         pg.text(95, yy + 3.4, a_, F_B, 7.4, INK)
@@ -977,7 +977,7 @@ def page_reference(cx, recs):
     steps = [f"Slot: the cavity around the axis from z {zf:.1f} to the slits equals the slot outline; no material inside it or inside the slits (0.000 mm²).",
              f"Screw hole: one round Ø {hole_d:.1f} mm hole on the axis, Ø {HEAD_D:.1f} × {HEAD_H:.1f} counterbore at the butt face, floor solid around it.",
              f"Envelope: outer skin vs the reference below z 90, worst case {worst:+.3f} mm; head wall ≥ {HEAD_WALL:.1f} mm from z 112 and long walls ≥ {HEAD_WALL:.1f} mm in the slit zone (min {min(r['fit']['head_wall_min_mm'] for r in recs):.2f} mm).",
-             "Hollow core: wall to the nearest outer surface measured in 3D (median 1.2 mm, min 1.1 mm); no cavity above z 100.",
+             "Hollow core: wall to the nearest outer surface measured in 3D (median 1.2 mm, min 1.1 mm); no cavity above z 100 or below z 5.",
              "Print check: every 0.20 mm layer sliced; one outer body, no material under 0.4 mm wide, flat bridges ≤ 4 mm."]
     yy = cyy + 4.0
     for s_ in steps:
@@ -1006,7 +1006,8 @@ def page_notes(cx, recs):
             ("3", "Solid body, 30 × 16 mm paddle slot, Ø3.5 mm screw hole; Voronoi windows removed"),
             ("4", "Sealed hollow core (≈ 50 g), 90° countersink on the screw hole"),
             ("5", "135 mm long (130 mm slot, 5 mm base), cap-head counterbore, solid head above z 110, 0.5 mm slot lead-in"),
-            ("6", "3.4 mm base (low-head M3 counterbore 6.2 × 2.2), 3.5 mm slot wall over the head, solid above z 100, both end walls slit 20 mm")]
+            ("6", "3.4 mm base (low-head M3 counterbore 6.2 × 2.2), 3.5 mm slot wall over the head, solid above z 100, both end walls slit 20 mm"),
+            ("7", "Slot 30.2 × 12.2 mm for the 12 mm thick handle (was 16.2), solid 5 mm base, 135 mm long, 1 mm lead-in at the mouth")]
     table(pg, 12, y, [10, 78], rows, header=["Rev", "Change"], row_h=5.3, size=7.0, aligns=["l", "l"], fonts=[F_B, F_R], zebra=False, hsize=5.8)
     x2 = 104.0
     y = heading(pg, x2, 36.0, "Densities used (g/cm³)", INK, 94)
@@ -1028,7 +1029,7 @@ def page_notes(cx, recs):
     pg.rect(12, yb, 186, 24.0, fill=PANEL, r=2.5)
     pg.text(16, yb + 5.6, "LIMITS OF THIS DOCUMENT", F_B, 6.4, INK)
     pg.para(16, yb + 7.6, "These sheets describe the geometry and its measured properties.  They are not a print guarantee: material, printer, cooling and slicer settings all "
-            "affect the result.  Do a preview slice before committing filament.  The slot is sized to a ruler measurement of 30 × 16 mm: check your paddle with calipers and adjust PADDLE_W / PADDLE_T in grip_core.py if it differs.", 178, F_R, 7.2, MUTED, leading=9.4)
+            "affect the result.  Do a preview slice before committing filament.  The slot is sized to a ruler measurement of 30 × 12 mm: check your paddle with calipers and adjust PADDLE_W / PADDLE_T in grip_core.py if it differs.", 178, F_R, 7.2, MUTED, leading=9.4)
 
 
 # ------------------------------------------------------------------------------------------------

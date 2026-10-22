@@ -238,19 +238,19 @@ def build_mesh(F, z, H):
 
 # --- solid body with the paddle slot and screw hole ------------------------------
 # Revision 3: the grip is a SOLID sleeve; the only cavities are the paddle slot and the screw hole.
-PADDLE_W, PADDLE_T = 30.0, 16.0        # mm - flat handle (tongue) of the paddle, measured on the real paddle
+PADDLE_W, PADDLE_T = 30.0, 12.0        # mm - flat handle (tongue) of the paddle: 30 mm wide, about 12 mm thick (rev 7; the 16 mm used up to rev 6 left ~2 mm of play per side)
 SLOT_CLEAR = 0.2                       # mm - total clearance added to each slot dimension (FDM holes print slightly small)
 SLOT_R = 0.3                           # mm - slot corner radius (a 0.4 mm nozzle cannot print sharper)
 HOLE_D = 3.5                           # mm - screw hole through the butt for an M3 (3 mm) screw
 HEAD_D = 6.2                           # mm - counterbore for a low-head M3 cap screw (DIN 7984: head 5.5 mm dia x 2.0 mm tall), +0.2 mm for print tolerance / depth
 HEAD_H = 2.2                           # mm - counterbore depth, so the screw head sits flush with (just below) the butt face
-BASE = 3.4                             # mm - base (butt) thickness = height of the slot floor; the floor under the screw head is BASE - HEAD_H = 1.2 mm
+BASE = 5.0                             # mm - solid base (butt) = height of the slot floor; the floor under the screw head is BASE - HEAD_H = 2.8 mm
 SLOT_DEPTH = 130.0                     # mm - paddle handle covered by the grip (13.0 cm)
-Z_TOP = BASE + SLOT_DEPTH              # mm - overall length 133.4 mm (the reference sleeve was 132.823 mm)
+Z_TOP = BASE + SLOT_DEPTH              # mm - overall length 135.0 mm (the reference sleeve was 132.823 mm)
 HEAD_WALL = 3.5                        # mm - minimum wall between the paddle slot and the outside over the head (the slot mouth cracked at 1.1 mm)
 SLIT_DEPTH = 20.0                      # mm - both short (30 mm direction) side walls of the slot are open from the top down this far, so the flared throat of the paddle passes
 HEAD_RAMP = (90.0, 112.0)              # mm - the wall requirement grows smoothly from 0 at z = 90 to HEAD_WALL at z = 112 and stays up to the top
-MOUTH_CHAMFER = 0.5                    # mm - 45 degree lead-in at the slot mouth, so the flare of the paddle neck does not pry the rim
+MOUTH_CHAMFER = 1.0                    # mm - 45 degree lead-in at the slot mouth, to guide the paddle into the snug 12.2 mm slot
 
 
 def bore_centre(F):

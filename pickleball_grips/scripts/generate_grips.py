@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the ten pickleball grip STLs: reference outer envelope, solid body, 30 x 16 mm paddle slot, 3.5 mm screw hole.
+"""Generate the ten pickleball grip STLs: reference outer envelope, solid body, 30 x 12 mm paddle slot, 3.5 mm screw hole.
 
 usage:  python3 generate_grips.py [--only 01 07 ...] [--res 0.25]
 Outputs ../stl/<id>.stl and ../data/<id>_colors.npz (render-only colour map).
@@ -51,7 +51,7 @@ def generate(F, name, label, fn, res, light=True):
     t0 = time.time()
     ctx, d = evaluate(F, fn, res)
     z, H, _ = F.skin(d["t"], res)
-    # Revision 3: SOLID sleeve - the only cavities are the 30 x 16 mm paddle slot and the 3.5 mm screw hole in the butt.
+    # Revision 3: SOLID sleeve - the only cavities are the 30 x 12 mm paddle slot and the 3.5 mm screw hole in the butt.
     # (VORONOI-CORE's through-windows are not cut any more: its cells stay as 2.3 mm recesses between the ribs.)
     V, Fc = build_mesh_solid_reduced(F, z, H)
     V, Fc = carve_cavity(F, V, Fc)

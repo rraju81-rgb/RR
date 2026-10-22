@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """renders/fit_overlay.png - cross-sections of every grip over the reference outlines.
 
-black  : the measured paddle tongue, 30 x 16 mm   -> sits inside the 30.2 x 16.2 mm slot of every grip
+black  : the measured paddle tongue, 30 x 12 mm   -> sits inside the 30.2 x 12.2 mm slot of every grip
 grey   : the reference bore (from the 3MF)        -> now filled; the two white side pockets are the sealed hollow core
 dashed : reference crest envelope (bore + 3.5 mm)  -> no grip exceeds it
 colour : the grip's section at mid-height (z = 64)
@@ -19,7 +19,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from grip_core import Frame  # noqa: E402
+from grip_core import Frame, PADDLE_W, PADDLE_T  # noqa: E402
 from designs import DESIGNS  # noqa: E402
 from verify_fitment import section_solid  # noqa: E402
 from extract_reference_profile import load_3mf_mesh, section_polys  # noqa: E402
@@ -49,8 +49,8 @@ def main():
                 ax.plot(*h.xy, color=cols[k], lw=1.0)
         ax.plot(*env.exterior.xy, "k--", lw=0.8, label="reference crest envelope")
         ax.plot(*ref_polys[1].exterior.xy, color="#8A93A0", ls=(0, (3, 2)), lw=1.0, label="reference bore (now solid)")
-        tongue = box(-15.0, -8.0, 15.0, 8.0)
-        ax.plot(*tongue.exterior.xy, "k-", lw=1.6, label="paddle tongue 30 x 16 mm")
+        tongue = box(-PADDLE_W / 2, -PADDLE_T / 2, PADDLE_W / 2, PADDLE_T / 2)
+        ax.plot(*tongue.exterior.xy, "k-", lw=1.6, label=f"paddle tongue {PADDLE_W:.0f} x {PADDLE_T:.0f} mm")
         ax.set_aspect("equal")
         ax.set_xlim(-22, 22)
         ax.set_ylim(-19.5, 19.5)
@@ -58,7 +58,7 @@ def main():
         ax.grid(alpha=0.25)
         if k == 0:
             ax.legend(loc="lower left", fontsize=7)
-    fig.suptitle("Fitment overlay - paddle slot and sealed hollow core (white) in a solid body around the 30 x 16 mm tongue (black); the outer skin stays inside the reference envelope (dashed)",
+    fig.suptitle("Fitment overlay - paddle slot and sealed hollow core (white) in a solid body around the 30 x 12 mm tongue (black); the outer skin stays inside the reference envelope (dashed)",
                  fontsize=14)
     plt.tight_layout()
     out = ROOT / "renders" / "fit_overlay.png"

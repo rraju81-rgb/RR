@@ -80,8 +80,8 @@ def _extrude_xz(poly, y0, y1, xm, ym):
     return V, Fc
 
 
-def make_paddle(out, width=190.0, top=402.0, tongue_w=30.0, thick=16.0):
-    """Illustrative paddle matching the measured one: a flat 16 mm slab whose handle is a 30 mm wide tongue that slides
+def make_paddle(out, width=190.0, top=402.0, tongue_w=30.0, thick=12.0):
+    """Illustrative paddle matching the measured one: a flat 12 mm slab whose handle is a 30 mm wide tongue that slides
     into the grip slot, flaring into a rounded face.  The face widens right at the rim of the grip (as on the real paddle),
     so the throat passes through the slits in the two end walls.  Light core edge, dark face plates on the face only."""
     from shapely.geometry import Polygon

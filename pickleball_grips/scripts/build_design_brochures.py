@@ -326,7 +326,7 @@ def page_one(pg, n, cur, art):
     pg.rect(0, 0, 210, 297, fill=BG1)
     colour_strip(pg)
     spaced(pg, 12, 15.0, f"PG-{cur + 1:02d}  ·  THE GRIP COLLECTION", F_B, 7.0, "#9AA5B4", 1.4)
-    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  13.3 CM", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
+    spaced(pg, 198, 15.0, "PLA  ·  ONE COLOUR  ·  13.5 CM", F_R, 6.8, "#9AA5B4", 1.0, anchor="r")
     spaced(pg, 12, 29.0, f"DESIGN {cur + 1:02d} OF 10", F_B, 7.2, acc, 1.5)
     title = LABEL[n].upper()
     size = 38.0
@@ -364,7 +364,7 @@ def page_one(pg, n, cur, art):
     yh = cy + cr + 5.2 + gap_b
     y = heading(pg, x0, yh, "The handle", acc, WHITE, w0, "#2A3442")
     yy = pg.para(x0, y + 1.0, HANDLE_NOTE, w0, F_R, 7.9, "#C5CDD8", leading=10.2)
-    tiles = [("133.4 mm", "LENGTH"), ("30 × 16 mm", "PADDLE SLOT"), ("130 mm", "SLOT DEPTH"), ("M3 low-head", "SCREW, FLUSH")]
+    tiles = [("135 mm", "LENGTH"), ("30 × 12 mm", "PADDLE SLOT"), ("130 mm", "SLOT DEPTH"), ("M3 low-head", "SCREW, FLUSH")]
     tw, gp = 19.5, 2.0
     ty = yy + 3.4
     for i, (big, small) in enumerate(tiles):
@@ -443,7 +443,7 @@ def page_two(pg, n, cur, art):
         pg.text(cx_, ey + 49.4, SHORT[nn], F_B if cur_ else F_R, 4.9, INK if cur_ else MUTED, anchor="c")
         if cur_:
             pg.rect(12 + i * pitch + 0.6, ey + 0.8, pitch - 1.2, 50.4, stroke=acc, sw_=0.5, r=2.0)
-    pg.text(12, 289.6, "The paddle in the illustration is generic, drawn with your 30 × 16 mm handle.   Every design prints in any of the ten PLA "
+    pg.text(12, 289.6, "The paddle in the illustration is generic, drawn with your 30 × 12 mm handle.   Every design prints in any of the ten PLA "
             "colours shown on page 1.   100 % infill  ·  0.20 mm layers  ·  upright, butt end down.", F_R, 5.4, SUBTLE)
 
 
