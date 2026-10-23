@@ -1,0 +1,181 @@
+{
+  "params": {
+    "bar_od": 22.2,
+    "teeth": 36,
+    "serr_r_in": 7.5,
+    "serr_r_out": 16.0,
+    "body_d": 32.0,
+    "pitch_x": 12.0,
+    "spigot_d": 12.4,
+    "spigot_len": 6.0,
+    "bolt_clear_d": 6.6,
+    "groove_x": [
+      4.0,
+      8.0
+    ],
+    "groove_w": 1.0,
+    "groove_depth": 0.5,
+    "hub_outer_x": 24.0,
+    "cbore_d": 11.0,
+    "cbore_depth": 6.5,
+    "neck_inner_x": 14.0,
+    "neck_h": 22.0,
+    "neck_end": 42.0,
+    "neck_fillet_r": 6.0,
+    "tap_d": 4.2,
+    "blade_t": 4.0,
+    "blade_h": 22.0,
+    "blade_rear": 12.35,
+    "blade_rear_r": 6.0,
+    "slot_w": 5.3,
+    "slot_margin": 4.0,
+    "screw_pitch": 12.0,
+    "adjust": 5.0,
+    "bend_r": 18.0,
+    "front_len": 100.0,
+    "front_toe_deg": 3.0,
+    "tip_r": 8.0,
+    "edge_r": 0.6,
+    "sleeve_len": 20.0,
+    "sleeve_recess_depth": 7.0,
+    "sleeve_slit_w": 1.0,
+    "sleeve_slit_len": 12.0,
+    "cone_land": 3.0,
+    "cone_half_angle_deg": 15.0,
+    "cone_min_d": 8.0,
+    "cone_tap_d": 5.0,
+    "m6_len": 45.0,
+    "m5_len": 12.0
+  },
+  "derived": {
+    "slot_length": 27.3,
+    "screw_positions_y": [
+      24.0,
+      36.0
+    ],
+    "bend_start_y": 47.650000000000006,
+    "bend_angle_deg": 87.0,
+    "run_start_centre_xy": [
+      8.94,
+      65.63
+    ],
+    "run_tip_centre_xy": [
+      -90.92,
+      70.86
+    ],
+    "tip_x": -90.92
+  },
+  "checks_4mm": {
+    "m6_engagement_mm": 8.5,
+    "m5_engagement_mm": 7.0,
+    "lever_clearance_mm": {
+      "-5": 12.2,
+      "+0": 17.2,
+      "+5": 22.2
+    },
+    "blade_path_length_mm": 162.6,
+    "protrusion_beyond_bar_end_mm": 31.75,
+    "reach_ahead_of_bar_axis_mm": 72.8,
+    "coverage_inboard_of_bar_end_mm": 91.0,
+    "blade_inner_face_ahead_of_bar_axis_mm": {
+      "-5": {
+        "run_start": 58.6,
+        "run_tip": 63.4
+      },
+      "+0": {
+        "run_start": 63.6,
+        "run_tip": 68.4
+      },
+      "+5": {
+        "run_start": 68.6,
+        "run_tip": 73.4
+      }
+    },
+    "overall_envelope_mm": [
+      119.0,
+      88.8,
+      32.0
+    ]
+  },
+  "checks_6mm": {
+    "m6_engagement_mm": 8.5,
+    "m5_engagement_mm": 7.0,
+    "lever_clearance_mm": {
+      "-5": 11.3,
+      "+0": 16.3,
+      "+5": 21.3
+    },
+    "blade_path_length_mm": 162.6,
+    "protrusion_beyond_bar_end_mm": 33.75,
+    "reach_ahead_of_bar_axis_mm": 73.8,
+    "coverage_inboard_of_bar_end_mm": 90.0,
+    "blade_inner_face_ahead_of_bar_axis_mm": {
+      "-5": {
+        "run_start": 57.6,
+        "run_tip": 62.4
+      },
+      "+0": {
+        "run_start": 62.6,
+        "run_tip": 67.4
+      },
+      "+5": {
+        "run_start": 67.6,
+        "run_tip": 72.4
+      }
+    },
+    "overall_envelope_mm": [
+      120.0,
+      89.8,
+      32.0
+    ]
+  },
+  "masses": {
+    "01_bar_end_adapter": {
+      "material": "al6061",
+      "grams": 25.9
+    },
+    "01b_bar_end_adapter_oem_thread": {
+      "material": "al6061",
+      "grams": 24.5
+    },
+    "02_guard_arm": {
+      "material": "al6061",
+      "grams": 37.8
+    },
+    "03_guard_blade_4mm_carbon": {
+      "material": "carbon",
+      "grams": 21.0
+    },
+    "03b_guard_blade_6mm_3dprint": {
+      "material": "pa12cf",
+      "grams": 22.4
+    },
+    "04_expander_sleeve_S_bar_id_13-15": {
+      "material": "tpu",
+      "grams": 1.7
+    },
+    "04_expander_sleeve_M_bar_id_15-17": {
+      "material": "tpu",
+      "grams": 2.5
+    },
+    "04_expander_sleeve_L_bar_id_17-19": {
+      "material": "tpu",
+      "grams": 3.3
+    },
+    "05_expander_cone_S_bar_id_13-15": {
+      "material": "al6061",
+      "grams": 1.7
+    },
+    "05_expander_cone_M_bar_id_15-17": {
+      "material": "al6061",
+      "grams": 2.6
+    },
+    "05_expander_cone_L_bar_id_17-19": {
+      "material": "al6061",
+      "grams": 3.8
+    }
+  },
+  "hardware_grams_per_side": 19.4,
+  "mass_per_side_grams_carbon_blade": 109.2,
+  "all_checks_passed": true
+}

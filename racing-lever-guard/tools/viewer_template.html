@@ -1,0 +1,555 @@
+<title>Racing Lever Guard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@600;700&display=swap">
+<style>
+  /* Layout: workshop spec sheet. Big 3D stage with a control rail beside it, measured data below. */
+  :root {
+    --bg: #eef0f3;
+    --surface: #ffffff;
+    --ink: #15181d;
+    --muted: #5b6370;
+    --line: #d5d9e0;
+    --accent: #c4142f;
+    --stage-a: #fbfbfc;
+    --stage-b: #dfe3e8;
+    --chip: #f4f5f7;
+    --pass: #1d7a46;
+    --font-display: "Saira Semi Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --font-body: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1013; --surface: #161a1f; --ink: #e8ebf0; --muted: #98a1ad; --line: #2b3038;
+      --accent: #ff4b62; --stage-a: #20252c; --stage-b: #0c0e11; --chip: #1d2228; --pass: #4cc386;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1013; --surface: #161a1f; --ink: #e8ebf0; --muted: #98a1ad; --line: #2b3038;
+    --accent: #ff4b62; --stage-a: #20252c; --stage-b: #0c0e11; --chip: #1d2228; --pass: #4cc386;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 20px 48px;
+    display: grid;
+    gap: 28px;
+  }
+  header { display: grid; gap: 6px; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.02; margin: 0; letter-spacing: 0.01em; text-wrap: balance;
+  }
+  h1 span { color: var(--accent); }
+  .lede { margin: 0; max-width: 68ch; color: var(--muted); }
+
+  .bench { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+  .stage {
+    position: relative; border-radius: 6px; overflow: hidden; border: 1px solid var(--line);
+    background: radial-gradient(120% 90% at 50% 25%, var(--stage-a), var(--stage-b));
+    aspect-ratio: 4 / 3; max-width: 100%;
+  }
+  .stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  .stage .hint {
+    position: absolute; left: 12px; bottom: 10px; font-family: var(--font-mono); font-size: 11px;
+    color: var(--muted); pointer-events: none;
+  }
+  .stage .loading {
+    position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-mono);
+    font-size: 13px; color: var(--muted);
+  }
+  .rail {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px;
+    display: grid; gap: 18px;
+  }
+  .ctl { display: grid; gap: 8px; }
+  .ctl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ctl-head label, .ctl-head .name {
+    font-family: var(--font-display); font-weight: 600; font-size: 16px; letter-spacing: 0.02em;
+  }
+  .readout { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .note { font-size: 12.5px; color: var(--muted); margin: 0; }
+  .stepper { display: grid; grid-template-columns: 44px 1fr 44px; gap: 6px; align-items: center; }
+  .stepper output {
+    text-align: center; font-family: var(--font-mono); font-size: 18px; font-variant-numeric: tabular-nums;
+    background: var(--chip); border: 1px solid var(--line); border-radius: 4px; padding: 6px 0;
+  }
+  button, .seg label {
+    font: inherit; color: var(--ink); background: var(--chip); border: 1px solid var(--line);
+    border-radius: 4px; padding: 7px 10px; cursor: pointer;
+  }
+  button:hover, .seg label:hover { border-color: var(--muted); }
+  button:focus-visible, input:focus-visible + label, input[type="range"]:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  input[type="range"] { width: 100%; accent-color: var(--accent); }
+  .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+  .swatches input, .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .swatches label {
+    width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer;
+    background: var(--sw); box-shadow: inset 0 -6px 10px rgba(0,0,0,.25), inset 0 5px 8px rgba(255,255,255,.35);
+  }
+  .swatches input:checked + label { border-color: var(--ink); transform: scale(1.06); }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg input:checked + label { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .toggles { display: grid; gap: 8px; }
+  .toggles label { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+  .toggles input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+  section { display: grid; gap: 12px; }
+  h2 {
+    font-family: var(--font-display); font-weight: 700; font-size: 24px; margin: 0; letter-spacing: 0.01em;
+    text-wrap: balance;
+  }
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; min-width: 0; }
+  .tbl { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  .src { font-size: 12px; color: var(--muted); }
+  .pill {
+    display: inline-block; font-family: var(--font-mono); font-size: 11px; padding: 1px 7px; border-radius: 99px;
+    border: 1px solid currentColor; color: var(--pass); white-space: nowrap;
+  }
+  ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  a { color: var(--accent); }
+  .sources { columns: 2 280px; column-gap: 24px; margin: 0; padding-left: 18px; font-size: 13.5px; }
+  .sources li { break-inside: avoid; margin-bottom: 4px; }
+
+  @media (max-width: 900px) {
+    .bench { grid-template-columns: minmax(0, 1fr); }
+    .cols { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  body.shot header, body.shot .rail, body.shot section, body.shot .hint { display: none; }
+  body.shot .wrap { padding: 0; max-width: none; }
+  body.shot .stage { border: 0; border-radius: 0; }
+</style>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Universal bar-end fit &middot; 7/8&Prime; (22.2 mm) bars &middot; bar ID 13&ndash;19 mm</div>
+    <h1>Racing Lever Guard <span>/</span> Carbon + CNC</h1>
+    <p class="lede">Parametric CAD of a bar-end racing lever protector: anodised 6061 adapter and arm, carbon blade,
+      expander for hollow bars. Turn the guard in its 10&deg; serration steps, slide the blade in its slot and
+      check the gap to the lever.</p>
+  </header>
+
+  <div class="bench">
+    <div class="stage" id="stage">
+      <canvas id="view" aria-label="3D model of the lever guard on a handlebar"></canvas>
+      <div class="loading" id="loading">Loading 3D model&hellip;</div>
+      <div class="hint">Drag to orbit &middot; pinch or scroll to zoom</div>
+    </div>
+
+    <div class="rail">
+      <div class="ctl">
+        <div class="ctl-head"><span class="name">Guard angle</span><span class="readout" id="angleNote"></span></div>
+        <div class="stepper">
+          <button type="button" id="angDown" aria-label="Turn guard 10 degrees up">&minus;10&deg;</button>
+          <output id="angleOut" aria-live="polite">30&deg;</output>
+          <button type="button" id="angUp" aria-label="Turn guard 10 degrees down">+10&deg;</button>
+        </div>
+        <p class="note">36-tooth Hirth serration: the arm only seats in 10&deg; steps, so it cannot slip round in a hit.</p>
+      </div>
+
+      <div class="ctl">
+        <div class="ctl-head"><label for="shift">Blade slot</label><span class="readout" id="shiftOut">0 mm</span></div>
+        <input type="range" id="shift" min="-5" max="5" step="1" value="0">
+        <div class="ctl-head"><span class="note">Gap to lever</span><span class="readout" id="gapOut">&ndash;</span></div>
+      </div>
+
+      <div class="ctl">
+        <div class="ctl-head"><span class="name">Anodise</span><span class="readout" id="colourOut">Red</span></div>
+        <div class="swatches" role="radiogroup" aria-label="Anodise colour">
+          <input type="radio" name="colour" id="c-red" value="red" checked><label for="c-red" style="--sw:#c4142f" title="Red"></label>
+          <input type="radio" name="colour" id="c-blue" value="blue"><label for="c-blue" style="--sw:#1546b8" title="Blue"></label>
+          <input type="radio" name="colour" id="c-gold" value="gold"><label for="c-gold" style="--sw:#d39b2c" title="Gold"></label>
+          <input type="radio" name="colour" id="c-black" value="black"><label for="c-black" style="--sw:#1b1c1f" title="Black"></label>
+          <input type="radio" name="colour" id="c-silver" value="silver"><label for="c-silver" style="--sw:#c5c8cc" title="Silver"></label>
+        </div>
+      </div>
+
+      <div class="ctl">
+        <span class="name" style="font-family:var(--font-display);font-weight:600;font-size:16px">View</span>
+        <div class="seg" role="radiogroup" aria-label="Camera view">
+          <input type="radio" name="view" id="v-34" value="three-quarter" checked><label for="v-34">3/4</label>
+          <input type="radio" name="view" id="v-plan" value="plan"><label for="v-plan">Plan</label>
+          <input type="radio" name="view" id="v-front" value="front"><label for="v-front">Front</label>
+          <input type="radio" name="view" id="v-out" value="outboard"><label for="v-out">Bar end</label>
+        </div>
+        <div class="toggles">
+          <label><input type="checkbox" id="exploded"> Exploded view</label>
+          <label><input type="checkbox" id="reference" checked> Show handlebar, grip and lever</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Key dimensions</h2>
+    <div class="cols">
+      <div class="card tbl"><table id="dims"></table></div>
+      <div class="card tbl"><table id="checks"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Fitment</h2>
+    <div class="cols">
+      <div class="card tbl">
+        <table id="fit"></table>
+      </div>
+      <div class="card">
+        <ol class="steps">
+          <li>Open the bar end: remove the OEM bar-end weight, or trim a closed grip end.</li>
+          <li>Measure the bar's inside diameter and pick the S, M or L expander sleeve. If the bar has a threaded OEM insert, use the flat adapter and a bolt into that thread instead.</li>
+          <li>Push the adapter in until it seats on the bar end, set the arm on the serration at the lever's angle, and fit the M6 bolt finger tight.</li>
+          <li>Slide the blade in its slot for at least 10 mm all round the lever, then torque the M5 screws to 4 N&middot;m and the M6 bolt to 8 N&middot;m.</li>
+          <li>Pull the lever through its full travel and turn the bars lock to lock: nothing may touch.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Parts and hardware</h2>
+    <div class="card tbl"><table id="bom"></table></div>
+  </section>
+
+  <section>
+    <h2>Where the numbers come from</h2>
+    <div class="card">
+      <p class="note" style="margin-bottom:10px">The reference listing gives material and finish only (CNC aluminium, carbon-fibre pattern, black / blue / gold / red / silver, universal fit) and publishes no dimensions. Sizes were set from comparable universal guards:</p>
+      <ul class="sources">
+        <li><a href="https://darpansarvanstore.com/product/racing-handguard-lever-protector-carbon-finish-universal-fit-for-all-bikes/" target="_blank" rel="noopener">Darpan Sarvan: Racing Handguard / Lever Protector</a>: material, finish, colours</li>
+        <li><a href="https://www.amazon.com/Handguard-Motorcycle-Protector-Universal-Modification/dp/B0H3NW88B1" target="_blank" rel="noopener">Universal carbon-texture guard</a>: 13&ndash;19 mm bars, ~160 mm long</li>
+        <li><a href="https://www.walmart.com/ip/17212813508" target="_blank" rel="noopener">Ysyqkn lever guards</a>: 175 mm long, bar ID &ge; 17 mm</li>
+        <li><a href="https://www.amazon.com/XWYINGAN-Universal-Handlebar-Protector-Motorcycle/dp/B0F4K9C1HM" target="_blank" rel="noopener">XWYINGAN carbon + aluminium guard</a>: 135 mm, 180 g variant</li>
+        <li><a href="https://www.wrs.it/en/adjustments-e-adapters/374630-carbon-brake-lever-protection-132mm-lightech-yamaha-r1-m-2020-2025-8052393423296.html" target="_blank" rel="noopener">LighTech carbon protection</a>: 132 mm bar-end to lever end</li>
+        <li><a href="https://maxiscoot.com/en/product/lever-guards-voca-red-291507" target="_blank" rel="noopener">Voca lever guards</a>: adjustable 130 / 148 mm</li>
+        <li><a href="https://stage6-racing.com/en/product/lever-guards-cnc-stage6-r-t-set/" target="_blank" rel="noopener">Stage6 R/T guards</a>: 14 mm (alloy) / 17 mm (steel) bar inserts</li>
+        <li><a href="https://www.sportsbikeshop.co.uk/motorcycle_parts/content_prod/666871" target="_blank" rel="noopener">R&amp;G universal lever guard</a>: expanding fit 13&ndash;21 mm</li>
+        <li><a href="https://www.louis-moto.com/en/highsider-lever-protectors-cnc-black-pair-60152580" target="_blank" rel="noopener">Highsider lever protectors</a>: bar ID 12&ndash;22 mm</li>
+        <li><a href="https://ducatiomaha.com/products/woodcraft-lever-hand-guards" target="_blank" rel="noopener">Woodcraft fitting guide</a>: at least 10 mm clearance round the lever</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script id="scene-data" type="application/json">__SCENE_JSON__</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const data = JSON.parse(document.getElementById("scene-data").textContent);
+const S = data.summary || {};
+const P = S.params || {};
+const C4 = S.checks_4mm || {};
+const LEVER_DEG = 30;           // reference lever sits 30 deg below the bar's horizontal plane
+const ANODISE = { red: 0xb5122b, blue: 0x123fa8, gold: 0xc8902a, black: 0x16171a, silver: 0xc9ccd0 };
+const NAMES = { red: "Red", blue: "Blue", gold: "Gold", black: "Black", silver: "Silver" };
+
+// ---------------------------------------------------------------- tables from the CAD summary
+const fmt = (v, d = 1) => (typeof v === "number" ? v.toFixed(d).replace(/\.0+$/, "") : v);
+function fillTable(id, head, rows) {
+  const t = document.getElementById(id);
+  t.innerHTML = `<thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows
+    .map((r) => `<tr>${r.map((c, i) => `<td class="${i > 0 && /^[\d.+\-−–±xØ ×°/]+/.test(String(c)) ? "num" : ""}">${c}</td>`).join("")}</tr>`)
+    .join("")}</tbody>`;
+}
+const env = C4.overall_envelope_mm || [];
+const face = C4.blade_inner_face_ahead_of_bar_axis_mm || {};
+fillTable("dims", ["Feature", "Value"], [
+  ["Overall envelope (along bar × ahead × tall)", env.length ? `${env[0]} × ${env[1]} × ${env[2]} mm` : "–"],
+  ["Blade length along its centre line", `${fmt(C4.blade_path_length_mm)} mm`],
+  ["Blade section (carbon / 3D print)", `${fmt(P.blade_h)} × ${fmt(P.blade_t)} / 6 mm`],
+  ["Run covers lever inboard of bar end", `${fmt(C4.coverage_inboard_of_bar_end_mm)} mm`],
+  ["Sticks out past the bar end", `${fmt(C4.protrusion_beyond_bar_end_mm)} mm`],
+  ["Blade face ahead of bar axis (slot −5 / 0 / +5)", face["+0"] ? `${face["-5"].run_start} / ${face["+0"].run_start} / ${face["+5"].run_start} mm` : "–"],
+  ["Bend radius (centre line) / run toe-out", `R${fmt(P.bend_r)} / ${fmt(P.front_toe_deg)}°`],
+  ["Adapter body / spigot", `Ø${fmt(P.body_d)} × ${fmt(P.pitch_x)} / Ø${fmt(P.spigot_d)} × ${fmt(P.spigot_len)} mm`],
+  ["Angle adjustment", `${P.teeth || 36} teeth → ${360 / (P.teeth || 36)}° steps`],
+  ["Fore-aft adjustment", `±${fmt(P.adjust)} mm slot`],
+  ["Mass per side (carbon blade)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} g` : "–"],
+]);
+const lc = C4.lever_clearance_mm || {};
+fillTable("checks", ["Fit check (CAD)", "Result"], [
+  ["Serration mesh, every 10°", `<span class="pill">0.000 mm³ overlap</span>`],
+  ["Half a tooth out", `<span class="pill">clashes, cannot slip</span>`],
+  ["Blade to reference lever (slot −5 / 0 / +5)", lc["+0"] ? `${lc["-5"]} / ${lc["+0"]} / ${lc["+5"]} mm` : "–"],
+  ["Finger room, grip to blade run", "48 mm"],
+  ["M6 bolt thread in cone nut", `${fmt(C4.m6_engagement_mm)} mm`],
+  ["M5 blade screws in arm", `${fmt(C4.m5_engagement_mm)} mm`],
+  ["All CAD checks", S.all_checks_passed ? `<span class="pill">pass</span>` : "see build log"],
+]);
+fillTable("fit", ["Bar inside diameter", "Use", "Typical bars"], [
+  ["13–15 mm", "Sleeve S + cone S", "Aluminium clip-ons, tapered alloy bars"],
+  ["15–17 mm", "Sleeve M + cone M", "Thin-wall steel / alloy bars"],
+  ["17–19 mm", "Sleeve L + cone L", "Steel tubular bars"],
+  ["OEM threaded insert", "Flat adapter 01b + bolt to suit thread", "Bikes sold with bar-end weights"],
+]);
+const m = S.masses || {};
+const g = (k) => (m[k] ? `${fmt(m[k].grams)} g` : "–");
+fillTable("bom", ["#", "Part", "Material / finish", "Qty per side", "Mass"], [
+  ["01", "Bar-end adapter (spigot)", "6061-T6, hard anodised", "1", g("01_bar_end_adapter")],
+  ["01b", "Bar-end adapter, flat (OEM thread)", "6061-T6, hard anodised", "alt.", g("01b_bar_end_adapter_oem_thread")],
+  ["02", "Guard arm, 36T serration", "6061-T6, hard anodised", "1", g("02_guard_arm")],
+  ["03", "Guard blade 4 mm", "3K twill carbon, gloss clear coat", "1", g("03_guard_blade_4mm_carbon")],
+  ["03b", "Guard blade 6 mm (printable)", "PA12-CF or PETG-CF, carbon hydro-dip", "alt.", g("03b_guard_blade_6mm_3dprint")],
+  ["04", "Expander sleeve S / M / L", "TPU 95A or NBR 70 Shore A", "1", g("04_expander_sleeve_M_bar_id_15-17")],
+  ["05", "Expander cone nut S / M / L, M6", "6061-T6 or zinc-plated steel", "1", g("05_expander_cone_M_bar_id_15-17")],
+  ["H1", "Socket cap screw M6 × 45, ISO 4762", "A2-70 stainless or 10.9 black", "1", ""],
+  ["H2", "Button head screw M5 × 12, ISO 7380", "A2-70 stainless", "2", ""],
+  ["H3", "Washer M5, ISO 7089", "A2 stainless", "2", ""],
+]);
+
+// ---------------------------------------------------------------- three.js scene
+const canvas = document.getElementById("view");
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+const key = new THREE.DirectionalLight(0xffffff, 1.6);
+key.position.set(300, 500, 400);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xdfe8ff, 0.8);
+rim.position.set(-400, 200, -300);
+scene.add(rim);
+
+const camera = new THREE.PerspectiveCamera(28, 4 / 3, 5, 5000);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+
+// bike frame B (X outward, Y forward, Z up) -> three.js (Y up)
+const B = (x, y, z) => new THREE.Vector3(x, z, -y);
+const root = new THREE.Group();
+root.rotation.x = -Math.PI / 2;
+scene.add(root);
+const leverFrame = new THREE.Group();
+leverFrame.rotation.x = THREE.MathUtils.degToRad(-LEVER_DEG);
+const guardFrame = new THREE.Group();
+root.add(leverFrame, guardFrame);
+
+function carbonTexture() {
+  const n = 512, cells = 8, c = n / cells;
+  const cv = document.createElement("canvas");
+  cv.width = cv.height = n;
+  const x = cv.getContext("2d");
+  x.fillStyle = "#0b0c0e";
+  x.fillRect(0, 0, n, n);
+  for (let i = 0; i < cells; i++) {
+    for (let j = 0; j < cells; j++) {
+      const horiz = (i + j) % 4 < 2; // 2x2 twill
+      const gr = horiz ? x.createLinearGradient(0, j * c, 0, (j + 1) * c) : x.createLinearGradient(i * c, 0, (i + 1) * c, 0);
+      const hi = horiz ? "#3b3f47" : "#262930";
+      gr.addColorStop(0, "#08090a");
+      gr.addColorStop(0.5, hi);
+      gr.addColorStop(1, "#08090a");
+      x.fillStyle = gr;
+      x.fillRect(i * c + 1, j * c + 1, c - 2, c - 2);
+      x.strokeStyle = "rgba(255,255,255,0.05)";
+      x.lineWidth = 1;
+      for (let k = 6; k < c; k += 6) {
+        x.beginPath();
+        if (horiz) { x.moveTo(i * c, j * c + k); x.lineTo((i + 1) * c, j * c + k); }
+        else { x.moveTo(i * c + k, j * c); x.lineTo(i * c + k, (j + 1) * c); }
+        x.stroke();
+      }
+    }
+  }
+  const t = new THREE.CanvasTexture(cv);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+const anodised = new THREE.MeshPhysicalMaterial({ color: ANODISE.red, metalness: 0.85, roughness: 0.3, clearcoat: 0.35, clearcoatRoughness: 0.25 });
+const MATS = {
+  anodised,
+  carbon: new THREE.MeshPhysicalMaterial({ map: carbonTexture(), metalness: 0.0, roughness: 0.32, clearcoat: 1.0, clearcoatRoughness: 0.06 }),
+  steel: new THREE.MeshPhysicalMaterial({ color: 0xb9bdc3, metalness: 1.0, roughness: 0.28 }),
+  alu: new THREE.MeshPhysicalMaterial({ color: 0xc8cbd0, metalness: 1.0, roughness: 0.35 }),
+  rubber: new THREE.MeshStandardMaterial({ color: 0x1c1d20, metalness: 0.0, roughness: 0.85 }),
+  bar: new THREE.MeshPhysicalMaterial({ color: 0x2a2c30, metalness: 0.7, roughness: 0.42 }),
+  grip: new THREE.MeshStandardMaterial({ color: 0x1a1b1d, metalness: 0.0, roughness: 0.9 }),
+  lever: new THREE.MeshPhysicalMaterial({ color: 0x9fa4ab, metalness: 0.9, roughness: 0.38 }),
+};
+
+function decode(b64, Type) {
+  const bin = atob(b64);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return new Type(u8.buffer);
+}
+
+function boxUV(geo, mmPerRepeat) {
+  const g2 = geo.toNonIndexed();
+  const pos = g2.attributes.position;
+  const uv = new Float32Array((pos.count / 3) * 6);
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), n = new THREE.Vector3();
+  for (let t = 0; t < pos.count / 3; t++) {
+    a.fromBufferAttribute(pos, 3 * t); b.fromBufferAttribute(pos, 3 * t + 1); c.fromBufferAttribute(pos, 3 * t + 2);
+    n.subVectors(c, b).cross(new THREE.Vector3().subVectors(a, b)).normalize();
+    const ax = Math.abs(n.x), ay = Math.abs(n.y), az = Math.abs(n.z);
+    [a, b, c].forEach((v, k) => {
+      let u, w;
+      if (ax >= ay && ax >= az) { u = v.y; w = v.z; } else if (ay >= az) { u = v.x; w = v.z; } else { u = v.x; w = v.y; }
+      uv[6 * t + 2 * k] = u / mmPerRepeat;
+      uv[6 * t + 2 * k + 1] = w / mmPerRepeat;
+    });
+  }
+  g2.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  return g2;
+}
+
+const meshes = {};
+for (const m of data.meshes) {
+  let geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(decode(m.positions, Float32Array), 3));
+  geo.setIndex(new THREE.BufferAttribute(decode(m.indices, Uint32Array), 1));
+  geo.computeVertexNormals();
+  if (m.material === "carbon") geo = boxUV(geo, 14);
+  const mesh = new THREE.Mesh(geo, MATS[m.material]);
+  mesh.userData = m;
+  (m.group === "guard" ? guardFrame : leverFrame).add(mesh);
+  meshes[m.name] = mesh;
+}
+document.getElementById("loading").hidden = true;
+
+// ---------------------------------------------------------------- state + controls
+const state = { angle: LEVER_DEG, shift: 0, explode: 0, colour: "red", reference: true };
+const live = { angle: LEVER_DEG, shift: 0, explode: 0 };
+const VIEWS = {
+  "three-quarter": { pos: B(250, 330, 210), target: B(-45, 32, -6), up: B(0, 0, 1) },
+  plan: (() => {
+    const t = THREE.MathUtils.degToRad(LEVER_DEG);
+    const tgt = B(-40, 34 * Math.cos(t), -34 * Math.sin(t));
+    return { pos: tgt.clone().add(B(0, Math.sin(t), Math.cos(t)).multiplyScalar(520)), target: tgt, up: B(0, Math.cos(t), -Math.sin(t)) };
+  })(),
+  front: { pos: B(-80, 470, 30), target: B(-80, 30, -14), up: B(0, 0, 1) },
+  outboard: { pos: B(460, 70, 80), target: B(0, 30, -10), up: B(0, 0, 1) },
+};
+function setView(name) {
+  const v = VIEWS[name];
+  camera.position.copy(v.pos);
+  camera.up.copy(v.up);
+  controls.target.copy(v.target);
+  camera.lookAt(v.target);
+  controls.update();
+}
+
+function updateReadouts() {
+  document.getElementById("angleOut").textContent = `${state.angle}°`;
+  const off = Math.abs(state.angle - LEVER_DEG);
+  const miss = 63 * Math.sin(THREE.MathUtils.degToRad(off));
+  document.getElementById("angleNote").textContent = off === 0 ? "on the lever line" : `${miss.toFixed(0)} mm off the lever`;
+  document.getElementById("shiftOut").textContent = `${state.shift > 0 ? "+" : ""}${state.shift} mm`;
+  const base = (C4.lever_clearance_mm || {})["+0"];
+  document.getElementById("gapOut").textContent = base ? `${(base + state.shift).toFixed(1)} mm` : "–";
+  document.getElementById("colourOut").textContent = NAMES[state.colour];
+}
+
+function apply(opts = {}) {
+  Object.assign(state, opts);
+  anodised.color.setHex(ANODISE[state.colour]);
+  if (state.colour === "black") { anodised.roughness = 0.42; anodised.metalness = 0.6; }
+  else if (state.colour === "silver") { anodised.roughness = 0.3; anodised.metalness = 1.0; }
+  else { anodised.roughness = 0.3; anodised.metalness = 0.85; }
+  leverFrame.visible = state.reference;
+  updateReadouts();
+}
+
+document.getElementById("angUp").addEventListener("click", () => apply({ angle: state.angle + 10 }));
+document.getElementById("angDown").addEventListener("click", () => apply({ angle: state.angle - 10 }));
+document.getElementById("shift").addEventListener("input", (e) => apply({ shift: Number(e.target.value) }));
+document.querySelectorAll('input[name="colour"]').forEach((el) => el.addEventListener("change", () => apply({ colour: el.value })));
+document.querySelectorAll('input[name="view"]').forEach((el) => el.addEventListener("change", () => setView(el.value)));
+document.getElementById("exploded").addEventListener("change", (e) => apply({ explode: e.target.checked ? 1 : 0 }));
+document.getElementById("reference").addEventListener("change", (e) => apply({ reference: e.target.checked }));
+
+let fixedSize = null;
+function resize() {
+  const w = fixedSize ? fixedSize[0] : stage.clientWidth;
+  const h = fixedSize ? fixedSize[1] : stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function frame() {
+  const k = reduce ? 1 : 0.18;
+  live.angle += (state.angle - live.angle) * k;
+  live.shift += (state.shift - live.shift) * k;
+  live.explode += (state.explode - live.explode) * k;
+  guardFrame.rotation.x = THREE.MathUtils.degToRad(-live.angle);
+  for (const m of Object.values(meshes)) {
+    const d = m.userData;
+    if (d.group !== "guard") continue;
+    m.position.x = d.explode * live.explode;
+    m.position.y = d.slides ? live.shift : 0;
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+renderer.setAnimationLoop(frame);
+setView("three-quarter");
+apply();
+resize();
+
+// hook for headless renders: viewer.shot({view, colour, explode, reference, angle, shift, size})
+window.viewer = {
+  shot(o) {
+    const opts = Object.assign({ angle: LEVER_DEG, shift: 0, explode: 0, reference: true, colour: "red" }, o);
+    document.body.classList.add("shot");
+    if (opts.size) { fixedSize = opts.size; stage.style.width = `${opts.size[0]}px`; stage.style.height = `${opts.size[1]}px`; stage.style.aspectRatio = "auto"; }
+    apply(opts);
+    Object.assign(live, { angle: state.angle, shift: state.shift, explode: state.explode });
+    resize();
+    setView(opts.view || "three-quarter");
+    if (opts.camera) { camera.position.copy(B(...opts.camera.pos)); controls.target.copy(B(...opts.camera.target)); camera.up.copy(B(0, 0, 1)); camera.lookAt(controls.target); }
+    if (opts.fov) { camera.fov = opts.fov; camera.updateProjectionMatrix(); }
+    controls.update();
+    frame();
+    return true;
+  },
+};
+window.viewerReady = true;
+</script>
