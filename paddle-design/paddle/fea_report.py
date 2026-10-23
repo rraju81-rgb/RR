@@ -476,17 +476,17 @@ with its allowable.</p>
 {fig("face", "Fig. 2 – Carbon face sheets, largest in-plane fibre stress. The stress concentrates in the throat; "
      "the colour scale saturates at the clamp edge, which is not assessed.")}
 {fig("bond", f"Fig. 3 – Shear stress in the bond line, plotted on the core's bonded surfaces: the {lay.frame_w:g} mm "
-     f"frame, the solid zone and the {wave.land_width():.1f} mm lands. White stripes are the open flutes.")}
+     f"frame, the solid zone and the {wave.land_width():.2f} mm lands. White stripes are the open flutes.")}
 {fig("profile", f"Fig. 4 – Bond shear along the paddle for the tip impact, in 5 mm bands: largest value, 99th "
      f"percentile and mean. Shaded: solid core and the {lay.runout_len:g} mm run-out.")}
 {fig("core", "Fig. 5 – Printed core coloured by von Mises stress for the tip impact, top sheet removed. "
      "Left: Elongated, right: Hybrid.")}
 
 <div class="keep"><h2>5 Design iteration: flute ends and land width</h2>
-<p>The first version of the core had square flute ends at y = {lay.solid_to:g} mm and lands {wave.land_width(B_AMP):.1f} mm wide (amplitude
+<p>The first version of the core had square flute ends at y = {lay.solid_to:g} mm and lands {wave.land_width(B_AMP):.2f} mm wide (amplitude
 {B_AMP:g} mm). Its bond peeled at the step where each flute starts: {_f(b2["bond_peel"]["value"])} MPa against a
 {A["bond_peel"]:g} MPa allowable. The final core starts each flute with a 45° run-out, so the core meets the sheet in a
-thin wedge instead of a step. Its amplitude is {lay.rib_amp:g} mm, which widens the lands to {wave.land_width():.1f} mm. Elongated, tip impact:</p>
+thin wedge instead of a step. Its amplitude is {lay.rib_amp:g} mm, which widens the lands to {wave.land_width():.2f} mm. Elongated, tip impact:</p>
 <table><tr><th></th><th class="n">First version</th><th class="n">Final</th></tr>{iteration}</table></div>
 <p>The peel peak has gone. The shear peaks now sit on the centre lands just above the solid zone. There the shear
 from the whole blade funnels into the 30 mm wide throat. With the wider lands, the wall under each land is

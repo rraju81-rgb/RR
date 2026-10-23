@@ -59,7 +59,7 @@ that band the 99th-percentile value is 5.5 MPa. Against the
 <li><b>Stiffness.</b> Under 500 N the blade deflects 3.8 mm for a tip
 impact and 2.2 mm at the sweet spot. With the grip held, the first
 bending mode is 105 Hz (Elongated) and 112 Hz (Hybrid).</li>
-<li><b>Weight.</b> The Elongated paddle weighs 831 g and the Hybrid 783 g,
+<li><b>Weight.</b> The Elongated paddle weighs 832 g and the Hybrid 785 g,
 about 3.5 times a typical 210–240 g paddle. The two 4 mm carbon sheets alone weigh 608 g /
 569 g. §6 has the breakdown.</li>
 </ul>
@@ -73,7 +73,7 @@ about 3.5 times a typical 210–240 g paddle. The two 4 mm carbon sheets alone w
 <tr><td>Bond line, shear: 99th percentile in the hot band</td><td class="n">5.4 MPa</td><td class="n">5.5 MPa</td><td class="n"><span class="warn">▲ RF 1.45</span></td></tr>
 <tr><td>Bond line, shear: local peak</td><td class="n">10.1 MPa</td><td class="n">10.1 MPa</td><td class="n"><span class="bad">✖ RF 0.79</span></td></tr>
 <tr><td>First bending mode (grip held)</td><td class="n">105 Hz</td><td class="n">112 Hz</td><td class="n">—</td></tr>
-<tr><td>Mass</td><td class="n">831 g</td><td class="n">783 g</td><td class="n"><span class="warn">▲ 3.5 × typical</span></td></tr></table>
+<tr><td>Mass</td><td class="n">832 g</td><td class="n">785 g</td><td class="n"><span class="warn">▲ 3.5 × typical</span></td></tr></table>
 <p class="small">Reserve factor RF = allowable ÷ calculated stress; RF ≥ 1 passes. ✔ means RF ≥ 1.5,
 ▲ means 1.0–1.5 and ✖ means below 1. The carbon RF uses the max-stress failure index (RF = 1 / index).</p>
 
@@ -84,14 +84,14 @@ the full outline, blade and handle.</li>
 <li><b>Core.</b> 8 mm high, 3D-printed in PA-CF (carbon-filled nylon), printed flat. A closed
 6 mm perimeter frame covers the whole edge. Inside it is a sinusoidal wave rib: pitch 18 mm,
 wall 1.6 mm, amplitude 4 mm. The flutes run along the paddle. The crests are cut flat
-where they meet the sheets, which gives bond lands 3.7 mm wide.</li>
+where they meet the sheets, which gives bond lands 4.25 mm wide.</li>
 <li><b>Solid zone.</b> The core is solid from the butt to y = 150 mm (handle and throat). Each flute
 starts with a 45° run-out, 8 mm long, which prints without support. The butt end holds an M4 heat-set
 insert for the butt-cap screw.</li>
 <li><b>Grip.</b> Sleeve, wrap, throat collar and butt cap are not load-carrying in this model. The hand is
 represented by a clamp (§3).</li>
 </ul>
-
+<figure class="half"><img src="../render/paddles_3d_cutaway.png"><figcaption>Cutaway render: the top sheet and the core are cut back to show the wave rib between the sheets.</figcaption></figure>
 
 <div class="keep"><h2>3 Finite-element model</h2>
 <ul>
@@ -151,15 +151,15 @@ with its allowable.</p>
 <tr><td>Bond: peel, local peak [MPa]</td><td class="n">5</td><td class="n">3.4</td><td class="n">4.8</td><td class="n">3.4</td><td class="n">4.9</td></tr>
 <tr><td>Bond: peel, 99th percentile in the band at the peak [MPa]</td><td class="n">5</td><td class="n">2.5</td><td class="n">3.5</td><td class="n">2.5</td><td class="n">3.5</td></tr></table>
 <figure class=""><img src="fea_face_sheet_stress.png"><figcaption>Fig. 2 – Carbon face sheets, largest in-plane fibre stress. The stress concentrates in the throat; the colour scale saturates at the clamp edge, which is not assessed.</figcaption></figure>
-<figure class=""><img src="fea_bond_shear.png"><figcaption>Fig. 3 – Shear stress in the bond line, plotted on the core's bonded surfaces: the 6 mm frame, the solid zone and the 3.7 mm lands. White stripes are the open flutes.</figcaption></figure>
+<figure class=""><img src="fea_bond_shear.png"><figcaption>Fig. 3 – Shear stress in the bond line, plotted on the core's bonded surfaces: the 6 mm frame, the solid zone and the 4.25 mm lands. White stripes are the open flutes.</figcaption></figure>
 <figure class=""><img src="fea_bond_profile.png"><figcaption>Fig. 4 – Bond shear along the paddle for the tip impact, in 5 mm bands: largest value, 99th percentile and mean. Shaded: solid core and the 8 mm run-out.</figcaption></figure>
-
+<figure class=""><img src="fea_core_von_mises.png"><figcaption>Fig. 5 – Printed core coloured by von Mises stress for the tip impact, top sheet removed. Left: Elongated, right: Hybrid.</figcaption></figure>
 
 <div class="keep"><h2>5 Design iteration: flute ends and land width</h2>
-<p>The first version of the core had square flute ends at y = 150 mm and lands 2.7 mm wide (amplitude
+<p>The first version of the core had square flute ends at y = 150 mm and lands 3.13 mm wide (amplitude
 3.6 mm). Its bond peeled at the step where each flute starts: 15.2 MPa against a
 5 MPa allowable. The final core starts each flute with a 45° run-out, so the core meets the sheet in a
-thin wedge instead of a step. Its amplitude is 4.0 mm, which widens the lands to 3.7 mm. Elongated, tip impact:</p>
+thin wedge instead of a step. Its amplitude is 4 mm, which widens the lands to 4.25 mm. Elongated, tip impact:</p>
 <table><tr><th></th><th class="n">First version</th><th class="n">Final</th></tr><tr><td>Bond peel, local peak</td><td class="n">15.2 MPa at y = 150</td><td class="n">4.8 MPa at y = 157</td></tr>
 <tr><td>Bond peel, 99th percentile in the band at the peak</td><td class="n">8.1 MPa</td><td class="n">3.5 MPa</td></tr>
 <tr><td>Bond shear, local peak</td><td class="n">6.6 MPa at y = 150</td><td class="n">10.1 MPa at y = 165</td></tr>
@@ -172,30 +172,31 @@ thin wedge instead of a step. Its amplitude is 4.0 mm, which widens the lands to
 <p>The peel peak has gone. The shear peaks now sit on the centre lands just above the solid zone. There the shear
 from the whole blade funnels into the 30 mm wide throat. With the wider lands, the wall under each land is
 thinner (0.8 mm instead of 1.2 mm), which sharpens those local
-peaks. The level across the band is about the same as before. Fig. 4 shows the peaks are narrow spikes and that
-the 99th-percentile line stays below the allowable along the whole blade. Spikes like these depend on the mesh
+peaks. Across that band the 99th-percentile level rose a little, from 4.8 to
+5.4 MPa. Fig. 4 shows the peaks are narrow spikes and that the 99th-percentile
+line stays below the allowable along the whole blade. Spikes like these depend on the mesh
 and on the sharp corner where the wall meets the sheet. In the real part, the adhesive fillet at the land edge
 rounds that corner off.</p>
 
 <div class="keep"><h2>6 Mass, balance and swing weight</h2>
 <table><tr><th>Part (from the CAD model)</th><th class="n">Elongated</th><th class="n">Hybrid</th></tr>
-<tr><td>Carbon face sheet, top (4 mm)</td><td class="n">304.2 g</td><td class="n">284.5 g</td></tr>
-<tr><td>Wave-rib core with frame (PA-CF)</td><td class="n">177.2 g</td><td class="n">169.0 g</td></tr>
-<tr><td>Carbon face sheet, bottom (4 mm)</td><td class="n">304.2 g</td><td class="n">284.5 g</td></tr>
-<tr><td>Grip sleeve (PU)</td><td class="n">26.3 g</td><td class="n">26.3 g</td></tr>
-<tr><td>Grip wrap (0.75 mm)</td><td class="n">9.5 g</td><td class="n">9.5 g</td></tr>
+<tr><td>Carbon face sheet, top (4 mm)</td><td class="n">304.2 g</td><td class="n">284.6 g</td></tr>
+<tr><td>Wave-rib core with frame (PA-CF)</td><td class="n">178.6 g</td><td class="n">170.2 g</td></tr>
+<tr><td>Carbon face sheet, bottom (4 mm)</td><td class="n">304.2 g</td><td class="n">284.6 g</td></tr>
+<tr><td>Grip sleeve (TPU)</td><td class="n">26.3 g</td><td class="n">26.3 g</td></tr>
+<tr><td>Grip wrap, PU (0.75 mm)</td><td class="n">9.5 g</td><td class="n">9.5 g</td></tr>
 <tr><td>Throat collar (TPU)</td><td class="n">1.7 g</td><td class="n">1.7 g</td></tr>
 <tr><td>Butt cap (TPU)</td><td class="n">5.0 g</td><td class="n">5.0 g</td></tr>
 <tr><td>Screw ISO 7380 M4 × 12</td><td class="n">1.8 g</td><td class="n">1.8 g</td></tr>
 <tr><td>Heat-set insert M4 (brass)</td><td class="n">1.1 g</td><td class="n">1.1 g</td></tr>
-<tr><td><b>Total</b></td><td class="n"><b>831 g</b></td><td class="n"><b>783 g</b></td></tr>
-<tr><td>Balance point from the butt</td><td class="n">238 mm</td><td class="n">233 mm</td></tr>
-<tr><td>Swing weight about a pivot 100 mm from the butt</td><td class="n">241 kg·cm²</td><td class="n">215 kg·cm²</td></tr></table></div>
+<tr><td><b>Total</b></td><td class="n"><b>832 g</b></td><td class="n"><b>785 g</b></td></tr>
+<tr><td>Balance point from the butt</td><td class="n">239 mm</td><td class="n">234 mm</td></tr>
+<tr><td>Swing weight about a pivot 100 mm from the butt</td><td class="n">241 kg·cm²</td><td class="n">216 kg·cm²</td></tr></table></div>
 <p>A typical competition paddle weighs 210–240 g (7.5–8.5 oz). Its swing weight is roughly 100–130 kg·cm² about
 the same pivot. These paddles are about 3.5 times as heavy and about twice the swing weight. The 4 mm carbon
 sheets make up 73 % of the mass. The printed core weighs
-177 g, an effective density of about
-451 kg/m³.
+179 g, an effective density of about
+455 kg/m³.
 A polypropylene honeycomb core is typically 80–120 kg/m³. The margins in §4 show how much strength there is to
 give up.</p>
 
