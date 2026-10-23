@@ -58,8 +58,8 @@ cmax = max(prt[n]["cavity_volume_cm3"] for n in DESC)
 txt = f"""# Pickleball paddle grips - ten designs, one paddle slot
 
 Ten printable grip sleeves generated from the catalog image.  The outer envelope comes from `reference/PickleballGrip_1.3mf`; only the
-outer surface differs between designs.  **Revision 7:** every grip is **135 mm (13.5 cm) long** - a **solid 5 mm base** under a **130 mm deep** paddle slot
-of **30.2 x 12.2 mm** (your 30 x 12 mm flat handle + 0.2 mm; up to rev 6 it was 16.2 mm and the paddle had about 2 mm of play per side) - so the paddle seats fully; the
+outer surface differs between designs.  **Revision 8:** every grip is **135 mm (13.5 cm) long** - a **solid 5 mm base** under a **130 mm deep** paddle slot
+of **30.2 x 16.0 mm** (the 30 mm wide handle + 0.2 mm, and the 1.6 cm space you marked; rev 7's 12.2 mm was too tight) - so the paddle seats fully; the
 **head (z 100 up) is solid; the wall around the slot is at least 3.5 mm thick from z 112 up** (it was 1.1 mm at the slot corners, where it cracked), and
 **both short side walls of the slot are slit open over the top 20 mm** so the flared throat of the paddle slides in smoothly, with a 1 mm lead-in chamfer at the slot mouth; the 3.5 mm screw hole in the butt has a **6.2 x 2.2 mm counterbore** so a low-head M3 cap screw (DIN 7984, 2.0 mm head)
 sits flush; the rest of the walls keep a sealed hollow core.
@@ -74,7 +74,7 @@ sits flush; the rest of the walls keep a sealed hollow core.
 
 All ten are **{wmin:.0f}-{wpmax:.0f} g in PLA** (up to {wmax:.0f} g in PETG; densities in g/cm3).  Slicers land within a few percent of
 (outer volume - sealed core) x density, so budget +-3 %.  History: rev 2 was 40-49 g (a bore, no paddle slot), rev 3 filled the bore down to the slot
-(88-98 g), rev 4 hollowed the walls (50-54 g) but the hollow head cracked, rev 5 made the head solid again (about 5 g heavier), rev 6 thickened the head wall, rev 7 narrows the slot to 12.2 mm (thicker walls) and makes the bottom 5 mm solid.
+(88-98 g), rev 4 hollowed the walls (50-54 g) but the hollow head cracked, rev 5 made the head solid again (about 5 g heavier), rev 6 thickened the head wall, rev 7 made the bottom 5 mm solid, rev 8 sets the slot to 16.0 mm.
 The hollow core is **sealed**: nothing can be seen or reached from outside - it is just air.  Walls around it are about 1.2 mm (3 x 0.4 mm
 perimeters; measured 3D median 1.2 mm, minimum about 1.1 mm - table below).  Generate the fully solid version with
 `python3 scripts/generate_grips.py --solid` (about 90-100 g).
@@ -84,7 +84,7 @@ perimeters; measured 3D median 1.2 mm, minimum about 1.1 mm - table below).  Gen
 | Feature | Value |
 |---|---|
 | Overall length | **135.0 mm = 13.5 cm**: 5.0 mm solid base + 130.0 mm slot (the reference sleeve was {P['z_top']} mm; the 2.2 mm extension continues the neck straight up) |
-| Paddle slot | **30.2 x 12.2 mm** rounded rectangle (corner radius 0.3 mm) = handle 30 x 12 mm + 0.2 mm clearance; wide axis along x; floor at **z = 5.0** mm (a **solid 5 mm base**); open at the top with a **1 mm 45 degree lead-in chamfer** |
+| Paddle slot | **30.2 x 16.0 mm** rounded rectangle (corner radius 0.3 mm) = handle width 30 mm + 0.2 mm clearance, 16.0 mm space for its thickness; wide axis along x; floor at **z = 5.0** mm (a **solid 5 mm base**); open at the top with a **1 mm 45 degree lead-in chamfer** |
 | Screw hole | **3.5 mm** round, on the slot axis, through the solid 5 mm butt (z 0 - 5), with a **6.2 mm x 2.2 mm counterbore** at the butt face: a **low-head** M3 cap screw (DIN 7984: 5.5 mm x 2.0 mm head) sits flush, with **2.8 mm** of solid floor left under its head - use an M3 x 12-16 mm low-head screw (a standard 3.0 mm head would stand 0.8 mm proud) |
 | Head | **solid from z 100 up**; the wall between the slot and the outside grows smoothly from z 90 and is **at least 3.5 mm from z 112 up** (the neck is about 1.8 mm wider at each slot end than the reference); **both short side walls (the 30 mm-direction ends of the slot) are slit open over the top 20 mm (z 115 to 135)**, as wide as the slot is thick, so the flared throat of the paddle passes; what is left above the slits is two separate long-wall plates, about 7.7 mm thick |
 | Hollow core | a sealed cavity in the thick side walls between z 5 and z 100 - **the bottom 5 mm and the head are solid** ({cmin:.0f}-{cmax:.0f} cm3; one connected piece on most designs, a few pieces on NEURO-TREAD, VORONOI-CORE and HEXA-MOD), walls about 1.1-1.2 mm or more to every outer surface, the slot, the hole and the floor (measured in 3D, table below); roofs at <= 45 degrees (flat bridges <= 4 mm) so it prints without supports; none under the slot floor, where the screw bears; no through-windows |
@@ -94,15 +94,15 @@ perimeters; measured 3D median 1.2 mm, minimum about 1.1 mm - table below).  Gen
 Reference bounding box 42.64 x 36.62 x 132.823 mm; all ten grips: 42.63 x 36.61 x 135.0 mm (2.2 mm longer).  "Base line" below = the reference's 32.06 x 26.04 mm
 octagonal bore outline, which is now inside the solid body and only serves as the datum the outer skin is measured from.
 
-**The slot size is a ruler measurement.**  Measure your paddle's handle with calipers; if it is not 30 x 12 mm change `PADDLE_W`, `PADDLE_T`
+**The slot size is a ruler measurement.**  Measure your paddle's handle with calipers; if it is not 30 x 16 mm change `PADDLE_W`, `SLOT_T`
 (and `SLOT_CLEAR`, 0.2 mm in total) in `scripts/grip_core.py` and run `generate_grips.py` again.  Printed holes come out slightly small, so
 test-print one grip before the rest.  The counterbore is sized for an M3 **cap-head** (socket-head, allen) screw; a countersunk (flat) head would also sit flush but
 not seat on the flat counterbore floor - for those, swap the counterbore for a 90 degree cone in `carve_cavity` (`scripts/grip_core.py`).  Your paddle's handle looks like
 a hollow honeycomb core (your cross-section photo), so a screw into its end face may not hold well - consider a threaded insert or epoxy.
 
-## What changed in revisions 3 to 7
+## What changed in revisions 3 to 8
 
-* **Interior:** the 32.06 x 26.04 mm octagonal bore is filled; the only cavity is the paddle slot (30.2 x 16.2 mm in rev 3-6, 30.2 x 12.2 mm from rev 7), so the grip no longer
+* **Interior:** the 32.06 x 26.04 mm octagonal bore is filled; the only cavity is the paddle slot (30.2 x 16.2 mm in rev 3-6, 12.2 mm thick in rev 7, 16.0 mm from rev 8), so the grip no longer
   rattles on your flat paddle handle (the gaps marked on your photos).
 * **Screw hole:** one 3.5 mm hole through the butt on the slot axis, to pin the grip to the paddle with an M3 allen screw.
 * **VORONOI-CORE:** with a solid body its through-windows are gone; its 54 cells stay as recesses about 1 mm deep between the rounded ribs (floors 2.46 mm above the base line, crests 3.5 mm).
@@ -123,8 +123,10 @@ a hollow honeycomb core (your cross-section photo), so a screw into its end face
   (your photos).  Each long wall is 2 mm thicker on the inside, along the whole length; the lead-in at the mouth is 1 mm to guide the paddle in.
 * **Rev 7 - solid 5 mm base:** the slot floor is back at z = 5 and the hollow core never comes below z = 5, so the butt is one solid, heavy block round the
   screw hole (2.8 mm of floor under the screw head).  Length 135 mm.  Weight now {wmin:.0f}-{wpmax:.0f} g in PLA.
-* **Fit test:** `stl/fit_test_slot.stl` is a small 8 mm tall coupon with three slots, 12.2 / 12.5 / 12.8 mm (one, two and three notches on the edge).  Print it
-  first (a few minutes) and push the paddle handle in: if 12.2 is too tight, set `PADDLE_T` to the size that fits minus 0.2 and regenerate.
+* **Rev 8 - slot 16.0 mm:** the 12.2 mm slot of rev 7 was too tight, so the slot thickness is 16.0 mm (`SLOT_T`), the 1.6 cm you marked.  Base, slits,
+  head wall and lead-in are as rev 7.
+* **Fit test:** `stl/fit_test_slot.stl` is a small 8 mm tall coupon with three slots, 15.6 / 16.0 / 16.4 mm (one, two and three notches on the edge).  Print it
+  first (a few minutes) and push the paddle handle in: the one that slides on snugly is the `SLOT_T` to use.
 
 Earlier revisions: rev 1 = ten designs + colour 3MFs; rev 2 = smooth finish, 1.2 mm base walls, <= 50 g each.
 

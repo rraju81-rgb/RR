@@ -12,7 +12,7 @@ For each grip:
     long walls are >= 3.5 mm thick
   * SIDE SLITS: over the top 20 mm both end walls of the slot are cut away, as wide as the slot is thick: nothing inside the
     slot + slit region, and both long walls stay as separate plates
-  * SLOT: at every height the cavity around the axis is the 30 x 12 mm paddle slot (+0.2 mm clearance), z 5 .. top;
+  * SLOT: at every height the cavity around the axis is the 30.2 x 16.0 mm paddle slot, z 5 .. top;
     no material inside the slot (the sealed lightening cavity in the side walls is checked in verify_print.py)
   * SCREW HOLE: one 3.5 mm hole through the butt (z 0 .. 5) on the slot axis with a 6.2 mm x 2.2 mm counterbore for a low-head
     M3 cap screw at the butt face (2.8 mm floor under the head); floor solid around it

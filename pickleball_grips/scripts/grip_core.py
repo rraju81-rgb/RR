@@ -238,7 +238,7 @@ def build_mesh(F, z, H):
 
 # --- solid body with the paddle slot and screw hole ------------------------------
 # Revision 3: the grip is a SOLID sleeve; the only cavities are the paddle slot and the screw hole.
-PADDLE_W, PADDLE_T = 30.0, 12.0        # mm - flat handle (tongue) of the paddle: 30 mm wide, about 12 mm thick (rev 7; the 16 mm used up to rev 6 left ~2 mm of play per side)
+PADDLE_W, PADDLE_T = 30.0, 16.0        # mm - flat handle (tongue) of the paddle: 30 mm wide, 16 mm thick
 SLOT_CLEAR = 0.2                       # mm - total clearance added to each slot dimension (FDM holes print slightly small)
 SLOT_R = 0.3                           # mm - slot corner radius (a 0.4 mm nozzle cannot print sharper)
 HOLE_D = 3.5                           # mm - screw hole through the butt for an M3 (3 mm) screw
@@ -250,7 +250,8 @@ Z_TOP = BASE + SLOT_DEPTH              # mm - overall length 135.0 mm (the refer
 HEAD_WALL = 3.5                        # mm - minimum wall between the paddle slot and the outside over the head (the slot mouth cracked at 1.1 mm)
 SLIT_DEPTH = 20.0                      # mm - both short (30 mm direction) side walls of the slot are open from the top down this far, so the flared throat of the paddle passes
 HEAD_RAMP = (90.0, 112.0)              # mm - the wall requirement grows smoothly from 0 at z = 90 to HEAD_WALL at z = 112 and stays up to the top
-MOUTH_CHAMFER = 1.0                    # mm - 45 degree lead-in at the slot mouth, to guide the paddle into the snug 12.2 mm slot
+MOUTH_CHAMFER = 1.0                    # mm - 45 degree lead-in at the slot mouth, to guide the paddle in
+SLOT_T = 16.0                          # mm - slot thickness, the space for the handle: 1.6 cm as marked by the user (rev 8; rev 7's 12.2 mm was too tight)
 
 
 def bore_centre(F):
@@ -258,7 +259,7 @@ def bore_centre(F):
     return (r[:, 0].min() + r[:, 0].max()) / 2, (r[:, 1].min() + r[:, 1].max()) / 2
 
 
-def slot_polygon(F, w=PADDLE_W + SLOT_CLEAR, t=PADDLE_T + SLOT_CLEAR, r=SLOT_R):
+def slot_polygon(F, w=PADDLE_W + SLOT_CLEAR, t=SLOT_T, r=SLOT_R):
     """Rounded-rectangle paddle slot, centred on the old bore: wide axis along x (the reference's wide axis)."""
     from shapely.geometry import box
     cx, cy = bore_centre(F)

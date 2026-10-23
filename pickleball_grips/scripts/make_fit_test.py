@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Fit-test coupon for the paddle slot: an 8 mm tall block with three through-slots, 30.2 mm wide and 12.2 / 12.5 / 12.8 mm
+"""Fit-test coupon for the paddle slot: an 8 mm tall block with three through-slots, 30.2 mm wide and 15.6 / 16.0 / 16.4 mm
 thick (one, two and three grooves on the +x end face).  Print it upright like a grip (a few minutes) and push the paddle handle
-through: the slot that slides on snugly gives PADDLE_T (+ SLOT_CLEAR) for grip_core.py.
+through: the slot that slides on snugly gives SLOT_T for grip_core.py.
 
 usage:  python3 make_fit_test.py          -> ../stl/fit_test_slot.stl
 """
@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from grip_core import PADDLE_W, SLOT_CLEAR, SLOT_R, MOUTH_CHAMFER, write_stl  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-THICK = (12.2, 12.5, 12.8)     # mm - slot thicknesses to try (the grip uses PADDLE_T + SLOT_CLEAR = 12.2)
+THICK = (15.6, 16.0, 16.4)     # mm - slot thicknesses to try (the grip uses SLOT_T = 16.0)
 WALL, HEIGHT = 3.5, 8.0        # mm
 
 

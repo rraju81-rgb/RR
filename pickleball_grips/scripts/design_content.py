@@ -9,7 +9,7 @@ ACCENT = {
     "10_hexa_mod": ("#3FD0C2", "#14857C"),
 }
 
-HANDLE_NOTE = ("A sleeve that slides over your paddle's flat handle: a snug 30.2 × 12.2 mm slot (the 30 × 12 mm handle plus 0.2 mm), "
+HANDLE_NOTE = ("A sleeve that slides over your paddle's flat handle: a 30.2 × 16 mm slot (the 30 mm wide handle plus 0.2 mm, 16 mm thick), "
                "130 mm deep so the paddle seats fully, with a solid 5 mm base and a counterbored 3.5 mm hole that takes a low-head M3 cap screw flush. "
                "The head is solid, with both short side walls of the slot slit open at the top so the flared throat of the paddle slides in smoothly; a sealed hollow core lightens the rest. The outer shape is the same on all ten designs.")
 
