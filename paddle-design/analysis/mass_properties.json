@@ -1,0 +1,106 @@
+{
+ "elongated": {
+  "parts": {
+   "face_sheet_top": {
+    "volume_cm3": 196.27,
+    "mass_g": 304.22,
+    "watertight": true
+   },
+   "rib_core": {
+    "volume_cm3": 151.32,
+    "mass_g": 178.56,
+    "watertight": true
+   },
+   "face_sheet_bottom": {
+    "volume_cm3": 196.27,
+    "mass_g": 304.22,
+    "watertight": true
+   },
+   "grip_sleeve": {
+    "volume_cm3": 21.75,
+    "mass_g": 26.32,
+    "watertight": true
+   },
+   "grip_wrap": {
+    "volume_cm3": 8.6,
+    "mass_g": 9.46,
+    "watertight": true
+   },
+   "throat_collar": {
+    "volume_cm3": 1.39,
+    "mass_g": 1.69,
+    "watertight": true
+   },
+   "butt_cap": {
+    "volume_cm3": 4.13,
+    "mass_g": 4.99,
+    "watertight": true
+   },
+   "screw_M4x12_ISO7380": {
+    "volume_cm3": 0.23,
+    "mass_g": 1.83,
+    "watertight": true
+   },
+   "insert_M4_heatset": {
+    "volume_cm3": 0.13,
+    "mass_g": 1.07,
+    "watertight": true
+   }
+  },
+  "mass_g": 832.4,
+  "balance_mm": 238.6,
+  "swing_weight_kgcm2": 241.4
+ },
+ "hybrid": {
+  "parts": {
+   "face_sheet_top": {
+    "volume_cm3": 183.63,
+    "mass_g": 284.63,
+    "watertight": true
+   },
+   "rib_core": {
+    "volume_cm3": 144.26,
+    "mass_g": 170.22,
+    "watertight": true
+   },
+   "face_sheet_bottom": {
+    "volume_cm3": 183.63,
+    "mass_g": 284.63,
+    "watertight": true
+   },
+   "grip_sleeve": {
+    "volume_cm3": 21.75,
+    "mass_g": 26.32,
+    "watertight": true
+   },
+   "grip_wrap": {
+    "volume_cm3": 8.6,
+    "mass_g": 9.46,
+    "watertight": true
+   },
+   "throat_collar": {
+    "volume_cm3": 1.39,
+    "mass_g": 1.69,
+    "watertight": true
+   },
+   "butt_cap": {
+    "volume_cm3": 4.13,
+    "mass_g": 4.99,
+    "watertight": true
+   },
+   "screw_M4x12_ISO7380": {
+    "volume_cm3": 0.23,
+    "mass_g": 1.83,
+    "watertight": true
+   },
+   "insert_M4_heatset": {
+    "volume_cm3": 0.13,
+    "mass_g": 1.07,
+    "watertight": true
+   }
+  },
+  "mass_g": 784.8,
+  "balance_mm": 233.5,
+  "swing_weight_kgcm2": 215.8
+ }
+}

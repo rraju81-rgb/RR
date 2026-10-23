@@ -1,0 +1,245 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Structural analysis – wave-rib sandwich paddles</title><style>
+@page { size: A4; margin: 15mm 16mm 16mm 16mm;
+        @bottom-right { content: counter(page); } }
+:root { --ink:#0b0b0b; --ink2:#52514e; --muted:#7a7873; --rule:#d9d7d0; --fill:#f4f3ef;
+        --good:#0ca30c; --warn:#b07800; --bad:#d03b3b; --accent:#2a78d6; }
+html { font-family: Inter, 'DejaVu Sans', sans-serif; font-size: 9.6pt; color: var(--ink); line-height: 1.42; }
+body { margin: 0; background: #fff; }
+h1 { font-size: 21pt; margin: 2mm 0 1.5mm; letter-spacing: -0.2pt; }
+h2 { font-size: 12.5pt; margin: 7mm 0 2mm; padding-top: 2mm; border-top: 1.2pt solid var(--ink); }
+h3 { font-size: 10pt; margin: 4mm 0 1.5mm; }
+p { margin: 0 0 2.2mm; }
+.kicker { font-size: 8pt; letter-spacing: 1.4pt; text-transform: uppercase; color: var(--ink2); }
+.sub { color: var(--ink2); margin-bottom: 4mm; }
+ul { margin: 0 0 2.5mm; padding-left: 5mm; }
+li { margin-bottom: 1.3mm; }
+table { border-collapse: collapse; width: 100%; margin: 1.5mm 0 3.5mm; font-size: 8.6pt;
+        font-variant-numeric: tabular-nums; }
+th, td { padding: 1.2mm 2mm; border-bottom: 0.5pt solid var(--rule); text-align: left; vertical-align: top; }
+th { font-weight: 600; color: var(--ink2); border-bottom: 1pt solid var(--ink2); }
+td.n, th.n { text-align: right; white-space: nowrap; }
+tr.sub td { color: var(--ink2); }
+.ok { color: var(--good); font-weight: 600; white-space: nowrap; }
+.warn { color: var(--warn); font-weight: 600; white-space: nowrap; }
+.bad { color: var(--bad); font-weight: 600; white-space: nowrap; }
+figure { margin: 2mm 0 4mm; break-inside: avoid; }
+figure img { width: 100%; display: block; }
+figcaption { font-size: 8.3pt; color: var(--ink2); margin-top: 1.5mm; }
+.note { background: var(--fill); padding: 2.5mm 3.5mm; margin: 2mm 0 3.5mm; font-size: 8.8pt; break-inside: avoid; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.pb { break-before: page; }
+.keep { break-inside: avoid; }
+table { break-inside: avoid; }
+table.mat td:first-child { width: 27%; } table.mat td:nth-child(2) { width: 37%; }
+figure.half { width: 78%; margin-left: auto; margin-right: auto; }
+.small { font-size: 8.2pt; color: var(--ink2); }
+</style></head><body>
+
+<div class="kicker">Structural analysis · REV B · 2026-10-23</div>
+<h1>Wave-rib sandwich pickleball paddles</h1>
+<p class="sub">PB-EL-001 Elongated (390 × 200 × 16 mm) and PB-HY-001 Hybrid (390 × 190 × 16 mm).
+Linear static and modal finite-element analysis.</p>
+
+<h2>1 Summary</h2>
+<p>Both paddles were analysed as a 4 mm carbon / 8 mm printed wave-rib / 4 mm carbon
+sandwich. Each was held at the grip and loaded by a 500 N ball impact, first at the sweet spot
+(y = 265 mm from the butt) and then at the tip (y = 345 mm). The tip impact is the worst case for
+every quantity.</p>
+<ul>
+<li><b>The carbon face sheets and the printed core have large margins.</b> The carbon reaches at most
+141 MPa (reserve factor ≥ 3.6). The core reaches
+17.6 MPa von Mises (RF ≥ 2.6). The highest
+face-sheet stress is in the throat, where the 30 mm handle widens into the blade.</li>
+<li><b>The adhesive bond between the core and the carbon is the critical item.</b> Bond shear peaks at
+10.1 MPa on the centre lands, 15–30 mm above the solid part of the core. Across
+that band the 99th-percentile value is 5.5 MPa. Against the
+8 MPa allowable assumed for an epoxy bond to printed PA-CF, the band passes
+(RF 1.45) but the local peaks do not (RF 0.79). §5 and §7 cover the cause and the fixes.</li>
+<li><b>Stiffness.</b> Under 500 N the blade deflects 3.8 mm for a tip
+impact and 2.2 mm at the sweet spot. With the grip held, the first
+bending mode is 105 Hz (Elongated) and 112 Hz (Hybrid).</li>
+<li><b>Weight.</b> The Elongated paddle weighs 831 g and the Hybrid 783 g,
+about 3.5 times a typical 210–240 g paddle. The two 4 mm carbon sheets alone weigh 608 g /
+569 g. §6 has the breakdown.</li>
+</ul>
+<table><tr><th>Worst case (tip impact, 500 N)</th><th class="n">Elongated</th>
+<th class="n">Hybrid</th><th class="n">Status (both)</th></tr>
+<tr><td>Deflection, sweet spot / tip impact</td><td class="n">2.25 / 3.85 mm</td><td class="n">2.24 / 3.84 mm</td><td class="n">—</td></tr>
+<tr><td>Carbon face sheets, max fibre stress</td><td class="n">141 MPa</td><td class="n">137 MPa</td><td class="n"><span class="ok">✔ RF 3.57</span></td></tr>
+<tr><td>Printed core, von Mises</td><td class="n">17.5 MPa</td><td class="n">17.6 MPa</td><td class="n"><span class="ok">✔ RF 2.56</span></td></tr>
+<tr><td>Printed core, shear across the print layers</td><td class="n">10.1 MPa</td><td class="n">10.1 MPa</td><td class="n"><span class="ok">✔ RF 2.48</span></td></tr>
+<tr><td>Bond line, peel (tension)</td><td class="n">4.8 MPa</td><td class="n">4.9 MPa</td><td class="n"><span class="warn">▲ RF 1.03</span></td></tr>
+<tr><td>Bond line, shear: 99th percentile in the hot band</td><td class="n">5.4 MPa</td><td class="n">5.5 MPa</td><td class="n"><span class="warn">▲ RF 1.45</span></td></tr>
+<tr><td>Bond line, shear: local peak</td><td class="n">10.1 MPa</td><td class="n">10.1 MPa</td><td class="n"><span class="bad">✖ RF 0.79</span></td></tr>
+<tr><td>First bending mode (grip held)</td><td class="n">105 Hz</td><td class="n">112 Hz</td><td class="n">—</td></tr>
+<tr><td>Mass</td><td class="n">831 g</td><td class="n">783 g</td><td class="n"><span class="warn">▲ 3.5 × typical</span></td></tr></table>
+<p class="small">Reserve factor RF = allowable ÷ calculated stress; RF ≥ 1 passes. ✔ means RF ≥ 1.5,
+▲ means 1.0–1.5 and ✖ means below 1. The carbon RF uses the max-stress failure index (RF = 1 / index).</p>
+
+<h2>2 Construction analysed</h2>
+<ul>
+<li><b>Face sheets.</b> Woven carbon/epoxy plates, 4 mm thick. Top and bottom are identical and cover
+the full outline, blade and handle.</li>
+<li><b>Core.</b> 8 mm high, 3D-printed in PA-CF (carbon-filled nylon), printed flat. A closed
+6 mm perimeter frame covers the whole edge. Inside it is a sinusoidal wave rib: pitch 18 mm,
+wall 1.6 mm, amplitude 4 mm. The flutes run along the paddle. The crests are cut flat
+where they meet the sheets, which gives bond lands 3.7 mm wide.</li>
+<li><b>Solid zone.</b> The core is solid from the butt to y = 150 mm (handle and throat). Each flute
+starts with a 45° run-out, 8 mm long, which prints without support. The butt end holds an M4 heat-set
+insert for the butt-cap screw.</li>
+<li><b>Grip.</b> Sleeve, wrap, throat collar and butt cap are not load-carrying in this model. The hand is
+represented by a clamp (§3).</li>
+</ul>
+
+
+<div class="keep"><h2>3 Finite-element model</h2>
+<ul>
+<li><b>Geometry.</b> Half model, symmetric about the centre line. Top sheet, core and bottom sheet are meshed
+together, so the bond is perfect and shares nodes. The core is modelled exactly as drawn: frame, solid zone,
+run-outs, wave walls and lands.</li>
+</ul></div><ul>
+<li><b>Mesh.</b> 10-node quadratic tetrahedra (C3D10). Element size is 1.6 mm in the core, which puts at least two
+elements through every wave wall, and 3.5 mm in the sheets. Meshed in gmsh, solved in CalculiX 2.21.</li>
+<li><b>Support.</b> The outer surfaces of the handle from y = 14 to 112 mm are fixed,
+which stands in for the hand on the grip. Next to a rigid clamp the stresses are artificially high, so results
+closer than 8 mm to its edge (y &lt; 120 mm) are not assessed. Table 2 lists them for reference.</li>
+<li><b>Load.</b> 500 N spread uniformly over a Ø30 mm patch (the ball contact) on the top
+sheet, at LC1 (x = 0, y = 265) or LC2 (x = 0, y = 345). The load is applied as a static peak force. A
+26 g ball that changes speed by about 33 m/s during a 4 ms contact gives about 215 N on average and about 340 N
+peak. The 500 N used is about 1.5 times that, to cover harder hits and some dynamic amplification.</li>
+<li><b>Modal.</b> Natural frequencies with the same grip support, on a coarser 3 / 5 mm mesh.</li>
+</ul>
+<table><tr><th>Model</th><th class="n">Nodes</th><th class="n">Elements</th><th class="n">Degrees of freedom</th>
+<th class="n">Load patch area (half)</th></tr><tr><td>ELONGATED</td><td class="n">305,534</td><td class="n">175,706</td><td class="n">916,602</td><td class="n">342 mm²</td></tr>
+<tr><td>HYBRID</td><td class="n">288,217</td><td class="n">165,800</td><td class="n">864,651</td><td class="n">350 mm²</td></tr></table>
+<h3>Materials and allowables</h3>
+<table class="mat"><tr><th>Material</th><th>Stiffness</th><th>Allowables (design values)</th></tr>
+<tr><td>Woven carbon/epoxy plate<br><span class="small">0/90 fabric, ρ = 1.55 g/cm³</span></td>
+<td>E₁ = E₂ = 60 GPa, E₃ = 8 GPa<br>G₁₂ = 4.5 GPa,
+G₁₃ = G₂₃ = 3.5 GPa<br>ν₁₂ = 0.05, ν₁₃ = ν₂₃ = 0.3</td>
+<td>Tension 600 MPa, compression 500 MPa<br>In-plane shear 90 MPa<br>
+Interlaminar shear 55 MPa</td></tr>
+<tr><td>Printed PA-CF core<br><span class="small">solid walls, ρ = 1.18 g/cm³</span></td>
+<td>E = 4 GPa, ν = 0.35<br>(isotropic)</td>
+<td>von Mises 45 MPa<br>Across the print layers 25 MPa</td></tr>
+<tr><td>Epoxy bond, carbon to printed core</td><td>— (perfect bond)</td>
+<td>Shear 8 MPa, peel 5 MPa<br><span class="small">Conservative values for abraded and
+primed nylon. Confirm them by coupon tests (§7).</span></td></tr></table>
+<p class="small">These are typical design values, not supplier data. When the actual carbon plate, filament
+and adhesive are chosen, replace them with the supplier's values. Every reserve factor scales directly
+with its allowable.</p>
+
+<div class="keep"><h2>4 Results</h2>
+<figure class=""><img src="fea_deflection.png"><figcaption>Fig. 1 – Out-of-plane deflection under 500 N. Dashed circle: ball contact patch. Hatched: grip clamp.</figcaption></figure>
+</div>
+<table><tr><th>Table 2 – all results</th><th class="n">Allowable</th><th class="n">Elongated LC1</th>
+<th class="n">Elongated LC2</th><th class="n">Hybrid LC1</th><th class="n">Hybrid LC2</th></tr>
+<tr><td>Max deflection [mm]</td><td class="n">—</td><td class="n">2.25</td><td class="n">3.85</td><td class="n">2.24</td><td class="n">3.84</td></tr>
+<tr><td>Carbon: fibre stress |σ11|, |σ22| [MPa]</td><td class="n">600 t / 500 c</td><td class="n">88</td><td class="n">141</td><td class="n">85</td><td class="n">137</td></tr>
+<tr><td>Carbon: in-plane shear τ12 [MPa]</td><td class="n">90</td><td class="n">12.8</td><td class="n">20.9</td><td class="n">12.9</td><td class="n">20.9</td></tr>
+<tr><td>Carbon: interlaminar shear [MPa]</td><td class="n">55</td><td class="n">3.5</td><td class="n">7.0</td><td class="n">3.4</td><td class="n">6.8</td></tr>
+<tr><td>Carbon: max-stress failure index</td><td class="n">1.00</td><td class="n">0.18</td><td class="n">0.28</td><td class="n">0.17</td><td class="n">0.27</td></tr>
+<tr class="sub"><td>· carbon fibre stress at the clamp edge (not assessed)</td><td class="n"></td><td class="n">125</td><td class="n">186</td><td class="n">125</td><td class="n">186</td></tr>
+<tr><td>Core: von Mises [MPa]</td><td class="n">45</td><td class="n">12.0</td><td class="n">17.5</td><td class="n">12.3</td><td class="n">17.6</td></tr>
+<tr><td>Core: through-thickness compression under the ball [MPa]</td><td class="n">45</td><td class="n">6.1</td><td class="n">6.3</td><td class="n">4.6</td><td class="n">5.6</td></tr>
+<tr><td>Core: shear across the print layers √(τxz²+τyz²) [MPa]</td><td class="n">25</td><td class="n">6.9</td><td class="n">10.1</td><td class="n">7.1</td><td class="n">10.1</td></tr>
+<tr><td>Bond: shear, local peak [MPa]</td><td class="n">8</td><td class="n">6.9</td><td class="n">10.1</td><td class="n">7.1</td><td class="n">10.1</td></tr>
+<tr class="sub"><td>· at height y [mm]</td><td class="n"></td><td class="n">165</td><td class="n">165</td><td class="n">176</td><td class="n">176</td></tr>
+<tr><td>Bond: shear, 99th percentile in the 10 mm band at the peak [MPa]</td><td class="n">8</td><td class="n">3.7</td><td class="n">5.4</td><td class="n">3.9</td><td class="n">5.5</td></tr>
+<tr><td>Bond: shear, mean over the whole bond [MPa]</td><td class="n"></td><td class="n">0.38</td><td class="n">0.70</td><td class="n">0.40</td><td class="n">0.73</td></tr>
+<tr><td>Bond: peel, local peak [MPa]</td><td class="n">5</td><td class="n">3.4</td><td class="n">4.8</td><td class="n">3.4</td><td class="n">4.9</td></tr>
+<tr><td>Bond: peel, 99th percentile in the band at the peak [MPa]</td><td class="n">5</td><td class="n">2.5</td><td class="n">3.5</td><td class="n">2.5</td><td class="n">3.5</td></tr></table>
+<figure class=""><img src="fea_face_sheet_stress.png"><figcaption>Fig. 2 – Carbon face sheets, largest in-plane fibre stress. The stress concentrates in the throat; the colour scale saturates at the clamp edge, which is not assessed.</figcaption></figure>
+<figure class=""><img src="fea_bond_shear.png"><figcaption>Fig. 3 – Shear stress in the bond line, plotted on the core's bonded surfaces: the 6 mm frame, the solid zone and the 3.7 mm lands. White stripes are the open flutes.</figcaption></figure>
+<figure class=""><img src="fea_bond_profile.png"><figcaption>Fig. 4 – Bond shear along the paddle for the tip impact, in 5 mm bands: largest value, 99th percentile and mean. Shaded: solid core and the 8 mm run-out.</figcaption></figure>
+
+
+<div class="keep"><h2>5 Design iteration: flute ends and land width</h2>
+<p>The first version of the core had square flute ends at y = 150 mm and lands 2.7 mm wide (amplitude
+3.6 mm). Its bond peeled at the step where each flute starts: 15.2 MPa against a
+5 MPa allowable. The final core starts each flute with a 45° run-out, so the core meets the sheet in a
+thin wedge instead of a step. Its amplitude is 4.0 mm, which widens the lands to 3.7 mm. Elongated, tip impact:</p>
+<table><tr><th></th><th class="n">First version</th><th class="n">Final</th></tr><tr><td>Bond peel, local peak</td><td class="n">15.2 MPa at y = 150</td><td class="n">4.8 MPa at y = 157</td></tr>
+<tr><td>Bond peel, 99th percentile in the band at the peak</td><td class="n">8.1 MPa</td><td class="n">3.5 MPa</td></tr>
+<tr><td>Bond shear, local peak</td><td class="n">6.6 MPa at y = 150</td><td class="n">10.1 MPa at y = 165</td></tr>
+<tr><td>Bond shear, 99th percentile in the band at the peak</td><td class="n">4.8 MPa</td><td class="n">5.4 MPa</td></tr>
+<tr><td>Bond reserve factor, local peaks (shear and peel)</td><td class="n"><span class="bad">✖ RF 0.33</span></td><td class="n"><span class="bad">✖ RF 0.80</span></td></tr>
+<tr><td>Bond reserve factor, 99th percentile in the band</td><td class="n"><span class="bad">✖ RF 0.62</span></td><td class="n"><span class="warn">▲ RF 1.43</span></td></tr>
+<tr><td>Core von Mises</td><td class="n">17.8 MPa</td><td class="n">17.5 MPa</td></tr>
+<tr><td>Carbon fibre stress</td><td class="n">143 MPa</td><td class="n">141 MPa</td></tr>
+<tr><td>Tip deflection</td><td class="n">3.91 mm</td><td class="n">3.85 mm</td></tr></table></div>
+<p>The peel peak has gone. The shear peaks now sit on the centre lands just above the solid zone. There the shear
+from the whole blade funnels into the 30 mm wide throat. With the wider lands, the wall under each land is
+thinner (0.8 mm instead of 1.2 mm), which sharpens those local
+peaks. The level across the band is about the same as before. Fig. 4 shows the peaks are narrow spikes and that
+the 99th-percentile line stays below the allowable along the whole blade. Spikes like these depend on the mesh
+and on the sharp corner where the wall meets the sheet. In the real part, the adhesive fillet at the land edge
+rounds that corner off.</p>
+
+<div class="keep"><h2>6 Mass, balance and swing weight</h2>
+<table><tr><th>Part (from the CAD model)</th><th class="n">Elongated</th><th class="n">Hybrid</th></tr>
+<tr><td>Carbon face sheet, top (4 mm)</td><td class="n">304.2 g</td><td class="n">284.5 g</td></tr>
+<tr><td>Wave-rib core with frame (PA-CF)</td><td class="n">177.2 g</td><td class="n">169.0 g</td></tr>
+<tr><td>Carbon face sheet, bottom (4 mm)</td><td class="n">304.2 g</td><td class="n">284.5 g</td></tr>
+<tr><td>Grip sleeve (PU)</td><td class="n">26.3 g</td><td class="n">26.3 g</td></tr>
+<tr><td>Grip wrap (0.75 mm)</td><td class="n">9.5 g</td><td class="n">9.5 g</td></tr>
+<tr><td>Throat collar (TPU)</td><td class="n">1.7 g</td><td class="n">1.7 g</td></tr>
+<tr><td>Butt cap (TPU)</td><td class="n">5.0 g</td><td class="n">5.0 g</td></tr>
+<tr><td>Screw ISO 7380 M4 × 12</td><td class="n">1.8 g</td><td class="n">1.8 g</td></tr>
+<tr><td>Heat-set insert M4 (brass)</td><td class="n">1.1 g</td><td class="n">1.1 g</td></tr>
+<tr><td><b>Total</b></td><td class="n"><b>831 g</b></td><td class="n"><b>783 g</b></td></tr>
+<tr><td>Balance point from the butt</td><td class="n">238 mm</td><td class="n">233 mm</td></tr>
+<tr><td>Swing weight about a pivot 100 mm from the butt</td><td class="n">241 kg·cm²</td><td class="n">215 kg·cm²</td></tr></table></div>
+<p>A typical competition paddle weighs 210–240 g (7.5–8.5 oz). Its swing weight is roughly 100–130 kg·cm² about
+the same pivot. These paddles are about 3.5 times as heavy and about twice the swing weight. The 4 mm carbon
+sheets make up 73 % of the mass. The printed core weighs
+177 g, an effective density of about
+451 kg/m³.
+A polypropylene honeycomb core is typically 80–120 kg/m³. The margins in §4 show how much strength there is to
+give up.</p>
+
+<div class="keep"><h2>7 Recommendations</h2>
+<h3>Bond line (before the first build)</h3>
+<ul>
+<li>Use a toughened structural epoxy or MMA adhesive that is rated for nylons. Abrade both surfaces, then
+clean and prime them as the adhesive supplier specifies. Leave a small fillet of adhesive along every land edge.</li>
+<li>Test single-lap shear coupons of carbon plate bonded to printed PA-CF (ISO 4587 / ASTM D1002 layout) and
+flatwise-tension coupons (ASTM C297). Use the measured strengths as the bond allowables in this analysis.</li>
+<li>If the coupons give less than about 12 MPa in shear, lower the peak at the start of the wave. Either thicken
+the wall under the centre lands (wall 2.0 mm instead of 1.6 mm), or extend the solid zone up the centre of the
+blade by about 30 mm, then re-run the analysis.</li>
+</ul></div>
+<h3>Weight</h3>
+<ul>
+<li>For a playable paddle, the sheets and the core both need to be much lighter. One option is 0.5–1.0 mm
+carbon sheets on a 14–15 mm core of honeycomb, foam or a much thinner-walled print, which keeps the 16 mm
+thickness. Because a sandwich gets its bending stiffness from the distance between the sheets, thin sheets
+on a thicker core can stay stiff. All the geometry is parametric (paddle/geometry.py), so a lighter lay-up can
+be re-analysed with the same tools.</li>
+<li>If the 4/8/4 build is meant as a prototype or a training paddle, the structure as analysed is strong
+enough. The bond line is the only item to qualify.</li>
+</ul>
+<h3>Validation on the first parts</h3>
+<ul>
+<li>Static stiffness check: clamp the grip and hang a known load at the tip. The analysis predicts
+0.77 mm per 100 N at y = 345 mm for the Elongated and
+0.77 mm per 100 N for the Hybrid.</li>
+<li>Tap test: the first bending mode should ring at about 105 Hz (Elongated) and 112 Hz
+(Hybrid), with the handle held firmly.</li>
+<li>Check for bond-line voids (tap or ultrasound) and for cracks at the throat after impact tests.</li>
+</ul>
+
+<h2 class="keep">8 Assumptions and limitations</h2>
+<ul class="small">
+<li>Linear elastic, small deflection, quasi-static peak load. No fatigue, no damage growth, no strain-rate effects.</li>
+<li>The bond is perfect. The adhesive layer is not modelled; bond stresses are read in the core elements next to
+each sheet.</li>
+<li>The printed core is treated as isotropic and fully dense. Real prints are weaker and softer across the layers
+(covered by the separate 25 MPa allowable) and depend on the print settings.</li>
+<li>The grip is a rigid clamp. A real hand and grip are softer, which lowers the stress at the throat slightly
+and raises the deflection slightly. Edge guard, paint and grip parts are not modelled.</li>
+<li>Peak values at sharp re-entrant corners depend on the mesh. Percentile and band values (Fig. 4) are the
+robust measures.</li>
+</ul>
+</body></html>

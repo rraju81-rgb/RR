@@ -1,0 +1,21 @@
+{
+  "note": "bending modes of the half model (symmetric), grip clamped y=14..112",
+  "frequencies_hz": {
+    "ELONGATED": [
+      105.4469,
+      832.3834,
+      2022.612,
+      2222.706,
+      2337.526,
+      2726.523
+    ],
+    "HYBRID": [
+      112.248,
+      872.0997,
+      2077.625,
+      2402.48,
+      2445.903,
+      2937.732
+    ]
+  }
+}

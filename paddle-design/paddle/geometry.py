@@ -141,7 +141,7 @@ class Construction:
     rib_pitch: float = 18.0      # wave length (crest to crest) across the width
     rib_t: float = 1.6           # wave-rib wall thickness
     rib_amp: float = 4.0         # wave centre-line amplitude; crests are cut flat at the faces = bond lands
-                                 # (4.0 -> 3.7 mm wide lands; the first FEA iteration used 3.6 -> 2.7 mm)
+                                 # (4.0 -> 4.25 mm wide lands; the first FEA iteration used 3.6 -> 3.13 mm)
     solid_to: float = 150.0      # core is solid from the butt up to this height (handle + throat)
     runout_len: float = 8.0      # flute run-out: 45 deg taper (printable without support) so the core
                                  # meets each face sheet in a thin wedge, not a square step; 0 = square
@@ -169,6 +169,25 @@ class Construction:
 
 
 CONSTRUCTION = Construction()
+
+
+def grip_dims(sp: PaddleSpec) -> dict[str, float]:
+    """Key sizes of the grip hardware (all derived from the handle core and CONSTRUCTION)."""
+    C = CONSTRUCTION
+    sw = sp.handle_width + 2 * (C.sleeve_clear + C.sleeve_wall)
+    st = sp.thickness + 2 * (C.sleeve_clear + C.sleeve_wall)
+    ww, wt = sw + 2 * C.wrap_t, st + 2 * C.wrap_t
+    wr = C.sleeve_r + C.wrap_t
+    cw, ct = sw + 2 * C.cap_wall, st + 2 * C.cap_wall
+    kw, kt = ww + 2 * C.collar_wall, wt + 2 * C.collar_wall
+    collar_top = sp.handle_length - 1.0
+    d = dict(sleeve_w=sw, sleeve_t=st, sleeve_bot=sp.cap_length, sleeve_top=collar_top,
+             wrap_w=ww, wrap_t=wt, wrap_r=wr, wrap_bot=sp.cap_length + C.cap_skirt, wrap_top=collar_top - C.collar_h,
+             cap_w=cw, cap_t=ct, cap_r=C.sleeve_r + C.cap_wall, collar_w=kw, collar_t=kt,
+             collar_r=wr + C.collar_wall, collar_bot=collar_top - C.collar_h, collar_top=collar_top)
+    # grip circumference on the wrap (rounded rectangle perimeter)
+    d["grip_circumference"] = 2 * (ww + wt) - 8 * wr + 2 * math.pi * wr
+    return d
 
 
 ELONGATED = PaddleSpec(key="elongated", name="ELONGATED", drawing_no="PB-EL-001",

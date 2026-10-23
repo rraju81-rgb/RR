@@ -7,14 +7,10 @@ per shot and runs tools/blender_scene.py in headless Blender.
 from __future__ import annotations
 
 import json
-import math
 import subprocess
 from pathlib import Path
 
-import numpy as np
-
-from .cad import PartDef, tessellate
-from .geometry import CONSTRUCTION as C
+from .cad import PartDef, assembly, tessellate
 from .geometry import Outline
 from .render import SANS, THEMES, defs_for, inset_polyline, model_path
 from .svgkit import f, fmt
@@ -178,15 +174,89 @@ def cutaway(o: Outline):
     return top, core
 
 
-def angle_between(a, b) -> float:
-    return math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
+SHOTS = ("hero", "cutaway", "exploded_elongated", "exploded_hybrid", "handle")
+EXPLODE = {"face_sheet_top": (0, 0, 58), "face_sheet_bottom": (0, 0, -58), "butt_cap": (0, -34, 0),
+           "screw_M4x12_ISO7380": (0, -66, 0), "insert_M4_heatset": (0, -15, 0)}
+HANDLE_EXPLODE = {"butt_cap": (0, -26, 0), "screw_M4x12_ISO7380": (0, -50, 0), "insert_M4_heatset": (0, -10, 0)}
 
 
-def bbox_of(meshes: list[str]) -> np.ndarray:
-    import trimesh
-    b = np.array([trimesh.load(m).bounds for m in meshes])
-    return np.array([b[:, 0].min(axis=0), b[:, 1].max(axis=0)])
+def shot_scene(shot: str, meshes: dict, cut: dict) -> tuple[list[dict], dict, tuple]:
+    """Paddle groups (placement in metres / degrees), camera and light target of one shot."""
+    def parts(key, offsets=None, cutaway=False):
+        p = part_list(key, meshes[key], offsets)
+        for q in p if cutaway else []:
+            q["mesh"] = cut[key].get(q["name"], q["mesh"])
+        return p
+    if shot == "hero":
+        return ([dict(name="EL", location=(-0.135, 0.0, 0.035), rotation=(90, 0, 34), parts=parts("elongated")),
+                 dict(name="HY", location=(0.135, 0.06, 0.035), rotation=(90, 0, -36), parts=parts("hybrid"))],
+                dict(location=(0.05, -1.55, 0.47), target=(0.0, 0.02, 0.215), lens=62), (0, 0.03, 0.23))
+    if shot == "cutaway":
+        return ([dict(name="EL", location=(-0.145, 0.0, 0.07), rotation=(52, 0, 9),
+                      parts=parts("elongated", cutaway=True)),
+                 dict(name="HY", location=(0.145, 0.02, 0.07), rotation=(52, 0, -9),
+                      parts=parts("hybrid", cutaway=True))],
+                dict(location=(0.0, -0.98, 0.52), target=(0.0, 0.13, 0.20), lens=50), (0, 0.1, 0.15))
+    if shot.startswith("exploded_"):
+        key = shot.split("_", 1)[1]
+        return ([dict(name="X", location=(0.02, -0.02, 0.135), rotation=(10, 0, -32), parts=parts(key, EXPLODE))],
+                dict(location=(0.50, -0.62, 0.52), target=(0.075, 0.13, 0.11), lens=42), (0.05, 0.12, 0.12))
+    if shot == "handle":
+        return ([dict(name="H", location=(0.0, 0.0, 0.035), rotation=(18, 0, -28),
+                      parts=parts("elongated", HANDLE_EXPLODE))],
+                dict(location=(0.075, -0.185, 0.115), target=(-0.012, 0.018, 0.03), lens=60,
+                     dof=dict(fstop=5.6, distance=0.2)), (0, 0, 0.03))
+    raise ValueError(shot)
 
 
-__all__ = ["write_textures", "export_meshes", "materials", "part_list", "write_scene", "run_blender",
-           "cutaway", "STUDIO", "studio_lights", "hex_rgb", "C"]
+def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samples: int = 128,
+               shots=SHOTS, log=print) -> list[Path]:
+    """Export meshes + textures from the CAD and render every shot to out/paddles_3d_<shot>.png."""
+    work = out / "_work"
+    meshes, cut, mats = {}, {}, {}
+    for o in outlines:
+        key = o.spec.key
+        meshes[key] = export_meshes(assembly(o), work / "mesh", key)
+        top, core = cutaway(o)
+        cut[key] = export_meshes([PartDef("face_sheet_top", top, "cf", (0, 0, 0)),
+                                  PartDef("rib_core", core, "core", (0, 0, 0))], work / "mesh", key + "_cut")
+        mats.update(materials(key, write_textures(o, work / "tex")))
+    done = []
+    for shot in shots:
+        groups, cam, target = shot_scene(shot, meshes, cut)
+        png = out / f"paddles_3d_{shot}.png"
+        scene = write_scene(work / f"{shot}.json", resolution=list(resolution), samples=samples, materials=mats,
+                            groups=groups, lights=studio_lights(target), camera=cam, output=str(png), **STUDIO)
+        run_blender(scene, work / f"{shot}.log")
+        done.append(png)
+        log(f"rendered {png}")
+    return done
+
+
+def render_stress_cores(plys: dict[str, Path], scale_png: Path, out_png: Path, work: Path,
+                        resolution=(1800, 1100), samples: int = 64) -> Path:
+    """Both rib cores coloured by von Mises stress (PLY vertex colours), with the colour bar below.
+
+    Rendered with the 'Standard' view transform so the colours match the colour bar."""
+    from PIL import Image
+    mat = {"stress": dict(vertex_colors=True, roughness=0.55, specular=0.2, emission=0.5)}
+    groups = [dict(name=k[:2].upper(), location=loc, rotation=rot,
+                   parts=[dict(name="core", mesh=str(p), material="stress", smooth_angle=20)])
+              for (k, p), loc, rot in zip(plys.items(), ((-0.145, 0.0, 0.07), (0.145, 0.02, 0.07)),
+                                          ((52, 0, 9), (52, 0, -9)))]
+    studio = dict(STUDIO, look="None", view_transform="Standard",
+                  backdrop=dict(STUDIO["backdrop"], color=(0.22, 0.23, 0.25)), world_strength=0.15)
+    raw = work / "core_stress_raw.png"
+    scene = write_scene(work / "core_stress.json", resolution=list(resolution), samples=samples, materials=mat,
+                        groups=groups, lights=studio_lights((0, 0.1, 0.15), 0.16),
+                        camera=dict(location=(0.0, -0.98, 0.52), target=(0.0, 0.13, 0.20), lens=50),
+                        output=str(raw), **studio)
+    run_blender(scene, work / "core_stress.log")
+    img = Image.open(raw).convert("RGB")
+    bar = Image.open(scale_png).convert("RGBA")
+    bar = bar.resize((int(img.width * 0.42), int(bar.height * img.width * 0.42 / bar.width)), Image.LANCZOS)
+    canvas = Image.new("RGB", (img.width, img.height + bar.height + 30), "white")
+    canvas.paste(img, (0, 0))
+    canvas.paste(bar, ((img.width - bar.width) // 2, img.height + 15), bar)
+    canvas.save(out_png)
+    return out_png

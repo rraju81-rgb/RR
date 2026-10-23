@@ -54,9 +54,13 @@ def element_max(m: Mesh, key: str, rows: np.ndarray, vals: np.ndarray) -> np.nda
     return out
 
 
-def nodal_average(m: Mesh, key: str, elem_vals: np.ndarray) -> np.ndarray:
-    """Average element values onto the corner nodes of one set (NaN for nodes outside the set)."""
+def nodal_average(m: Mesh, key: str, elem_vals: np.ndarray, mask: np.ndarray | None = None) -> np.ndarray:
+    """Average element values onto the corner nodes of one set (NaN for nodes outside the set).
+
+    mask (optional, over the elements of the set) restricts the average to some elements."""
     conn = m.elems[key][:, :4] - 1
+    if mask is not None:
+        conn, elem_vals = conn[mask], elem_vals[mask]
     acc = np.zeros(len(m.nodes))
     cnt = np.zeros(len(m.nodes))
     for k in range(4):
@@ -99,34 +103,48 @@ def plan_panel(ax, o: Outline, m: Mesh, tris: np.ndarray, nodal: np.ndarray, vmi
         ax.add_patch(Circle((lc.x, lc.y), lc.diameter / 2, fill=False, ec="white", lw=1.2, ls="--"))
         ax.add_patch(Circle((lc.x, lc.y), lc.diameter / 2, fill=False, ec="black", lw=0.5, ls="--"))
     if peak is not None:
-        ax.plot([peak[0]], [peak[1]], marker="x", ms=7, mew=1.6, color="white")
-        ax.plot([peak[0]], [peak[1]], marker="x", ms=6, mew=0.8, color="black")
-        ax.annotate(f"max {fmt_peak.format(peak[2])} {unit}", (peak[0], peak[1]), xytext=(18, 22),
-                    textcoords="offset points", fontsize=7.5, fontweight="bold",
-                    arrowprops=dict(arrowstyle="-", lw=0.6, color="#222"),
-                    bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="#888", lw=0.5))
+        ax.plot([peak[0]], [peak[1]], marker="x", ms=7, mew=2.2, color="white")
+        ax.plot([peak[0]], [peak[1]], marker="x", ms=6, mew=1.0, color="black")
+        ax.text(0, -10, f"max {fmt_peak.format(peak[2])} {unit}  (× at y = {peak[1]:.0f})", ha="center", va="top",
+                fontsize=8, fontweight="bold", color="#0b0b0b")
     ax.set_aspect("equal")
     ax.set_xlim(-o.spec.width / 2 - 14, o.spec.width / 2 + 14)
-    ax.set_ylim(-4, o.spec.length + 8)
-    ax.set_title(title, fontsize=9, fontweight="bold")
+    ax.set_ylim(-26, o.spec.length + 8)
+    if title:
+        ax.set_title(title, fontsize=9, fontweight="bold")
     ax.axis("off")
     return pc
 
 
-def contour_figure(panels: list[dict], cbar_label: str, outfile: Path, cmap: str = "turbo",
+def contour_figure(rows: list, cbar_label: str, outfile: Path, cmap: str = "YlOrRd",
                    vmin: float = 0.0, vmax: float | None = None, suptitle: str = "", unit: str = "MPa",
-                   fmt_peak: str = "{:.0f}") -> None:
-    """panels: dicts with o, m, tris, nodal, lc, title, peak."""
+                   fmt_peak: str = "{:.0f}", extend: str = "neither", row_labels: list[str] | None = None) -> None:
+    """Grid of plan-view panels sharing one colour scale.
+
+    rows: list of panel rows (or one flat list = one row); a panel is a dict with o, m, tris,
+    nodal, title and optionally lc (load patch) and peak (x, y, value)."""
+    if rows and isinstance(rows[0], dict):
+        rows = [rows]
     if vmax is None:
-        vmax = max(float(np.nanmax(p["nodal"][np.unique(p["tris"]) - 1])) for p in panels)
-    fig, axes = plt.subplots(1, len(panels), figsize=(2.55 * len(panels) + 0.9, 5.4))
-    axes = np.atleast_1d(axes)
+        vmax = max(float(np.nanmax(p["nodal"][np.unique(p["tris"]) - 1])) for r in rows for p in r)
+    ncol = max(len(r) for r in rows)
+    fig, axes = plt.subplots(len(rows), ncol, figsize=(2.55 * ncol + 0.9, 5.0 * len(rows)), squeeze=False)
     pc = None
-    for ax, p in zip(axes, panels):
-        pc = plan_panel(ax, p["o"], p["m"], p["tris"], p["nodal"], vmin, vmax, cmap, p.get("lc"), p["title"],
-                        p.get("peak"), unit, fmt_peak)
-    cb = fig.colorbar(pc, ax=list(axes), fraction=0.025, pad=0.02)
+    for i, r in enumerate(rows):
+        for j in range(ncol):
+            ax = axes[i, j]
+            if j >= len(r):
+                ax.axis("off")
+                continue
+            p = r[j]
+            pc = plan_panel(ax, p["o"], p["m"], p["tris"], p["nodal"], vmin, vmax, cmap, p.get("lc"), p["title"],
+                            p.get("peak"), unit, fmt_peak)
+    for i, label in enumerate(row_labels or []):
+        axes[i, 0].annotate(label, xy=(0, 0.5), xycoords="axes fraction", xytext=(-6, 0), textcoords="offset points",
+                            rotation=90, ha="right", va="center", fontsize=10, fontweight="bold", color="#52514e")
+    cb = fig.colorbar(pc, ax=axes.ravel().tolist(), fraction=0.025, pad=0.02, extend=extend)
     cb.set_label(cbar_label)
+    cb.outline.set_linewidth(0.5)
     if suptitle:
         fig.suptitle(suptitle, fontsize=11, fontweight="bold", x=0.02, ha="left")
     fig.savefig(outfile, dpi=200, bbox_inches="tight")
@@ -134,7 +152,7 @@ def contour_figure(panels: list[dict], cbar_label: str, outfile: Path, cmap: str
 
 
 # ---------------------------------------------------------------- colour-mapped mesh (Blender)
-def colour_map(vals: np.ndarray, vmax: float, cmap: str = "turbo", vmin: float = 0.0) -> np.ndarray:
+def colour_map(vals: np.ndarray, vmax: float, cmap: str = "YlOrRd", vmin: float = 0.0) -> np.ndarray:
     cm = matplotlib.colormaps[cmap]
     t = np.clip((vals - vmin) / (vmax - vmin), 0, 1)
     return (np.asarray(cm(t))[:, :3] * 255).astype(np.uint8)
@@ -158,7 +176,7 @@ def write_ply(path: Path, verts: np.ndarray, tris: np.ndarray, colours: np.ndarr
 
 
 def mirrored_surface_ply(m: Mesh, key: str, nodal: np.ndarray, vmax: float, path: Path,
-                         cmap: str = "turbo", drop_symmetry_plane: bool = True) -> None:
+                         cmap: str = "YlOrRd", drop_symmetry_plane: bool = True) -> None:
     """Boundary surface of an element set, mirrored about x = 0, coloured by a nodal field."""
     tris = boundary_tris(m, key)
     if drop_symmetry_plane:
@@ -177,7 +195,7 @@ def mirrored_surface_ply(m: Mesh, key: str, nodal: np.ndarray, vmax: float, path
     write_ply(path, verts, faces, np.vstack([col, col]))
 
 
-def colourbar_png(path: Path, vmax: float, label: str, cmap: str = "turbo", vmin: float = 0.0) -> None:
+def colourbar_png(path: Path, vmax: float, label: str, cmap: str = "YlOrRd", vmin: float = 0.0) -> None:
     fig, ax = plt.subplots(figsize=(4.2, 0.62))
     cb = matplotlib.colorbar.ColorbarBase(ax, cmap=matplotlib.colormaps[cmap],
                                           norm=matplotlib.colors.Normalize(vmin, vmax), orientation="horizontal")

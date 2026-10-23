@@ -39,6 +39,13 @@ class Chromium:
                                               "height": h_mm / 25.4 * 96})
         page.close()
 
+    def html_pdf(self, html_file: Path, out: Path) -> None:
+        """Print an HTML document (its own @page CSS sets the paper) to PDF; relative links resolve."""
+        page = self._browser.new_page()
+        page.goto(html_file.resolve().as_uri(), wait_until="networkidle")
+        page.pdf(path=str(out), prefer_css_page_size=True, print_background=True)
+        page.close()
+
     def png_px(self, svg: str, w_px: int, h_px: int, out: Path, scale: float = 2.0) -> None:
         page = self._browser.new_page(viewport={"width": int(w_px), "height": int(h_px)},
                                       device_scale_factor=scale)

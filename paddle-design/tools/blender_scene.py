@@ -145,6 +145,8 @@ def import_obj(path):
     if len(obs) > 1:
         bpy.ops.object.join()
     ob = bpy.context.view_layer.objects.active
+    if ob.data.users > 1:                            # the PLY importer can leave a second user on the mesh
+        ob.data = ob.data.copy()
     # bake the mm -> m import scale into the mesh so 'Object' texture coordinates are in metres
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     return ob

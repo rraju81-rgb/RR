@@ -15,8 +15,9 @@ from build123d import (Align, Box, Compound, Cylinder, Edge, Face, Kind, Locatio
                        RectangleRounded, Rot, Vector, Wire, export_step, export_stl, extrude, fillet,
                        offset)
 
+from . import wave
 from .geometry import CONSTRUCTION as C
-from .geometry import Line, Outline, PaddleSpec
+from .geometry import Line, Outline, PaddleSpec, grip_dims
 
 # densities [g/cm^3]
 DENSITY = {"cf": 1.55, "core": 1.18, "tpu": 1.21, "pu": 1.10, "steel": 7.9, "brass": 8.5}
@@ -41,15 +42,6 @@ def outline_face(o: Outline, z: float = 0.0) -> Face:
     return Face(Wire(edges))
 
 
-def _wave_offset(u: float, s: int) -> tuple[float, float]:
-    """Point on the upper (s=+1) / lower (s=-1) surface of the wave rib at centre-line parameter u."""
-    k = 2 * math.pi / C.rib_pitch
-    z = C.rib_amp * math.cos(k * u)
-    d = -C.rib_amp * k * math.sin(k * u)
-    n = math.sqrt(1 + d * d)
-    return u - s * C.rib_t / 2 * d / n, z + s * C.rib_t / 2 / n
-
-
 def flute_channel_faces(x_half: float, y0: float, ext: float = 1.0) -> list[tuple[int, Face]]:
     """XZ faces of the open flutes above and below the wave rib.
 
@@ -59,31 +51,19 @@ def flute_channel_faces(x_half: float, y0: float, ext: float = 1.0) -> list[tupl
     zlim = C.core_t / 2
     faces = []
     for s in (+1, -1):
-        def g(u: float) -> float:          # > 0 where the rib surface reaches the face sheet (land)
-            return s * _wave_offset(u, s)[1] - zlim
-        us = np.linspace(-x_half, x_half, int(2 * x_half / C.rib_pitch * 400) + 1)
-        gv = np.array([g(u) for u in us])
-        roots = []
-        for i in range(len(us) - 1):
-            if (gv[i] > 0) != (gv[i + 1] > 0):
-                a, b = us[i], us[i + 1]
-                for _ in range(60):
-                    m = (a + b) / 2
-                    if (g(m) > 0) == (gv[i] > 0):
-                        a = m
-                    else:
-                        b = m
-                roots.append((a + b) / 2)
-        bounds = ([-x_half] if gv[0] <= 0 else []) + roots + ([x_half] if gv[-1] <= 0 else [])
         zt = s * (zlim + ext)
-        for a, b in zip(bounds[0::2], bounds[1::2]):
+        for a, b in wave.channel_bounds(x_half, s):
             n = max(6, int((b - a) / C.rib_pitch * 60))
-            pts = [Vector(_wave_offset(u, s)[0], y0, _wave_offset(u, s)[1]) for u in np.linspace(a, b, n)]
+            pts = [Vector(*_xz(wave.surface_point(u, s), y0)) for u in np.linspace(a, b, n)]
             faces.append((s, Face(Wire([Edge.make_spline(pts),
                                         Edge.make_line(pts[-1], Vector(pts[-1].X, y0, zt)),
                                         Edge.make_line(Vector(pts[-1].X, y0, zt), Vector(pts[0].X, y0, zt)),
                                         Edge.make_line(Vector(pts[0].X, y0, zt), pts[0])]))))
     return faces
+
+
+def _xz(p: tuple[float, float], y: float) -> tuple[float, float, float]:
+    return p[0], y, p[1]
 
 
 def _runout_region(s: int, y_start: float, length: float):
@@ -147,24 +127,6 @@ def _rrect_prism(w: float, h: float, r: float, y0: float, y1: float):
     return extrude(pl * RectangleRounded(w, h, r), amount=y1 - y0)
 
 
-def grip_dims(sp: PaddleSpec) -> dict[str, float]:
-    """Key sizes of the grip hardware (all derived from the handle core and CONSTRUCTION)."""
-    sw = sp.handle_width + 2 * (C.sleeve_clear + C.sleeve_wall)
-    st = sp.thickness + 2 * (C.sleeve_clear + C.sleeve_wall)
-    ww, wt = sw + 2 * C.wrap_t, st + 2 * C.wrap_t
-    wr = C.sleeve_r + C.wrap_t
-    cw, ct = sw + 2 * C.cap_wall, st + 2 * C.cap_wall
-    kw, kt = ww + 2 * C.collar_wall, wt + 2 * C.collar_wall
-    collar_top = sp.handle_length - 1.0
-    d = dict(sleeve_w=sw, sleeve_t=st, sleeve_bot=sp.cap_length, sleeve_top=collar_top,
-             wrap_w=ww, wrap_t=wt, wrap_r=wr, wrap_bot=sp.cap_length + C.cap_skirt, wrap_top=collar_top - C.collar_h,
-             cap_w=cw, cap_t=ct, cap_r=C.sleeve_r + C.cap_wall, collar_w=kw, collar_t=kt,
-             collar_r=wr + C.collar_wall, collar_bot=collar_top - C.collar_h, collar_top=collar_top)
-    # grip circumference on the wrap (rounded rectangle perimeter)
-    d["grip_circumference"] = 2 * (ww + wt) - 8 * wr + 2 * math.pi * wr
-    return d
-
-
 def grip_parts(sp: PaddleSpec) -> list[PartDef]:
     g = grip_dims(sp)
     y0 = sp.cap_length
@@ -222,12 +184,13 @@ def mass_properties(parts: list[PartDef], pivot_y: float = 100.0) -> dict:
         v, f = tessellate(p.shape, 0.05)
         m = trimesh.Trimesh(v, f, process=True)
         rho = DENSITY[p.material] * 1e-3                      # g/mm^3
-        mass = m.volume * rho
+        vol = p.shape.volume                                  # exact B-rep volume; the mesh gives COM + inertia
+        mass = vol * rho
         com = m.center_mass
-        inertia = m.moment_inertia * rho                      # g mm^2 about COM (density-scaled)
+        inertia = m.moment_inertia * rho * vol / m.volume     # g mm^2 about COM (density-scaled)
         ixx_c = inertia[0, 0]
         ixx_pivot = ixx_c + mass * ((com[1] - pivot_y) ** 2 + com[2] ** 2)
-        per[p.name] = dict(volume_cm3=m.volume / 1000, mass_g=mass, watertight=bool(m.is_watertight))
+        per[p.name] = dict(volume_cm3=vol / 1000, mass_g=mass, watertight=bool(m.is_watertight))
         total += mass
         my += mass * com[1]
         iyy += ixx_pivot

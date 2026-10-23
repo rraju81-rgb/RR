@@ -1,16 +1,23 @@
-"""Engineering drawing sheets.
+"""Engineering drawing sheets (REV B: carbon / wave-rib sandwich with grip assembly).
 
-Sheet 1 - A3 landscape general arrangement (front view, side view, sections,
-          isometric view, notes, title block), first-angle projection, 1:2.
-Sheet 2 - A3 portrait full-size (1:1) profile template with the geometry table.
+Per paddle:
+  Sheet 1 - A3 landscape general arrangement: front view with the grip, side view with the
+            4 / 8 / 4 lay-up, sections A-A (blade, wave core) and B-B (handle + grip),
+            isometric view, notes, title block; first-angle projection, 1:2.
+  Sheet 2 - A3 portrait full-size (1:1) body profile template with the geometry table.
+  Sheet 3 - rib core (sheets_construction.core_sheet).
+Shared by both paddles: PB-GR-001 grip and butt-cap assembly (sheets_construction.grip_sheet).
 """
 from __future__ import annotations
 
-from .geometry import Outline, PaddleSpec
+from . import wave
+from .geometry import CONSTRUCTION as C
+from .geometry import Outline, PaddleSpec, grip_dims
 from .pictorial import ISOMETRIC, project
-from .svgkit import Doc, View, fmt, frame_iso, hatch_pattern, projection_symbol_first_angle
+from .svgkit import Doc, View, f, fmt, frame_iso, hatch_pattern, projection_symbol_first_angle
 
-ISSUE = {"rev": "A", "date": "2026-10-23", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
+ISSUE = {"rev": "B", "date": "2026-10-23", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
+SHEETS = 3                                  # sheets per paddle drawing
 USAP_SUM, USAP_LEN = 609.6, 431.8          # 24 in (length + width), 17 in (length)
 GREY = "#555"
 
@@ -39,6 +46,12 @@ def draw_pictorial(d: Doc, o: Outline, frame, centre, scale: float, wall_fill: s
     return S((u0, v1)) + S((u1, v0))
 
 
+def core_inner(o: Outline):
+    """Inner edge of the core's perimeter frame (shapely polygon, model mm)."""
+    from shapely.geometry import Polygon
+    return Polygon(o.polyline(0.5)).buffer(-C.frame_w, join_style=1, quad_segs=32)
+
+
 def cell(d: Doc, x: float, y: float, w: float, h: float, caption: str, value: str = "",
          size: float = 3.2, weight: str = "normal", anchor: str = "middle") -> None:
     d.rect(x, y, w, h, "thin")
@@ -50,19 +63,20 @@ def cell(d: Doc, x: float, y: float, w: float, h: float, caption: str, value: st
                weight=weight)
 
 
-def title_block(d: Doc, x: float, y: float, sp: PaddleSpec, subtitle: str, scale: str, sheet: str,
-                size: str, w: float = 180.0) -> None:
+def title_block(d: Doc, x: float, y: float, sp: PaddleSpec | None, subtitle: str, scale: str, sheet: str,
+                size: str, w: float = 180.0, title: str | None = None, drawing_no: str | None = None,
+                material: str = "SEE NOTES") -> None:
     """ISO 7200-style title block, top-left corner at (x, y), 46 mm tall."""
     d.rect(x, y, w, 46, "frame")
     cell(d, x, y, w, 16, "", "")
-    d.text((x + 3, y + 7.6), f"PICKLEBALL PADDLE – {sp.name}", 5.6, anchor="start", weight="bold")
+    d.text((x + 3, y + 7.6), title or f"PICKLEBALL PADDLE – {sp.name}", 5.6, anchor="start", weight="bold")
     d.text((x + 3, y + 13.2), subtitle, 3.0, anchor="start")
     y2 = y + 16
     for i, (cap, val) in enumerate((("DRAWN", ISSUE["drawn"]), ("DATE", ISSUE["date"]),
                                     ("CHECKED", ""), ("APPROVED", ""))):
         cell(d, x + i * w / 4, y2, w / 4, 10, cap, val)
     y3 = y2 + 10
-    cols = (("DRAWING No.", sp.drawing_no, 52), ("REV", ISSUE["rev"], 16), ("SHEET", sheet, 22),
+    cols = (("DRAWING No.", drawing_no or sp.drawing_no, 52), ("REV", ISSUE["rev"], 16), ("SHEET", sheet, 22),
             ("SIZE", size, 18), ("SCALE", scale, 32), ("UNITS", "mm", 40))
     xx = x
     for cap, val, cw in cols:
@@ -72,7 +86,7 @@ def title_block(d: Doc, x: float, y: float, sp: PaddleSpec, subtitle: str, scale
     y4 = y3 + 10
     cell(d, x, y4, 46, 10, "PROJECTION")
     projection_symbol_first_angle(d, x + 14, y4 + 6.2, 5.0)
-    cell(d, x + 46, y4, 64, 10, "MATERIAL", "SEE NOTE 9", 3.0)
+    cell(d, x + 46, y4, 64, 10, "MATERIAL", material, 3.0)
     cell(d, x + 110, y4, w - 110, 10, "STATUS", ISSUE["status"], 3.0)
 
 
@@ -88,32 +102,75 @@ def notes_block(d: Doc, x: float, y: float, lines: list[str], size: float = 2.75
         yy += 0.4
 
 
-def ga_notes(o: Outline) -> list[str]:
+def ga_notes(o: Outline, mass: dict | None = None) -> list[str]:
     sp = o.spec
+    g = grip_dims(sp)
     s = sp.length + sp.width
-    return [
-        "ALL DIMENSIONS IN MILLIMETRES. DO NOT SCALE THE DRAWING.",
+    notes = [
+        "ALL DIMENSIONS IN MILLIMETRES. DO NOT SCALE THE DRAWING. UNLESS STATED: LINEAR ±0.5, ANGULAR ±0.5°.",
         "PROFILE SYMMETRICAL ABOUT THE CENTRE LINE. ALL ARCS TANGENT TO ADJOINING EDGES.",
-        f"THICKNESS {fmt(sp.thickness)} ±0.2 UNIFORM OVER BLADE AND HANDLE (CORE + FACE SKINS).",
-        "UNLESS STATED: LINEAR ±0.5, ANGULAR ±0.5°. BREAK ALL SHARP EDGES.",
-        "EDGE GUARD, GRIP WRAP, HANDLE BUILD-UP AND BUTT CAP NOT SHOWN.",
-        f"HANDLE CORE {fmt(sp.handle_width)} × {fmt(sp.thickness)} (PERIMETER "
-        f"{fmt(2 * (sp.handle_width + sp.thickness))}): BUILD UP ≈2–2.5 PER SIDE\n"
-        "FOR A 4¼ in (108) GRIP CIRCUMFERENCE.",
-        f"USA PICKLEBALL PADDLE LIMITS: L + W = {fmt(s)} ≤ {fmt(USAP_SUM)} (24 in),  L = {fmt(sp.length)} "
-        f"≤ {fmt(USAP_LEN)} (17 in).\nEDGE GUARD AND BUTT CAP COUNT TOWARDS THESE LIMITS "
-        f"(MARGIN {fmt(USAP_SUM - s)} mm).",
-        f"PROFILE AREA {o.area / 100:.0f} cm² (INCL. HANDLE), PERIMETER {o.perimeter:.0f}. FULL-SIZE "
-        f"TEMPLATE: SHEET 2.\nCNC CUT PROFILE: {sp.drawing_no}_profile.dxf (1:1, mm).",
-        "FACE SKIN AND CORE MATERIALS TO BE SPECIFIED.",
+        f"SANDWICH: CF FACE SHEET {fmt(C.face_t)} + WAVE-RIB CORE {fmt(C.core_t)} + CF FACE SHEET {fmt(C.face_t)} = "
+        f"{fmt(sp.thickness)} ±0.3, UNIFORM OVER\nBLADE AND HANDLE. BODY (SHEETS + CORE) FROM y = {fmt(sp.cap_length)} "
+        f"TO THE TIP; BUTT CAP y = 0 … {fmt(sp.cap_length + C.cap_skirt)}.",
+        f"FACE SHEETS (2 OFF, IDENTICAL): WOVEN CARBON/EPOXY PLATE {fmt(C.face_t)} THK, CUT TO "
+        f"{sp.drawing_no}_profile.dxf,\nOUTER EDGES R0.8. TEMPLATE: SHEET 2.",
+        f"CORE: 3D-PRINTED PA-CF, CLOSED FRAME {fmt(C.frame_w)}, WAVE RIB λ{fmt(C.rib_pitch)} / WALL {fmt(C.rib_t)} / "
+        f"LANDS {wave.land_width():.2f}, SOLID TO\ny = {fmt(C.solid_to)} WITH 45° FLUTE RUN-OUT – SEE SHEET 3.",
+        "BOND CORE TO SHEETS: STRUCTURAL EPOXY, ABRADED + PRIMED SURFACES, FILLET ALL LAND EDGES\n"
+        "(CRITICAL ITEM – SEE THE STRESS REPORT).",
+        f"GRIP: SLEEVE + WRAP + COLLAR + BUTT CAP, ISO 7380 M4×12 SCREW INTO M4 HEAT-SET INSERT –\n"
+        f"SEE PB-GR-001. GRIP {fmt(g['wrap_w'])} × {fmt(g['wrap_t'])}, CIRCUMFERENCE "
+        f"{g['grip_circumference']:.1f} (4¼ in).",
+        f"USA PICKLEBALL LIMITS: L + W = {fmt(s)} ≤ {fmt(USAP_SUM)} (24 in), L = {fmt(sp.length)} ≤ {fmt(USAP_LEN)} "
+        f"(17 in), INCL. BUTT CAP.\nAN EDGE GUARD COUNTS TOWARDS THESE LIMITS (MARGIN {fmt(USAP_SUM - s)}).",
     ]
+    if mass:
+        notes.append(f"MASS {mass['mass_g']:.0f} g, BALANCE POINT {mass['balance_mm']:.0f} FROM THE BUTT "
+                     f"(FROM THE 3D MODEL).")
+    return notes
 
 
 # --------------------------------------------------------------------------- sheet 1
-def ga_sheet(o: Outline) -> Doc:
+def rrect_path(cx: float, cy: float, w: float, h: float, r: float) -> str:
+    """Closed SVG path of a rounded rectangle centred on (cx, cy) (sheet units)."""
+    x0, y0, x1, y1 = cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2
+    r = min(r, w / 2, h / 2)
+    if r <= 0:
+        return f"M{f(x0)},{f(y0)} H{f(x1)} V{f(y1)} H{f(x0)} Z"
+    a = f"A{f(r)},{f(r)} 0 0 1"
+    return (f"M{f(x0 + r)},{f(y0)} H{f(x1 - r)} {a} {f(x1)},{f(y0 + r)} V{f(y1 - r)} {a} {f(x1 - r)},{f(y1)} "
+            f"H{f(x0 + r)} {a} {f(x0)},{f(y1 - r)} V{f(y0 + r)} {a} {f(x0 + r)},{f(y0)} Z")
+
+
+def hatches(d: Doc) -> dict[str, str]:
+    """Section fills: a different hatch per part (ISO 128-50); thin parts are filled solid."""
+    return {"cf": hatch_pattern(d, "h_cf", 0.9, 45), "core": hatch_pattern(d, "h_core", 1.4, -45),
+            "grip": hatch_pattern(d, "h_grip", 2.2, 30), "metal": hatch_pattern(d, "h_metal", 0.7, 60),
+            "cap": hatch_pattern(d, "h_cap", 1.8, -60)}
+
+
+def fill(pattern: str) -> str:
+    return f'style="fill:{pattern}"'
+
+
+def grip_front(d: Doc, v: View, sp: PaddleSpec, white: str = "#fff") -> None:
+    """Butt cap, grip wrap and throat collar in the face (XY) view; the handle inside is hidden."""
+    g = grip_dims(sp)
+    for hw, y0, y1 in ((g["cap_w"] / 2, 0.0, sp.cap_length + C.cap_skirt), (g["wrap_w"] / 2, g["wrap_bot"], g["wrap_top"]),
+                       (g["collar_w"] / 2, g["collar_bot"], g["collar_top"])):
+        p, q = v.P((-hw, y1)), v.P((hw, y0))
+        d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=f'style="fill:{white}"')
+    h = sp.handle_width / 2
+    for sx in (-1, 1):
+        v.line((sx * h, sp.cap_length), (sx * h, g["collar_top"]), "hid")
+    v.line((-h, sp.cap_length), (h, sp.cap_length), "hid")
+
+
+def ga_sheet(o: Outline, mass: dict | None = None) -> Doc:
     sp = o.spec
+    g = grip_dims(sp)
     d = Doc(420, 297, f"{sp.drawing_no} {sp.name} paddle - general arrangement")
-    hatch = hatch_pattern(d)
+    H = hatches(d)
     frame_iso(d)
     a, h, t, L = sp.width / 2, sp.handle_width / 2, sp.handle_length, sp.length
     S = 0.5
@@ -121,24 +178,24 @@ def ga_sheet(o: Outline) -> Doc:
     butt_y = tip_y + L * S
     fv = View(d, (cx, butt_y), S)
     P = fv.P
+    cw = g["cap_w"] / 2
 
-    # ---- front view
+    # ---- front view: body outline, grip over the handle
     d.path(fv.outline_path(o), "vis")
+    grip_front(d, fv, sp)
     fv.line((0, -9), (0, L + 9), "ctr")
     top_ref = (-o.pts["crown"][0], L) if sp.head == "square" else (0.0, L)
-    # overall width / handle width
     yside = o.pts["side_hi"][1]
     d.dim_linear(P((-a, yside)), P((a, yside)), "x", tip_y - 11, fmt(sp.width))
-    d.dim_linear(P((-h, 0)), P((h, 0)), "x", butt_y + 9, fmt(sp.handle_width))
-    # lengths (left)
+    d.dim_linear(P((-cw, 0)), P((cw, 0)), "x", butt_y + 9, fmt(g["cap_w"]))
     x1, x2 = cx - a * S - 20, cx - a * S - 31
-    d.dim_linear(P((-h, 0)), P((-h, t)), "y", x1, fmt(sp.handle_length))
+    d.dim_linear(P((-cw, 0)), P((-h, t)), "y", x1, fmt(sp.handle_length))
     d.dim_linear(P((-h, t)), P(top_ref), "y", x1, fmt(sp.blade_length))
-    d.dim_linear(P((-h, 0)), P(top_ref), "y", x2, fmt(sp.length))
+    d.dim_linear(P((-cw, 0)), P(top_ref), "y", x2, fmt(sp.length))
     d.text((x1 + 2.2, P((0, t / 2))[1] + 13), "HANDLE", 2.5, rot=-90, fill=GREY)
     d.text((x1 + 2.2, P((0, t + sp.blade_length / 2))[1] + 12), "BLADE", 2.5, rot=-90, fill=GREY)
+    d.leader_note(P((g["wrap_w"] / 2, 62)), (P((0, 0))[0] + 26, P((0, 72))[1]), "GRIP – SEE PB-GR-001", 3.0)
 
-    # taper angle at the (virtual) throat vertex + radii on the right-hand side
     tv = (h, o.info["throat_vertex_y"])
     fv.line(o.pts["taper_lo"], tv)
     fv.line(tv, (h + 44, tv[1]))
@@ -157,50 +214,87 @@ def ga_sheet(o: Outline) -> Doc:
         c, r = o.centres["dome_shoulder"]
         fv.dim_radius(c, r, 30, f"2×R{fmt(r)}", 11, side="out")
 
-    # cutting planes
     fv.section_line(280.0, -a - 15, a + 15, "A")
-    fv.section_line(70.0, -h - 14, h + 14, "B")
+    fv.section_line(70.0, -g["collar_w"] / 2 - 12, g["collar_w"] / 2 + 12, "B")
     d.text((cx, 259), "FRONT VIEW", 3.5, weight="bold")
 
-    # ---- side view (view from the left, placed on the right: first angle)
+    # ---- side view (from the left, placed on the right: first angle)
     sv_x = 212.0
     sv = View(d, (sv_x, butt_y), S)
-    T = sp.thickness / 2
-    d.poly([sv.P((-T, 0)), sv.P((T, 0)), sv.P((T, L)), sv.P((-T, L))], "vis", closed=True)
+    T, hc = sp.thickness / 2, C.core_t / 2
+    y0 = sp.cap_length
+    d.poly([sv.P((-T, y0)), sv.P((T, y0)), sv.P((T, L)), sv.P((-T, L))], "vis", closed=True)
+    for z in (-hc, hc):                                   # bond lines between sheets and core
+        sv.line((z, g["collar_top"]), (z, L), "vis")
+    for ht, ya, yb in ((g["cap_t"] / 2, 0.0, y0 + C.cap_skirt), (g["wrap_t"] / 2, g["wrap_bot"], g["wrap_top"]),
+                       (g["collar_t"] / 2, g["collar_bot"], g["collar_top"])):
+        p, q = sv.P((-ht, yb)), sv.P((ht, ya))
+        d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra='style="fill:#fff"')
+    for z in (-T, T):
+        sv.line((z, y0), (z, g["collar_top"]), "hid")
     sv.line((0, -9), (0, L + 9), "ctr")
     d.dim_linear(sv.P((-T, L)), sv.P((T, L)), "x", tip_y - 11, fmt(sp.thickness), outside=True)
     d.text((sv_x, 259), "SIDE VIEW", 3.5, weight="bold")
+    d.text((sv_x, 263.5), f"LAY-UP {fmt(C.face_t)} / {fmt(C.core_t)} / {fmt(C.face_t)}", 2.6)
 
-    # ---- sections
-    ya = 120.0
-    xa = 292.0
-    w2 = a * S
-    d.rect(xa - w2, ya - T * S, 2 * w2, sp.thickness * S, "vis", extra=f'style="fill:{hatch}"')
-    d.dim_linear((xa - w2, ya - T * S), (xa + w2, ya - T * S), "x", ya - 10, fmt(sp.width))
-    d.dim_linear((xa + w2, ya - T * S), (xa + w2, ya + T * S), "y", xa + w2 + 9, fmt(sp.thickness),
-                 outside=True)
-    d.line((xa - w2 - 6, ya), (xa + w2 + 6, ya), "ctr")
-    d.text((xa, ya + 15), "SECTION A–A", 3.5, weight="bold")
+    # ---- section A-A (blade, 1:2): face sheets, closed frame and the wave rib
+    xa, ya = 287.0, 118.0
+    aw = o.half_width_at(280.0)
 
-    xb, yb = 375.0, 120.0
-    d.rect(xb - h, yb - T, 2 * h, 2 * T, "vis", extra=f'style="fill:{hatch}"')
-    d.dim_linear((xb - h, yb - T), (xb + h, yb - T), "x", yb - T - 7, fmt(sp.handle_width))
-    d.dim_linear((xb + h, yb - T), (xb + h, yb + T), "y", xb + h + 8, fmt(sp.thickness))
-    d.line((xb - h - 5, yb), (xb + h + 5, yb), "ctr")
-    d.line((xb, yb - T - 3), (xb, yb + T + 3), "ctr")
-    d.text((xb, yb + T + 11), "SECTION B–B", 3.5, weight="bold")
-    d.text((xb, yb + T + 15.5), "SCALE 1:1", 2.8)
+    def A(x: float, z: float):
+        return (xa + x * S, ya - z * S)
+
+    for z0 in (hc, -hc - C.face_t):
+        p, q = A(-aw, z0 + C.face_t), A(aw, z0)
+        d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H["cf"]))
+    for sx in (-1, 1):
+        x_in, x_out = sorted((sx * (aw - C.frame_w), sx * aw))
+        p, q = A(x_in, hc), A(x_out, -hc)
+        d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H["core"]))
+    d.poly([A(x, z) for x, z in wave.wall_polygon(-(aw - C.frame_w), aw - C.frame_w)], "", closed=True,
+           extra='fill="#000" stroke="none"')
+    d.dim_linear(A(-aw, T), A(aw, T), "x", ya - T * S - 8, fmt(2 * aw))
+    d.dim_linear(A(aw, T), A(aw, -T), "y", xa + aw * S + 8, fmt(sp.thickness), outside=True)
+    d.line((xa - aw * S - 6, ya), (xa + aw * S + 6, ya), "ctr")
+    d.text((xa, ya + 12), "SECTION A–A", 3.5, weight="bold")
+    d.text((xa, ya + 16.2), f"SCALE 1:2 · CF {fmt(C.face_t)} / WAVE-RIB CORE {fmt(C.core_t)} / CF {fmt(C.face_t)} · "
+           "CORE DETAIL: SHEET 3", 2.5)
+
+    # ---- section B-B (handle with grip, 1:1)
+    xb, yb = 370.0, 118.0
+
+    def B(x: float, z: float):
+        return (xb + x, yb - z)
+
+    for z0, key in ((hc, "cf"), (-hc, "core"), (-T, "cf")):
+        zt = z0 + (C.face_t if key == "cf" else C.core_t)
+        p, q = B(-h, zt), B(h, z0)
+        d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H[key]))
+    ci_w, ci_t = sp.handle_width + 2 * C.sleeve_clear, sp.thickness + 2 * C.sleeve_clear
+    d.path(rrect_path(xb, yb, g["sleeve_w"], g["sleeve_t"], C.sleeve_r) + " " + rrect_path(xb, yb, ci_w, ci_t, 0.6),
+           "vis", extra=f'style="fill:{H["grip"]}" fill-rule="evenodd"')
+    d.path(rrect_path(xb, yb, g["wrap_w"], g["wrap_t"], g["wrap_r"]) + " " +
+           rrect_path(xb, yb, g["sleeve_w"], g["sleeve_t"], C.sleeve_r), "vis",
+           extra='style="fill:#000" fill-rule="evenodd"')
+    ww, wt = g["wrap_w"] / 2, g["wrap_t"] / 2
+    d.dim_linear(B(-h, T), B(h, T), "x", yb - wt - 4.5, fmt(sp.handle_width))
+    d.dim_linear(B(-ww, wt), B(ww, wt), "x", yb - wt - 10.5, fmt(g["wrap_w"]))
+    d.dim_linear(B(h, T), B(h, -T), "y", xb + ww + 4.5, fmt(sp.thickness))
+    d.dim_linear(B(ww, wt), B(ww, -wt), "y", xb + ww + 10.5, fmt(g["wrap_t"]))
+    d.line((xb - ww - 4, yb), (xb + ww + 2, yb), "ctr")
+    d.line((xb, yb - wt - 2), (xb, yb + wt + 3), "ctr")
+    d.text((xb, yb + wt + 9), "SECTION B–B", 3.5, weight="bold")
+    d.text((xb, yb + wt + 13.2), "SCALE 1:1 · GRIP: PB-GR-001", 2.5)
 
     # ---- isometric view
-    draw_pictorial(d, o, ISOMETRIC, (318.0, 54.0), 0.25)
-    d.text((318.0, 93.0), "ISOMETRIC VIEW", 3.5, weight="bold")
-    d.text((318.0, 97.5), "SCALE 1:4", 2.8)
+    draw_pictorial(d, o, ISOMETRIC, (318.0, 52.0), 0.25)
+    d.text((318.0, 91.0), "ISOMETRIC VIEW", 3.5, weight="bold")
+    d.text((318.0, 95.5), "SCALE 1:4 (BODY ONLY)", 2.8)
 
     # ---- notes + title block
-    notes_block(d, 228.0, 160.0, ga_notes(o))
+    notes_block(d, 228.0, 152.0, ga_notes(o, mass), size=2.5, lead=3.75)
     title_block(d, 225.0, 236.0, sp, f"GENERAL ARRANGEMENT  ·  {fmt(sp.length)} × {fmt(sp.width)} "
-                f"× {fmt(sp.thickness)} mm  ·  HANDLE {fmt(sp.handle_length)} × "
-                f"{fmt(sp.handle_width)}", "1:2", "1 / 2", "A3")
+                f"× {fmt(sp.thickness)} mm  ·  CF / WAVE-RIB SANDWICH", "1:2", f"1 / {SHEETS}", "A3")
     return d
 
 
@@ -249,6 +343,23 @@ def template_sheet(o: Outline) -> Doc:
     d.text((cx + 8.5, v.P((0, 65))[1]), f"HANDLE {fmt(sp.handle_width)} × {fmt(sp.handle_length)}",
            3.2, rot=-90, fill="#8a939c")
 
+    # light reference lines: butt-cap base, core frame inner edge, end of the solid core zone
+    ref = 'fill="none" stroke="#9aa3ad" stroke-width="0.25" stroke-dasharray="6 1.5 1.5 1.5"'
+    d.line(v.P((-h - 22, 0)), v.P((h + 22, 0)), "", ref)
+    d.text(v.P((-h - 24, 1.0)), "BUTT-CAP BASE y = 0 (CAP NOT ON THIS TEMPLATE)", 2.4, anchor="end", fill="#7c8590")
+    inner = core_inner(o)
+    for ring in [inner.exterior]:
+        d.poly([v.P(q) for q in ring.coords], "", extra=ref)
+    from shapely.geometry import LineString
+    seg = LineString([(-200, C.solid_to), (200, C.solid_to)]).intersection(inner)
+    if not seg.is_empty:
+        (xa0, _), (xa1, _) = seg.coords[0], seg.coords[-1]
+        d.line(v.P((xa0, C.solid_to)), v.P((xa1, C.solid_to)), "", ref)
+        d.text(v.P((xa1 - 2, C.solid_to + 1.6)), f"CORE: SOLID BELOW y = {fmt(C.solid_to)}", 2.4, anchor="end",
+               fill="#7c8590")
+    p_lab = v.P((sp.width / 2 - C.frame_w - 2, o.pts["side_lo"][1] + 30))
+    d.text(p_lab, f"CORE FRAME INNER EDGE ({fmt(C.frame_w)} INSIDE)", 2.4, anchor="end", rot=-90, fill="#7c8590")
+
     # throat / handle start line
     yt = sp.handle_length
     v.line((-h - 34, yt), (h + 34, yt), "hid")
@@ -294,8 +405,8 @@ def template_sheet(o: Outline) -> Doc:
             cell(d, xx, yy, wv, rh, "", vals[k], 2.7, anchor="start" if k == 1 else "middle")
             xx += wv
     yy = ty + rh * (len(rows) + 1) + 4.2
-    d.text((tx, yy), "Origin: centre of the butt end. Y along the paddle, X across.", 2.5, anchor="start",
-           fill=GREY)
+    d.text((tx, yy), f"Origin: centre of the butt-cap base (y = 0); the body starts at y = {fmt(sp.cap_length)}.",
+           2.5, anchor="start", fill=GREY)
     d.text((tx, yy + 3.8), "All arcs tangent. Dots = tangent points, + = arc centres.", 2.5,
            anchor="start", fill=GREY)
 
@@ -319,10 +430,10 @@ def template_sheet(o: Outline) -> Doc:
     d.rect(tbx, tby, tbw, 40, "frame")
     cell(d, tbx, tby, tbw, 11, "", "")
     d.text((tbx + 2.5, tby + 5.4), f"PICKLEBALL PADDLE – {sp.name}", 4.0, anchor="start", weight="bold")
-    d.text((tbx + 2.5, tby + 9.3), "FULL-SIZE PROFILE TEMPLATE", 2.6, anchor="start")
+    d.text((tbx + 2.5, tby + 9.3), "FULL-SIZE BODY TEMPLATE – FACE SHEETS + CORE", 2.6, anchor="start")
     cell(d, tbx, tby + 11, 44, 9, "DRAWING No.", sp.drawing_no, 3.2, weight="bold")
     cell(d, tbx + 44, tby + 11, 16, 9, "REV", ISSUE["rev"], 3.0)
-    cell(d, tbx + 60, tby + 11, 20, 9, "SHEET", "2 / 2", 3.0)
+    cell(d, tbx + 60, tby + 11, 20, 9, "SHEET", f"2 / {SHEETS}", 3.0)
     cell(d, tbx + 80, tby + 11, tbw - 80, 9, "SCALE", "1:1", 3.2, weight="bold")
     cell(d, tbx, tby + 20, 44, 9, "DATE", ISSUE["date"], 3.0)
     cell(d, tbx + 44, tby + 20, 36, 9, "DRAWN", ISSUE["drawn"], 2.8)
