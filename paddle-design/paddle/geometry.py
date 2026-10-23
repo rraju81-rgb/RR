@@ -108,11 +108,12 @@ class PaddleSpec:
     key: str
     name: str
     drawing_no: str
-    length: float = 390.0           # overall length, butt to tip
+    length: float = 390.0           # overall length incl. butt cap, butt to tip
     width: float = 200.0            # blade width
-    handle_length: float = 130.0    # straight 30 mm handle section
+    handle_length: float = 130.0    # handle incl. butt cap: butt to the end of the straight 30 mm section
     handle_width: float = 30.0
     thickness: float = 16.0
+    cap_length: float = 4.0         # butt-cap base below the body: plates + core start at y = cap_length
     head: str = "square"            # "square" (corner radii) or "dome"
     corner_r: float = 48.0          # square head: tip corner radius
     dome_r: float = 150.0           # dome head: crown radius
@@ -124,6 +125,50 @@ class PaddleSpec:
     @property
     def blade_length(self) -> float:
         return self.length - self.handle_length
+
+    @property
+    def body_length(self) -> float:
+        """Length of the face plates / rib core (overall length minus the butt-cap base)."""
+        return self.length - self.cap_length
+
+
+@dataclass(frozen=True)
+class Construction:
+    """Sandwich lay-up, wave-rib core and grip hardware shared by both paddles (mm)."""
+    face_t: float = 4.0          # carbon-fibre face sheet, top and bottom (identical parts)
+    core_t: float = 8.0          # rib core height between the face sheets
+    frame_w: float = 6.0         # closed perimeter frame of the rib core (covers the whole side)
+    rib_pitch: float = 18.0      # wave length (crest to crest) across the width
+    rib_t: float = 1.6           # wave-rib wall thickness
+    rib_amp: float = 4.0         # wave centre-line amplitude; crests are cut flat at the faces = bond lands
+                                 # (4.0 -> 3.7 mm wide lands; the first FEA iteration used 3.6 -> 2.7 mm)
+    solid_to: float = 150.0      # core is solid from the butt up to this height (handle + throat)
+    runout_len: float = 8.0      # flute run-out: 45 deg taper (printable without support) so the core
+                                 # meets each face sheet in a thin wedge, not a square step; 0 = square
+    insert_d: float = 5.6        # M4 heat-set insert bore (OD 5.6, L 8.1) in the butt end of the core
+    insert_depth: float = 10.0
+    screw_relief_d: float = 4.5  # clearance bore beyond the insert for the screw tip
+    screw_relief_depth: float = 16.0
+    # grip hardware
+    sleeve_clear: float = 0.2    # per side, between handle core and sleeve
+    sleeve_wall: float = 1.8
+    sleeve_r: float = 3.0        # outer corner radius of the sleeve
+    wrap_t: float = 0.75         # replacement grip tape
+    collar_h: float = 10.0
+    collar_wall: float = 1.25
+    cap_skirt: float = 6.0       # butt-cap skirt over the sleeve end
+    cap_wall: float = 1.5
+    cb_d: float = 8.0            # counterbore for ISO 7380 M4 button head (head 7.6 x 2.2)
+    cb_depth: float = 2.4
+    cap_hole_d: float = 4.5
+    screw_len: float = 12.0      # ISO 7380 M4 x 12
+
+    @property
+    def thickness(self) -> float:
+        return 2 * self.face_t + self.core_t
+
+
+CONSTRUCTION = Construction()
 
 
 ELONGATED = PaddleSpec(key="elongated", name="ELONGATED", drawing_no="PB-EL-001",
@@ -206,18 +251,20 @@ def _taper(spec: PaddleSpec) -> dict:
 
 
 def build(spec: PaddleSpec) -> Outline:
+    """Outline of the paddle body (face plates / rib core); the butt cap fills y = 0 .. cap_length."""
     a, h, t, L = spec.width / 2, spec.handle_width / 2, spec.handle_length, spec.length
+    y0 = spec.cap_length
     b = math.radians(spec.taper_deg)
     tp = _taper(spec)
     y1, p1, p2 = tp["y1"], tp["p1"], tp["p2"]
 
     right: list[Segment] = [
-        Line((h, 0.0), (h, t)),                                              # handle side
+        Line((h, y0), (h, t)),                                               # handle side
         Arc(tp["c_throat"], spec.throat_r, math.pi, -(math.pi / 2 - b)),      # throat fillet (concave)
         Line(p2, p1),                                                        # taper
         Arc(tp["c_shoulder"], spec.shoulder_r, -(math.pi / 2 - b), math.pi / 2 - b),  # shoulder (convex)
     ]
-    pts = {"butt": (h, 0.0), "throat": (h, t), "taper_lo": p2, "taper_hi": p1, "side_lo": (a, y1)}
+    pts = {"butt": (h, y0), "throat": (h, t), "taper_lo": p2, "taper_hi": p1, "side_lo": (a, y1)}
     centres = {"throat": (tp["c_throat"], spec.throat_r), "shoulder": (tp["c_shoulder"], spec.shoulder_r)}
     info: dict[str, float] = {}
 
@@ -261,7 +308,7 @@ def build(spec: PaddleSpec) -> Outline:
         segs.extend(left[1:])
     else:
         segs.extend(left)
-    segs.append(Line(left[-1].p1, right[0].p0))               # butt edge (-h,0) -> (h,0)
+    segs.append(Line(left[-1].p1, right[0].p0))               # butt edge (-h,y0) -> (h,y0)
 
     info.update(
         side_straight=pts["side_hi"][1] - y1,
@@ -291,7 +338,8 @@ def check(o: Outline) -> None:
     assert kinks == 2, f"expected only the 2 butt corners, found {kinks} corners"
     x0, y0, x1, y1 = o.bbox()
     sp = o.spec
-    assert abs((x1 - x0) - sp.width) < 1e-3 and abs((y1 - y0) - sp.length) < 1e-3, (x0, y0, x1, y1)
+    assert abs((x1 - x0) - sp.width) < 1e-3 and abs(y0 - sp.cap_length) < 1e-3 and abs(y1 - sp.length) < 1e-3, \
+        (x0, y0, x1, y1)
     assert o.area > 0, "outline must be counter-clockwise"
 
 
