@@ -33,6 +33,7 @@ towards the USA Pickleball limits, so keep it within the margins above.
 | | |
 |---|---|
 | ![Cutaway](output/render/paddles_3d_cutaway.png) | ![Exploded view](output/render/paddles_3d_exploded_elongated.png) |
+| ![Exploded view, hybrid](output/render/paddles_3d_exploded_hybrid.png) | ![Butt cap, M4 screw and insert](output/render/paddles_3d_handle.png) |
 
 - **Face sheets.** Two identical 4 mm woven carbon/epoxy plates, cut to the body profile
   (`*_profile.dxf`, template sheet 2). Outer edges R0.8.
