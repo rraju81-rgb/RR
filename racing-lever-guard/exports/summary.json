@@ -75,7 +75,7 @@
     },
     "blade_path_length_mm": 162.6,
     "protrusion_beyond_bar_end_mm": 31.75,
-    "reach_ahead_of_bar_axis_mm": 72.8,
+    "reach_ahead_of_bar_axis_mm": 72.9,
     "coverage_inboard_of_bar_end_mm": 91.0,
     "blade_inner_face_ahead_of_bar_axis_mm": {
       "-5": {
@@ -92,8 +92,8 @@
       }
     },
     "overall_envelope_mm": [
-      119.0,
-      88.8,
+      122.8,
+      88.9,
       32.0
     ]
   },
@@ -107,8 +107,8 @@
     },
     "blade_path_length_mm": 162.6,
     "protrusion_beyond_bar_end_mm": 33.75,
-    "reach_ahead_of_bar_axis_mm": 73.8,
-    "coverage_inboard_of_bar_end_mm": 90.0,
+    "reach_ahead_of_bar_axis_mm": 73.9,
+    "coverage_inboard_of_bar_end_mm": 90.1,
     "blade_inner_face_ahead_of_bar_axis_mm": {
       "-5": {
         "run_start": 57.6,
@@ -124,8 +124,8 @@
       }
     },
     "overall_envelope_mm": [
-      120.0,
-      89.8,
+      123.8,
+      89.9,
       32.0
     ]
   },

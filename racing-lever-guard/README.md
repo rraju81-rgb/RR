@@ -165,6 +165,7 @@ python -m venv .venv && . .venv/bin/activate
 pip install cadquery matplotlib
 cd cad
 python build.py          # fit checks + STEP/STL + exports/summary.json
+python build.py --check  # fit checks + summary.json only (leaves STEP/STL untouched)
 python drawings.py ../docs/drawings/lever_guard_drawings.pdf
 ```
 

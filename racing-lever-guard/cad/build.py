@@ -143,14 +143,16 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
             f"OD {od} slides into {lo:g}; cone taper {math.degrees(math.atan2(rise, travel)):.0f} deg",
         )
 
-    bb = parts["blade"].BoundingBox()
+    # envelope from the parameters (OCC bounding boxes are padded by the tessellation)
+    protrusion = p.blade_seat_x + p.blade_t + 1.0 + 2.75  # ISO 7380 M5 head on a 1 mm washer
+    inboard = -(p.tip_x - p.blade_t / 2 * math.sin(math.radians(p.front_toe_deg)))
+    reach = p.run_point(p.front_len, -p.blade_t / 2)[1]
     info.update(
         {
             "blade_path_length_mm": round(p.blade_path_len, 1),
-            # ISO 7380 M5 head (2.75) on a 1 mm washer on top of the blade
-            "protrusion_beyond_bar_end_mm": round(p.blade_seat_x + p.blade_t + 1.0 + 2.75, 2),
-            "reach_ahead_of_bar_axis_mm": round(bb.ymax, 1),
-            "coverage_inboard_of_bar_end_mm": round(-bb.xmin, 1),
+            "protrusion_beyond_bar_end_mm": round(protrusion, 2),
+            "reach_ahead_of_bar_axis_mm": round(reach, 1),
+            "coverage_inboard_of_bar_end_mm": round(inboard, 1),
             "blade_inner_face_ahead_of_bar_axis_mm": {
                 f"{s:+.0f}": {
                     "run_start": round(p.run_point(0, p.blade_t / 2)[1] + s, 1),
@@ -159,8 +161,8 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
                 for s in (-p.adjust, 0, p.adjust)
             },
             "overall_envelope_mm": [
-                round(bb.xmax - min(bb.xmin, -p.spigot_len), 1),
-                round(bb.ymax + p.body_d / 2, 1),
+                round(protrusion + inboard, 1),
+                round(reach + p.body_d / 2, 1),
                 round(max(p.blade_h, p.body_d), 1),
             ],
         }
@@ -183,12 +185,9 @@ def to_print_pose(name: str, wp: cq.Workplane) -> cq.Workplane:
     return wp.translate((-(bb.xmin + bb.xmax) / 2, -(bb.ymin + bb.ymax) / 2, -bb.zmin))
 
 
-def export_all(p: lg.Params, pp: lg.Params) -> dict:
-    step_dir, stl_dir = EXPORTS / "step", EXPORTS / "stl"
-    step_dir.mkdir(parents=True, exist_ok=True)
-    stl_dir.mkdir(parents=True, exist_ok=True)
-
-    catalogue = [
+def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]]:
+    """Every exported part: (file name, solid, material)."""
+    parts = [
         ("01_bar_end_adapter", lg.adapter(p), "al6061"),
         ("01b_bar_end_adapter_oem_thread", lg.adapter(p, spigot=False), "al6061"),
         ("02_guard_arm", lg.arm(p), "al6061"),
@@ -196,18 +195,22 @@ def export_all(p: lg.Params, pp: lg.Params) -> dict:
         ("03b_guard_blade_6mm_3dprint", lg.blade(pp), "pa12cf"),
     ]
     for size, (_, (lo, hi)) in lg.SLEEVES.items():
-        catalogue.append((f"04_expander_sleeve_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_sleeve(p, size), "tpu"))
+        parts.append((f"04_expander_sleeve_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_sleeve(p, size), "tpu"))
     for size, (_, (lo, hi)) in lg.SLEEVES.items():
-        catalogue.append((f"05_expander_cone_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_cone(p, size), "al6061"))
+        parts.append((f"05_expander_cone_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_cone(p, size), "al6061"))
+    return parts
 
-    masses = {}
-    for name, wp, mat in catalogue:
+
+def export_all(p: lg.Params, parts) -> None:
+    step_dir, stl_dir = EXPORTS / "step", EXPORTS / "stl"
+    step_dir.mkdir(parents=True, exist_ok=True)
+    stl_dir.mkdir(parents=True, exist_ok=True)
+    for name, wp, _ in parts:
         cq.exporters.export(wp, str(step_dir / f"{name}.step"))
         cq.exporters.export(
             to_print_pose(name, wp), str(stl_dir / f"{name}.stl"), tolerance=0.02, angularTolerance=0.1
         )
-        masses[name] = {"material": mat, "grams": round(mass_g(wp.val(), mat), 1)}
-        print(f"  exported {name}  ({masses[name]['grams']} g {mat})")
+        print(f"  exported {name}")
 
     for label, with_ref in (("assembly_right_guard", False), ("assembly_right_guard_on_reference_bar", True)):
         assy = lg.assembly(p, with_reference=with_ref, size="M")
@@ -216,12 +219,11 @@ def export_all(p: lg.Params, pp: lg.Params) -> dict:
         except AttributeError:
             assy.save(str(step_dir / f"{label}.step"))
         print(f"  exported {label}")
-    return masses
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--check", action="store_true", help="run the checks only")
+    ap.add_argument("--check", action="store_true", help="checks + summary.json only, no STEP / STL")
     args = ap.parse_args()
 
     p, pp = lg.Params(), lg.PRINT_PARAMS
@@ -229,11 +231,12 @@ def main() -> int:
     rep, info = run_checks(p)
     print("== checks: 3D-printed blade (6 mm) ==")
     rep6, info6 = run_checks(pp)
-    if args.check:
-        return 0 if rep.ok and rep6.ok else 1
 
-    print("== exports ==")
-    masses = export_all(p, pp)
+    parts = catalogue(p, pp)
+    masses = {n: {"material": m, "grams": round(mass_g(wp.val(), m), 1)} for n, wp, m in parts}
+    if not args.check:
+        print("== exports ==")
+        export_all(p, parts)
     hw = sum(mass_g(wp.val(), "steel") for n, wp, _ in lg.guard_parts(p) if n.startswith(("m5", "m6")))
     per_side = (
         masses["01_bar_end_adapter"]["grams"]
