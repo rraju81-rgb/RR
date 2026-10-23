@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="297mm" height="420mm" viewBox="0 0 297 420">
+<title>PB-HY-001 HYBRID paddle - full-size template</title>
+<defs>
+<style>
+  .vis  { fill:none; stroke:#000; stroke-width:0.5; stroke-linejoin:round; stroke-linecap:round }
+  .thin { fill:none; stroke:#000; stroke-width:0.25; stroke-linecap:round }
+  .xthin{ fill:none; stroke:#000; stroke-width:0.13 }
+  .ctr  { fill:none; stroke:#000; stroke-width:0.25; stroke-dasharray:9 1.6 1.6 1.6 }
+  .hid  { fill:none; stroke:#000; stroke-width:0.25; stroke-dasharray:2.4 1.2 }
+  .phan { fill:none; stroke:#000; stroke-width:0.25; stroke-dasharray:9 1.6 1.6 1.6 1.6 1.6 }
+  .cut  { fill:none; stroke:#000; stroke-width:0.7; stroke-linecap:butt }
+  .frame{ fill:none; stroke:#000; stroke-width:0.7 }
+  .arrow{ fill:#000; stroke:none }
+  text  { font-family:'DejaVu Sans', 'Liberation Sans', Arial, Helvetica, sans-serif }
+</style>
+
+</defs>
+<rect x="0" y="0" width="297" height="420" fill="#fff"/>
+<rect x="7" y="7" width="283" height="406" class="thin" />
+<path d="M163.5,405 L163.5,275 A15,15 0 0 1 171,262.01 L231,227.369 A25,25 0 0 0 243.5,205.718 L243.5,64.129 A30,30 0 0 0 229.75,38.911 A150,150 0 0 0 148.5,15 A150,150 0 0 0 67.25,38.911 A30,30 0 0 0 53.5,64.129 L53.5,205.718 A25,25 0 0 0 66,227.369 L126,262.01 A15,15 0 0 1 133.5,275 L133.5,405 L163.5,405 Z" class="" fill="#f4f6f8" stroke="none"/>
+<line x1="148.5" y1="409" x2="148.5" y2="11" class="ctr" />
+<text x="148.5" y="120" font-size="14" text-anchor="middle" font-weight="bold" fill="#c9cfd6" >HYBRID</text>
+<text x="148.5" y="128" font-size="6" text-anchor="middle" font-weight="normal" fill="#c9cfd6" >390 × 190 × 16 mm</text>
+<text x="157" y="340" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#8a939c" transform="rotate(-90 157 340)" >HANDLE 30 × 130</text>
+<line x1="99.5" y1="275" x2="197.5" y2="275" class="hid" />
+<text x="199.5" y="273.4" font-size="3" text-anchor="start" font-weight="normal" fill="#555" >BLADE ↑</text>
+<text x="199.5" y="279.2" font-size="3" text-anchor="start" font-weight="normal" fill="#555" >HANDLE ↓</text>
+<text x="97.5" y="276.4" font-size="3" text-anchor="end" font-weight="normal" fill="#555" >130 FROM BUTT</text>
+<circle cx="163.5" cy="405" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="133.5" cy="405" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="163.5" cy="275" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="133.5" cy="275" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="171" cy="262.01" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="126" cy="262.01" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="231" cy="227.369" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="66" cy="227.369" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="243.5" cy="205.718" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="53.5" cy="205.718" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="243.5" cy="64.129" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="53.5" cy="64.129" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="229.75" cy="38.911" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="67.25" cy="38.911" r="0.9" class="thin" style="fill:#fff"/>
+<circle cx="148.5" cy="15" r="0.9" class="thin" style="fill:#fff"/>
+<line x1="175.5" y1="275" x2="181.5" y2="275" class="thin" />
+<line x1="178.5" y1="272" x2="178.5" y2="278" class="thin" />
+<line x1="115.5" y1="275" x2="121.5" y2="275" class="thin" />
+<line x1="118.5" y1="272" x2="118.5" y2="278" class="thin" />
+<line x1="215.5" y1="205.718" x2="221.5" y2="205.718" class="thin" />
+<line x1="218.5" y1="202.718" x2="218.5" y2="208.718" class="thin" />
+<line x1="75.5" y1="205.718" x2="81.5" y2="205.718" class="thin" />
+<line x1="78.5" y1="202.718" x2="78.5" y2="208.718" class="thin" />
+<line x1="210.5" y1="64.129" x2="216.5" y2="64.129" class="thin" />
+<line x1="213.5" y1="61.129" x2="213.5" y2="67.129" class="thin" />
+<line x1="80.5" y1="64.129" x2="86.5" y2="64.129" class="thin" />
+<line x1="83.5" y1="61.129" x2="83.5" y2="67.129" class="thin" />
+<line x1="145.5" y1="165" x2="151.5" y2="165" class="thin" />
+<line x1="148.5" y1="162" x2="148.5" y2="168" class="thin" />
+<text x="166.5" y="410.2" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P1</text>
+<text x="165.5" y="281.7" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P2</text>
+<text x="173.5" y="259.71" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P3</text>
+<text x="233" y="224.569" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P4</text>
+<text x="246" y="208.918" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P5</text>
+<text x="246" y="61.829" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P6</text>
+<text x="231.75" y="35.611" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P7</text>
+<text x="150.5" y="11.7" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >P8</text>
+<text x="181" y="279.2" font-size="3" text-anchor="start" font-weight="bold" fill="#1f5fa8" >C1</text>
+<text x="221" y="209.918" font-size="3" text-anchor="start" font-weight="bold" fill="#1f5fa8" >C2</text>
+<text x="216" y="68.329" font-size="3" text-anchor="start" font-weight="bold" fill="#1f5fa8" >C3</text>
+<text x="151" y="169.2" font-size="3" text-anchor="start" font-weight="bold" fill="#1f5fa8" >C4</text>
+<path d="M163.5,405 L163.5,275 A15,15 0 0 1 171,262.01 L231,227.369 A25,25 0 0 0 243.5,205.718 L243.5,64.129 A30,30 0 0 0 229.75,38.911 A150,150 0 0 0 148.5,15 A150,150 0 0 0 67.25,38.911 A30,30 0 0 0 53.5,64.129 L53.5,205.718 A25,25 0 0 0 66,227.369 L126,262.01 A15,15 0 0 1 133.5,275 L133.5,405 L163.5,405 Z" class="" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>
+<text x="12" y="280" font-size="2.8" text-anchor="start" font-weight="bold" fill="#000" >PROFILE GEOMETRY (RIGHT HALF; LEFT = MIRROR, X → −X)</text>
+<rect x="12" y="283" width="12" height="5.6" class="thin" />
+<text x="18" y="286.745" font-size="2.7" text-anchor="middle" font-weight="bold" fill="#000" >ID</text>
+<rect x="24" y="283" width="64" height="5.6" class="thin" />
+<text x="56" y="286.745" font-size="2.7" text-anchor="middle" font-weight="bold" fill="#000" >POINT</text>
+<rect x="88" y="283" width="18" height="5.6" class="thin" />
+<text x="97" y="286.745" font-size="2.7" text-anchor="middle" font-weight="bold" fill="#000" >X</text>
+<rect x="106" y="283" width="18" height="5.6" class="thin" />
+<text x="115" y="286.745" font-size="2.7" text-anchor="middle" font-weight="bold" fill="#000" >Y</text>
+<rect x="12" y="288.6" width="12" height="5.6" class="thin" />
+<text x="18" y="292.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P1</text>
+<rect x="24" y="288.6" width="64" height="5.6" class="thin" />
+<text x="26.5" y="292.345" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Butt corner</text>
+<rect x="88" y="288.6" width="18" height="5.6" class="thin" />
+<text x="97" y="292.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >15.00</text>
+<rect x="106" y="288.6" width="18" height="5.6" class="thin" />
+<text x="115" y="292.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >0.00</text>
+<rect x="12" y="294.2" width="12" height="5.6" class="thin" />
+<text x="18" y="297.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P2</text>
+<rect x="24" y="294.2" width="64" height="5.6" class="thin" />
+<text x="26.5" y="297.945" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Handle edge / throat arc</text>
+<rect x="88" y="294.2" width="18" height="5.6" class="thin" />
+<text x="97" y="297.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >15.00</text>
+<rect x="106" y="294.2" width="18" height="5.6" class="thin" />
+<text x="115" y="297.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >130.00</text>
+<rect x="12" y="299.8" width="12" height="5.6" class="thin" />
+<text x="18" y="303.545" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P3</text>
+<rect x="24" y="299.8" width="64" height="5.6" class="thin" />
+<text x="26.5" y="303.545" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Throat arc / taper</text>
+<rect x="88" y="299.8" width="18" height="5.6" class="thin" />
+<text x="97" y="303.545" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >22.50</text>
+<rect x="106" y="299.8" width="18" height="5.6" class="thin" />
+<text x="115" y="303.545" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >142.99</text>
+<rect x="12" y="305.4" width="12" height="5.6" class="thin" />
+<text x="18" y="309.145" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P4</text>
+<rect x="24" y="305.4" width="64" height="5.6" class="thin" />
+<text x="26.5" y="309.145" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Taper / shoulder arc</text>
+<rect x="88" y="305.4" width="18" height="5.6" class="thin" />
+<text x="97" y="309.145" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >82.50</text>
+<rect x="106" y="305.4" width="18" height="5.6" class="thin" />
+<text x="115" y="309.145" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >177.63</text>
+<rect x="12" y="311" width="12" height="5.6" class="thin" />
+<text x="18" y="314.745" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P5</text>
+<rect x="24" y="311" width="64" height="5.6" class="thin" />
+<text x="26.5" y="314.745" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Shoulder arc / side</text>
+<rect x="88" y="311" width="18" height="5.6" class="thin" />
+<text x="97" y="314.745" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >95.00</text>
+<rect x="106" y="311" width="18" height="5.6" class="thin" />
+<text x="115" y="314.745" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >199.28</text>
+<rect x="12" y="316.6" width="12" height="5.6" class="thin" />
+<text x="18" y="320.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P6</text>
+<rect x="24" y="316.6" width="64" height="5.6" class="thin" />
+<text x="26.5" y="320.345" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Side / crown-shoulder arc</text>
+<rect x="88" y="316.6" width="18" height="5.6" class="thin" />
+<text x="97" y="320.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >95.00</text>
+<rect x="106" y="316.6" width="18" height="5.6" class="thin" />
+<text x="115" y="320.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >340.87</text>
+<rect x="12" y="322.2" width="12" height="5.6" class="thin" />
+<text x="18" y="325.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P7</text>
+<rect x="24" y="322.2" width="64" height="5.6" class="thin" />
+<text x="26.5" y="325.945" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Crown shoulder / dome</text>
+<rect x="88" y="322.2" width="18" height="5.6" class="thin" />
+<text x="97" y="325.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >81.25</text>
+<rect x="106" y="322.2" width="18" height="5.6" class="thin" />
+<text x="115" y="325.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >366.09</text>
+<rect x="12" y="327.8" width="12" height="5.6" class="thin" />
+<text x="18" y="331.545" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >P8</text>
+<rect x="24" y="327.8" width="64" height="5.6" class="thin" />
+<text x="26.5" y="331.545" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Apex (on centre line)</text>
+<rect x="88" y="327.8" width="18" height="5.6" class="thin" />
+<text x="97" y="331.545" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >0.00</text>
+<rect x="106" y="327.8" width="18" height="5.6" class="thin" />
+<text x="115" y="331.545" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >390.00</text>
+<rect x="12" y="333.4" width="12" height="5.6" class="thin" />
+<text x="18" y="337.145" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >C1</text>
+<rect x="24" y="333.4" width="64" height="5.6" class="thin" />
+<text x="26.5" y="337.145" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Throat centre  R15</text>
+<rect x="88" y="333.4" width="18" height="5.6" class="thin" />
+<text x="97" y="337.145" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >30.00</text>
+<rect x="106" y="333.4" width="18" height="5.6" class="thin" />
+<text x="115" y="337.145" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >130.00</text>
+<rect x="12" y="339" width="12" height="5.6" class="thin" />
+<text x="18" y="342.745" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >C2</text>
+<rect x="24" y="339" width="64" height="5.6" class="thin" />
+<text x="26.5" y="342.745" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Shoulder centre  R25</text>
+<rect x="88" y="339" width="18" height="5.6" class="thin" />
+<text x="97" y="342.745" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >70.00</text>
+<rect x="106" y="339" width="18" height="5.6" class="thin" />
+<text x="115" y="342.745" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >199.28</text>
+<rect x="12" y="344.6" width="12" height="5.6" class="thin" />
+<text x="18" y="348.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >C3</text>
+<rect x="24" y="344.6" width="64" height="5.6" class="thin" />
+<text x="26.5" y="348.345" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Crown-shoulder centre  R30</text>
+<rect x="88" y="344.6" width="18" height="5.6" class="thin" />
+<text x="97" y="348.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >65.00</text>
+<rect x="106" y="344.6" width="18" height="5.6" class="thin" />
+<text x="115" y="348.345" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >340.87</text>
+<rect x="12" y="350.2" width="12" height="5.6" class="thin" />
+<text x="18" y="353.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >C4</text>
+<rect x="24" y="350.2" width="64" height="5.6" class="thin" />
+<text x="26.5" y="353.945" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000" >Dome centre  R150</text>
+<rect x="88" y="350.2" width="18" height="5.6" class="thin" />
+<text x="97" y="353.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >0.00</text>
+<rect x="106" y="350.2" width="18" height="5.6" class="thin" />
+<text x="115" y="353.945" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000" >240.00</text>
+<text x="12" y="360" font-size="2.5" text-anchor="start" font-weight="normal" fill="#555" >Origin: centre of the butt end. Y along the paddle, X across.</text>
+<text x="12" y="363.8" font-size="2.5" text-anchor="start" font-weight="normal" fill="#555" >All arcs tangent. Dots = tangent points, + = arc centres.</text>
+<text x="178" y="295.5" font-size="2.8" text-anchor="start" font-weight="bold" fill="#000" >SCALE CHECK – MUST MEASURE 100 mm</text>
+<rect x="178" y="300" width="100" height="3" class="thin" />
+<line x1="178" y1="303" x2="178" y2="306" class="thin" />
+<line x1="188" y1="303" x2="188" y2="304.8" class="thin" />
+<line x1="198" y1="303" x2="198" y2="304.8" class="thin" />
+<line x1="208" y1="303" x2="208" y2="304.8" class="thin" />
+<line x1="218" y1="303" x2="218" y2="304.8" class="thin" />
+<line x1="228" y1="303" x2="228" y2="306" class="thin" />
+<line x1="238" y1="303" x2="238" y2="304.8" class="thin" />
+<line x1="248" y1="303" x2="248" y2="304.8" class="thin" />
+<line x1="258" y1="303" x2="258" y2="304.8" class="thin" />
+<line x1="268" y1="303" x2="268" y2="304.8" class="thin" />
+<line x1="278" y1="303" x2="278" y2="306" class="thin" />
+<rect x="178" y="300" width="10" height="3" class="" fill="#000"/>
+<rect x="198" y="300" width="10" height="3" class="" fill="#000"/>
+<rect x="218" y="300" width="10" height="3" class="" fill="#000"/>
+<rect x="238" y="300" width="10" height="3" class="" fill="#000"/>
+<rect x="258" y="300" width="10" height="3" class="" fill="#000"/>
+<text x="178" y="309.6" font-size="2.6" text-anchor="middle" font-weight="normal" fill="#000" >0</text>
+<text x="228" y="309.6" font-size="2.6" text-anchor="middle" font-weight="normal" fill="#000" >50</text>
+<text x="278" y="309.6" font-size="2.6" text-anchor="middle" font-weight="normal" fill="#000" >100 mm</text>
+<rect x="260" y="314" width="18" height="50" class="thin" />
+<text x="258" y="341" font-size="2.6" text-anchor="end" font-weight="normal" fill="#000" >50 mm</text>
+<text x="258" y="345" font-size="2.2" text-anchor="end" font-weight="normal" fill="#555" >(height check)</text>
+<rect x="178" y="372" width="108" height="40" class="frame" />
+<rect x="178" y="372" width="108" height="11" class="thin" />
+<text x="180.5" y="377.4" font-size="4" text-anchor="start" font-weight="bold" fill="#000" >PICKLEBALL PADDLE – HYBRID</text>
+<text x="180.5" y="381.3" font-size="2.6" text-anchor="start" font-weight="normal" fill="#000" >FULL-SIZE PROFILE TEMPLATE</text>
+<rect x="178" y="383" width="44" height="9" class="thin" />
+<text x="179.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DRAWING No.</text>
+<text x="200" y="389.62" font-size="3.2" text-anchor="middle" font-weight="bold" fill="#000" >PB-HY-001</text>
+<rect x="222" y="383" width="16" height="9" class="thin" />
+<text x="223.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >REV</text>
+<text x="230" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >A</text>
+<rect x="238" y="383" width="20" height="9" class="thin" />
+<text x="239.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SHEET</text>
+<text x="248" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >2 / 2</text>
+<rect x="258" y="383" width="28" height="9" class="thin" />
+<text x="259.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SCALE</text>
+<text x="272" y="389.62" font-size="3.2" text-anchor="middle" font-weight="bold" fill="#000" >1:1</text>
+<rect x="178" y="392" width="44" height="9" class="thin" />
+<text x="179.2" y="394.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DATE</text>
+<text x="200" y="398.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >2026-10-23</text>
+<rect x="222" y="392" width="36" height="9" class="thin" />
+<text x="223.2" y="394.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DRAWN</text>
+<text x="240" y="398.48" font-size="2.8" text-anchor="middle" font-weight="normal" fill="#000" >Claude Code</text>
+<rect x="258" y="392" width="28" height="9" class="thin" />
+<text x="259.2" y="394.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >UNITS</text>
+<text x="272" y="398.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >mm</text>
+<rect x="178" y="401" width="108" height="11" class="thin" />
+<text x="232" y="405.8" font-size="2.6" text-anchor="middle" font-weight="bold" fill="#000" >PRINT ON A3 AT 100 % / “ACTUAL SIZE” – NO FIT-TO-PAGE.</text>
+<text x="232" y="409.6" font-size="2.5" text-anchor="middle" font-weight="normal" fill="#000" >Verify both scale bars before cutting.</text>
+</svg>
