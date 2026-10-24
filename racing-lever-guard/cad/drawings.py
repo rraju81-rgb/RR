@@ -207,6 +207,31 @@ class View:
                 codes += [MPath.MOVETO] + [MPath.LINETO] * (len(ring) - 1) + [MPath.CLOSEPOLY]
             self.ax.add_patch(PathPatch(MPath(verts, codes), fill=False, hatch=hatch, lw=0, zorder=1))
 
+    def hatch_plane(self, shape: cq.Shape, point, normal, hatch="////"):
+        """Hatch the faces of `shape` that lie on the plane (point, normal)."""
+        n = cq.Vector(*normal).normalized()
+        u = cq.Vector(0, 0, 1) if abs(n.z) < 0.9 else cq.Vector(1, 0, 0)
+        u = (u - n * u.dot(n)).normalized()
+        w = n.cross(u)
+        o = cq.Vector(*point)
+        corners = [o + (u * a + w * b) * 400 for a, b in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        face = cq.Face.makeFromWires(cq.Wire.makePolygon(corners, close=True))
+        for f in shape.intersect(face).Faces():
+            verts, codes = [], []
+            rings = [(f.outerWire(), True)] + [(wi, False) for wi in f.innerWires()]
+            for wire, outer in rings:
+                ring = np.array([self.sh(self.uv(q)) for q in _wire_points(wire)])
+                if (_signed_area(ring) > 0) != outer:
+                    ring = ring[::-1]
+                verts += list(ring) + [ring[0]]
+                codes += [MPath.MOVETO] + [MPath.LINETO] * (len(ring) - 1) + [MPath.CLOSEPOLY]
+            self.ax.add_patch(PathPatch(MPath(verts, codes), fill=False, hatch=hatch, lw=0, zorder=1))
+
+    def tag(self, uv, text, size=7.4, color=DIMC):
+        q = self.sh(uv)
+        self.ax.text(q[0], q[1], text, fontsize=size, color=color, ha="center", va="center", zorder=5,
+                     bbox=dict(boxstyle="square,pad=0.15", fc="white", ec="none"))
+
     def centerline(self, a, b):
         p, q = self.sh(a), self.sh(b)
         self.ax.plot([p[0], q[0]], [p[1], q[1]], color=CL, lw=0.3, ls=(0, (9, 2, 1.5, 2)), zorder=1)
@@ -324,19 +349,27 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
                                     lg.ref_handlebar(p).val().intersect(cq.Solid.makeBox(110, 60, 60, cq.Vector(-235, -30, -30)))])
 
     # plan view: drawing plane = lever plane
-    v = View(s, (0, 0, 1), (1, 0, 0), (290, 150), 1.0)
+    v = View(s, (0, 0, 1), (1, 0, 0), (290, 125), 1.0)
     v.draw(ref, color=REF, lw=0.45, hidden=False, smooth=False)
     v.draw(guard, lw=0.7, hidden=False)
     v.draw(inside, lw=0.7, dashed=True)
     v.centerline((-240, 0), (60, 0))
-    v.caption((-60, -34), "PLAN  (looking square onto the lever plane)")
+    v.caption((-60, -27), "PLAN  (looking square onto the lever plane)")
     tip = p.run_point(p.front_len)
     tip_min_x = tip[0] - p.blade_t / 2 * math.sin(math.radians(p.front_toe_deg))
     head_x = p.blade_seat_x + p.blade_t + 1.0 + 2.75
     top_y = p.run_point(p.front_len, -p.blade_t / 2)[1]
-    v.hdim((tip_min_x, top_y), (head_x, p.screw_v[1] + 4.75), 95, fmt(head_x - tip_min_x))
-    v.hdim((tip_min_x, top_y), (0, p.body_d / 2), 86, fmt(-tip_min_x))
-    v.hdim((0, p.body_d / 2), (head_x, p.screw_v[1] + 4.75), 86, fmt(head_x))
+    plate_pts = np.array([(q.x, q.y) for q in parts["diffuser_plate"].tessellate(0.01, 0.05)[0]])
+    plate_end = plate_pts[np.argmin(plate_pts[:, 0])]
+    plate_top = plate_pts[:, 1].max()
+    lvl1, lvl2 = plate_top + 9, plate_top + 18
+    v.hdim(tuple(plate_end), (head_x, p.screw_v[1] + 4.75), lvl2, fmt(head_x - plate_end[0]))
+    v.hdim((tip_min_x, top_y), (0, p.body_d / 2), lvl1, fmt(-tip_min_x))
+    v.hdim((0, p.body_d / 2), (head_x, p.screw_v[1] + 4.75), lvl1, fmt(head_x))
+    v.tag((-125, (plate_top + top_y) / 2 + 4), f"LG-06 WIND DIFFUSER  {fmt(p.diffuser_len)} x {fmt(p.diffuser_depth_out)}-{fmt(p.diffuser_depth_in)}")
+    clamp_mid = p.run_point(p.clamp_pos + p.clamp_len / 2, -p.blade_t / 2)
+    v.leader((clamp_mid[0], clamp_mid[1] + p.clamp_front), (-40, plate_top - 6),
+             f"LG-07 clamp: slides {fmt(p.clamp_range[1] - p.clamp_range[0])} along the run, 2x M4", ha="right")
     rs = p.run_point(0, p.blade_t / 2)
     v.vdim((rs[0], rs[1]), (40, 0), 48, f"{fmt(rs[1])} to blade face")
     # gap to the reference lever at its closest point (toward the blade tip)
@@ -347,19 +380,17 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
     v.vdim((gx, lever_y), (gx, blade_y), gx + 6, f"{fmt(blade_y - lever_y)} gap")
     bc = p.bend_center
     v.center_mark(bc, 2.5)
-    v.radius(bc, p.bend_r, 30, f"R{fmt(p.bend_r)} CL / R{fmt(p.bend_r - p.blade_t / 2)} inside", outside=26)
-    near_tip = p.run_point(p.front_len - 15, -p.blade_t / 2)
-    v.leader(near_tip, (-112, 95), f"run toed out {fmt(p.front_toe_deg)}° from bar axis", ha="right")
+    v.radius(bc, p.bend_r, 30, f"R{fmt(p.bend_r)} CL, gusset inside", outside=26)
     v.leader((p.blade_seat_x + p.blade_t, 15), (34, -9), f"slot: blade ±{fmt(p.adjust)}")
     v.leader((-112, -15.6), (-135, -25), "reference grip, bar and lever (phantom)", ha="right")
 
     # bar-end view (from outboard), aligned with the plan
-    e = View(s, (1, 0, 0), (0, 0, -1), (390, 150), 1.0)
+    e = View(s, (1, 0, 0), (0, 0, -1), (390, 125), 1.0)
     e.draw(guard, lw=0.7, hidden=False)
     e.centerline((-22, 0), (22, 0))
-    e.centerline((0, -22), (0, 80))
+    e.centerline((0, -22), (0, 60))
     e.caption((0, -24), "BAR-END VIEW")
-    e.hdim((-p.blade_h / 2, 70), (p.blade_h / 2, 70), 82)
+    e.hdim((-p.blade_h / 2, 62), (p.blade_h / 2, 62), lvl1)
     e.diameter((0, 0), p.body_d / 2, -135, f"Ø{fmt(p.body_d)}", outside=8)
 
     # front view (looking back at the lever), aligned with the plan
@@ -369,12 +400,13 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
     f.caption((-90, -16), "FRONT VIEW")
     f.vdim((tip_min_x + 4, p.blade_h / 2), (tip_min_x + 4, -p.blade_h / 2), tip_min_x - 8)
 
-    s.notes(18, 270, [
+    s.notes(18, 44, [
         "1. Drawing plane = lever plane. Turn the arm on its 36-tooth serration (10° steps) to put the blade on the lever line.",
         "2. Clearances shown for the reference sport-bike lever; keep ≥ 10 mm all round, re-check at full lever travel.",
-        f"3. Mass per side ≈ {fmt(round(MASS.get('mass_per_side_grams_carbon_blade', 109)))} g with the carbon blade and steel screws.",
+        f"3. Mass per side ≈ {fmt(round(MASS.get('mass_per_side_grams_carbon_blade', 0)))} g, "
+        f"{fmt(round(MASS.get('mass_per_side_grams_with_diffuser', 0)))} g with the wind diffuser.",
         "4. Left side: same parts, arm turned over (every part is symmetric about the lever plane).",
-    ], size=6.6)
+    ], size=6.4, step=4.0)
     return s
 
 
@@ -462,14 +494,15 @@ def sheet_arm(p: lg.Params, n_sheets: int) -> Sheet:
         "    flat within 0.05.",
         "3. M6 screw: ISO 4762 M6 x 45 (expander) or to suit the",
         "    OEM thread; 8 N·m, medium threadlocker.",
-        "4. M5 screws: ISO 7380 M5 x 12 + ISO 7089 washers, 4 N·m.",
+        "4. M5 screws: ISO 7380 M5 x 14 (x 16 with LG-03b)",
+        "    + ISO 7089 washers, 4 N·m.",
     ], size=6.6)
     return s
 
 
 def sheet_blade(p: lg.Params, pp: lg.Params, n_sheets: int) -> Sheet:
-    s = Sheet("GUARD BLADE", "LG-03", "3K 2x2 twill carbon / epoxy", "Gloss clear coat, edges R0.6",
-              "3 : 2", "1", 4, n_sheets)
+    s = Sheet("GUARD BLADE WITH BEND GUSSET", "LG-03", "3K 2x2 twill carbon / epoxy, forged-carbon gusset",
+              "Gloss clear coat, edges R0.6", "3 : 2", "1", 4, n_sheets)
     k = 1.5
     part = lg.blade(p).val()
     t, h = p.blade_t, p.blade_h
@@ -482,11 +515,16 @@ def sheet_blade(p: lg.Params, pp: lg.Params, n_sheets: int) -> Sheet:
            f"{fmt(t)}  (LG-03b: {fmt(pp.blade_t)})")
     bc = p.bend_center
     v.center_mark(bc, 2.5)
-    ri = p.bend_r - t / 2
-    v.leader((bc[0] + ri * math.cos(math.radians(45)), bc[1] + ri * math.sin(math.radians(45))), (-6, 40),
-             f"R{fmt(ri)} inside")
+    ox, oy, rho = lg.haunch_circle(p)
+    b_pt = lg.haunch_ends(p)[1]
+    s_pt, t_pt, f_pt = lg.haunch_blend(p)
+    v.leader(lg.arc_mid((ox, oy), rho, t_pt, b_pt), (-8, 38),
+             f"gusset edge R{fmt(round(rho, 1))}, tangent to the run")
+    v.adim(p.run_point(0, t / 2), p.run_point(p.haunch_len, t / 2), 7.0, fmt(p.haunch_len))
+    v.leader(lg.arc_mid(f_pt, p.haunch_blend_r, s_pt, t_pt), (44, s_pt[1] - 4),
+             f"R{fmt(p.haunch_blend_r)} blend into the seat face")
     v.leader((bc[0] + (p.bend_r + t / 2) * math.cos(math.radians(50)), bc[1] + (p.bend_r + t / 2) * math.sin(math.radians(50))),
-             (40, 86), f"bend {fmt(p.bend_angle_deg)}° on R{fmt(p.bend_r)} centre line")
+             (40, 88), f"bend {fmt(p.bend_angle_deg)}° on R{fmt(p.bend_r)} centre line")
     a = p.run_point(0, -t / 2)
     b = p.run_point(p.front_len, -t / 2)
     v.adim(b, a, 10.0, f"{fmt(p.front_len)} straight run (toe-out {fmt(p.front_toe_deg)}°)")
@@ -512,11 +550,15 @@ def sheet_blade(p: lg.Params, pp: lg.Params, n_sheets: int) -> Sheet:
     s.notes(18, 270, [
         f"1. Centre-line length {fmt(round(p.blade_path_len, 1))} mm: {fmt(p.bend_start - p.blade_rear)} straight + "
         f"{fmt(p.bend_angle_deg)}° bend on R{fmt(p.bend_r)} + {fmt(p.front_len)} straight.",
-        f"2. LG-03 carbon: mould 4.0 ± 0.2 over a male tool (inside R{fmt(p.bend_r - t / 2)}), cure, then CNC-trim outline and slot.",
-        f"3. LG-03 aluminium option: bend 5052-H32 4 mm strip (blank {fmt(round(p.blade_path_len, 1))} mm on the centre line), carbon hydro-dip.",
-        f"4. LG-03b 3D print: same outline, {fmt(pp.blade_t)} thick, PA12-CF / PETG-CF, print lying flat (lever plane on the bed),",
-        "    5 walls, 40 % gyroid; hydro-dip or wrap for the carbon finish.",
-        f"5. Slot lets the blade slide ±{fmt(p.adjust)} mm toward / away from the lever.",
+        f"2. Gusset inside the bend: section {fmt(round(lg.bend_section(p, False), 1))} -> {fmt(round(lg.bend_section(p), 1))} mm across the bend, "
+        f"about {fmt(round((lg.bend_section(p) / lg.bend_section(p, False)) ** 2, 1))}x the bending strength where a fall loads the blade.",
+        "    Its edge is tangent all along (blend into the seat face, arc, run-out on the run): no corner to start a crack.",
+        f"3. LG-03 carbon: skin {fmt(t)} ± 0.2 moulded over a male tool, gusset filled with forged (chopped) carbon in the same cure;",
+        "    CNC-trim the outline and slot. Lay plies continuous round the bend; no cut fibres at the gusset edge.",
+        "4. LG-03 aluminium option: machine from 6061-T6 25 mm plate (the gusset rules out bending strip), carbon hydro-dip.",
+        f"5. LG-03b 3D print: same outline, {fmt(pp.blade_t)} thick, PA12-CF / PETG-CF, lying flat (lever plane on the bed),",
+        "    6 walls, 50 % gyroid; hydro-dip or wrap for the carbon finish.",
+        f"6. Slot lets the blade slide ±{fmt(p.adjust)} mm toward / away from the lever.",
     ], size=6.6)
     return s
 
@@ -583,13 +625,88 @@ def sheet_expander(p: lg.Params, n_sheets: int) -> Sheet:
     return s
 
 
+def sheet_diffuser(p: lg.Params, n_sheets: int) -> Sheet:
+    s = Sheet("WIND DIFFUSER + SLIDING CLAMP", "LG-06 / LG-07", "LG-06 3K carbon plate 3 mm; LG-07 EN AW-6061-T6",
+              "LG-07 hard anodise, colour to order", "1:1 / 2:1 / 3:1", "1 + 2 halves", 6, n_sheets)
+    c, L, F = p.clamp_clear, p.clamp_len, p.clamp_front
+    plate = lg.diffuser_plate_local(p).val()
+    upper = lg.clamp_half_local(p)
+    lower = lg._turn_over(p, upper)
+    blade_bar = cq.Workplane("XY").box(L + 30, p.blade_t, p.blade_h).translate((L / 2, p.blade_t / 2, 0)).val()
+    y0 = -p.diffuser_gap
+    holes = lg._clamp_screw_xy(p)
+
+    # LG-06 plate, flat, 1:1
+    v = View(s, (0, 0, 1), (1, 0, 0), (40, 222), 1.0)
+    v.draw(plate, lw=0.7, hidden=False)
+    v.draw(cq.Workplane("XY").box(110, p.blade_t, 2).translate((55, p.blade_t / 2, 0)).val(), color=REF, lw=0.4,
+           hidden=False, smooth=False)
+    v.caption((110, -48), "LG-06 DIFFUSER PLATE (flat, 3 mm)  -  blade run shown phantom")
+    v.hdim((0, y0 - p.diffuser_depth_out), (p.diffuser_len, y0 - p.diffuser_depth_in), y0 - p.diffuser_depth_in - 6)
+    v.vdim((0, y0), (0, y0 - p.diffuser_depth_out), -7)
+    v.vdim((p.diffuser_len, y0), (p.diffuser_len, y0 - p.diffuser_depth_in), p.diffuser_len + 7)
+    v.hdim((0, y0), holes[0], 12)
+    v.hdim(holes[0], holes[1], 12)
+    v.leader(holes[1], (60, -24), f"2x Ø4.4, {fmt(round(-holes[0][1] + y0, 2))} from the rear edge")
+    for (x, y), r, tx in (((p.diffuser_len, y0 - p.diffuser_depth_in), 14, (205, -46)),
+                          ((0, y0 - p.diffuser_depth_out), 8, (-14, -30)),
+                          ((p.diffuser_len, y0), 5, (232, 10))):
+        cx = x - r if x > 0 else x + r
+        cy = y + r if y < y0 - 1 else y - r
+        k = 1 - 1 / math.sqrt(2)
+        v.leader((x + (-r if x > 0 else r) * k, y + (r if y < y0 - 1 else -r) * k), tx, f"R{r}")
+
+    # LG-07 clamp half, top view 2:1
+    t_ = View(s, (0, 0, 1), (1, 0, 0), (60, 118), 2.0)
+    t_.draw(upper.val(), lw=0.7, hidden=True)
+    t_.caption((L / 2, -24), "LG-07 CLAMP HALF, outer face (2:1)")
+    t_.hdim((0, -(c + F)), (L, -(c + F)), -(c + F) - 6)
+    t_.hdim((0, 0), holes[0], 12)
+    t_.hdim(holes[0], holes[1], 12)
+    t_.vdim((L, -(c + F)), (L, p.blade_t + c + p.clamp_lip_t), L + 6)
+    t_.leader((holes[1][0] + 2.5, holes[1][1] + 2.5), (L + 14, 8), "hex 7.1 A/F x 4 deep, Ø4.5 thru")
+
+    # section through a screw, looking along the run, 3:1
+    xs = holes[0][0]
+    keep = cq.Solid.makeBox(200, 200, 200, cq.Vector(xs - 200, -100, -100))
+    x_sec = View(s, (1, 0, 0), (0, 1, 0), (318, 180), 3.0)
+    for shape, hatch in ((upper.val(), "////"), (lower.val(), "////"), (plate, "\\\\\\")):
+        cut = shape.intersect(keep)
+        x_sec.draw(cut, lw=0.7, hidden=False, smooth=False)
+        x_sec.hatch_plane(cut, (xs, 0, 0), (1, 0, 0), hatch)
+    x_sec.draw(blade_bar.intersect(keep), color=REF, lw=0.5, hidden=False, smooth=False)
+    x_sec.draw(lg.m4_screw_nut_local(p, *holes[0]).val().intersect(keep), lw=0.5, hidden=False, smooth=False)
+    x_sec.caption((-6, -20), "SECTION THROUGH A SCREW (3:1)")
+    top = lg._clamp_top(p)
+    x_sec.vdim((p.blade_t + 3, top), (p.blade_t + 3, -top), p.blade_t + 6)
+    x_sec.hdim((-(c + F), top), (-c, top), top + 3, fmt(F))
+    x_sec.vdim((p.blade_t + c + p.clamp_lip_t, p.blade_h / 2), (p.blade_t + c + p.clamp_lip_t, p.blade_h / 2 - p.clamp_lip),
+               p.blade_t + c + p.clamp_lip_t + 1.6, fmt(p.clamp_lip))
+    x_sec.tag((p.blade_t / 2, 0), f"blade\n{fmt(p.blade_t)} x {fmt(p.blade_h)}", size=6.4, color=CL)
+    x_sec.leader((-14, 0), (-17, -9), f"plate {fmt(p.diffuser_t)}")
+
+    s.notes(232, 108, [
+        "1. LG-07 is one part used twice: the lower half is the upper turned over.",
+        "2. Fit with the guard on the bike: halves above and below the blade run,",
+        "    plate strip between their front blocks, 2x M4 x 25 ISO 4762 + DIN 985",
+        "    nyloc nuts, 2.5 N·m. No holes in the blade.",
+        "3. Tightening squeezes the halves onto the blade's top and bottom edges",
+        f"    and pinches the plate. Loosen to slide: {fmt(p.clamp_range[0])}-{fmt(p.clamp_range[1])} mm from the bend.",
+        "4. Plate: 3 mm 3K carbon cut from sheet, or 5052 aluminium + hydro-dip.",
+        "5. With the diffuser fitted keep the blade slot at -3 or more: at -5 the",
+        "    clamp lip comes within 8 mm of the reference lever.",
+        "6. Check mirror and reservoir clearance before sliding it inboard.",
+    ], size=6.4, step=4.0)
+    return s
+
+
 def main() -> None:
     out = Path(sys.argv[1] if len(sys.argv) > 1 else "drawings.pdf")
     out.parent.mkdir(parents=True, exist_ok=True)
     p, pp = lg.Params(), lg.PRINT_PARAMS
-    n = 5
+    n = 6
     makers = [lambda: sheet_ga(p, n), lambda: sheet_adapter(p, n), lambda: sheet_arm(p, n),
-              lambda: sheet_blade(p, pp, n), lambda: sheet_expander(p, n)]
+              lambda: sheet_blade(p, pp, n), lambda: sheet_expander(p, n), lambda: sheet_diffuser(p, n)]
     with PdfPages(out) as pdf:
         for i, make in enumerate(makers, 1):
             sheet = make()

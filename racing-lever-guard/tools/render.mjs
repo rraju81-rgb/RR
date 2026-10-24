@@ -29,6 +29,14 @@ const SHOTS = [
     file: "exploded.png", colour: "red", reference: false, explode: 1, size: [1800, 1000], fov: 24,
     camera: { pos: [250, 250, 200], target: [14, 30, -14] },
   },
+  {
+    file: "bend_gusset_detail.png", colour: "red", diffuser: false, size: [1400, 1000], fov: 34,
+    camera: { pos: [-10, 95, 84], target: [10, 43, -25] },
+  },
+  {
+    file: "diffuser_clamp_detail.png", colour: "red", reference: false, size: [1400, 1000], fov: 30,
+    camera: { pos: [70, 200, 70], target: [-28, 61, -36] },
+  },
   ...["red", "blue", "gold", "black", "silver"].map((c) => ({
     file: `colour_${c}.png`, colour: c, reference: false, size: [800, 640], fov: 26,
     camera: { pos: [170, 220, 150], target: [-30, 38, -12] },
@@ -52,10 +60,12 @@ await page.route("https://fonts.googleapis.com/**", (r) => r.fulfill({ body: "",
 await page.goto("file://" + path.resolve(viewer));
 await page.waitForFunction(() => window.viewerReady === true, null, { timeout: 120000 });
 
-for (const shot of SHOTS) {
+const only = process.env.SHOTS ? process.env.SHOTS.split(",") : null;
+for (const shot of SHOTS.filter((s) => !only || only.includes(s.file))) {
   await page.evaluate((o) => window.viewer.shot(o), shot);
   await page.waitForTimeout(500);
-  await page.locator("#stage").screenshot({ path: path.join(outDir, shot.file) });
+  const box = await page.locator("#stage").boundingBox();
+  await page.screenshot({ path: path.join(outDir, shot.file), clip: box, timeout: 120000 });
   console.log("rendered", shot.file);
 }
 await browser.close();

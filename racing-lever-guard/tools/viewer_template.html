@@ -156,9 +156,10 @@
   <header>
     <div class="eyebrow">Universal bar-end fit &middot; 7/8&Prime; (22.2 mm) bars &middot; bar ID 13&ndash;19 mm</div>
     <h1>Racing Lever Guard <span>/</span> Carbon + CNC</h1>
-    <p class="lede">Parametric CAD of a bar-end racing lever protector: anodised 6061 adapter and arm, carbon blade,
-      expander for hollow bars. Turn the guard in its 10&deg; serration steps, slide the blade in its slot and
-      check the gap to the lever.</p>
+    <p class="lede">Parametric CAD of a bar-end racing lever protector: anodised 6061 adapter and arm,
+      a 6 mm carbon blade with a gusset inside the bend, an expander for hollow bars and a sliding
+      wind diffuser. Turn the guard in its 10&deg; serration steps, slide the blade and the diffuser,
+      and check the gap to the lever.</p>
   </header>
 
   <div class="bench">
@@ -183,6 +184,13 @@
         <div class="ctl-head"><label for="shift">Blade slot</label><span class="readout" id="shiftOut">0 mm</span></div>
         <input type="range" id="shift" min="-5" max="5" step="1" value="0">
         <div class="ctl-head"><span class="note">Gap to lever</span><span class="readout" id="gapOut">&ndash;</span></div>
+      </div>
+
+      <div class="ctl">
+        <div class="ctl-head"><label for="dpos">Wind diffuser position</label><span class="readout" id="dposOut">0 mm</span></div>
+        <input type="range" id="dpos" min="0" max="45" step="1" value="0">
+        <div class="toggles"><label><input type="checkbox" id="diffuser" checked> Fit wind diffuser</label></div>
+        <p class="note">The clamp wraps the blade. Two M4 screws lock it; loosen them and it slides along the run.</p>
       </div>
 
       <div class="ctl">
@@ -272,7 +280,8 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 const data = JSON.parse(document.getElementById("scene-data").textContent);
 const S = data.summary || {};
 const P = S.params || {};
-const C4 = S.checks_4mm || {};
+const C4 = S.checks_carbon || {};
+const DF = S.diffuser || {};
 const LEVER_DEG = 30;           // reference lever sits 30 deg below the bar's horizontal plane
 const ANODISE = { red: 0xb5122b, blue: 0x123fa8, gold: 0xc8902a, black: 0x16171a, silver: 0xc9ccd0 };
 const NAMES = { red: "Red", blue: "Blue", gold: "Gold", black: "Black", silver: "Silver" };
@@ -290,7 +299,8 @@ const face = C4.blade_inner_face_ahead_of_bar_axis_mm || {};
 fillTable("dims", ["Feature", "Value"], [
   ["Overall envelope (along bar × ahead × tall)", env.length ? `${env[0]} × ${env[1]} × ${env[2]} mm` : "–"],
   ["Blade length along its centre line", `${fmt(C4.blade_path_length_mm)} mm`],
-  ["Blade section (carbon / 3D print)", `${fmt(P.blade_h)} × ${fmt(P.blade_t)} / 6 mm`],
+  ["Blade section (carbon / 3D print)", `${fmt(P.blade_h)} × ${fmt(P.blade_t)} / 8 mm`],
+  ["Bend gusset", DF.gusset ? `R${fmt(DF.gusset.blend_radius_mm)} blend + R${fmt(DF.gusset.radius_mm)} edge, bend ${fmt(DF.gusset.section_plain_mm)} → ${fmt(DF.gusset.section_mm)} mm thick` : "–"],
   ["Run covers lever inboard of bar end", `${fmt(C4.coverage_inboard_of_bar_end_mm)} mm`],
   ["Sticks out past the bar end", `${fmt(C4.protrusion_beyond_bar_end_mm)} mm`],
   ["Blade face ahead of bar axis (slot −5 / 0 / +5)", face["+0"] ? `${face["-5"].run_start} / ${face["+0"].run_start} / ${face["+5"].run_start} mm` : "–"],
@@ -298,14 +308,18 @@ fillTable("dims", ["Feature", "Value"], [
   ["Adapter body / spigot", `Ø${fmt(P.body_d)} × ${fmt(P.pitch_x)} / Ø${fmt(P.spigot_d)} × ${fmt(P.spigot_len)} mm`],
   ["Angle adjustment", `${P.teeth || 36} teeth → ${360 / (P.teeth || 36)}° steps`],
   ["Fore-aft adjustment", `±${fmt(P.adjust)} mm slot`],
-  ["Mass per side (carbon blade)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} g` : "–"],
+  ["Wind diffuser plate", DF.length_mm ? `${fmt(DF.length_mm)} long, ${fmt(DF.depth_mm[0])}–${fmt(DF.depth_mm[1])} mm deep, ${fmt(P.diffuser_t)} mm` : "–"],
+  ["Diffuser travel along the blade", DF.travel_mm ? `${fmt(DF.travel_mm)} mm (2 × M4 lock)` : "–"],
+  ["Mass per side (carbon blade, without / with diffuser)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} / ${fmt(S.mass_per_side_grams_with_diffuser, 0)} g` : "–"],
 ]);
 const lc = C4.lever_clearance_mm || {};
 fillTable("checks", ["Fit check (CAD)", "Result"], [
   ["Serration mesh, every 10°", `<span class="pill">0.000 mm³ overlap</span>`],
   ["Half a tooth out", `<span class="pill">clashes, cannot slip</span>`],
   ["Blade to reference lever (slot −5 / 0 / +5)", lc["+0"] ? `${lc["-5"]} / ${lc["+0"]} / ${lc["+5"]} mm` : "–"],
-  ["Finger room, grip to blade run", "48 mm"],
+  ["Finger room, grip to blade run", C4.finger_room_mm ? `${fmt(C4.finger_room_mm)} mm` : "–"],
+  ["Diffuser to lever (clamp travel ends)", DF.lever_clearance_mm ? `${DF.lever_clearance_mm.join(" / ")} mm` : "–"],
+  ["Diffuser to brake perch (clamp travel ends)", DF.perch_clearance_mm ? `${DF.perch_clearance_mm.join(" / ")} mm` : "–"],
   ["M6 bolt thread in cone nut", `${fmt(C4.m6_engagement_mm)} mm`],
   ["M5 blade screws in arm", `${fmt(C4.m5_engagement_mm)} mm`],
   ["All CAD checks", S.all_checks_passed ? `<span class="pill">pass</span>` : "see build log"],
@@ -322,13 +336,17 @@ fillTable("bom", ["#", "Part", "Material / finish", "Qty per side", "Mass"], [
   ["01", "Bar-end adapter (spigot)", "6061-T6, hard anodised", "1", g("01_bar_end_adapter")],
   ["01b", "Bar-end adapter, flat (OEM thread)", "6061-T6, hard anodised", "alt.", g("01b_bar_end_adapter_oem_thread")],
   ["02", "Guard arm, 36T serration", "6061-T6, hard anodised", "1", g("02_guard_arm")],
-  ["03", "Guard blade 4 mm", "3K twill carbon, gloss clear coat", "1", g("03_guard_blade_4mm_carbon")],
-  ["03b", "Guard blade 6 mm (printable)", "PA12-CF or PETG-CF, carbon hydro-dip", "alt.", g("03b_guard_blade_6mm_3dprint")],
+  ["03", "Guard blade 6 mm with bend gusset", "3K twill carbon, gloss clear coat", "1", g("03_guard_blade_6mm_carbon")],
+  ["03b", "Guard blade 8 mm (printable)", "PA12-CF or PETG-CF, carbon hydro-dip", "alt.", g("03b_guard_blade_8mm_3dprint")],
   ["04", "Expander sleeve S / M / L", "TPU 95A or NBR 70 Shore A", "1", g("04_expander_sleeve_M_bar_id_15-17")],
   ["05", "Expander cone nut S / M / L, M6", "6061-T6 or zinc-plated steel", "1", g("05_expander_cone_M_bar_id_15-17")],
+  ["06", "Wind diffuser plate 3 mm", "3K carbon plate or 5052 aluminium, carbon finish", "1", g("06_wind_diffuser_plate_3mm")],
+  ["07", "Diffuser clamp half (same part twice)", "6061-T6, hard anodised", "2", g("07_diffuser_clamp_half")],
   ["H1", "Socket cap screw M6 × 45, ISO 4762", "A2-70 stainless or 10.9 black", "1", ""],
-  ["H2", "Button head screw M5 × 12, ISO 7380", "A2-70 stainless", "2", ""],
+  ["H2", "Button head screw M5 × 14, ISO 7380", "A2-70 stainless", "2", ""],
   ["H3", "Washer M5, ISO 7089", "A2 stainless", "2", ""],
+  ["H4", "Socket cap screw M4 × 25, ISO 4762", "A2-70 stainless", "2", ""],
+  ["H5", "Nyloc nut M4, DIN 985", "A2 stainless", "2", ""],
 ]);
 
 // ---------------------------------------------------------------- three.js scene
@@ -453,8 +471,11 @@ for (const m of data.meshes) {
 document.getElementById("loading").hidden = true;
 
 // ---------------------------------------------------------------- state + controls
-const state = { angle: LEVER_DEG, shift: 0, explode: 0, colour: "red", reference: true };
-const live = { angle: LEVER_DEG, shift: 0, explode: 0 };
+const RUN = data.run_dir || [-1, 0];
+const DRANGE = data.clamp_range || [15, 60];
+document.getElementById("dpos").max = String(DRANGE[1] - DRANGE[0]);
+const state = { angle: LEVER_DEG, shift: 0, explode: 0, colour: "red", reference: true, diffuser: true, dpos: 0 };
+const live = { angle: LEVER_DEG, shift: 0, explode: 0, dpos: 0 };
 const VIEWS = {
   "three-quarter": { pos: B(250, 330, 210), target: B(-45, 32, -6), up: B(0, 0, 1) },
   plan: (() => {
@@ -483,6 +504,7 @@ function updateReadouts() {
   const base = (C4.lever_clearance_mm || {})["+0"];
   document.getElementById("gapOut").textContent = base ? `${(base + state.shift).toFixed(1)} mm` : "–";
   document.getElementById("colourOut").textContent = NAMES[state.colour];
+  document.getElementById("dposOut").textContent = state.diffuser ? `${state.dpos} mm inboard` : "off";
 }
 
 function apply(opts = {}) {
@@ -492,6 +514,7 @@ function apply(opts = {}) {
   else if (state.colour === "silver") { anodised.roughness = 0.3; anodised.metalness = 1.0; }
   else { anodised.roughness = 0.3; anodised.metalness = 0.85; }
   leverFrame.visible = state.reference;
+  for (const mesh of Object.values(meshes)) if (mesh.userData.runSlide) mesh.visible = state.diffuser;
   updateReadouts();
 }
 
@@ -502,6 +525,8 @@ document.querySelectorAll('input[name="colour"]').forEach((el) => el.addEventLis
 document.querySelectorAll('input[name="view"]').forEach((el) => el.addEventListener("change", () => setView(el.value)));
 document.getElementById("exploded").addEventListener("change", (e) => apply({ explode: e.target.checked ? 1 : 0 }));
 document.getElementById("reference").addEventListener("change", (e) => apply({ reference: e.target.checked }));
+document.getElementById("dpos").addEventListener("input", (e) => apply({ dpos: Number(e.target.value) }));
+document.getElementById("diffuser").addEventListener("change", (e) => apply({ diffuser: e.target.checked }));
 
 let fixedSize = null;
 function resize() {
@@ -519,12 +544,18 @@ function frame() {
   live.angle += (state.angle - live.angle) * k;
   live.shift += (state.shift - live.shift) * k;
   live.explode += (state.explode - live.explode) * k;
+  live.dpos += (state.dpos - live.dpos) * k;
   guardFrame.rotation.x = THREE.MathUtils.degToRad(-live.angle);
   for (const m of Object.values(meshes)) {
     const d = m.userData;
     if (d.group !== "guard") continue;
-    m.position.x = d.explode * live.explode;
-    m.position.y = d.slides ? live.shift : 0;
+    const ex = Array.isArray(d.explode) ? d.explode : [d.explode, 0, 0];
+    const run = d.runSlide ? live.dpos : 0;
+    m.position.set(
+      ex[0] * live.explode + RUN[0] * run,
+      ex[1] * live.explode + (d.slides ? live.shift : 0) + RUN[1] * run,
+      ex[2] * live.explode,
+    );
   }
   controls.update();
   renderer.render(scene, camera);
@@ -534,14 +565,14 @@ setView("three-quarter");
 apply();
 resize();
 
-// hook for headless renders: viewer.shot({view, colour, explode, reference, angle, shift, size})
+// hook for headless renders: viewer.shot({view, colour, explode, reference, angle, shift, diffuser, dpos, size})
 window.viewer = {
   shot(o) {
-    const opts = Object.assign({ angle: LEVER_DEG, shift: 0, explode: 0, reference: true, colour: "red" }, o);
+    const opts = Object.assign({ angle: LEVER_DEG, shift: 0, explode: 0, reference: true, colour: "red", diffuser: true, dpos: 0 }, o);
     document.body.classList.add("shot");
     if (opts.size) { fixedSize = opts.size; stage.style.width = `${opts.size[0]}px`; stage.style.height = `${opts.size[1]}px`; stage.style.aspectRatio = "auto"; }
     apply(opts);
-    Object.assign(live, { angle: state.angle, shift: state.shift, explode: state.explode });
+    Object.assign(live, { angle: state.angle, shift: state.shift, explode: state.explode, dpos: state.dpos });
     resize();
     setView(opts.view || "three-quarter");
     if (opts.camera) { camera.position.copy(B(...opts.camera.pos)); controls.target.copy(B(...opts.camera.target)); camera.up.copy(B(0, 0, 1)); camera.lookAt(controls.target); }

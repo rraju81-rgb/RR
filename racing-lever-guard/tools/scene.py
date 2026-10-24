@@ -33,18 +33,29 @@ MATERIAL = {
     "ref_handlebar": "bar",
     "ref_grip": "grip",
     "ref_lever": "lever",
+    "diffuser_plate": "carbon",
+    "diffuser_clamp_upper": "anodised",
+    "diffuser_clamp_lower": "anodised",
+    "diffuser_screw_1": "steel",
+    "diffuser_screw_2": "steel",
 }
 
-# exploded-view offsets along the bar axis (mm)
+# exploded-view offsets in G (mm): guard parts fan out along the bar axis, the diffuser rides
+# with the blade and opens up around it
 EXPLODE = {
-    "expander_cone": -46,
-    "expander_sleeve": -24,
-    "adapter": 0,
-    "arm": 22,
-    "blade": 44,
-    "m5_screw_1": 66,
-    "m5_screw_2": 66,
-    "m6_bolt": 92,
+    "expander_cone": (-46, 0, 0),
+    "expander_sleeve": (-24, 0, 0),
+    "adapter": (0, 0, 0),
+    "arm": (22, 0, 0),
+    "blade": (44, 0, 0),
+    "m5_screw_1": (66, 0, 0),
+    "m5_screw_2": (66, 0, 0),
+    "m6_bolt": (92, 0, 0),
+    "diffuser_plate": (44, 34, 0),
+    "diffuser_clamp_upper": (44, 0, 24),
+    "diffuser_clamp_lower": (44, 0, -24),
+    "diffuser_screw_1": (44, 0, 48),
+    "diffuser_screw_2": (44, 0, 48),
 }
 
 LABEL = {
@@ -52,13 +63,18 @@ LABEL = {
     "arm": "Guard arm",
     "blade": "Carbon blade",
     "m6_bolt": "M6 x 45 cap screw",
-    "m5_screw_1": "M5 x 12 button screw",
-    "m5_screw_2": "M5 x 12 button screw",
+    "m5_screw_1": "M5 x 14 button screw",
+    "m5_screw_2": "M5 x 14 button screw",
     "expander_sleeve": "Expander sleeve (M)",
     "expander_cone": "Expander cone nut",
     "ref_handlebar": "Handlebar (reference)",
     "ref_grip": "Grip (reference)",
     "ref_lever": "Brake lever (reference)",
+    "diffuser_plate": "Wind diffuser plate",
+    "diffuser_clamp_upper": "Diffuser clamp half",
+    "diffuser_clamp_lower": "Diffuser clamp half",
+    "diffuser_screw_1": "M4 x 25 screw + nyloc nut",
+    "diffuser_screw_2": "M4 x 25 screw + nyloc nut",
 }
 
 
@@ -79,15 +95,16 @@ def build_scene(p: lg.Params = lg.Params()) -> dict:
     meshes = []
     for name, wp, group in items:
         fine = group == "guard"
-        pos, idx = tessellate(wp, 0.01 if fine else 0.05, 0.08 if fine else 0.2)
+        pos, idx = tessellate(wp, 0.02 if fine else 0.05, 0.12 if fine else 0.2)
         meshes.append(
             {
                 "name": name,
                 "label": LABEL[name],
                 "group": group,
                 "material": MATERIAL[name],
-                "explode": EXPLODE.get(name, 0),
-                "slides": name == "blade",
+                "explode": EXPLODE.get(name, (0, 0, 0)),
+                "slides": name == "blade" or name.startswith("diffuser"),
+                "runSlide": name.startswith("diffuser"),
                 "positions": b64(pos),
                 "indices": b64(idx),
                 "triangles": int(len(idx) // 3),
@@ -100,6 +117,8 @@ def build_scene(p: lg.Params = lg.Params()) -> dict:
         "frame": "G: X out of the bar end, Y toward the lever, Z normal to the lever plane (mm)",
         "teeth": p.teeth,
         "adjust": p.adjust,
+        "run_dir": p.run_dir,
+        "clamp_range": p.clamp_range,
         "summary": summary,
         "meshes": meshes,
     }

@@ -1,7 +1,7 @@
 """Build every part, run the fit checks and export STEP / STL.
 
-    python build.py            # checks + exports into ../exports
-    python build.py --check    # checks only
+    python build.py            # checks + STEP/STL + summary.json into ../exports
+    python build.py --check    # checks + summary.json only (leaves STEP/STL untouched)
 """
 
 from __future__ import annotations
@@ -33,8 +33,18 @@ def mass_g(shape: cq.Shape, material: str) -> float:
     return shape.Volume() / 1000.0 * DENSITY[material]
 
 
-def rot_x(wp: cq.Workplane, deg: float) -> cq.Workplane:
-    return wp.rotate((0, 0, 0), (1, 0, 0), deg)
+def _boxes_touch(a: cq.Shape, b: cq.Shape, tol: float = 0.05) -> bool:
+    A, B = a.BoundingBox(), b.BoundingBox()
+    return not (
+        A.xmax < B.xmin - tol or B.xmax < A.xmin - tol
+        or A.ymax < B.ymin - tol or B.ymax < A.ymin - tol
+        or A.zmax < B.zmin - tol or B.zmax < A.zmin - tol
+    )
+
+
+def _half_space_x(shape: cq.Shape, x: float, inboard: bool) -> cq.Shape:
+    box = cq.Solid.makeBox(600, 600, 600, cq.Vector(x - 600 if inboard else x, -300, -300))
+    return shape.intersect(box)
 
 
 # ------------------------------------------------------------------------------------------------
@@ -92,13 +102,17 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
     worst = 0.0
     for i, n1 in enumerate(names):
         for n2 in names[i + 1 :]:
-            if frozenset({n1, n2}) in allowed:
+            if frozenset({n1, n2}) in allowed or not _boxes_touch(parts[n1], parts[n2]):
                 continue
             v = parts[n1].intersect(parts[n2]).Volume()
             worst = max(worst, v)
             if v > 1e-3:
                 rep.check(f"{n1} x {n2}", False, f"overlap {v:.3f} mm3")
     rep.check("no unintended overlaps", worst <= 1e-3, f"worst {worst:.4f} mm3")
+    for shift in (-p.adjust, p.adjust):  # the bend gusset must clear the arm across the slot
+        b = lg.blade(p, shift).val()
+        v = max(b.intersect(parts[n]).Volume() for n in ("arm", "adapter", "m5_screw_1", "m5_screw_2"))
+        rep.check(f"blade at slot {shift:+.0f} clears arm, adapter and screws", v < 1e-3, f"overlap {v:.4f} mm3")
 
     print("thread engagement")
     m5_eng = p.hub_outer_x - (p.blade_seat_x + p.blade_t + 1.0 - p.m5_len)
@@ -110,6 +124,27 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
     rep.check("M6 bolt in cone nut", m6_eng >= 1.2 * 6, f"{m6_eng:.1f} mm (>= 1.2 d), tip {cone_far - tip:+.1f} mm past the cone")
     info["m6_engagement_mm"] = round(m6_eng, 1)
     info["m5_engagement_mm"] = round(m5_eng, 1)
+
+    print("bend gusset")
+    plain, gusset = lg.bend_section(p, gusset=False), lg.bend_section(p)
+    rep.check(
+        "bend section with gusset",
+        gusset >= 1.4 * plain,
+        f"{gusset:.1f} mm across the bend vs {plain:.1f} mm plain (bending strength x{(gusset / plain) ** 2:.1f})",
+    )
+    start = lg.haunch_blend(p)[0][1] - p.adjust - p.neck_end  # blade at the slot end nearest the arm
+    rep.check(
+        f"gusset starts past the arm's neck at slot {-p.adjust:+.0f}",
+        start >= 0.0,
+        f"R{p.haunch_blend_r:g} blend into the seat face starts {start:.2f} mm past the neck",
+    )
+    info["gusset"] = {
+        "radius_mm": round(lg.haunch_circle(p)[2], 1),
+        "blend_radius_mm": p.haunch_blend_r,
+        "section_plain_mm": round(plain, 1),
+        "section_mm": round(gusset, 1),
+        "strength_factor": round((gusset / plain) ** 2, 1),
+    }
 
     print("lever clearance (reference sport-bike lever, see ref_lever)")
     lever = ref["ref_lever"]
@@ -129,8 +164,39 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
     run = parts["blade"].intersect(cq.Solid.makeBox(400, 200, 100, cq.Vector(-400 + p.blade_cx - p.bend_r, -100, -50)))
     d_grip = run.distance(ref["ref_grip"])
     rep.check("finger room, grip to blade run", d_grip >= 40.0, f"{d_grip:.1f} mm")
+    info["finger_room_mm"] = round(d_grip, 1)
     d_adapter_grip = parts["adapter"].distance(ref["ref_grip"])
     rep.check("adapter seats on bar end", d_adapter_grip < 0.05, f"{d_adapter_grip:.2f} mm to grip end")
+
+    print("wind diffuser")
+    lever_blade = _half_space_x(lever, -160.0, inboard=False)  # lever blade and tip
+    perch = _half_space_x(lever, -160.0, inboard=True)  # pivot, master cylinder and clamp
+    blade0 = parts["blade"]
+    lever_gaps, perch_gaps = [], []
+    for pos in p.clamp_range:
+        dp = {n: wp.val() for n, wp in lg.diffuser_parts(p, pos)}
+        ov = max(s.intersect(blade0).Volume() for s in dp.values())
+        rep.check(f"diffuser at {pos:g} mm sits on the blade", ov < 1e-3, f"overlap {ov:.4f} mm3")
+        bear = max(dp["diffuser_clamp_upper"].distance(blade0), dp["diffuser_clamp_lower"].distance(blade0))
+        rep.check(f"diffuser at {pos:g} mm: clamp halves bear on the blade edges", bear < 0.01, f"gap {bear:.3f} mm")
+        dl = min(s.distance(lever_blade) for s in dp.values())
+        dpp = min(s.distance(perch) for s in dp.values())
+        lever_gaps.append(round(dl, 1))
+        perch_gaps.append(round(dpp, 1))
+        rep.check(f"diffuser at {pos:g} mm to lever", dl >= 10.0, f"{dl:.1f} mm")
+        rep.check(f"diffuser at {pos:g} mm to brake perch", dpp >= 10.0, f"{dpp:.1f} mm")
+        dg = min(s.distance(ref["ref_grip"]) for s in dp.values())
+        rep.check(f"diffuser at {pos:g} mm to grip", dg >= 30.0, f"{dg:.1f} mm")
+    for shift in (-p.adjust, p.adjust):
+        dl = min(wp.val().distance(lever) for _, wp in lg.diffuser_parts(p, None, shift))
+        print(f"  [info] diffuser to lever with the blade moved {shift:+.0f} mm: {dl:.1f} mm")
+    info["diffuser"] = {
+        "length_mm": p.diffuser_len,
+        "depth_mm": [p.diffuser_depth_out, p.diffuser_depth_in],
+        "travel_mm": p.clamp_range[1] - p.clamp_range[0],
+        "lever_clearance_mm": lever_gaps,
+        "perch_clearance_mm": perch_gaps,
+    }
 
     print("expander sleeves")
     for size, (od, (lo, hi)) in lg.SLEEVES.items():
@@ -181,23 +247,30 @@ def to_print_pose(name: str, wp: cq.Workplane) -> cq.Workplane:
         wp = wp.rotate((0, 0, 0), (0, 1, 0), 90)
     elif name.startswith(("04", "05")):  # sleeve / cone: large end down
         wp = wp.rotate((0, 0, 0), (0, 1, 0), -90)
+    elif name.startswith("07"):  # clamp half: outer face on the bed, cavity open upward
+        wp = wp.rotate((0, 0, 0), (1, 0, 0), 180)
     bb = wp.val().BoundingBox()
     return wp.translate((-(bb.xmin + bb.xmax) / 2, -(bb.ymin + bb.ymax) / 2, -bb.zmin))
 
 
 def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]]:
-    """Every exported part: (file name, solid, material)."""
+    """Every exported part: (file name, solid, material). The diffuser parts are exported in
+    their own run frame (plate flat on XY, clamp half with the blade run along X)."""
     parts = [
         ("01_bar_end_adapter", lg.adapter(p), "al6061"),
         ("01b_bar_end_adapter_oem_thread", lg.adapter(p, spigot=False), "al6061"),
         ("02_guard_arm", lg.arm(p), "al6061"),
-        ("03_guard_blade_4mm_carbon", lg.blade(p), "carbon"),
-        ("03b_guard_blade_6mm_3dprint", lg.blade(pp), "pa12cf"),
+        ("03_guard_blade_6mm_carbon", lg.blade(p), "carbon"),
+        ("03b_guard_blade_8mm_3dprint", lg.blade(pp), "pa12cf"),
     ]
     for size, (_, (lo, hi)) in lg.SLEEVES.items():
         parts.append((f"04_expander_sleeve_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_sleeve(p, size), "tpu"))
     for size, (_, (lo, hi)) in lg.SLEEVES.items():
         parts.append((f"05_expander_cone_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_cone(p, size), "al6061"))
+    parts += [
+        ("06_wind_diffuser_plate_3mm", lg.diffuser_plate_local(p), "carbon"),
+        ("07_diffuser_clamp_half", lg.clamp_half_local(p), "al6061"),
+    ]
     return parts
 
 
@@ -227,25 +300,31 @@ def main() -> int:
     args = ap.parse_args()
 
     p, pp = lg.Params(), lg.PRINT_PARAMS
-    print("== checks: carbon / aluminium blade (4 mm) ==")
+    print(f"== checks: carbon / aluminium blade ({p.blade_t:g} mm) ==")
     rep, info = run_checks(p)
-    print("== checks: 3D-printed blade (6 mm) ==")
-    rep6, info6 = run_checks(pp)
+    print(f"== checks: 3D-printed blade ({pp.blade_t:g} mm) ==")
+    rep_p, info_p = run_checks(pp)
 
     parts = catalogue(p, pp)
     masses = {n: {"material": m, "grams": round(mass_g(wp.val(), m), 1)} for n, wp, m in parts}
     if not args.check:
         print("== exports ==")
         export_all(p, parts)
-    hw = sum(mass_g(wp.val(), "steel") for n, wp, _ in lg.guard_parts(p) if n.startswith(("m5", "m6")))
+    guard = {n: wp.val() for n, wp, _ in lg.guard_parts(p)}
+    hw = sum(mass_g(s, "steel") for n, s in guard.items() if n.startswith(("m5", "m6")))
+    hw_diffuser = sum(mass_g(s, "steel") for n, s in guard.items() if n.startswith("diffuser_screw"))
     per_side = (
         masses["01_bar_end_adapter"]["grams"]
         + masses["02_guard_arm"]["grams"]
-        + masses["03_guard_blade_4mm_carbon"]["grams"]
+        + masses["03_guard_blade_6mm_carbon"]["grams"]
         + masses["04_expander_sleeve_M_bar_id_15-17"]["grams"]
         + masses["05_expander_cone_M_bar_id_15-17"]["grams"]
         + hw
     )
+    diffuser_kit = (
+        masses["06_wind_diffuser_plate_3mm"]["grams"] + 2 * masses["07_diffuser_clamp_half"]["grams"] + hw_diffuser
+    )
+    info["diffuser"]["kit_grams"] = round(diffuser_kit, 1)
     summary = {
         "params": {k: getattr(p, k) for k in p.__dataclass_fields__},
         "derived": {
@@ -256,13 +335,16 @@ def main() -> int:
             "run_start_centre_xy": [round(c, 2) for c in p.run_point(0)],
             "run_tip_centre_xy": [round(c, 2) for c in p.run_point(p.front_len)],
             "tip_x": round(p.tip_x, 2),
+            "clamp_range": p.clamp_range,
         },
-        "checks_4mm": info,
-        "checks_6mm": info6,
+        "checks_carbon": info,
+        "checks_print": info_p,
+        "diffuser": {**info["diffuser"], "gusset": info["gusset"]},
         "masses": masses,
         "hardware_grams_per_side": round(hw, 1),
         "mass_per_side_grams_carbon_blade": round(per_side, 1),
-        "all_checks_passed": rep.ok and rep6.ok,
+        "mass_per_side_grams_with_diffuser": round(per_side + diffuser_kit, 1),
+        "all_checks_passed": rep.ok and rep_p.ok,
     }
     (EXPORTS / "summary.json").write_text(json.dumps(summary, indent=2))
     print(f"== {'ALL CHECKS PASSED' if summary['all_checks_passed'] else 'SOME CHECKS FAILED'} ==")

@@ -7,8 +7,11 @@ Architecture (same as the "CNC aluminium + carbon finish" universal racing guard
     guard arm        (CNC 6061-T6, anodised colour)  -- Hirth face serration on the adapter
                                                         gives 10 deg angle steps
     guard blade      (carbon / carbon finish)        -- bolted to the arm through a slot,
-                                                        +/-5 mm fore-aft adjustment
+                                                        +/-5 mm fore-aft adjustment; gusset
+                                                        inside the bend takes crash loads
     expander         (cone nut + elastomer sleeve)   -- S / M / L sleeves cover 13-19 mm bar ID
+    wind diffuser    (plate + two-piece clamp)       -- clamp wraps the blade run and slides
+                                                        along it, locked by two M4 screws
 
 Guard frame "G" used for every part (all dimensions in mm):
     origin  centre of the handlebar's open end face
@@ -17,7 +20,8 @@ Guard frame "G" used for every part (all dimensions in mm):
     +Z      normal to the lever plane
 
 One part set fits either side of the bike: the left guard is the right guard turned over
-(rotated 180 deg about Y), because every part is symmetric about the lever plane.
+(rotated 180 deg about Y), because every part is symmetric about the lever plane (the two
+diffuser clamp halves are the same part, one turned over).
 """
 
 from __future__ import annotations
@@ -62,7 +66,7 @@ class Params:
     tap_d: float = 4.2  # M5 tap drill
 
     # ---- guard blade --------------------------------------------------------------------------
-    blade_t: float = 4.0  # 4 = carbon / aluminium, 6 = 3D printed
+    blade_t: float = 6.0  # 6 = carbon / aluminium, 8 = 3D printed
     blade_h: float = 22.0
     blade_rear: float = 12.35  # rear end of the blade at the nominal position (puts the M5 holes at 24 / 36)
     blade_rear_r: float = 6.0
@@ -75,6 +79,9 @@ class Params:
     front_toe_deg: float = 3.0  # run opens away from the bar toward its tip, following the lever line
     tip_r: float = 8.0
     edge_r: float = 0.6  # edge break on the blade
+    haunch_len: float = 14.0  # gusset inside the bend runs out tangentially this far along the run
+    haunch_seat_gap: float = 1.0  # the gusset's edge arc crosses the seat face this far past the bend start
+    haunch_blend_r: float = 4.0  # blend from the seat face into the gusset's edge (no corner to crack from)
 
     # ---- expander -----------------------------------------------------------------------------
     sleeve_len: float = 20.0
@@ -86,9 +93,26 @@ class Params:
     cone_min_d: float = 8.0  # keeps >= 1 mm wall around the M6 thread
     cone_tap_d: float = 5.0  # M6 tap drill
 
+    # ---- wind diffuser: flat plate held by a two-piece clamp that slides on the blade run ---
+    diffuser_t: float = 3.0  # plate thickness (3K carbon or 5052 aluminium sheet)
+    diffuser_len: float = 220.0  # along the run, from the clamp's outboard end
+    diffuser_depth_out: float = 18.0  # plate depth away from the lever, outboard end
+    diffuser_depth_in: float = 36.0  # plate depth away from the lever, inboard end
+    diffuser_gap: float = 1.0  # plate rear edge to the blade's outer face
+    clamp_len: float = 40.0
+    clamp_front: float = 10.0  # clamp block depth ahead of the blade (holds the plate)
+    clamp_wall: float = 3.0  # wall over the blade's top / bottom edge
+    clamp_lip: float = 2.5  # hook over the blade's lever-side face
+    clamp_lip_t: float = 2.0
+    clamp_clear: float = 0.15
+    clamp_screw_inset: float = 8.0  # M4 screw distance from the clamp ends
+    clamp_pocket: float = 4.0  # hex pocket depth for the M4 head / nyloc nut
+    clamp_pos: float = 15.0  # clamp outboard end along the run, from the bend (see clamp_range)
+
     # ---- hardware -----------------------------------------------------------------------------
     m6_len: float = 45.0  # ISO 4762 M6 x 45 in expander mode
-    m5_len: float = 12.0  # ISO 7380 M5 x 12 for the 4 mm blade
+    m5_len: float = 14.0  # ISO 7380 M5 x 14 for the 6 mm blade
+    m4_len: float = 25.0  # ISO 4762 M4 x 25 + DIN 985 nyloc nut through the diffuser clamp
 
     # ---- derived ------------------------------------------------------------------------------
     @property
@@ -152,6 +176,12 @@ class Params:
     @property
     def head_seat_x(self) -> float:
         return self.hub_outer_x - self.cbore_depth
+
+    @property
+    def clamp_range(self) -> tuple[float, float]:
+        """Travel of the diffuser clamp's outboard end along the run: from just past the bend
+        gusset to where the clamp still sits fully on the blade."""
+        return (self.haunch_len + 1.0, self.front_len - self.clamp_len)
 
     @property
     def blade_path_len(self) -> float:
@@ -326,6 +356,90 @@ def arm(p: Params = Params()) -> cq.Workplane:
     return body.cut(holes)
 
 
+def arc_mid(c: tuple[float, float], r: float, p1: tuple[float, float], p2: tuple[float, float]) -> tuple[float, float]:
+    """Midpoint of the shorter arc from p1 to p2 on the circle with centre c and radius r."""
+    a1 = math.atan2(p1[1] - c[1], p1[0] - c[0])
+    a2 = math.atan2(p2[1] - c[1], p2[0] - c[0])
+    a = a1 + math.remainder(a2 - a1, math.tau) / 2
+    return (c[0] + r * math.cos(a), c[1] + r * math.sin(a))
+
+
+def _haunch(p: Params) -> cq.Workplane:
+    """Gusset filling the inside of the bend, where a fall loads the blade hardest.
+
+    Its free edge is tangent all the way along: it leaves the seat face on a haunch_blend_r
+    blend, follows an arc and runs out tangent to the run's inner face at s = haunch_len, so
+    there is no corner or step for a crack to start from. The blend starts past the arm's neck
+    with the blade at slot -adjust, so the gusset clears the arm at every slot position.
+    """
+    R = p.bend_r
+    cxc, cyc = p.bend_center
+    s, t, f = haunch_blend(p)
+    b_pt = haunch_ends(p)[1]
+    ox, oy, rho = haunch_circle(p)
+    b = math.radians(p.bend_angle_deg)
+    on_cl = lambda a: (cxc + R * math.cos(a), cyc + R * math.sin(a))  # noqa: E731
+    # close the outline through the blade material: seat, bend and run centre lines
+    wp = cq.Workplane("XY", origin=(0, 0, -p.blade_h / 2)).moveTo(*s)
+    if s[1] < cyc:  # the blend starts on the straight seat
+        a0 = 0.0
+        wp = wp.lineTo(p.blade_cx, s[1]).lineTo(*on_cl(a0))
+    else:
+        a0 = math.asin((s[1] - cyc) / R)
+        wp = wp.lineTo(*on_cl(a0))
+    wp = (
+        wp.threePointArc(on_cl((a0 + b) / 2), on_cl(b))
+        .lineTo(*p.run_point(p.haunch_len, 0.0))
+        .lineTo(*b_pt)
+        .threePointArc(arc_mid((ox, oy), rho, b_pt, t), t)
+    )
+    if p.haunch_blend_r > 0:
+        wp = wp.threePointArc(arc_mid(f, p.haunch_blend_r, t, s), s)
+    return wp.close().extrude(p.blade_h)
+
+
+def haunch_ends(p: Params) -> tuple[tuple[float, float], tuple[float, float]]:
+    """A: where the gusset's edge arc crosses the seat face (rounded off by the blend, see
+    haunch_blend); B: where the arc runs out on the run's inner face."""
+    return (p.blade_seat_x, p.bend_start + p.haunch_seat_gap), p.run_point(p.haunch_len, p.blade_t / 2)
+
+
+def haunch_blend(p: Params) -> tuple[tuple[float, float], tuple[float, float], tuple[float, float]]:
+    """Blend between the seat face and the gusset's edge arc: the circle of radius
+    haunch_blend_r tangent to both. Returns its tangent point on the seat face (where the
+    gusset starts), its tangent point on the edge arc, and its centre."""
+    ox, oy, rho = haunch_circle(p)
+    r = p.haunch_blend_r
+    fx = p.blade_seat_x - r
+    fy = oy + math.sqrt((rho - r) ** 2 - (fx - ox) ** 2)
+    k = rho / (rho - r)
+    return (p.blade_seat_x, fy), (ox + k * (fx - ox), oy + k * (fy - oy)), (fx, fy)
+
+
+def haunch_circle(p: Params) -> tuple[float, float, float]:
+    """Centre and radius of the gusset's free edge: the circle through A and B that is tangent
+    to the run's inner face at B (centre on the lever side)."""
+    (ax, ay), (bx, by) = haunch_ends(p)
+    toe = math.radians(p.front_toe_deg)
+    e2 = (math.sin(toe), math.cos(toe))  # run normal, pointing away from the lever
+    dx, dy = bx - ax, by - ay
+    rho = (dx * dx + dy * dy) / (2 * (dx * e2[0] + dy * e2[1]))
+    return bx - rho * e2[0], by - rho * e2[1], rho
+
+
+def bend_section(p: Params, gusset: bool = True) -> float:
+    """Blade thickness across the middle of the bend (along its bisector from the bend centre)."""
+    if not gusset or p.haunch_len <= 0:
+        return p.blade_t
+    ox, oy, rho = haunch_circle(p)
+    cx, cy = p.bend_center
+    a = math.radians(p.bend_angle_deg / 2)
+    wx, wy = cx - ox, cy - oy
+    b = wx * math.cos(a) + wy * math.sin(a)
+    r_in = -b + math.sqrt(b * b - (wx * wx + wy * wy - rho * rho))
+    return p.bend_r + p.blade_t / 2 - r_in
+
+
 def blade(p: Params = Params(), shift: float = 0.0) -> cq.Workplane:
     """Carbon guard blade. shift moves it along Y inside its slot (-adjust .. +adjust)."""
     t, h, R = p.blade_t, p.blade_h, p.bend_r
@@ -360,6 +474,8 @@ def blade(p: Params = Params(), shift: float = 0.0) -> cq.Workplane:
         .rotate((x_end, v_b, 0), (x_end, v_b, 1), -p.front_toe_deg)
     )
     body = rear.union(bend).union(front)
+    if p.haunch_len > 0:
+        body = body.union(_haunch(p))
     body = _fillet_sharp(body, p.edge_r)
     slot = (
         cq.Workplane("YZ", origin=(x0 - 1, 0, 0))
@@ -422,6 +538,102 @@ def expander_cone(p: Params, size: str) -> cq.Workplane:
             (xs, r_t),
         ]
     )
+
+
+# ------------------------------------------------------------------------------------------------
+# wind diffuser
+# ------------------------------------------------------------------------------------------------
+def run_frame(p: Params, s: float, shift: float = 0.0) -> cq.Location:
+    """Frame on the outer face of the blade run, s mm along it from the bend: local x runs
+    inboard along the run, local y points toward the lever (0 = outer face, blade_t = inner
+    face), local z = Z. Parts below are drawn in this frame and moved into G with it."""
+    ox, oy = p.run_point(s, -p.blade_t / 2)
+    dx, dy = p.run_dir
+    return cq.Plane(origin=(ox, oy + shift, 0), xDir=(dx, dy, 0), normal=(0, 0, 1)).location
+
+
+def _box(x0, x1, y0, y1, z0, z1) -> cq.Workplane:
+    return cq.Workplane("XY").box(x1 - x0, y1 - y0, z1 - z0, centered=False).translate((x0, y0, z0))
+
+
+def _clamp_top(p: Params) -> float:
+    return p.blade_h / 2 + p.clamp_wall
+
+
+def _clamp_screw_xy(p: Params) -> list[tuple[float, float]]:
+    y = -(p.clamp_clear + p.clamp_front / 2)
+    return [(p.clamp_screw_inset, y), (p.clamp_len - p.clamp_screw_inset, y)]
+
+
+def clamp_half_local(p: Params) -> cq.Workplane:
+    """Upper diffuser clamp half in the run frame. The lower half is the same part turned
+    over (180 deg about local y), so both halves come off one drawing."""
+    t, c, L = p.blade_t, p.clamp_clear, p.clamp_len
+    h2, top, g = p.blade_h / 2, _clamp_top(p), p.diffuser_t / 2
+    lip_y = t + c + p.clamp_lip_t
+    body = (
+        _box(0, L, -(c + p.clamp_front), -c, g, top)  # block ahead of the blade, grips the plate
+        .union(_box(0, L, -c - 0.01, t + c, h2, top))  # wall over the blade's edge
+        .union(_box(0, L, t + c, lip_y, h2 - p.clamp_lip, top))  # hook over the lever-side face
+    )
+    front_y = -(c + p.clamp_front)
+    body = _fillet_sharp(
+        body, 0.8,
+        keep=lambda m: m.z > top - 0.01 or m.y < front_y + 0.01 or m.y > lip_y - 0.01
+        or m.x < 0.01 or m.x > L - 0.01,
+    )
+    pocket = 7.1 / math.cos(math.pi / 6)  # hex 7.1 across flats: M4 head or M4 nyloc nut
+    for x, y in _clamp_screw_xy(p):
+        body = body.cut(_box(x - 2.25, x + 2.25, y - 2.25, y + 2.25, 0, top + 1).edges("|Z").fillet(2.2))
+        body = body.cut(
+            cq.Workplane("XY", origin=(x, y, top - p.clamp_pocket)).polygon(6, pocket).extrude(p.clamp_pocket + 1)
+        )
+    return body
+
+
+def _turn_over(p: Params, wp: cq.Workplane) -> cq.Workplane:
+    return wp.rotate((p.clamp_len / 2, 0, 0), (p.clamp_len / 2, 1, 0), 180)
+
+
+def diffuser_plate_local(p: Params) -> cq.Workplane:
+    """Flat diffuser plate in the run frame; its rear strip is pinched between the clamp halves."""
+    y0, L, d = -p.diffuser_gap, p.diffuser_len, p.diffuser_t
+    pts = [(0, y0), (L, y0), (L, y0 - p.diffuser_depth_in), (0, y0 - p.diffuser_depth_out)]
+    plate = cq.Workplane("XY").polyline(pts).close().extrude(d).translate((0, 0, -d / 2))
+    for (x, y), r in zip(pts, (1.5, 5.0, 14.0, 8.0)):
+        plate = plate.edges(cq.selectors.NearestToPointSelector((x, y, 0))).fillet(r)
+    plate = _fillet_sharp(plate, 0.6)
+    for x, y in _clamp_screw_xy(p):
+        plate = plate.cut(cq.Workplane("XY", origin=(x, y, -d)).circle(2.2).extrude(2 * d))
+    return plate
+
+
+def m4_screw_nut_local(p: Params, x: float, y: float) -> cq.Workplane:
+    """ISO 4762 M4 cap screw (head 7 x 4) in the upper pocket + DIN 985 M4 nyloc nut below."""
+    z_head = _clamp_top(p) - p.clamp_pocket
+    head = cq.Workplane("XY", origin=(x, y, z_head)).circle(3.5).extrude(4.0)
+    head = head.cut(cq.Workplane("XY", origin=(x, y, z_head + 2.0)).polygon(6, 3.0 / math.cos(math.pi / 6)).extrude(2.1))
+    shank = cq.Workplane("XY", origin=(x, y, z_head - p.m4_len)).circle(2.0).extrude(p.m4_len)
+    nut = (
+        cq.Workplane("XY", origin=(x, y, -z_head - 5.0)).polygon(6, 7.0 / math.cos(math.pi / 6)).extrude(5.0)
+        .cut(cq.Workplane("XY", origin=(x, y, -z_head - 6.0)).circle(2.0).extrude(7.0))
+    )
+    return head.union(shank).union(nut)
+
+
+def diffuser_parts(p: Params = Params(), pos: float | None = None, shift: float = 0.0):
+    """Diffuser plate, both clamp halves and the two M4 screws, placed on the blade in G."""
+    loc = run_frame(p, p.clamp_pos if pos is None else pos, shift)
+    place = lambda wp: cq.Workplane(obj=wp.val().moved(loc))  # noqa: E731
+    upper = clamp_half_local(p)
+    items = [
+        ("diffuser_plate", place(diffuser_plate_local(p))),
+        ("diffuser_clamp_upper", place(upper)),
+        ("diffuser_clamp_lower", place(_turn_over(p, upper))),
+    ]
+    for i, (x, y) in enumerate(_clamp_screw_xy(p)):
+        items.append((f"diffuser_screw_{i + 1}", place(m4_screw_nut_local(p, x, y))))
+    return items
 
 
 # ------------------------------------------------------------------------------------------------
@@ -511,7 +723,7 @@ STEEL_RGB = (0.25, 0.25, 0.27)
 
 
 def guard_parts(p: Params = Params(), size: str = "M", shift: float = 0.0, spigot: bool = True,
-                colour: str = "red"):
+                colour: str = "red", diffuser: bool = True, clamp_pos: float | None = None):
     """All parts of one guard in the G frame: list of (name, Workplane, rgb)."""
     parts = [
         ("adapter", adapter(p, spigot), ANODISE[colour]),
@@ -526,6 +738,10 @@ def guard_parts(p: Params = Params(), size: str = "M", shift: float = 0.0, spigo
             ("expander_sleeve", expander_sleeve(p, size), (0.12, 0.12, 0.12)),
             ("expander_cone", expander_cone(p, size), (0.70, 0.70, 0.72)),
         ]
+    if diffuser:
+        for name, wp in diffuser_parts(p, clamp_pos, shift):
+            rgb = CARBON_RGB if name == "diffuser_plate" else STEEL_RGB if "screw" in name else ANODISE[colour]
+            parts.append((name, wp, rgb))
     return parts
 
 
@@ -546,4 +762,4 @@ def assembly(p: Params = Params(), with_reference: bool = True, **kw) -> cq.Asse
 
 
 # 3D-printed variant: thicker blade, one size longer M5 screws
-PRINT_PARAMS = replace(Params(), blade_t=6.0, m5_len=14.0)
+PRINT_PARAMS = replace(Params(), blade_t=8.0, m5_len=16.0)
