@@ -556,7 +556,8 @@ def sheet_blade(p: lg.Params, pp: lg.Params, n_sheets: int) -> Sheet:
         f"3. LG-03 carbon: skin {fmt(t)} ± 0.2 moulded over a male tool, gusset filled with forged (chopped) carbon in the same cure;",
         "    CNC-trim the outline and slot. Lay plies continuous round the bend; no cut fibres at the gusset edge.",
         "4. LG-03 aluminium option: machine from 6061-T6 25 mm plate (the gusset rules out bending strip), carbon hydro-dip.",
-        f"5. LG-03b 3D print: same outline, {fmt(pp.blade_t)} thick, PA12-CF / PETG-CF, lying flat (lever plane on the bed),",
+        f"5. LG-03b 3D print: same outline, {fmt(pp.blade_t)} thick,",
+        "    PA12-CF / PETG-CF, lying flat (lever plane on the bed),",
         "    6 walls, 50 % gyroid; hydro-dip or wrap for the carbon finish.",
         f"6. Slot lets the blade slide ±{fmt(p.adjust)} mm toward / away from the lever.",
     ], size=6.6)
