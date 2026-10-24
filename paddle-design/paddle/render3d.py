@@ -200,7 +200,7 @@ def shot_scene(shot: str, meshes: dict, cut: dict, pieces: dict | None = None) -
         key = shot.split("_", 1)[1]
         return ([dict(name="X", location=(0.02, -0.02, 0.135), rotation=(10, 0, -32), parts=parts(key, EXPLODE))],
                 dict(location=(0.50, -0.62, 0.52), target=(0.075, 0.13, 0.11), lens=42), (0.05, 0.12, 0.12))
-    if shot == "handle":                          # grip pulled off the handle: slot mouth, slits, insert, screw
+    if shot == "handle":                          # grip pulled off the handle: slot mouth, slits, insert
         return ([dict(name="H", location=(0.0, 0.0, 0.0184), rotation=(0, 0, -60),
                       parts=parts("elongated", HANDLE_EXPLODE))],
                 dict(location=(0.135, -0.269, 0.228), target=(-0.032, -0.022, 0.012), lens=45,

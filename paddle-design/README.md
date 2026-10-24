@@ -33,7 +33,7 @@ towards the USA Pickleball limits, so keep it within the margins above.
 | | |
 |---|---|
 | ![Cutaway](output/render/paddles_3d_cutaway.png) | ![Exploded view](output/render/paddles_3d_exploded_elongated.png) |
-| ![Exploded view, hybrid](output/render/paddles_3d_exploded_hybrid.png) | ![Printed grip, M3 screw and insert](output/render/paddles_3d_handle.png) |
+| ![Exploded view, hybrid](output/render/paddles_3d_exploded_hybrid.png) | ![Printed grip pulled off the handle: slot, end-wall slits and the M3 insert](output/render/paddles_3d_handle.png) |
 
 - **Face sheets.** Two identical 4 mm woven carbon/epoxy plates, cut to the body profile
   (`*_profile.dxf`, template sheet 2). Outer edges R0.8.
@@ -161,7 +161,7 @@ What the results mean:
 | `output/cad/<design>_assembly.step` | 3-D assembly: sheets, rib support, screw and insert (named solids) |
 | `output/cad/<design>_assembly.3mf` | The same assembly with the printed grip (a mesh, so it is not in the STEP) |
 | `output/cad/<design>_rib_core.step` / `.stl`, `output/cad/<design>_<part>.stl` | The rib support as one piece, and every other part, in mm |
-| `output/render/paddles_3d_*.png` | Photoreal renders: hero, cutaway, exploded (each design), handle close-up, two-piece rib support |
+| `output/render/paddles_3d_*.png` | Photoreal renders: hero, cutaway, exploded with the grip and screw (each design), handle close-up, two-piece rib support |
 | `output/render/paddles_2d_render.(png/svg)` | 2-D presentation render (face and 3/4 views) |
 | `output/fea/paddle_stress_report.pdf`, `output/fea/fea_*.png` | Stress report and its figures |
 | `analysis/fea/*.json`, `analysis/mass_properties.json` | Raw results: peak stresses with locations, reserve factors, bond profile, frequencies, masses |
