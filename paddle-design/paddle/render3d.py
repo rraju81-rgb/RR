@@ -108,12 +108,14 @@ def materials(key: str, tex: dict) -> dict:
         f"accent_{key}": dict(color=acc, roughness=0.32, specular=0.5),
         f"grip_{key}": dict(color=GRIP_COLOUR[key], roughness=0.58, specular=0.32),     # printed PLA grip
         "steel": dict(color=(0.62, 0.63, 0.66), metallic=1.0, roughness=0.22),
+        "mould": dict(color=(0.07, 0.09, 0.12), roughness=0.6, specular=0.3),          # printed mould halves
         "brass": dict(color=(0.75, 0.55, 0.22), metallic=1.0, roughness=0.28),
     }
 
 
 PART_MATERIAL = {"face_sheet_top": "cf_top", "face_sheet_bottom": "cf_bottom", "rib_core": "core", "grip": "grip",
-                 "screw_M3x12_DIN7984": "steel", "insert_M3_heatset": "brass", "piece_A": "core", "piece_B": "core"}
+                 "screw_M3x12_DIN7984": "steel", "insert_M3_heatset": "brass", "mould_bottom": "mould",
+                 "mould_top": "mould", "dowel_pins": "steel"}
 GRIPS = PADDLE_GRIP                     # any of the ten grips fits both paddles
 GRIP_COLOUR = {"elongated": (0.022, 0.022, 0.025), "hybrid": (0.05, 0.052, 0.058)}
 
@@ -173,13 +175,15 @@ def cutaway(o: Outline):
     return top, core
 
 
-SHOTS = ("hero", "cutaway", "exploded_elongated", "exploded_hybrid", "handle", "rib_support")
+SHOTS = ("hero", "cutaway", "exploded_elongated", "exploded_hybrid", "handle", "mould")
 EXPLODE = {"face_sheet_top": (0, 0, 58), "face_sheet_bottom": (0, 0, -58), "grip": (0, -150, 0),
            "screw_M3x12_DIN7984": (0, -185, 0), "insert_M3_heatset": (0, -8, 0)}
 HANDLE_EXPLODE = {"grip": (0, -175, 0), "screw_M3x12_DIN7984": (0, -215, 0), "insert_M3_heatset": (0, -9, 0)}
+MOULD_EXPLODE = {"face_sheet_bottom": (0, 0, 30), "rib_core": (0, 0, 62), "face_sheet_top": (0, 0, 94),
+                 "mould_top": (0, 0, 140)}            # mm above the closed position, bottom half on the floor
 
 
-def shot_scene(shot: str, meshes: dict, cut: dict, pieces: dict | None = None) -> tuple[list[dict], dict, tuple]:
+def shot_scene(shot: str, meshes: dict, cut: dict, moulds: dict | None = None) -> tuple[list[dict], dict, tuple]:
     """Paddle groups (placement in metres / degrees), camera and light target of one shot."""
     def parts(key, offsets=None, cutaway=False):
         p = part_list(key, meshes[key], offsets)
@@ -205,20 +209,22 @@ def shot_scene(shot: str, meshes: dict, cut: dict, pieces: dict | None = None) -
                       parts=parts("elongated", HANDLE_EXPLODE))],
                 dict(location=(0.135, -0.269, 0.228), target=(-0.032, -0.022, 0.012), lens=45,
                      dof=dict(fstop=8.0, distance=0.38)), (-0.03, -0.02, 0.02))
-    if shot == "rib_support":                     # the two print pieces of the core, lying flat, joint opened up
-        ps = part_list("elongated", pieces["elongated"], {"piece_B": (0, 22, 0)})
-        return ([dict(name="R", location=(-0.05, -0.06, 0.004), rotation=(0, 0, -35), parts=ps)],
-                dict(location=(-0.21, -0.31, 0.27), target=(0.075, 0.105, 0.0), lens=48), (0.07, 0.1, 0.0))
+    if shot == "mould":                           # open compression mould: half, skin, rib support, skin, half
+        from .mould import MOULD
+        sandwich = {k: v for k, v in meshes["elongated"].items() if k in ("face_sheet_bottom", "rib_core", "face_sheet_top")}
+        ps = part_list("elongated", {**moulds["elongated"], **sandwich}, MOULD_EXPLODE)
+        return ([dict(name="M", location=(0.0, -0.02, MOULD.height / 1000), rotation=(0, 0, -32), parts=ps)],
+                dict(location=(0.50, -0.56, 0.56), target=(0.07, 0.115, 0.055), lens=46), (0.06, 0.12, 0.08))
     raise ValueError(shot)
 
 
 def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samples: int = 128,
                shots=SHOTS, log=print) -> list[Path]:
     """Export meshes + textures from the CAD and render every shot to out/paddles_3d_<shot>.png."""
-    from .cad import SPLICE_Y, rib_core, split_core
     from .grip import load as load_grip
+    from .mould import dowel_pins, mould_half, top_half
     work = out / "_work"
-    meshes, cut, pieces, mats = {}, {}, {}, {}
+    meshes, cut, moulds, mats = {}, {}, {}, {}
     for o in outlines:
         key = o.spec.key
         meshes[key] = export_meshes(assembly(o), work / "mesh", key)
@@ -227,13 +233,16 @@ def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samp
         top, core = cutaway(o)
         cut[key] = export_meshes([PartDef("face_sheet_top", top, "cf", (0, 0, 0)),
                                   PartDef("rib_core", core, "core", (0, 0, 0))], work / "mesh", key + "_cut")
-        a, b = split_core(rib_core(o, splice=SPLICE_Y), SPLICE_Y, o.half_width_at(SPLICE_Y))
-        pieces[key] = export_meshes([PartDef("piece_A", a, "core", (0, 0, 0)), PartDef("piece_B", b, "core", (0, 0, 0))],
-                                    work / "mesh", key + "_split")
+        if key == "elongated":                    # only the elongated mould is shown
+            half = mould_half(o)
+            moulds[key] = export_meshes([PartDef("mould_bottom", half, "pla", (0, 0, 0)),
+                                         PartDef("mould_top", top_half(half), "pla", (0, 0, 0)),
+                                         PartDef("dowel_pins", dowel_pins(o), "steel", (0, 0, 0))],
+                                        work / "mesh", key + "_mould")
         mats.update(materials(key, write_textures(o, work / "tex")))
     done = []
     for shot in shots:
-        groups, cam, target = shot_scene(shot, meshes, cut, pieces)
+        groups, cam, target = shot_scene(shot, meshes, cut, moulds)
         png = out / f"paddles_3d_{shot}.png"
         scene = write_scene(work / f"{shot}.json", resolution=list(resolution), samples=samples, materials=mats,
                             groups=groups, lights=studio_lights(target), camera=cam, output=str(png), **STUDIO)

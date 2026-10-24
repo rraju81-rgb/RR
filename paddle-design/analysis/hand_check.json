@@ -1,0 +1,153 @@
+{
+ "REV_C": {
+  "lay_up": "4 / 8 / 4",
+  "span_between_lands": 13.75,
+  "designs": {
+   "elongated": {
+    "LC1": {
+     "skin_max": 64.104,
+     "skin_at_y": 120.039,
+     "core_max": 2.137,
+     "tip_deflection": 1.354,
+     "skin_blade_max": 14.681,
+     "skin_blade_at_y": 158.066,
+     "skin_expected": 90.907,
+     "rf_core": 21.059,
+     "deflection_expected": 2.243,
+     "rf_skin": 5.5,
+     "rf_dimpling": 1140.064
+    },
+    "LC2": {
+     "skin_max": 99.427,
+     "skin_at_y": 120.162,
+     "core_max": 3.314,
+     "tip_deflection": 2.332,
+     "skin_blade_max": 25.674,
+     "skin_blade_at_y": 158.056,
+     "skin_expected": 141.0,
+     "rf_core": 13.578,
+     "deflection_expected": 3.862,
+     "rf_skin": 3.546,
+     "rf_dimpling": 651.897
+    }
+   },
+   "hybrid": {
+    "LC1": {
+     "skin_max": 64.104,
+     "skin_at_y": 120.039,
+     "core_max": 2.137,
+     "tip_deflection": 1.358,
+     "skin_blade_max": 14.681,
+     "skin_blade_at_y": 158.066,
+     "skin_expected": 90.907,
+     "rf_core": 21.059,
+     "deflection_expected": 2.25,
+     "rf_skin": 5.5,
+     "rf_dimpling": 1140.064
+    },
+    "LC2": {
+     "skin_max": 99.427,
+     "skin_at_y": 120.162,
+     "core_max": 3.314,
+     "tip_deflection": 2.346,
+     "skin_blade_max": 25.674,
+     "skin_blade_at_y": 158.056,
+     "skin_expected": 141.0,
+     "rf_core": 13.578,
+     "deflection_expected": 3.885,
+     "rf_skin": 3.546,
+     "rf_dimpling": 651.897
+    }
+   }
+  },
+  "skin_between_lands": {
+   "pressure": 0.707,
+   "stress": 3.933,
+   "membrane": 0.0,
+   "deflection": 0.0,
+   "linear_stress": 4.182,
+   "rf": 127.129
+  },
+  "dimpling_stress": 16737.1
+ },
+ "REV_D": {
+  "lay_up": "0.3 / 10 / 0.3",
+  "span_between_lands": 13.72,
+  "designs": {
+   "elongated": {
+    "LC1": {
+     "skin_max": 596.309,
+     "skin_at_y": 120.039,
+     "core_max": 37.504,
+     "tip_deflection": 19.793,
+     "skin_blade_max": 150.302,
+     "skin_blade_at_y": 160.108,
+     "skin_expected": 845.639,
+     "rf_core": 1.2,
+     "deflection_expected": 32.783,
+     "rf_skin": 0.591,
+     "rf_dimpling": 0.63
+    },
+    "LC2": {
+     "skin_max": 924.891,
+     "skin_at_y": 120.162,
+     "core_max": 58.169,
+     "tip_deflection": 34.524,
+     "skin_blade_max": 264.08,
+     "skin_blade_at_y": 160.193,
+     "skin_expected": 1311.609,
+     "rf_core": 0.774,
+     "deflection_expected": 57.183,
+     "rf_skin": 0.381,
+     "rf_dimpling": 0.358
+    }
+   },
+   "hybrid": {
+    "LC1": {
+     "skin_max": 596.309,
+     "skin_at_y": 120.039,
+     "core_max": 37.504,
+     "tip_deflection": 19.863,
+     "skin_blade_max": 150.302,
+     "skin_blade_at_y": 160.108,
+     "skin_expected": 845.639,
+     "rf_core": 1.2,
+     "deflection_expected": 32.899,
+     "rf_skin": 0.591,
+     "rf_dimpling": 0.63
+    },
+    "LC2": {
+     "skin_max": 924.891,
+     "skin_at_y": 120.162,
+     "core_max": 58.169,
+     "tip_deflection": 34.763,
+     "skin_blade_max": 264.08,
+     "skin_blade_at_y": 160.193,
+     "skin_expected": 1311.609,
+     "rf_core": 0.774,
+     "deflection_expected": 57.578,
+     "rf_skin": 0.381,
+     "rf_dimpling": 0.358
+    }
+   }
+  },
+  "skin_between_lands": {
+   "pressure": 0.707,
+   "stress": 556.201,
+   "membrane": 64.922,
+   "deflection": 0.288,
+   "linear_stress": 739.639,
+   "rf": 0.899
+  },
+  "dimpling_stress": 94.6
+ },
+ "calibration_fea_over_beam": {
+  "skin": 1.418,
+  "deflection": 1.656
+ },
+ "allowables_MPa": {
+  "cf_tension": 600.0,
+  "cf_compression": 500.0,
+  "core_von_mises": 45.0
+ }
+}

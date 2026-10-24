@@ -1,0 +1,60 @@
+{
+ "note": "two identical halves split on the paddle mid-plane; pocket 5.3 deep each, so the closed cavity is 10.6 mm = skin 0.3 + rib support 10 + skin 0.3; pocket = body outline + 0.2 mm, 1 deg draft",
+ "cavity_mm": 10.6,
+ "pocket_depth_mm": 5.3,
+ "plate_mm": 15.3,
+ "designs": {
+  "elongated": {
+   "file": "elongated_mould_half.stl",
+   "triangles": 17128,
+   "watertight": true,
+   "bodies": 1,
+   "volume_cm3": 855.64,
+   "cad_volume_cm3": 855.68,
+   "size_mm": [
+    244.4,
+    429.4,
+    15.3
+   ],
+   "mass_g": {
+    "PLA": 1061.0,
+    "PETG": 1086.7,
+    "PA-CF": 1009.7
+   },
+   "fits_bed": [
+    "500 x 500"
+   ],
+   "print_count": 2,
+   "bolts_M6": 18,
+   "dowel_pins_6x20": 4,
+   "pry_notches": 2,
+   "vents": 6
+  },
+  "hybrid": {
+   "file": "hybrid_mould_half.stl",
+   "triangles": 17096,
+   "watertight": true,
+   "bodies": 1,
+   "volume_cm3": 813.49,
+   "cad_volume_cm3": 813.58,
+   "size_mm": [
+    234.4,
+    429.4,
+    15.3
+   ],
+   "mass_g": {
+    "PLA": 1008.7,
+    "PETG": 1033.1,
+    "PA-CF": 959.9
+   },
+   "fits_bed": [
+    "500 x 500"
+   ],
+   "print_count": 2,
+   "bolts_M6": 18,
+   "dowel_pins_6x20": 4,
+   "pry_notches": 2,
+   "vents": 6
+  }
+ }
+}

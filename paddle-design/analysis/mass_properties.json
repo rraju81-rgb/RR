@@ -7,18 +7,18 @@
  "elongated": {
   "parts": {
    "face_sheet_top": {
-    "volume_cm3": 196.15,
-    "mass_g": 304.04,
+    "volume_cm3": 14.72,
+    "mass_g": 22.82,
     "watertight": true
    },
    "rib_core": {
-    "volume_cm3": 151.27,
-    "mass_g": 178.5,
+    "volume_cm3": 181.75,
+    "mass_g": 214.46,
     "watertight": true
    },
    "face_sheet_bottom": {
-    "volume_cm3": 196.15,
-    "mass_g": 304.04,
+    "volume_cm3": 14.72,
+    "mass_g": 22.82,
     "watertight": true
    },
    "screw_M3x12_DIN7984": {
@@ -37,25 +37,25 @@
     "watertight": true
    }
   },
-  "mass_g": 849.1,
-  "balance_mm": 235.5,
-  "swing_weight_kgcm2": 241.8
+  "mass_g": 322.7,
+  "balance_mm": 197.6,
+  "swing_weight_kgcm2": 74.0
  },
  "hybrid": {
   "parts": {
    "face_sheet_top": {
-    "volume_cm3": 183.51,
-    "mass_g": 284.45,
+    "volume_cm3": 13.77,
+    "mass_g": 21.35,
     "watertight": true
    },
    "rib_core": {
-    "volume_cm3": 144.21,
-    "mass_g": 170.16,
+    "volume_cm3": 172.76,
+    "mass_g": 203.86,
     "watertight": true
    },
    "face_sheet_bottom": {
-    "volume_cm3": 183.51,
-    "mass_g": 284.45,
+    "volume_cm3": 13.77,
+    "mass_g": 21.35,
     "watertight": true
    },
    "screw_M3x12_DIN7984": {
@@ -74,8 +74,8 @@
     "watertight": true
    }
   },
-  "mass_g": 801.6,
-  "balance_mm": 230.3,
-  "swing_weight_kgcm2": 216.2
+  "mass_g": 309.1,
+  "balance_mm": 192.1,
+  "swing_weight_kgcm2": 66.5
  }
 }

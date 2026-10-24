@@ -31,6 +31,9 @@ ap.add_argument("--modes", type=int, default=0, help="natural frequencies instea
 ap.add_argument("--set", nargs="*", default=[], metavar="NAME=VALUE",
                 help="override construction parameters, e.g. rib_amp=3.6 runout_len=0")
 a = ap.parse_args()
+if CONSTRUCTION.face_t < 1.0:          # solid tetrahedra cannot mesh a thin skin through its thickness
+    sys.exit(f"face sheets of {CONSTRUCTION.face_t:g} mm are too thin for this solid-element model "
+             "(it needs about 1 mm or more); use tools/hand_check.py for the thin-skin lay-up")
 
 for item in a.set:                     # design-study override of the (frozen) shared construction
     k, v = item.split("=")

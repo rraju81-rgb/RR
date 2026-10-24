@@ -31,6 +31,9 @@ ap.add_argument("--json", type=Path, default=ROOT / "analysis" / "fea")
 ap.add_argument("--render-core", action="store_true",
                 help="render the core coloured by von Mises stress with Blender (Fig. 5 of the report)")
 a = ap.parse_args()
+if C.face_t < 1.0:                     # solid tetrahedra cannot mesh a thin skin through its thickness
+    sys.exit(f"face sheets of {C.face_t:g} mm are too thin for this solid-element model "
+             "(it needs about 1 mm or more); use tools/hand_check.py for the thin-skin lay-up")
 a.out.mkdir(parents=True, exist_ok=True)
 a.json.mkdir(parents=True, exist_ok=True)
 lcs = [lc.key for lc in fea.LOADS]

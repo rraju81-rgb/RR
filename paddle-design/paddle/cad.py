@@ -85,29 +85,8 @@ def _axial_cylinder(d: float, y0: float, length: float):
     return Pos(0, y0, 0) * Rot(-90, 0, 0) * Cylinder(d / 2, length, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
 
-SPLICE_Y = 240.0        # joint of the two-piece rib support: both pieces fit a 256 x 256 mm bed
-SPLICE_BAND = 7.0       # solid band across the core at the joint (width at the far face sheet)
-SPLICE_RUNOUT = 4.0     # flute run-outs into the band: 63 deg, still printable without support
-
-
-def _band_region(s: int, y_mid: float, width: float, length: float):
-    """Prism across the core in which flutes opening towards side s are closed: `width` wide at the far
-    face sheet, widening by `length` each side towards the near one (sloped run-outs that print unsupported)."""
-    h = C.core_t / 2
-    zz = h + 1.0                                          # the flute cutters stick out 1 mm past each face
-
-    def half(z: float) -> float:
-        return width / 2 + length * (s * z + h) / (2 * h)
-    pts = [Vector(-200, y_mid - half(-zz), -zz), Vector(-200, y_mid + half(-zz), -zz),
-           Vector(-200, y_mid + half(zz), zz), Vector(-200, y_mid - half(zz), zz)]
-    face = Face(Wire([Edge.make_line(pts[i], pts[(i + 1) % 4]) for i in range(4)]))
-    return extrude(face, amount=400, dir=(1, 0, 0))
-
-
-def rib_core(o: Outline, with_hole: bool = True, splice: float | None = None):
-    """Closed perimeter frame + solid handle/throat zone + clipped sinusoidal wave rib, one part.
-
-    splice: y of a solid band across the blade, where the two-piece print version is joined."""
+def rib_core(o: Outline, with_hole: bool = True):
+    """Closed perimeter frame + solid handle/throat zone + clipped sinusoidal wave rib, one part."""
     sp = o.spec
     f = outline_face(o, -C.core_t / 2)
     slab = extrude(f, amount=C.core_t)
@@ -120,10 +99,7 @@ def rib_core(o: Outline, with_hole: bool = True, splice: float | None = None):
                  for side, fc in flute_channel_faces(sp.width / 2 + C.rib_pitch, y0) if side == s]
         region = prism & (_runout_region(s, C.solid_to, C.runout_len) if C.runout_len > 0 else
                           Pos(0, (C.solid_to + 400) / 2, 0) * Box(400, 400 - C.solid_to, 40))
-        v = (Part() + chans) & region
-        if splice is not None:
-            v = v - _band_region(s, splice, SPLICE_BAND, SPLICE_RUNOUT)
-        voids.append(v)
+        voids.append((Part() + chans) & region)
     core = slab - voids[0] - voids[1]
     if with_hole:
         core = core - _axial_cylinder(C.insert_d, sp.cap_length, C.insert_depth) \
@@ -131,40 +107,10 @@ def rib_core(o: Outline, with_hole: bool = True, splice: float | None = None):
     return core
 
 
-def dovetail_regions(y_mid: float, x_edge: float, pitch: float = 20.0, neck: float = 8.0, flare: float = 1.8,
-                     depth: float = 5.0, gap: float = 0.1, margin: float = 4.0):
-    """Plan-view regions of the two rib-support pieces either side of a dovetail joint line at y_mid.
-
-    Piece A (handle side) carries dovetail tabs, centred on x = 0 at `pitch`, that lock into piece B; tabs
-    stay `margin` clear of the paddle edge (x_edge = half width at y_mid) so no slivers are cut off.  Each
-    region is pulled back by `gap` from the line: the printed pieces press together with 2 x gap for glue."""
-    from shapely.geometry import Polygon
-    lo, hi = y_mid - depth / 2, y_mid + depth / 2
-    reach = neck / 2 + flare + margin
-    k = int((x_edge - reach) // pitch)
-    line = [(-x_edge - 50.0, lo)]
-    for xm in (i * pitch for i in range(-k, k + 1)):
-        line += [(xm - neck / 2, lo), (xm - neck / 2 - flare, hi), (xm + neck / 2 + flare, hi), (xm + neck / 2, lo)]
-    line.append((x_edge + 50.0, lo))
-    big = 1000.0
-    a = Polygon([(line[0][0], -big)] + line + [(line[-1][0], -big)])
-    b = Polygon([(line[0][0], big)] + line + [(line[-1][0], big)])
-    return a.buffer(-gap, join_style=2), b.buffer(-gap, join_style=2)
-
-
-def split_core(core, y_mid: float, x_edge: float):
-    """Cut a (spliced) core into its two dovetailed print pieces (A: butt side, B: tip side)."""
-    out = []
-    for poly in dovetail_regions(y_mid, x_edge):
-        ring = [Vector(x, y, -10.0) for x, y in list(poly.exterior.coords)[:-1]]
-        out.append(core & extrude(Face(Wire.make_polygon(ring, close=True)), amount=20.0, dir=(0, 0, 1)))
-    return out
-
-
 def face_sheet(o: Outline, top: bool, edge_r: float = 0.8):
     z0 = C.core_t / 2 if top else -C.core_t / 2 - C.face_t
     plate = extrude(outline_face(o, z0), amount=C.face_t)
-    if edge_r:
+    if edge_r and C.face_t > 2 * edge_r:               # thin skins keep a sharp, trimmed edge
         zo = z0 + C.face_t if top else z0               # exposed (outer) face
         edges = plate.edges().filter_by(lambda e: abs(e.center().Z - zo) < 1e-6 and
                                         abs(e.start_point().Z - zo) < 1e-6 and abs(e.end_point().Z - zo) < 1e-6)

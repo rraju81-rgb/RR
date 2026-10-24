@@ -1,7 +1,7 @@
-"""Construction drawings (REV C): the printed rib support (core) of each paddle and the shared printed grip.
+"""Construction drawings (REV D): the printed rib support (core) of each paddle and the shared printed grip.
 
-  core_sheet(o)  - PB-xx-001 sheet 3: rib support plan view 1:2 (with the two-piece split line), section C-C
-                   across the wave 2:1, section D-D along a land through the flute run-out 2:1, print notes.
+  core_sheet(o)  - PB-xx-001 sheet 3: rib support plan view 1:2, section C-C across the wave 2:1,
+                   section D-D along a land through the flute run-out 2:1, print notes.
   grip_sheet()   - PB-GR-002: handle in the printed grip 1:1, sections E-E / G-G across the grip and F-F through
                    the M3 screw and insert 2:1, fit-test coupon, bill of materials, notes.
 """
@@ -14,7 +14,6 @@ from shapely.geometry import LineString, Polygon, box
 
 from . import wave
 from .geometry import CONSTRUCTION as C
-from .cad import SPLICE_BAND, SPLICE_Y
 from .geometry import GRIP, Outline, PaddleSpec
 from .sheets import (GREY, SHEETS, cell, core_inner, fill, grip_front, hatches, notes_block, polygon_path,
                      title_block)
@@ -72,11 +71,10 @@ def core_notes(o: Outline, mass: dict | None) -> list[str]:
         f"{fmt(C.runout_len)} LONG (D–D).",
         f"M3 HEAT-SET INSERT BORE Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
         f"{fmt(C.screw_relief_depth)} IN THE BUTT FACE (GRIP SCREW) – SEE PB-GR-002.",
-        "BONDING: ABRADE (P120), DEGREASE, STRUCTURAL EPOXY, FILLET EVERY LAND EDGE.",
-        f"PRINT FILES output/rib_support/: {sp.key}_rib_support_1piece.stl "
-        f"(BED ≥ {fmt(sp.length - sp.cap_length + 6)} × {fmt(sp.width + 6)}) OR _2piece_A + _B "
-        f"(256 BED):\n{fmt(SPLICE_BAND)} SOLID SPLICE BAND AT y = {fmt(SPLICE_Y)}, DOVETAIL JOINT 0.1 CLEARANCE PER "
-        "SIDE - GLUE IT BEFORE BONDING THE SHEETS.",
+        "BONDING: ABRADE (P120) AND DEGREASE BOTH FACES; THE SHEETS ARE LAMINATED ON IN THE MOULD (SHEET 4).",
+        f"PRINT FILE output/rib_support/{sp.key}_rib_support.stl: ONE PIECE, FLAT, BED ≥ "
+        f"{fmt(sp.length - sp.cap_length + 6)} × {fmt(sp.width + 6)}.\nIT DROPS INTO THE MOULD POCKET "
+        f"(+0.2 CLEARANCE); PLUG THE INSERT BORE BEFORE MOULDING.",
         f"{m}y FROM THE GRIP BUTT FACE (y = 0); THE RIB SUPPORT STARTS AT y = {fmt(sp.cap_length)}.",
     ]
 
@@ -146,10 +144,6 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
         d.line((p[0], p[1] + s * 3), (p[0] - 6, p[1] + s * 3), "thin")
         d.arrow((p[0] - 7.5, p[1] + s * 3), (-1, 0), 3.0, 1.4)
         d.text((p[0] + 1.2, p[1] - (1.5 if s > 0 else -4.5)), "D", 5.0, anchor="start", weight="bold")
-    hw = o.half_width_at(SPLICE_Y)                # two-piece print option: joint line
-    pv.line((-hw - 8, SPLICE_Y), (hw + 8, SPLICE_Y), "phan")
-    d.text((P((hw + 9, 0))[0], P((0, SPLICE_Y))[1] + 1.0), f"2-PIECE JOINT y = {fmt(SPLICE_Y)}", 2.4, anchor="start",
-           fill=GREY)
     view_label(d, cx, 259, "PLAN VIEW (TOP FACE)", "SCALE 1:2 · BOTTOM LANDS OFFSET ½ PITCH")
 
     # ---- section C-C (partial, at y = 280, right-hand edge), 2:1
@@ -242,14 +236,16 @@ def grip_notes(sp: PaddleSpec, g: dict, masses: dict | None) -> list[str]:
     return [
         f"GRIP (3): ANY OF THE TEN REV-8 PRINTED GRIPS (pickleball_grips) - SAME INTERFACE, DIFFERENT SURFACE; DRAWN: "
         f"{g['name']}.\nPLA 60–65 g ({g['mass_g']:.1f} g DRAWN). PRINT UPRIGHT, BUTT DOWN, 100 % INFILL, NO SUPPORTS.",
-        f"SLOT {fmt(GRIP.slot_w)} × {fmt(GRIP.slot_t)} × {fmt(GRIP.slot_depth)} DEEP, {fmt(GRIP.lead_in)} LEAD-IN; "
-        f"HANDLE {fmt(sp.handle_width)} × {fmt(sp.thickness)} NOMINAL. THE BONDED 4/8/4 STACK MAY\nMEASURE 16.1–16.5: "
-        "MEASURE IT, PRINT THE FIT-TEST COUPON AND SET SLOT_T (pickleball_grips/scripts/grip_core.py) TO SUIT.",
+        f"REV-8 SLOT {fmt(GRIP.slot_w)} × {fmt(GRIP.slot_t)} × {fmt(GRIP.slot_depth)} DEEP, {fmt(GRIP.lead_in)} LEAD-IN; "
+        f"HANDLE {fmt(sp.handle_width)} × {fmt(sp.thickness)} ({fmt(C.face_t)} / {fmt(C.core_t)} / {fmt(C.face_t)}, "
+        f"MOULDED) = {fmt(GRIP.slot_t - sp.thickness)} LOOSE.\nREGENERATE THE GRIPS WITH SLOT_T = {fmt(sp.thickness)} "
+        f"(pickleball_grips/scripts/grip_core.py) AND THE COUPON AT {fmt(sp.thickness - 0.4)} / {fmt(sp.thickness)} / "
+        f"{fmt(sp.thickness + 0.4)}.",
         f"END WALLS SLIT OVER THE TOP {fmt(GRIP.slit_depth)} (y {fmt(GRIP.length - GRIP.slit_depth)}–{fmt(GRIP.length)}) "
         f"SO THE THROAT FLARE (FROM y = {fmt(sp.handle_length)}) PASSES;\nTHE GRIP SEATS ON THE BODY BUTT AT "
         f"y = {fmt(sp.cap_length)} (= GRIP BASE {fmt(GRIP.base)}).",
         f"INSERT (5): HEAT-SET M3 × {fmt(C.insert_len)} INTO THE Ø{fmt(C.insert_d)} BORE, FLUSH WITH THE CORE BUTT, "
-        "BEFORE THE FACE SHEETS ARE BONDED.",
+        "BEFORE MOULDING; KEEP A SCREW IN IT SO NO RESIN GETS IN.",
         f"SCREW (4): DIN 7984 M3 × {fmt(GRIP.screw_len)} LOW-HEAD (M3 × 16 ALSO FITS), LOW-STRENGTH THREADLOCKER, "
         f"HAND-TIGHT (≈0.5 N·m)\nSO THE PLA BASE DOES NOT CRACK; {fmt(GRIP.base - GRIP.cbore_depth)} OF FLOOR UNDER "
         "THE HEAD.",
@@ -343,9 +339,10 @@ def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
         p, q = Gp(-h, zt), Gp(h, zb)
         d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H[key]))
     gx0, gz0, gx1, gz1 = g["sec_g"].bounds
-    plate = min(gz1 - T, -T - gz0)
+    ts = GRIP.slot_t / 2                              # slot face (the handle may be thinner: see note 2)
+    plate = min(gz1 - ts, -ts - gz0)
     d.dim_linear(Gp(gx0, gz1), Gp(gx1, gz1), "x", zg - gz1 * S2 - 5, f"{gx1 - gx0:.1f}")
-    d.dim_linear(Gp(gx1, gz1), Gp(gx1, T), "y", xg + gx1 * S2 + 5, f"{plate:.1f}", outside=True)
+    d.dim_linear(Gp(gx1, gz1), Gp(gx1, ts), "y", xg + gx1 * S2 + 5, f"{plate:.1f}", outside=True)
     d.leader_note(Gp(gx1 - 0.6, 0.0), (Gp(gx1, 0)[0] + 9, zg + gz1 * S2 + 6), "OPEN SLIT", 2.4)
     d.line((xg + gx0 * S2 - 3, zg), (xg + gx1 * S2 + 2, zg), "ctr")
     view_label(d, xg, zg + gz1 * S2 + 16, "SECTION G–G", "SCALE 2:1 · HEAD, IN THE SLIT ZONE (y = 120)")
@@ -363,7 +360,7 @@ def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
         d.text((xc + (b1 + b3) / 2, yc + 1.0), label, 2.6, weight="bold")
     cb = cpn.bounds
     view_label(d, xc, yc + cb[2] + 10, "FIT-TEST COUPON (fit_test_slot.stl)",
-               "SCALE 1:1 · 8 THK · SLOTS 15.6 / 16.0 / 16.4 × 30.2")
+               "SCALE 1:1 · 8 THK · REV-8 SLOTS 15.6 / 16.0 / 16.4 × 30.2")
 
     # ---- section F-F through the screw, butt end (y = 0 .. 40), 2:1
     yf1 = 40.0
@@ -427,16 +424,16 @@ def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
         if abs(v[0] - v[1]) < 0.05:
             return f"{v[0]:.1f}" if v[0] < 10 else f"{v[0]:.0f}"
         return " / ".join(f"{x:.0f}" for x in v)
-    rows = [("1", "Face sheet", f"Woven carbon/epoxy plate {fmt(C.face_t)} thk, cut to the profile DXF", "2",
+    rows = [("1", "Face sheet", f"Woven carbon/epoxy {fmt(C.face_t)} thk, cut to the profile DXF", "2",
              mass("face_sheet_top")),
-            ("2", "Rib support", "PA-CF printed, 1 or 2 pieces – sheet 3 of PB-EL-001 / PB-HY-001", "1",
+            ("2", "Rib support", "PA-CF printed in one piece – sheet 3 of PB-EL-001 / PB-HY-001", "1",
              mass("rib_core")),
-            ("3", "Grip", f"PLA printed, any rev-8 design (drawn {g['name']}), 60–65 g", "1", mass("grip")),
+            ("3", "Grip", f"PLA printed, rev 8 (drawn {g['name']}), slot: note 2", "1", mass("grip")),
             ("4", "Screw", f"DIN 7984 M3 × {fmt(GRIP.screw_len)} low-head cap screw, A2 stainless", "1",
              mass("screw_M3x12_DIN7984")),
             ("5", "Threaded insert", f"M3 heat-set, brass, {fmt(C.insert_len)} long, in a Ø{fmt(C.insert_d)} bore",
              "1", mass("insert_M3_heatset")),
-            ("6", "Adhesive", "Structural epoxy (rib support to face sheets)", "a/r", "–")]
+            ("6", "Adhesive", "Laminating epoxy, sheets onto the rib support in the mould", "a/r", "–")]
     for i, r in enumerate(rows):
         yy = by + rh + 0.6 + i * rh
         xx = bx

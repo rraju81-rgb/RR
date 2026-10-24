@@ -18,8 +18,8 @@ from .geometry import GRIP, Outline, PaddleSpec
 from .pictorial import ISOMETRIC, project
 from .svgkit import Doc, View, f, fmt, frame_iso, hatch_pattern, projection_symbol_first_angle
 
-ISSUE = {"rev": "C", "date": "2026-10-24", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
-SHEETS = 3                                  # sheets per paddle drawing
+ISSUE = {"rev": "D", "date": "2026-10-24", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
+SHEETS = 4                                  # sheets per paddle drawing
 USAP_SUM, USAP_LEN = 609.6, 431.8          # 24 in (length + width), 17 in (length)
 GREY = "#555"
 
@@ -113,18 +113,22 @@ def ga_notes(o: Outline, mass: dict | None = None) -> list[str]:
         "ALL DIMENSIONS IN MILLIMETRES. DO NOT SCALE THE DRAWING. UNLESS STATED: LINEAR ±0.5, ANGULAR ±0.5°.",
         "PROFILE SYMMETRICAL ABOUT THE CENTRE LINE. ALL ARCS TANGENT TO ADJOINING EDGES.",
         f"SANDWICH: CF FACE SHEET {fmt(C.face_t)} + WAVE-RIB CORE {fmt(C.core_t)} + CF FACE SHEET {fmt(C.face_t)} = "
-        f"{fmt(sp.thickness)} ±0.3, UNIFORM OVER\nBLADE AND HANDLE. BODY (SHEETS + CORE) FROM y = {fmt(sp.cap_length)} "
+        f"{fmt(sp.thickness)} ±0.2, SET BY THE\nMOULD (SHEET 4). BODY (SHEETS + CORE) FROM y = {fmt(sp.cap_length)} "
         f"TO THE TIP; GRIP BASE y = 0 … {fmt(GRIP.base)}.",
-        f"FACE SHEETS (2 OFF, IDENTICAL): WOVEN CARBON/EPOXY PLATE {fmt(C.face_t)} THK, CUT TO "
-        f"{sp.drawing_no}_profile.dxf,\nOUTER EDGES R0.8. TEMPLATE: SHEET 2.",
-        f"RIB SUPPORT (CORE): 3D-PRINTED PA-CF, CLOSED FRAME {fmt(C.frame_w)}, WAVE RIB λ{fmt(C.rib_pitch)} / WALL "
-        f"{fmt(C.rib_t)} / LANDS {wave.land_width():.2f},\nSOLID TO y = {fmt(C.solid_to)} WITH 45° FLUTE RUN-OUT – "
-        f"SEE SHEET 3 (1- OR 2-PIECE PRINT).",
-        "BOND CORE TO SHEETS: STRUCTURAL EPOXY, ABRADED + PRIMED SURFACES, FILLET ALL LAND EDGES\n"
-        "(CRITICAL ITEM – SEE THE STRESS REPORT).",
-        f"GRIP: PRINTED PLA GRIP (ANY OF THE TEN REV-8 DESIGNS; DRAWN: {g['name']}, {g['mass_g']:.0f} g), SLOT "
-        f"{fmt(GRIP.slot_w)} × {fmt(GRIP.slot_t)}\n× {fmt(GRIP.slot_depth)} DEEP, LOCKED BY A DIN 7984 M3 × "
-        f"{fmt(GRIP.screw_len)} SCREW INTO AN M3 HEAT-SET INSERT – SEE PB-GR-002.",
+        f"FACE SHEETS (2 OFF, IDENTICAL): WOVEN CARBON/EPOXY {fmt(C.face_t)} THK (CURED), CUT TO "
+        f"{sp.drawing_no}_profile.dxf\n(TEMPLATE: SHEET 2)" + (", OUTER EDGES R0.8." if C.face_t > 1.6 else
+                                                                   ", TRIMMED FLUSH WITH THE CORE EDGE."),
+        f"RIB SUPPORT (CORE): 3D-PRINTED PA-CF IN ONE PIECE, CLOSED FRAME {fmt(C.frame_w)}, WAVE RIB λ{fmt(C.rib_pitch)} / "
+        f"WALL {fmt(C.rib_t)} /\nLANDS {wave.land_width():.2f}, SOLID TO y = {fmt(C.solid_to)} WITH 45° FLUTE RUN-OUT "
+        "– SEE SHEET 3.",
+        "SHEETS LAMINATED ONTO THE CORE IN THE TWO-HALF COMPRESSION MOULD (SHEET 4): EPOXY, ABRADED +\n"
+        "PRIMED CORE FACES, CLOSED TO THE HARD STOP.",
+        "STRENGTH: NOT QUALIFIED. THE HAND CHECK (analysis/hand_check.json) GIVES RF < 1 FOR THE 500 N\n"
+        "BALL IMPACT WITH 0.3 SHEETS (HANDLE ABOVE THE GRIP, SKIN BETWEEN LANDS) – SEE THE README.",
+        f"GRIP: PRINTED PLA GRIP (ANY OF THE TEN REV-8 DESIGNS; DRAWN: {g['name']}, {g['mass_g']:.0f} g), LOCKED BY A "
+        f"DIN 7984\nM3 × {fmt(GRIP.screw_len)} SCREW INTO AN M3 HEAT-SET INSERT. " +
+        (f"REV-8 SLOT {fmt(GRIP.slot_t)} > HANDLE {fmt(sp.thickness)}: REGENERATE – PB-GR-002."
+         if GRIP.slot_t - sp.thickness > 0.6 else "SEE PB-GR-002."),
         f"USA PICKLEBALL LIMITS: L + W = {fmt(s)} ≤ {fmt(USAP_SUM)} (24 in), L = {fmt(sp.length)} ≤ {fmt(USAP_LEN)} "
         f"(17 in), INCL. GRIP.\nAN EDGE GUARD COUNTS TOWARDS THESE LIMITS (MARGIN {fmt(USAP_SUM - s)}).",
     ]
@@ -258,7 +262,7 @@ def ga_sheet(o: Outline, mass: dict | None = None) -> Doc:
     sv.line((0, -9), (0, L + 9), "ctr")
     d.dim_linear(sv.P((-T, L)), sv.P((T, L)), "x", tip_y - 11, fmt(sp.thickness), outside=True)
     d.text((sv_x, 259), "SIDE VIEW", 3.5, weight="bold")
-    d.text((sv_x, 263.5), f"LAY-UP {fmt(C.face_t)} / {fmt(C.core_t)} / {fmt(C.face_t)}", 2.6)
+    d.text((sv_x, 263.5), f"LAY-UP {fmt(C.face_t)}/{fmt(C.core_t)}/{fmt(C.face_t)}", 2.4)
 
     # ---- section A-A (blade, 1:2): face sheets, closed frame and the wave rib
     xa, ya = 287.0, 118.0
@@ -303,7 +307,7 @@ def ga_sheet(o: Outline, mass: dict | None = None) -> Doc:
     d.line((xb - ww - 4, yb), (xb + ww + 2, yb), "ctr")
     d.line((xb, yb - wt - 2), (xb, yb + wt + 3), "ctr")
     d.text((xb, yb + wt + 9), "SECTION B–B", 3.5, weight="bold")
-    d.text((xb, yb + wt + 13.2), "SCALE 1:1 · GRIP: PB-GR-002", 2.5)
+    d.text((xb, yb + wt + 13.2), f"SCALE 1:1 · REV-8 GRIP, SLOT {fmt(GRIP.slot_t)}: PB-GR-002", 2.5)
 
     # ---- isometric view
     draw_pictorial(d, o, ISOMETRIC, (318.0, 52.0), 0.25)

@@ -112,7 +112,7 @@ class PaddleSpec:
     width: float = 200.0            # blade width
     handle_length: float = 130.0    # handle incl. the grip base: butt to the end of the straight 30 mm section
     handle_width: float = 30.0
-    thickness: float = 16.0
+    thickness: float = 10.6         # = Construction.thickness: 0.3 + 10 + 0.3 (checked)
     cap_length: float = 5.0         # solid base of the printed grip below the body: sheets + core start here
     head: str = "square"            # "square" (corner radii) or "dome"
     corner_r: float = 48.0          # square head: tip corner radius
@@ -135,15 +135,15 @@ class PaddleSpec:
 @dataclass(frozen=True)
 class Construction:
     """Sandwich lay-up, wave-rib core and butt fixing shared by both paddles (mm)."""
-    face_t: float = 4.0          # carbon-fibre face sheet, top and bottom (identical parts)
-    core_t: float = 8.0          # rib core height between the face sheets
+    face_t: float = 0.3          # carbon-fibre face sheet, top and bottom (identical parts)
+    core_t: float = 10.0         # rib core height between the face sheets
     frame_w: float = 6.0         # closed perimeter frame of the rib core (covers the whole side)
     rib_pitch: float = 18.0      # wave length (crest to crest) across the width
     rib_t: float = 1.6           # wave-rib wall thickness
-    rib_amp: float = 4.0         # wave centre-line amplitude; crests are cut flat at the faces = bond lands
-                                 # (4.0 -> 4.25 mm wide lands; the first FEA iteration used 3.6 -> 3.13 mm)
+    rib_amp: float = 5.2         # wave centre-line amplitude; crests are cut flat at the faces = bond lands
+                                 # (5.2 -> 4.28 mm wide lands in the 10 mm core, as REV C had 4.25 in 8 mm)
     solid_to: float = 150.0      # core is solid from the butt up to this height (handle + throat)
-    runout_len: float = 8.0      # flute run-out: 45 deg taper (printable without support) so the core
+    runout_len: float = 10.0     # flute run-out: 45 deg taper (printable without support) so the core
                                  # meets each face sheet in a thin wedge, not a square step; 0 = square
     insert_d: float = 4.0        # bore for an M3 heat-set insert (M3 x 5.7, knurl about 4.6) in the butt of the core
     insert_depth: float = 7.0
@@ -359,6 +359,7 @@ def check(o: Outline) -> None:
     assert abs((x1 - x0) - sp.width) < 1e-3 and abs(y0 - sp.cap_length) < 1e-3 and abs(y1 - sp.length) < 1e-3, \
         (x0, y0, x1, y1)
     assert o.area > 0, "outline must be counter-clockwise"
+    assert abs(sp.thickness - CONSTRUCTION.thickness) < 1e-9, (sp.thickness, CONSTRUCTION.thickness)
 
 
 if __name__ == "__main__":

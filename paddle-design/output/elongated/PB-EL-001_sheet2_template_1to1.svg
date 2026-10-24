@@ -20,7 +20,7 @@
 <path d="M163.5,400 L163.5,275 A15,15 0 0 1 171,262.01 L236,224.482 A25,25 0 0 0 248.5,202.831 L248.5,63 A48,48 0 0 0 200.5,15 L96.5,15 A48,48 0 0 0 48.5,63 L48.5,202.831 A25,25 0 0 0 61,224.482 L126,262.01 A15,15 0 0 1 133.5,275 L133.5,400 L163.5,400 Z" class="" fill="#f4f6f8" stroke="none"/>
 <line x1="148.5" y1="409" x2="148.5" y2="11" class="ctr" />
 <text x="148.5" y="120" font-size="14" text-anchor="middle" font-weight="bold" fill="#c9cfd6" >ELONGATED</text>
-<text x="148.5" y="128" font-size="6" text-anchor="middle" font-weight="normal" fill="#c9cfd6" >390 × 200 × 16 mm</text>
+<text x="148.5" y="128" font-size="6" text-anchor="middle" font-weight="normal" fill="#c9cfd6" >390 × 200 × 10.6 mm</text>
 <text x="157" y="340" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#8a939c" transform="rotate(-90 157 340)" >HANDLE 30 × 130</text>
 <line x1="111.5" y1="405" x2="185.5" y2="405" class="" fill="none" stroke="#9aa3ad" stroke-width="0.25" stroke-dasharray="6 1.5 1.5 1.5"/>
 <text x="109.5" y="404" font-size="2.4" text-anchor="end" font-weight="normal" fill="#7c8590" >GRIP BUTT FACE y = 0 (GRIP NOT ON THIS TEMPLATE)</text>
@@ -193,10 +193,10 @@
 <text x="200" y="389.62" font-size="3.2" text-anchor="middle" font-weight="bold" fill="#000" >PB-EL-001</text>
 <rect x="222" y="383" width="16" height="9" class="thin" />
 <text x="223.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >REV</text>
-<text x="230" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >C</text>
+<text x="230" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >D</text>
 <rect x="238" y="383" width="20" height="9" class="thin" />
 <text x="239.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SHEET</text>
-<text x="248" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >2 / 3</text>
+<text x="248" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >2 / 4</text>
 <rect x="258" y="383" width="28" height="9" class="thin" />
 <text x="259.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SCALE</text>
 <text x="272" y="389.62" font-size="3.2" text-anchor="middle" font-weight="bold" fill="#000" >1:1</text>

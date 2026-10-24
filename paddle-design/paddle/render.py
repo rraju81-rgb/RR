@@ -213,7 +213,7 @@ def board(outlines: list[Outline]) -> tuple[str, float, float]:
             'Pickleball paddle designs</text>',
             f'<text x="70" y="112" font-family="{SANS}" font-size="19" fill="#5d6066">'
             'Elongated &amp; Hybrid  ·  39 cm overall  ·  26 cm blade + 13 cm handle  ·  3 cm handle  '
-            '·  1.6 cm thick</text>']
+            f'·  {outlines[0].spec.thickness / 10:g} cm thick</text>']
     slots = [(330.0, 650.0), (1230.0, 1550.0)]
     captions = {
         "elongated": ("Square head · R48 tip corners", "R25 shoulders · 30° taper · R15 throat"),
