@@ -10,8 +10,8 @@ Architecture (same as the "CNC aluminium + carbon finish" universal racing guard
                                                         +/-5 mm fore-aft adjustment; gusset
                                                         inside the bend takes crash loads
     expander         (cone nut + elastomer sleeve)   -- S / M / L sleeves cover 13-19 mm bar ID
-    wind diffuser    (plate + two-piece clamp)       -- clamp wraps the blade run and slides
-                                                        along it, locked by two M4 screws
+    wind guard       (moulded shell + two-piece      -- clamp wraps the blade run and slides
+                      CNC clamp)                        along it, locked by two M4 screws
 
 Guard frame "G" used for every part (all dimensions in mm):
     origin  centre of the handlebar's open end face
@@ -21,7 +21,8 @@ Guard frame "G" used for every part (all dimensions in mm):
 
 One part set fits either side of the bike: the left guard is the right guard turned over
 (rotated 180 deg about Y), because every part is symmetric about the lever plane (the two
-diffuser clamp halves are the same part, one turned over).
+diffuser clamp halves are the same part, one turned over). The wind guard shell is the
+exception: it rises toward the rider's knuckles, so it comes as a mirror-image pair.
 """
 
 from __future__ import annotations
@@ -93,14 +94,18 @@ class Params:
     cone_min_d: float = 8.0  # keeps >= 1 mm wall around the M6 thread
     cone_tap_d: float = 5.0  # M6 tap drill
 
-    # ---- wind diffuser: flat plate held by a two-piece clamp that slides on the blade run ---
-    diffuser_t: float = 3.0  # plate thickness (3K carbon or 5052 aluminium sheet)
-    diffuser_len: float = 220.0  # along the run, from the clamp's outboard end
-    diffuser_depth_out: float = 18.0  # plate depth away from the lever, outboard end
-    diffuser_depth_in: float = 36.0  # plate depth away from the lever, inboard end
-    diffuser_gap: float = 1.0  # plate rear edge to the blade's outer face
+    # ---- wind guard: moulded shell held by a two-piece clamp that slides on the blade run ----
+    shell_t: float = 3.0  # wall; the flat flange is pinched between the clamp halves
+    shell_gap: float = 1.0  # flange rear edge to the blade's outer face
+    shell_flange: float = 14.0  # flange runs this far ahead of the blade's outer face, then bends up
+    shell_bend_r: float = 12.0  # flange-to-shield bend (centre line)
+    shell_out: float = 14.0  # shell starts this far outboard of the clamp's outboard end
+    shell_len: float = 230.0  # outboard end to tip, along the run
+    shell_crest: float = 84.0  # highest point above the blade's outer face, measured up on the bike
+    shell_crease: tuple[float, float] = (60.0, -4.0)  # crease height at the outboard end / at the tip
+    lever_deg: float = 30.0  # lever plane below horizontal: sets "up" and "forward" for the shell
     clamp_len: float = 40.0
-    clamp_front: float = 10.0  # clamp block depth ahead of the blade (holds the plate)
+    clamp_front: float = 10.0  # clamp block depth ahead of the blade (holds the shell's flange)
     clamp_wall: float = 3.0  # wall over the blade's top / bottom edge
     clamp_lip: float = 2.5  # hook over the blade's lever-side face
     clamp_lip_t: float = 2.0
@@ -112,7 +117,7 @@ class Params:
     # ---- hardware -----------------------------------------------------------------------------
     m6_len: float = 45.0  # ISO 4762 M6 x 45 in expander mode
     m5_len: float = 14.0  # ISO 7380 M5 x 14 for the 6 mm blade
-    m4_len: float = 25.0  # ISO 4762 M4 x 25 + DIN 985 nyloc nut through the diffuser clamp
+    m4_len: float = 25.0  # ISO 4762 M4 x 25 from below + DIN 985 nyloc nut through the clamp
 
     # ---- derived ------------------------------------------------------------------------------
     @property
@@ -541,7 +546,7 @@ def expander_cone(p: Params, size: str) -> cq.Workplane:
 
 
 # ------------------------------------------------------------------------------------------------
-# wind diffuser
+# wind guard: moulded shell on a two-piece clamp that slides along the blade run
 # ------------------------------------------------------------------------------------------------
 def run_frame(p: Params, s: float, shift: float = 0.0) -> cq.Location:
     """Frame on the outer face of the blade run, s mm along it from the bend: local x runs
@@ -569,10 +574,10 @@ def clamp_half_local(p: Params) -> cq.Workplane:
     """Upper diffuser clamp half in the run frame. The lower half is the same part turned
     over (180 deg about local y), so both halves come off one drawing."""
     t, c, L = p.blade_t, p.clamp_clear, p.clamp_len
-    h2, top, g = p.blade_h / 2, _clamp_top(p), p.diffuser_t / 2
+    h2, top, g = p.blade_h / 2, _clamp_top(p), p.shell_t / 2
     lip_y = t + c + p.clamp_lip_t
     body = (
-        _box(0, L, -(c + p.clamp_front), -c, g, top)  # block ahead of the blade, grips the plate
+        _box(0, L, -(c + p.clamp_front), -c, g, top)  # block ahead of the blade, grips the flange
         .union(_box(0, L, -c - 0.01, t + c, h2, top))  # wall over the blade's edge
         .union(_box(0, L, t + c, lip_y, h2 - p.clamp_lip, top))  # hook over the lever-side face
     )
@@ -595,39 +600,134 @@ def _turn_over(p: Params, wp: cq.Workplane) -> cq.Workplane:
     return wp.rotate((p.clamp_len / 2, 0, 0), (p.clamp_len / 2, 1, 0), 180)
 
 
-def diffuser_plate_local(p: Params) -> cq.Workplane:
-    """Flat diffuser plate in the run frame; its rear strip is pinched between the clamp halves."""
-    y0, L, d = -p.diffuser_gap, p.diffuser_len, p.diffuser_t
-    pts = [(0, y0), (L, y0), (L, y0 - p.diffuser_depth_in), (0, y0 - p.diffuser_depth_out)]
-    plate = cq.Workplane("XY").polyline(pts).close().extrude(d).translate((0, 0, -d / 2))
-    for (x, y), r in zip(pts, (1.5, 5.0, 14.0, 8.0)):
-        plate = plate.edges(cq.selectors.NearestToPointSelector((x, y, 0))).fillet(r)
-    plate = _fillet_sharp(plate, 0.6)
-    for x, y in _clamp_screw_xy(p):
-        plate = plate.cut(cq.Workplane("XY", origin=(x, y, -d)).circle(2.2).extrude(2 * d))
-    return plate
+# Front-view outline of the wind guard, as (distance along the run from the shell's outboard
+# end, height "up" on the bike above the blade's outer face) for shell_len = 230 and
+# shell_crest = 84; scaled to the parameters. Points below 0 shape the rounded tip.
+_SHELL_TOP = [(0, 2), (6, 38), (16, 61), (30, 75), (54, 84), (89, 82), (126, 70), (162, 49),
+              (190, 26), (211, 5), (222, -3), (228, -9), (230, -16)]
+_SHELL_X = (0, 29, 64, 104, 144, 184, 242)  # loft sections, same scale
+_SHELL_RA, _SHELL_RK, _SHELL_RB, _SHELL_KINK = 140.0, 4.0, 250.0, 12.0  # panel radii, crease
+
+
+def _arc_pt(c: tuple[float, float], r: float, ang: float) -> tuple[float, float]:
+    return (c[0] + r * math.cos(math.radians(ang)), c[1] + r * math.sin(math.radians(ang)))
+
+
+def _shell_profile(p: Params, phi0: float, sig_a: float, sig_b: float):
+    """Centre line of one shell section in the run frame's (y, z) plane, as arcs
+    (centre, radius, start angle, sweep), all turning the same way: the bend from the flange up
+    to heading phi0, the lower panel, the crease and the upper panel."""
+    pieces, head, p0 = [], 180.0, (-p.shell_flange, 0.0)
+    for r, turn in ((p.shell_bend_r, 180.0 - phi0), (_SHELL_RA, sig_a), (_SHELL_RK, _SHELL_KINK), (_SHELL_RB, sig_b)):
+        hy, hz = math.cos(math.radians(head)), math.sin(math.radians(head))
+        c = (p0[0] + r * hz, p0[1] - r * hy)  # centre on the rider's side of the heading
+        pieces.append((c, r, head + 90.0, turn))
+        head -= turn
+        p0 = _arc_pt(c, r, head + 90.0)
+    return pieces
+
+
+def _shell_up(p: Params, yz: tuple[float, float]) -> float:
+    """Height of a run-frame (y, z) point "up" on the bike, above the blade's outer face."""
+    a = math.radians(p.lever_deg)
+    return yz[0] * math.sin(a) + yz[1] * math.cos(a)
+
+
+def _shell_section(p: Params, x: float, phi0: float, sig_a: float, sig_b: float) -> cq.Wire:
+    t2, pcs = p.shell_t / 2, _shell_profile(p, phi0, sig_a, sig_b)
+    wp = cq.Workplane("YZ", origin=(x, 0, 0)).moveTo(-p.shell_flange, -t2)
+    for c, r, a0, turn in pcs:  # front face, flange up to the top
+        wp = wp.threePointArc(_arc_pt(c, r + t2, a0 - turn / 2), _arc_pt(c, r + t2, a0 - turn))
+    c, r, a0, turn = pcs[-1]
+    wp = wp.lineTo(*_arc_pt(c, r - t2, a0 - turn))
+    for c, r, a0, turn in reversed(pcs):  # rider's side back down
+        wp = wp.threePointArc(_arc_pt(c, r - t2, a0 - turn / 2), _arc_pt(c, r - t2, a0))
+    return wp.close().val()
+
+
+def wind_guard_local(p: Params, left: bool = False) -> cq.Workplane:
+    """Moulded wind guard shell in the run frame (right-hand; left=True gives the mirror image).
+
+    A flat flange, pinched between the clamp halves, bends up into a shield that stands in front
+    of the hand on the bike, convex to the wind and curling back over the knuckles. A crease runs
+    from the high outboard end down to the pointed tip. The shield is lofted through sections
+    that lean back more at both ends, so it wraps round the hand, then trimmed to its front-view
+    outline.
+    """
+    kx, ku, x0 = p.shell_len / 230.0, p.shell_crest / 84.0, -p.shell_out
+    top = [(x0 + xs * kx, u * ku if u > 0 else u) for xs, u in _SHELL_TOP]
+
+    def top_u(x: float) -> float:
+        if x <= top[0][0]:
+            return top[0][1]
+        for (xa, ua), (xb, ub) in zip(top, top[1:]):
+            if xa <= x <= xb:
+                return ua + (ub - ua) * (x - xa) / (xb - xa)
+        return top[-1][1]
+
+    def top_of(phi0, sig_a, sig_b, piece):
+        c, r, a0, turn = _shell_profile(p, phi0, sig_a, sig_b)[piece]
+        return _shell_up(p, _arc_pt(c, r, a0 - turn))
+
+    wires, n = [], len(_SHELL_X) - 1
+    for i, xs in enumerate(_SHELL_X):
+        x, f = x0 + xs * kx, i / n
+        phi0 = 96.0 - p.lever_deg - 5 * (1 - min(1.0, f / 0.35)) ** 2 - 5 * max(0.0, (f - 0.6) / 0.4) ** 2
+        crease = p.shell_crease[0] + (p.shell_crease[1] - p.shell_crease[0]) * xs / 226.0
+        need = max(top_u(x), top_u(x - 20), top_u(x + 20), 20.0) + 8.0
+        sig_a = 2.0
+        while top_of(phi0, sig_a, 2.0, 1) < crease and sig_a < 60:
+            sig_a += 0.5
+        sig_b = 2.0
+        while top_of(phi0, sig_a, sig_b, 3) < need and sig_b < 60:
+            sig_b += 1.0
+        wires.append(_shell_section(p, x, phi0, sig_a, sig_b))
+    shell = cq.Workplane(obj=cq.Solid.makeLoft(wires, False))
+
+    a = math.radians(p.lever_deg)  # trim to the outline seen from the front of the bike
+    front = cq.Plane(origin=(0, 0, 0), xDir=(1, 0, 0), normal=(0, -math.cos(a), math.sin(a)))
+    x_far = x0 + 260 * kx
+    outline = (
+        cq.Workplane(front).moveTo(x_far, -60).lineTo(x0 - 26, -60).lineTo(x0 - 26, -14)
+        .spline(top, includeCurrent=True).lineTo(x_far, -60).close().extrude(300, both=True)
+    )
+    shell = shell.intersect(outline)
+
+    y0, ys, fl_end, t = -p.shell_gap, -p.shell_flange, p.clamp_len + 20.0, p.shell_t
+    flange = (
+        cq.Workplane("XY").moveTo(x0, y0).lineTo(fl_end - 16, y0)
+        .threePointArc((fl_end - 5, y0 - 4.5), (fl_end, ys)).lineTo(x0, ys).close()
+        .extrude(t).translate((0, 0, -t / 2))
+    )
+    shell = shell.union(flange)
+    for x, y in _clamp_screw_xy(p):  # holes for the compression sleeves
+        shell = shell.cut(cq.Workplane("XY", origin=(x, y, -t)).circle(3.0).extrude(2 * t))
+    return shell.mirror("XY") if left else shell
 
 
 def m4_screw_nut_local(p: Params, x: float, y: float) -> cq.Workplane:
-    """ISO 4762 M4 cap screw (head 7 x 4) in the upper pocket + DIN 985 M4 nyloc nut below."""
-    z_head = _clamp_top(p) - p.clamp_pocket
-    head = cq.Workplane("XY", origin=(x, y, z_head)).circle(3.5).extrude(4.0)
-    head = head.cut(cq.Workplane("XY", origin=(x, y, z_head + 2.0)).polygon(6, 3.0 / math.cos(math.pi / 6)).extrude(2.1))
-    shank = cq.Workplane("XY", origin=(x, y, z_head - p.m4_len)).circle(2.0).extrude(p.m4_len)
+    """ISO 4762 M4 cap screw (head 7 x 4) from below in the lower half's pocket, DIN 985 M4 nyloc
+    nut captive in the upper half's pocket, and a 6 / 4 x shell_t aluminium compression sleeve
+    in the shell's flange that keeps the clamp load off the plastic."""
+    z_pocket = _clamp_top(p) - p.clamp_pocket
+    head = cq.Workplane("XY", origin=(x, y, -z_pocket - 4.0)).circle(3.5).extrude(4.0)
+    head = head.cut(cq.Workplane("XY", origin=(x, y, -z_pocket - 4.1)).polygon(6, 3.0 / math.cos(math.pi / 6)).extrude(2.1))
+    shank = cq.Workplane("XY", origin=(x, y, -z_pocket)).circle(2.0).extrude(p.m4_len)
     nut = (
-        cq.Workplane("XY", origin=(x, y, -z_head - 5.0)).polygon(6, 7.0 / math.cos(math.pi / 6)).extrude(5.0)
-        .cut(cq.Workplane("XY", origin=(x, y, -z_head - 6.0)).circle(2.0).extrude(7.0))
+        cq.Workplane("XY", origin=(x, y, z_pocket)).polygon(6, 7.0 / math.cos(math.pi / 6)).extrude(5.0)
+        .cut(cq.Workplane("XY", origin=(x, y, z_pocket - 1.0)).circle(2.0).extrude(7.0))
     )
-    return head.union(shank).union(nut)
+    sleeve = cq.Workplane("XY", origin=(x, y, -p.shell_t / 2)).circle(3.0).extrude(p.shell_t)
+    return head.union(shank).union(nut).union(sleeve)
 
 
 def diffuser_parts(p: Params = Params(), pos: float | None = None, shift: float = 0.0):
-    """Diffuser plate, both clamp halves and the two M4 screws, placed on the blade in G."""
+    """Wind guard shell, both clamp halves and the two M4 screws, placed on the blade in G."""
     loc = run_frame(p, p.clamp_pos if pos is None else pos, shift)
     place = lambda wp: cq.Workplane(obj=wp.val().moved(loc))  # noqa: E731
     upper = clamp_half_local(p)
     items = [
-        ("diffuser_plate", place(diffuser_plate_local(p))),
+        ("diffuser_shell", place(wind_guard_local(p))),
         ("diffuser_clamp_upper", place(upper)),
         ("diffuser_clamp_lower", place(_turn_over(p, upper))),
     ]
@@ -740,7 +840,7 @@ def guard_parts(p: Params = Params(), size: str = "M", shift: float = 0.0, spigo
         ]
     if diffuser:
         for name, wp in diffuser_parts(p, clamp_pos, shift):
-            rgb = CARBON_RGB if name == "diffuser_plate" else STEEL_RGB if "screw" in name else ANODISE[colour]
+            rgb = STEEL_RGB if "screw" in name else ANODISE[colour]
             parts.append((name, wp, rgb))
     return parts
 

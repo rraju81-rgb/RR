@@ -26,20 +26,24 @@ const SHOTS = [
     camera: { pos: [330, 60, 70], target: [0, 28, -14] },
   },
   {
-    file: "exploded.png", colour: "red", reference: false, explode: 1, size: [1800, 1000], fov: 24,
-    camera: { pos: [250, 250, 200], target: [14, 30, -14] },
+    file: "exploded.png", colour: "red", reference: false, explode: 1, size: [1800, 1000], fov: 31,
+    camera: { pos: [250, 250, 200], target: [-34, 38, -4] },
   },
   {
     file: "bend_gusset_detail.png", colour: "red", diffuser: false, size: [1400, 1000], fov: 34,
     camera: { pos: [-10, 95, 84], target: [10, 43, -25] },
   },
   {
-    file: "diffuser_clamp_detail.png", colour: "red", reference: false, size: [1400, 1000], fov: 30,
-    camera: { pos: [70, 200, 70], target: [-28, 61, -36] },
+    file: "wind_guard_front.png", colour: "red", size: [1600, 1000], fov: 28,
+    camera: { pos: [60, 420, 120], target: [-80, 40, 0] },
+  },
+  {
+    file: "wind_guard_mount_detail.png", colour: "red", reference: false, size: [1400, 1000], fov: 30,
+    camera: { pos: [95, 70, -205], target: [-25, 58, -34] },
   },
   ...["red", "blue", "gold", "black", "silver"].map((c) => ({
-    file: `colour_${c}.png`, colour: c, reference: false, size: [800, 640], fov: 26,
-    camera: { pos: [170, 220, 150], target: [-30, 38, -12] },
+    file: `colour_${c}.png`, colour: c, reference: false, size: [800, 640], fov: 34,
+    camera: { pos: [210, 250, 170], target: [-62, 42, -2] },
   })),
 ];
 

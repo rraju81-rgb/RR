@@ -157,9 +157,9 @@
     <div class="eyebrow">Universal bar-end fit &middot; 7/8&Prime; (22.2 mm) bars &middot; bar ID 13&ndash;19 mm</div>
     <h1>Racing Lever Guard <span>/</span> Carbon + CNC</h1>
     <p class="lede">Parametric CAD of a bar-end racing lever protector: anodised 6061 adapter and arm,
-      a 6 mm carbon blade with a gusset inside the bend, an expander for hollow bars and a sliding
-      wind diffuser. Turn the guard in its 10&deg; serration steps, slide the blade and the diffuser,
-      and check the gap to the lever.</p>
+      a 6 mm carbon blade with a gusset inside the bend, an expander for hollow bars and a moulded
+      wind guard that slides along the blade. Turn the guard in its 10&deg; serration steps, slide
+      the blade and the wind guard, and check the gap to the lever.</p>
   </header>
 
   <div class="bench">
@@ -187,9 +187,9 @@
       </div>
 
       <div class="ctl">
-        <div class="ctl-head"><label for="dpos">Wind diffuser position</label><span class="readout" id="dposOut">0 mm</span></div>
+        <div class="ctl-head"><label for="dpos">Wind guard position</label><span class="readout" id="dposOut">0 mm</span></div>
         <input type="range" id="dpos" min="0" max="45" step="1" value="0">
-        <div class="toggles"><label><input type="checkbox" id="diffuser" checked> Fit wind diffuser</label></div>
+        <div class="toggles"><label><input type="checkbox" id="diffuser" checked> Fit wind guard</label></div>
         <p class="note">The clamp wraps the blade. Two M4 screws lock it; loosen them and it slides along the run.</p>
       </div>
 
@@ -308,9 +308,9 @@ fillTable("dims", ["Feature", "Value"], [
   ["Adapter body / spigot", `Ø${fmt(P.body_d)} × ${fmt(P.pitch_x)} / Ø${fmt(P.spigot_d)} × ${fmt(P.spigot_len)} mm`],
   ["Angle adjustment", `${P.teeth || 36} teeth → ${360 / (P.teeth || 36)}° steps`],
   ["Fore-aft adjustment", `±${fmt(P.adjust)} mm slot`],
-  ["Wind diffuser plate", DF.length_mm ? `${fmt(DF.length_mm)} long, ${fmt(DF.depth_mm[0])}–${fmt(DF.depth_mm[1])} mm deep, ${fmt(P.diffuser_t)} mm` : "–"],
-  ["Diffuser travel along the blade", DF.travel_mm ? `${fmt(DF.travel_mm)} mm (2 × M4 lock)` : "–"],
-  ["Mass per side (carbon blade, without / with diffuser)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} / ${fmt(S.mass_per_side_grams_with_diffuser, 0)} g` : "–"],
+  ["Wind guard shell", DF.length_mm ? `${fmt(DF.length_mm)} long, ${fmt(DF.above_bar_axis_mm)} above / ${fmt(DF.below_bar_axis_mm)} below the bar axis, ${fmt(P.shell_t)} mm wall` : "–"],
+  ["Wind guard travel along the blade", DF.travel_mm ? `${fmt(DF.travel_mm)} mm (2 × M4 lock)` : "–"],
+  ["Mass per side (carbon blade, without / with wind guard)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} / ${fmt(S.mass_per_side_grams_with_diffuser, 0)} g` : "–"],
 ]);
 const lc = C4.lever_clearance_mm || {};
 fillTable("checks", ["Fit check (CAD)", "Result"], [
@@ -318,8 +318,9 @@ fillTable("checks", ["Fit check (CAD)", "Result"], [
   ["Half a tooth out", `<span class="pill">clashes, cannot slip</span>`],
   ["Blade to reference lever (slot −5 / 0 / +5)", lc["+0"] ? `${lc["-5"]} / ${lc["+0"]} / ${lc["+5"]} mm` : "–"],
   ["Finger room, grip to blade run", C4.finger_room_mm ? `${fmt(C4.finger_room_mm)} mm` : "–"],
-  ["Diffuser to lever (clamp travel ends)", DF.lever_clearance_mm ? `${DF.lever_clearance_mm.join(" / ")} mm` : "–"],
-  ["Diffuser to brake perch (clamp travel ends)", DF.perch_clearance_mm ? `${DF.perch_clearance_mm.join(" / ")} mm` : "–"],
+  ["Wind guard to lever (clamp travel ends)", DF.lever_clearance_mm ? `${DF.lever_clearance_mm.join(" / ")} mm` : "–"],
+  ["Wind guard to brake perch (clamp travel ends)", DF.perch_clearance_mm ? `${DF.perch_clearance_mm.join(" / ")} mm` : "–"],
+  ["Wind guard to a gloved hand (Ø100 round the grip)", DF.hand_clearance_mm ? `${DF.hand_clearance_mm.join(" / ")} mm` : "–"],
   ["M6 bolt thread in cone nut", `${fmt(C4.m6_engagement_mm)} mm`],
   ["M5 blade screws in arm", `${fmt(C4.m5_engagement_mm)} mm`],
   ["All CAD checks", S.all_checks_passed ? `<span class="pill">pass</span>` : "see build log"],
@@ -340,13 +341,14 @@ fillTable("bom", ["#", "Part", "Material / finish", "Qty per side", "Mass"], [
   ["03b", "Guard blade 8 mm (printable)", "PA12-CF or PETG-CF, carbon hydro-dip", "alt.", g("03b_guard_blade_8mm_3dprint")],
   ["04", "Expander sleeve S / M / L", "TPU 95A or NBR 70 Shore A", "1", g("04_expander_sleeve_M_bar_id_15-17")],
   ["05", "Expander cone nut S / M / L, M6", "6061-T6 or zinc-plated steel", "1", g("05_expander_cone_M_bar_id_15-17")],
-  ["06", "Wind diffuser plate 3 mm", "3K carbon plate or 5052 aluminium, carbon finish", "1", g("06_wind_diffuser_plate_3mm")],
-  ["07", "Diffuser clamp half (same part twice)", "6061-T6, hard anodised", "2", g("07_diffuser_clamp_half")],
+  ["06 / 06b", "Wind guard shell, right / left (mirror pair)", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("06_wind_guard_shell_RH")],
+  ["07", "Wind guard clamp half (same part twice)", "6061-T6, hard anodised", "2", g("07_wind_guard_clamp_half")],
   ["H1", "Socket cap screw M6 × 45, ISO 4762", "A2-70 stainless or 10.9 black", "1", ""],
   ["H2", "Button head screw M5 × 14, ISO 7380", "A2-70 stainless", "2", ""],
   ["H3", "Washer M5, ISO 7089", "A2 stainless", "2", ""],
-  ["H4", "Socket cap screw M4 × 25, ISO 4762", "A2-70 stainless", "2", ""],
-  ["H5", "Nyloc nut M4, DIN 985", "A2 stainless", "2", ""],
+  ["H4", "Socket cap screw M4 × 25, ISO 4762, from below", "A2-70 stainless", "2", ""],
+  ["H5", "Nyloc nut M4, DIN 985, captive in the upper half", "A2 stainless", "2", ""],
+  ["H6", "Compression sleeve Ø6 / Ø4.2 × 3 (in the shell flange)", "Aluminium", "2", ""],
 ]);
 
 // ---------------------------------------------------------------- three.js scene
@@ -418,8 +420,10 @@ function carbonTexture() {
 }
 
 const anodised = new THREE.MeshPhysicalMaterial({ color: ANODISE.red, metalness: 0.85, roughness: 0.3, clearcoat: 0.35, clearcoatRoughness: 0.25 });
+const shellMat = new THREE.MeshPhysicalMaterial({ color: ANODISE.red, metalness: 0.0, roughness: 0.38, clearcoat: 0.7, clearcoatRoughness: 0.18, side: THREE.DoubleSide });
 const MATS = {
   anodised,
+  shell: shellMat,
   carbon: new THREE.MeshPhysicalMaterial({ map: carbonTexture(), metalness: 0.0, roughness: 0.32, clearcoat: 1.0, clearcoatRoughness: 0.06 }),
   steel: new THREE.MeshPhysicalMaterial({ color: 0xb9bdc3, metalness: 1.0, roughness: 0.28 }),
   alu: new THREE.MeshPhysicalMaterial({ color: 0xc8cbd0, metalness: 1.0, roughness: 0.35 }),
@@ -510,6 +514,7 @@ function updateReadouts() {
 function apply(opts = {}) {
   Object.assign(state, opts);
   anodised.color.setHex(ANODISE[state.colour]);
+  shellMat.color.setHex(ANODISE[state.colour]);
   if (state.colour === "black") { anodised.roughness = 0.42; anodised.metalness = 0.6; }
   else if (state.colour === "silver") { anodised.roughness = 0.3; anodised.metalness = 1.0; }
   else { anodised.roughness = 0.3; anodised.metalness = 0.85; }

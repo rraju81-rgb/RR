@@ -33,14 +33,14 @@ MATERIAL = {
     "ref_handlebar": "bar",
     "ref_grip": "grip",
     "ref_lever": "lever",
-    "diffuser_plate": "carbon",
+    "diffuser_shell": "shell",
     "diffuser_clamp_upper": "anodised",
     "diffuser_clamp_lower": "anodised",
     "diffuser_screw_1": "steel",
     "diffuser_screw_2": "steel",
 }
 
-# exploded-view offsets in G (mm): guard parts fan out along the bar axis, the diffuser rides
+# exploded-view offsets in G (mm): guard parts fan out along the bar axis, the wind guard rides
 # with the blade and opens up around it
 EXPLODE = {
     "expander_cone": (-46, 0, 0),
@@ -51,11 +51,11 @@ EXPLODE = {
     "m5_screw_1": (66, 0, 0),
     "m5_screw_2": (66, 0, 0),
     "m6_bolt": (92, 0, 0),
-    "diffuser_plate": (44, 34, 0),
+    "diffuser_shell": (44, 18, 30),
     "diffuser_clamp_upper": (44, 0, 24),
     "diffuser_clamp_lower": (44, 0, -24),
-    "diffuser_screw_1": (44, 0, 48),
-    "diffuser_screw_2": (44, 0, 48),
+    "diffuser_screw_1": (44, 0, -48),
+    "diffuser_screw_2": (44, 0, -48),
 }
 
 LABEL = {
@@ -70,11 +70,11 @@ LABEL = {
     "ref_handlebar": "Handlebar (reference)",
     "ref_grip": "Grip (reference)",
     "ref_lever": "Brake lever (reference)",
-    "diffuser_plate": "Wind diffuser plate",
-    "diffuser_clamp_upper": "Diffuser clamp half",
-    "diffuser_clamp_lower": "Diffuser clamp half",
-    "diffuser_screw_1": "M4 x 25 screw + nyloc nut",
-    "diffuser_screw_2": "M4 x 25 screw + nyloc nut",
+    "diffuser_shell": "Wind guard shell (right)",
+    "diffuser_clamp_upper": "Wind guard clamp half",
+    "diffuser_clamp_lower": "Wind guard clamp half",
+    "diffuser_screw_1": "M4 x 25 screw, nyloc nut, sleeve",
+    "diffuser_screw_2": "M4 x 25 screw, nyloc nut, sleeve",
 }
 
 

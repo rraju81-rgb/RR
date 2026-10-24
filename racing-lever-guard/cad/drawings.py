@@ -38,6 +38,7 @@ import lever_guard as lg  # noqa: E402
 
 W, H = 420.0, 297.0
 INK, REF, DIMC, CL = "#111111", "#a3a3a3", "#173a6b", "#6b6b6b"
+SHELL = "#9c3b36"  # wind guard shell drawn as a phantom over the assembly
 DATE = "2026-10-23"
 _SUMMARY = Path(__file__).resolve().parent.parent / "exports" / "summary.json"
 MASS = json.loads(_SUMMARY.read_text()) if _SUMMARY.exists() else {}
@@ -339,6 +340,7 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
               1, n_sheets)
     outside = cq.Solid.makeBox(300, 300, 300, cq.Vector(0, -150, -150))
     parts = {n: wp.val() for n, wp, _ in lg.guard_parts(p)}
+    shell = parts.pop("diffuser_shell")
     guard = cq.Compound.makeCompound(
         [sh.intersect(outside) if n in ("adapter", "m6_bolt") else sh
          for n, sh in parts.items() if not n.startswith("expander")])
@@ -349,9 +351,10 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
                                     lg.ref_handlebar(p).val().intersect(cq.Solid.makeBox(110, 60, 60, cq.Vector(-235, -30, -30)))])
 
     # plan view: drawing plane = lever plane
-    v = View(s, (0, 0, 1), (1, 0, 0), (290, 125), 1.0)
+    v = View(s, (0, 0, 1), (1, 0, 0), (270, 125), 1.0)
     v.draw(ref, color=REF, lw=0.45, hidden=False, smooth=False)
     v.draw(guard, lw=0.7, hidden=False)
+    v.draw(shell, color=SHELL, lw=0.4, hidden=False)
     v.draw(inside, lw=0.7, dashed=True)
     v.centerline((-240, 0), (60, 0))
     v.caption((-60, -27), "PLAN  (looking square onto the lever plane)")
@@ -359,16 +362,16 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
     tip_min_x = tip[0] - p.blade_t / 2 * math.sin(math.radians(p.front_toe_deg))
     head_x = p.blade_seat_x + p.blade_t + 1.0 + 2.75
     top_y = p.run_point(p.front_len, -p.blade_t / 2)[1]
-    plate_pts = np.array([(q.x, q.y) for q in parts["diffuser_plate"].tessellate(0.01, 0.05)[0]])
-    plate_end = plate_pts[np.argmin(plate_pts[:, 0])]
-    plate_top = plate_pts[:, 1].max()
-    lvl1, lvl2 = plate_top + 9, plate_top + 18
-    v.hdim(tuple(plate_end), (head_x, p.screw_v[1] + 4.75), lvl2, fmt(head_x - plate_end[0]))
+    shell_pts = np.array([(q.x, q.y) for q in shell.tessellate(0.05, 0.1)[0]])
+    shell_end = shell_pts[np.argmin(shell_pts[:, 0])]
+    shell_top = shell_pts[:, 1].max()
+    lvl1, lvl2 = shell_top + 9, shell_top + 18
+    v.hdim(tuple(shell_end), (head_x, p.screw_v[1] + 4.75), lvl2, fmt(head_x - shell_end[0]))
     v.hdim((tip_min_x, top_y), (0, p.body_d / 2), lvl1, fmt(-tip_min_x))
     v.hdim((0, p.body_d / 2), (head_x, p.screw_v[1] + 4.75), lvl1, fmt(head_x))
-    v.tag((-125, (plate_top + top_y) / 2 + 4), f"LG-06 WIND DIFFUSER  {fmt(p.diffuser_len)} x {fmt(p.diffuser_depth_out)}-{fmt(p.diffuser_depth_in)}")
+    v.tag((-150, shell_top - 12), "LG-06 WIND GUARD SHELL (phantom, RH shown)", color=SHELL)
     clamp_mid = p.run_point(p.clamp_pos + p.clamp_len / 2, -p.blade_t / 2)
-    v.leader((clamp_mid[0], clamp_mid[1] + p.clamp_front), (-40, plate_top - 6),
+    v.leader((clamp_mid[0], clamp_mid[1] + p.clamp_front), (-50, shell_top - 26),
              f"LG-07 clamp: slides {fmt(p.clamp_range[1] - p.clamp_range[0])} along the run, 2x M4", ha="right")
     rs = p.run_point(0, p.blade_t / 2)
     v.vdim((rs[0], rs[1]), (40, 0), 48, f"{fmt(rs[1])} to blade face")
@@ -394,18 +397,20 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
     e.diameter((0, 0), p.body_d / 2, -135, f"Ø{fmt(p.body_d)}", outside=8)
 
     # front view (looking back at the lever), aligned with the plan
-    f = View(s, (0, 1, 0), (1, 0, 0), (290, 72), 1.0)
+    f = View(s, (0, 1, 0), (1, 0, 0), (270, 72), 1.0)
     f.draw(guard, lw=0.7, hidden=False)
     f.centerline((-240, 0), (60, 0))
-    f.caption((-90, -16), "FRONT VIEW")
+    f.caption((-90, -16), "FRONT VIEW (wind guard shell not shown)")
     f.vdim((tip_min_x + 4, p.blade_h / 2), (tip_min_x + 4, -p.blade_h / 2), tip_min_x - 8)
 
     s.notes(18, 44, [
         "1. Drawing plane = lever plane. Turn the arm on its 36-tooth serration (10° steps) to put the blade on the lever line.",
         "2. Clearances shown for the reference sport-bike lever; keep ≥ 10 mm all round, re-check at full lever travel.",
         f"3. Mass per side ≈ {fmt(round(MASS.get('mass_per_side_grams_carbon_blade', 0)))} g, "
-        f"{fmt(round(MASS.get('mass_per_side_grams_with_diffuser', 0)))} g with the wind diffuser.",
-        "4. Left side: same parts, arm turned over (every part is symmetric about the lever plane).",
+        f"{fmt(round(MASS.get('mass_per_side_grams_with_diffuser', 0)))} g with the wind guard.",
+        "4. Left side: same parts, arm turned over (they are symmetric about the lever plane), except the wind guard",
+        "    shell: LG-06 is made as a mirror-image pair.",
+        "5. Wind guard shell drawn as a phantom in the plan; its profile and fixing are on sheet 6.",
     ], size=6.4, step=4.0)
     return s
 
@@ -626,77 +631,90 @@ def sheet_expander(p: lg.Params, n_sheets: int) -> Sheet:
     return s
 
 
-def sheet_diffuser(p: lg.Params, n_sheets: int) -> Sheet:
-    s = Sheet("WIND DIFFUSER + SLIDING CLAMP", "LG-06 / LG-07", "LG-06 3K carbon plate 3 mm; LG-07 EN AW-6061-T6",
-              "LG-07 hard anodise, colour to order", "1:1 / 2:1 / 3:1", "1 + 2 halves", 6, n_sheets)
-    c, L, F = p.clamp_clear, p.clamp_len, p.clamp_front
-    plate = lg.diffuser_plate_local(p).val()
+def sheet_wind_guard(p: lg.Params, n_sheets: int) -> Sheet:
+    s = Sheet("WIND GUARD SHELL + SLIDING CLAMP", "LG-06 / LG-07",
+              "LG-06 HDPE or PP, moulded (ASA / PA12 printed); LG-07 EN AW-6061-T6",
+              "LG-06 colour to order, edges R1; LG-07 hard anodise", "1:1 / 2:1", "1 pair + 2 halves", 6, n_sheets)
+    c, L, F, t = p.clamp_clear, p.clamp_len, p.clamp_front, p.shell_t
+    shell = lg.wind_guard_local(p).val()
     upper = lg.clamp_half_local(p)
     lower = lg._turn_over(p, upper)
     blade_bar = cq.Workplane("XY").box(L + 30, p.blade_t, p.blade_h).translate((L / 2, p.blade_t / 2, 0)).val()
-    y0 = -p.diffuser_gap
     holes = lg._clamp_screw_xy(p)
+    a = math.radians(p.lever_deg)
 
-    # LG-06 plate, flat, 1:1
-    v = View(s, (0, 0, 1), (1, 0, 0), (40, 222), 1.0)
-    v.draw(plate, lw=0.7, hidden=False)
-    v.draw(cq.Workplane("XY").box(110, p.blade_t, 2).translate((55, p.blade_t / 2, 0)).val(), color=REF, lw=0.4,
-           hidden=False, smooth=False)
-    v.caption((110, -48), "LG-06 DIFFUSER PLATE (flat, 3 mm)  -  blade run shown phantom")
-    v.hdim((0, y0 - p.diffuser_depth_out), (p.diffuser_len, y0 - p.diffuser_depth_in), y0 - p.diffuser_depth_in - 6)
-    v.vdim((0, y0), (0, y0 - p.diffuser_depth_out), -7)
-    v.vdim((p.diffuser_len, y0), (p.diffuser_len, y0 - p.diffuser_depth_in), p.diffuser_len + 7)
-    v.hdim((0, y0), holes[0], 12)
-    v.hdim(holes[0], holes[1], 12)
-    v.leader(holes[1], (60, -24), f"2x Ø4.4, {fmt(round(-holes[0][1] + y0, 2))} from the rear edge")
-    for (x, y), r, tx in (((p.diffuser_len, y0 - p.diffuser_depth_in), 14, (205, -46)),
-                          ((0, y0 - p.diffuser_depth_out), 8, (-14, -30)),
-                          ((p.diffuser_len, y0), 5, (232, 10))):
-        cx = x - r if x > 0 else x + r
-        cy = y + r if y < y0 - 1 else y - r
-        k = 1 - 1 / math.sqrt(2)
-        v.leader((x + (-r if x > 0 else r) * k, y + (r if y < y0 - 1 else -r) * k), tx, f"R{r}")
+    # LG-06 seen from the front of the bike, 1:1
+    v = View(s, (0, -math.cos(a), math.sin(a)), (1, 0, 0), (44, 172), 1.0)
+    v.draw(shell, lw=0.7, hidden=False)
+    v.draw(cq.Compound.makeCompound([upper.val(), blade_bar]), color=REF, lw=0.4, hidden=False, smooth=False)
+    uv = np.array([v.uv((q.x, q.y, q.z)) for q in shell.tessellate(0.05, 0.1)[0]])
+    lo, hi = uv.min(axis=0), uv.max(axis=0)
+    crest = uv[np.argmax(uv[:, 1])]
+    v.caption((lo[0] + (hi[0] - lo[0]) / 2, lo[1] - 16), "LG-06 SHELL (RH), SEEN FROM THE FRONT OF THE BIKE  -  clamp and blade phantom")
+    v.hdim((lo[0], lo[1]), (hi[0], lo[1]), lo[1] - 7)
+    v.vdim((lo[0], lo[1]), (lo[0], hi[1]), lo[0] - 8)
+    v.hdim((lo[0], hi[1]), tuple(crest), hi[1] + 6)
+    xc = 100.0  # crease height there, as in lg.wind_guard_local
+    uc = p.shell_crease[0] + (p.shell_crease[1] - p.shell_crease[0]) * (xc + p.shell_out) / (226.0 * p.shell_len / 230.0)
+    v.leader((xc, uc), (xc + 40, uc + 34), "crease R4, outboard top to tip")
+    v.leader((hi[0] - 2, lo[1] + 3), (hi[0] + 6, lo[1] + 16), "tip ≈ R5")
+
+    # flange seen from below, 1:1 (view up = forward, away from the blade)
+    x0, y0, yf = -p.shell_out, -p.shell_gap, -p.shell_flange
+    flange = shell.intersect(cq.Solid.makeBox(p.clamp_len + 20 - x0, 30, 2 * t, cq.Vector(x0, yf - 1, -t)))
+    b = View(s, (0, 0, -1), (1, 0, 0), (44, 112), 1.0)
+    b.draw(flange, lw=0.7, hidden=False)
+    b.draw(cq.Compound.makeCompound([lower.val(), blade_bar]), color=REF, lw=0.4, hidden=False, smooth=False)
+    b.caption((25, -16), "FLANGE FROM BELOW (pinched by the clamp)")
+    (hx0, hy), (hx1, _) = holes
+    b.hdim((x0, -y0), (hx0, -hy), -yf + 5)
+    b.hdim((hx0, -hy), (hx1, -hy), -yf + 5)
+    b.vdim((hx1, -y0), (hx1, -hy), hx1 + 8, fmt(round(y0 - hy, 2)))
+    b.vdim((p.clamp_len + 20, -y0), (p.clamp_len + 20, -yf), p.clamp_len + 26, f"flange {fmt(y0 - yf)}")
+    b.leader((hx1 + 2.1, -hy + 2.1), (hx1 + 14, -yf + 10), f"2x Ø6 for sleeves Ø6 / Ø4.2 x {fmt(t)}")
 
     # LG-07 clamp half, top view 2:1
-    t_ = View(s, (0, 0, 1), (1, 0, 0), (60, 118), 2.0)
+    t_ = View(s, (0, 0, 1), (1, 0, 0), (150, 70), 2.0)
     t_.draw(upper.val(), lw=0.7, hidden=True)
     t_.caption((L / 2, -24), "LG-07 CLAMP HALF, outer face (2:1)")
     t_.hdim((0, -(c + F)), (L, -(c + F)), -(c + F) - 6)
     t_.hdim((0, 0), holes[0], 12)
     t_.hdim(holes[0], holes[1], 12)
     t_.vdim((L, -(c + F)), (L, p.blade_t + c + p.clamp_lip_t), L + 6)
-    t_.leader((holes[1][0] + 2.5, holes[1][1] + 2.5), (L + 14, 8), "hex 7.1 A/F x 4 deep, Ø4.5 thru")
+    t_.leader((holes[1][0] + 2.5, holes[1][1] + 2.5), (L - 6, 24), "hex 7.1 A/F x 4 deep, Ø4.5 thru")
 
-    # section through a screw, looking along the run, 3:1
+    # section through a screw, looking along the run, 1:1
     xs = holes[0][0]
     keep = cq.Solid.makeBox(200, 200, 200, cq.Vector(xs - 200, -100, -100))
-    x_sec = View(s, (1, 0, 0), (0, 1, 0), (318, 180), 3.0)
-    for shape, hatch in ((upper.val(), "////"), (lower.val(), "////"), (plate, "\\\\\\")):
+    x_sec = View(s, (1, 0, 0), (0, 1, 0), (318, 150), 1.0)
+    for shape, hatch in ((upper.val(), "////"), (lower.val(), "////"), (shell, "\\\\\\")):
         cut = shape.intersect(keep)
-        x_sec.draw(cut, lw=0.7, hidden=False, smooth=False)
+        x_sec.draw(cut, lw=0.6, hidden=False, smooth=False)
         x_sec.hatch_plane(cut, (xs, 0, 0), (1, 0, 0), hatch)
     x_sec.draw(blade_bar.intersect(keep), color=REF, lw=0.5, hidden=False, smooth=False)
-    x_sec.draw(lg.m4_screw_nut_local(p, *holes[0]).val().intersect(keep), lw=0.5, hidden=False, smooth=False)
-    x_sec.caption((-6, -20), "SECTION THROUGH A SCREW (3:1)")
-    top = lg._clamp_top(p)
-    x_sec.vdim((p.blade_t + 3, top), (p.blade_t + 3, -top), p.blade_t + 6)
-    x_sec.hdim((-(c + F), top), (-c, top), top + 3, fmt(F))
-    x_sec.vdim((p.blade_t + c + p.clamp_lip_t, p.blade_h / 2), (p.blade_t + c + p.clamp_lip_t, p.blade_h / 2 - p.clamp_lip),
-               p.blade_t + c + p.clamp_lip_t + 1.6, fmt(p.clamp_lip))
-    x_sec.tag((p.blade_t / 2, 0), f"blade\n{fmt(p.blade_t)} x {fmt(p.blade_h)}", size=6.4, color=CL)
-    x_sec.leader((-14, 0), (-17, -9), f"plate {fmt(p.diffuser_t)}")
+    x_sec.draw(lg.m4_screw_nut_local(p, *holes[0]).val().intersect(keep), lw=0.4, hidden=False, smooth=False)
+    x_sec.caption((10, -24), "SECTION THROUGH A SCREW (1:1)")
+    sec = np.array([x_sec.uv((q.x, q.y, q.z)) for q in shell.intersect(keep).tessellate(0.05, 0.1)[0]])
+    x_sec.vdim((sec[:, 0].min(), -t / 2), (sec[:, 0].min(), sec[:, 1].max()), sec[:, 0].min() - 6)
+    x_sec.leader((-p.shell_flange - 6, 3), (-44, 14), f"bend R{fmt(p.shell_bend_r)}")
+    x_sec.leader((-(p.shell_gap + p.shell_flange) / 2 - 3, -t / 2), (-40, -12), f"flange {fmt(t)}, pinched")
+    band = shell.intersect(cq.Solid.makeBox(1, 200, 4, cq.Vector(xs - 1, -100, 38))).BoundingBox()
+    x_sec.leader((band.ymax, 40), (band.ymax + 22, 32), f"wall {fmt(t)}")
+    x_sec.tag((p.blade_t / 2, 0), "blade", size=6.0, color=CL)
 
-    s.notes(232, 108, [
-        "1. LG-07 is one part used twice: the lower half is the upper turned over.",
-        "2. Fit with the guard on the bike: halves above and below the blade run,",
-        "    plate strip between their front blocks, 2x M4 x 25 ISO 4762 + DIN 985",
-        "    nyloc nuts, 2.5 N·m. No holes in the blade.",
-        "3. Tightening squeezes the halves onto the blade's top and bottom edges",
-        f"    and pinches the plate. Loosen to slide: {fmt(p.clamp_range[0])}-{fmt(p.clamp_range[1])} mm from the bend.",
-        "4. Plate: 3 mm 3K carbon cut from sheet, or 5052 aluminium + hydro-dip.",
-        "5. With the diffuser fitted keep the blade slot at -3 or more: at -5 the",
-        "    clamp lip comes within 8 mm of the reference lever.",
-        "6. Check mirror and reservoir clearance before sliding it inboard.",
+    s.notes(286, 112, [
+        "1. LG-06 surface as the STEP files 06 (RH) / 06b (LH, mirror image).",
+        "    Injection-moulded HDPE or PP, or printed ASA / PA12 (flange on",
+        "    the bed, tree supports under the bend and the top). Edges R1.",
+        "2. Press the two aluminium sleeves into the flange holes: the clamp",
+        "    load goes through them, not the plastic.",
+        "3. LG-07 is one part used twice: the lower half is the upper turned over.",
+        "4. Fit with the guard on the bike: halves above and below the blade run,",
+        "    shell flange between their front blocks, 2x M4 x 25 ISO 4762 from",
+        "    below, DIN 985 nyloc nuts captive in the upper half, 2.5 N·m.",
+        f"5. Loosen to slide: {fmt(p.clamp_range[0])}-{fmt(p.clamp_range[1])} mm from the bend. No holes in the blade.",
+        "6. Keep the blade slot at -4 or more with the shell fitted (>= 10 mm",
+        "    to the reference lever). Check steering lock, mirrors, reservoir.",
     ], size=6.4, step=4.0)
     return s
 
@@ -707,7 +725,7 @@ def main() -> None:
     p, pp = lg.Params(), lg.PRINT_PARAMS
     n = 6
     makers = [lambda: sheet_ga(p, n), lambda: sheet_adapter(p, n), lambda: sheet_arm(p, n),
-              lambda: sheet_blade(p, pp, n), lambda: sheet_expander(p, n), lambda: sheet_diffuser(p, n)]
+              lambda: sheet_blade(p, pp, n), lambda: sheet_expander(p, n), lambda: sheet_wind_guard(p, n)]
     with PdfPages(out) as pdf:
         for i, make in enumerate(makers, 1):
             sheet = make()

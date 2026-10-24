@@ -25,6 +25,7 @@ DENSITY = {  # g/cm3
     "pa12cf": 1.10,
     "petgcf": 1.30,
     "tpu": 1.21,
+    "hdpe": 0.95,
     "steel": 7.90,
 }
 
@@ -168,34 +169,47 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
     d_adapter_grip = parts["adapter"].distance(ref["ref_grip"])
     rep.check("adapter seats on bar end", d_adapter_grip < 0.05, f"{d_adapter_grip:.2f} mm to grip end")
 
-    print("wind diffuser")
+    print("wind guard")
     lever_blade = _half_space_x(lever, -160.0, inboard=False)  # lever blade and tip
     perch = _half_space_x(lever, -160.0, inboard=True)  # pivot, master cylinder and clamp
+    hand = cq.Solid.makeCylinder(50.0, 128.0, cq.Vector(-128, 0, 0), cq.Vector(1, 0, 0))  # gloved hand, Ø100 round the grip
     blade0 = parts["blade"]
-    lever_gaps, perch_gaps = [], []
+    lever_gaps, perch_gaps, hand_gaps = [], [], []
     for pos in p.clamp_range:
         dp = {n: wp.val() for n, wp in lg.diffuser_parts(p, pos)}
         ov = max(s.intersect(blade0).Volume() for s in dp.values())
-        rep.check(f"diffuser at {pos:g} mm sits on the blade", ov < 1e-3, f"overlap {ov:.4f} mm3")
+        rep.check(f"wind guard at {pos:g} mm sits on the blade", ov < 1e-3, f"overlap {ov:.4f} mm3")
         bear = max(dp["diffuser_clamp_upper"].distance(blade0), dp["diffuser_clamp_lower"].distance(blade0))
-        rep.check(f"diffuser at {pos:g} mm: clamp halves bear on the blade edges", bear < 0.01, f"gap {bear:.3f} mm")
+        rep.check(f"wind guard at {pos:g} mm: clamp halves bear on the blade edges", bear < 0.01, f"gap {bear:.3f} mm")
         dl = min(s.distance(lever_blade) for s in dp.values())
         dpp = min(s.distance(perch) for s in dp.values())
+        dh = dp["diffuser_shell"].distance(hand)
         lever_gaps.append(round(dl, 1))
         perch_gaps.append(round(dpp, 1))
-        rep.check(f"diffuser at {pos:g} mm to lever", dl >= 10.0, f"{dl:.1f} mm")
-        rep.check(f"diffuser at {pos:g} mm to brake perch", dpp >= 10.0, f"{dpp:.1f} mm")
+        hand_gaps.append(round(dh, 1))
+        rep.check(f"wind guard at {pos:g} mm to lever", dl >= 10.0, f"{dl:.1f} mm")
+        rep.check(f"wind guard at {pos:g} mm to brake perch", dpp >= 10.0, f"{dpp:.1f} mm")
+        rep.check(f"wind guard at {pos:g} mm to a gloved hand (Ø100 round the grip)", dh >= 15.0, f"{dh:.1f} mm")
         dg = min(s.distance(ref["ref_grip"]) for s in dp.values())
-        rep.check(f"diffuser at {pos:g} mm to grip", dg >= 30.0, f"{dg:.1f} mm")
+        rep.check(f"wind guard at {pos:g} mm to grip", dg >= 30.0, f"{dg:.1f} mm")
     for shift in (-p.adjust, p.adjust):
-        dl = min(wp.val().distance(lever) for _, wp in lg.diffuser_parts(p, None, shift))
-        print(f"  [info] diffuser to lever with the blade moved {shift:+.0f} mm: {dl:.1f} mm")
+        ds = {n: wp.val() for n, wp in lg.diffuser_parts(p, None, shift)}
+        dl = min(s.distance(lever) for s in ds.values())
+        dh = ds["diffuser_shell"].distance(hand)
+        print(f"  [info] blade moved {shift:+.0f} mm: wind guard to lever {dl:.1f} mm, to the hand {dh:.1f} mm")
+    # size on the bike (lever plane lever_deg below horizontal), default clamp position
+    shell = dict((n, wp.val()) for n, wp in lg.diffuser_parts(p))["diffuser_shell"]
+    bb = shell.rotate(cq.Vector(0, 0, 0), cq.Vector(1, 0, 0), -p.lever_deg).BoundingBox()
     info["diffuser"] = {
-        "length_mm": p.diffuser_len,
-        "depth_mm": [p.diffuser_depth_out, p.diffuser_depth_in],
+        "length_mm": p.shell_len,
+        "ahead_of_bar_axis_mm": [round(bb.ymin, 1), round(bb.ymax, 1)],
+        "above_bar_axis_mm": round(bb.zmax, 1),
+        "below_bar_axis_mm": round(-bb.zmin, 1),
+        "inboard_of_bar_end_mm": round(-bb.xmin, 1),
         "travel_mm": p.clamp_range[1] - p.clamp_range[0],
         "lever_clearance_mm": lever_gaps,
         "perch_clearance_mm": perch_gaps,
+        "hand_clearance_mm": hand_gaps,
     }
 
     print("expander sleeves")
@@ -247,6 +261,8 @@ def to_print_pose(name: str, wp: cq.Workplane) -> cq.Workplane:
         wp = wp.rotate((0, 0, 0), (0, 1, 0), 90)
     elif name.startswith(("04", "05")):  # sleeve / cone: large end down
         wp = wp.rotate((0, 0, 0), (0, 1, 0), -90)
+    elif name.startswith("06b"):  # left-hand shell: flange on the bed, shield up like the right one
+        wp = wp.rotate((0, 0, 0), (1, 0, 0), 180)
     elif name.startswith("07"):  # clamp half: outer face on the bed, cavity open upward
         wp = wp.rotate((0, 0, 0), (1, 0, 0), 180)
     bb = wp.val().BoundingBox()
@@ -254,8 +270,8 @@ def to_print_pose(name: str, wp: cq.Workplane) -> cq.Workplane:
 
 
 def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]]:
-    """Every exported part: (file name, solid, material). The diffuser parts are exported in
-    their own run frame (plate flat on XY, clamp half with the blade run along X)."""
+    """Every exported part: (file name, solid, material). The wind guard parts are exported in
+    their own run frame (shell flange flat on XY, clamp half with the blade run along X)."""
     parts = [
         ("01_bar_end_adapter", lg.adapter(p), "al6061"),
         ("01b_bar_end_adapter_oem_thread", lg.adapter(p, spigot=False), "al6061"),
@@ -268,8 +284,9 @@ def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]
     for size, (_, (lo, hi)) in lg.SLEEVES.items():
         parts.append((f"05_expander_cone_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_cone(p, size), "al6061"))
     parts += [
-        ("06_wind_diffuser_plate_3mm", lg.diffuser_plate_local(p), "carbon"),
-        ("07_diffuser_clamp_half", lg.clamp_half_local(p), "al6061"),
+        ("06_wind_guard_shell_RH", lg.wind_guard_local(p), "hdpe"),
+        ("06b_wind_guard_shell_LH", lg.wind_guard_local(p, left=True), "hdpe"),
+        ("07_wind_guard_clamp_half", lg.clamp_half_local(p), "al6061"),
     ]
     return parts
 
@@ -322,7 +339,7 @@ def main() -> int:
         + hw
     )
     diffuser_kit = (
-        masses["06_wind_diffuser_plate_3mm"]["grams"] + 2 * masses["07_diffuser_clamp_half"]["grams"] + hw_diffuser
+        masses["06_wind_guard_shell_RH"]["grams"] + 2 * masses["07_wind_guard_clamp_half"]["grams"] + hw_diffuser
     )
     info["diffuser"]["kit_grams"] = round(diffuser_kit, 1)
     summary = {
