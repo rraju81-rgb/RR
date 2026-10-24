@@ -246,7 +246,7 @@
 <text x="228" y="220.4" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >7.</text>
 <text x="233" y="220.4" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >BONDING: ABRADE (P120), DEGREASE, STRUCTURAL EPOXY, FILLET EVERY LAND EDGE.</text>
 <text x="228" y="224.2" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >8.</text>
-<text x="233" y="224.2" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >PRINT FILES output/rib_support/: elongated_rib_support_1piece.stl (BED ≥ 390 × 205) OR _2piece_A + _B (256 BED):</text>
+<text x="233" y="224.2" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >PRINT FILES output/rib_support/: elongated_rib_support_1piece.stl (BED ≥ 391 × 206) OR _2piece_A + _B (256 BED):</text>
 <text x="233" y="227.6" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >7 SOLID SPLICE BAND AT y = 240, DOVETAIL JOINT 0.1 CLEARANCE PER SIDE - GLUE IT BEFORE BONDING THE SHEETS.</text>
 <text x="228" y="231.4" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >9.</text>
 <text x="233" y="231.4" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >MASS 178 g. y FROM THE GRIP BUTT FACE (y = 0); THE RIB SUPPORT STARTS AT y = 5.</text>

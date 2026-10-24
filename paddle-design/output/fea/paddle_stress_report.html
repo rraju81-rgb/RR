@@ -36,7 +36,7 @@ figure.half { width: 78%; margin-left: auto; margin-right: auto; }
 .small { font-size: 8.2pt; color: var(--ink2); }
 </style></head><body>
 
-<div class="kicker">Structural analysis · REV B · 2026-10-23</div>
+<div class="kicker">Structural analysis · REV C · 2026-10-24</div>
 <h1>Wave-rib sandwich pickleball paddles</h1>
 <p class="sub">PB-EL-001 Elongated (390 × 200 × 16 mm) and PB-HY-001 Hybrid (390 × 190 × 16 mm).
 Linear static and modal finite-element analysis.</p>
@@ -59,8 +59,8 @@ that band the 99th-percentile value is 5.5 MPa. Against the
 <li><b>Stiffness.</b> Under 500 N the blade deflects 3.8 mm for a tip
 impact and 2.2 mm at the sweet spot. With the grip held, the first
 bending mode is 105 Hz (Elongated) and 112 Hz (Hybrid).</li>
-<li><b>Weight.</b> The Elongated paddle weighs 832 g and the Hybrid 785 g,
-about 3.5 times a typical 210–240 g paddle. The two 4 mm carbon sheets alone weigh 608 g /
+<li><b>Weight.</b> The Elongated paddle weighs 849 g and the Hybrid 802 g,
+about 3.8 and 3.6 times a typical 210–240 g paddle. The two 4 mm carbon sheets alone weigh 608 g /
 569 g. §6 has the breakdown.</li>
 </ul>
 <table><tr><th>Worst case (tip impact, 500 N)</th><th class="n">Elongated</th>
@@ -73,7 +73,7 @@ about 3.5 times a typical 210–240 g paddle. The two 4 mm carbon sheets alone w
 <tr><td>Bond line, shear: 99th percentile in the hot band</td><td class="n">5.4 MPa</td><td class="n">5.5 MPa</td><td class="n"><span class="warn">▲ RF 1.45</span></td></tr>
 <tr><td>Bond line, shear: local peak</td><td class="n">10.1 MPa</td><td class="n">10.1 MPa</td><td class="n"><span class="bad">✖ RF 0.79</span></td></tr>
 <tr><td>First bending mode (grip held)</td><td class="n">105 Hz</td><td class="n">112 Hz</td><td class="n">—</td></tr>
-<tr><td>Mass</td><td class="n">832 g</td><td class="n">785 g</td><td class="n"><span class="warn">▲ 3.5 × typical</span></td></tr></table>
+<tr><td>Mass</td><td class="n">849 g</td><td class="n">802 g</td><td class="n"><span class="warn">▲ 3.6–3.8 × typical</span></td></tr></table>
 <p class="small">Reserve factor RF = allowable ÷ calculated stress; RF ≥ 1 passes. ✔ means RF ≥ 1.5,
 ▲ means 1.0–1.5 and ✖ means below 1. The carbon RF uses the max-stress failure index (RF = 1 / index).</p>
 
@@ -86,10 +86,16 @@ the full outline, blade and handle.</li>
 wall 1.6 mm, amplitude 4 mm. The flutes run along the paddle. The crests are cut flat
 where they meet the sheets, which gives bond lands 4.25 mm wide.</li>
 <li><b>Solid zone.</b> The core is solid from the butt to y = 150 mm (handle and throat). Each flute
-starts with a 45° run-out, 8 mm long, which prints without support. The butt end holds an M4 heat-set
-insert for the butt-cap screw.</li>
-<li><b>Grip.</b> Sleeve, wrap, throat collar and butt cap are not load-carrying in this model. The hand is
+starts with a 45° run-out, 8 mm long, which prints without support. The butt end holds an M3 heat-set
+insert for the grip screw.</li>
+<li><b>Grip.</b> A printed PLA grip (Carbon Matrix drawn; any of the ten rev-8 designs fits) slides over the handle:
+135 mm long, slot 30.2 × 16 mm, solid 5 mm base. A DIN 7984 M3 × 12 screw
+through the base into the insert holds it on. The grip is not load-carrying in this model. The hand is
 represented by a clamp (§3).</li>
+<li><b>Revision C.</b> The printed grip replaced the REV B sleeve, wrap, collar and butt cap, and the insert
+changed from M4 to M3. The body now starts 5 mm above the butt, on the grip base, instead of 4 mm. All of
+this sits below or inside the clamped band (y = 14–112 mm), which carries no assessed
+stress, so the stress and modal results stand and the cases were not re-solved. The masses in §6 are REV C.</li>
 </ul>
 <figure class="half"><img src="../render/paddles_3d_cutaway.png"><figcaption>Cutaway render: the top sheet and the core are cut back to show the wave rib between the sheets.</figcaption></figure>
 
@@ -180,22 +186,19 @@ rounds that corner off.</p>
 
 <div class="keep"><h2>6 Mass, balance and swing weight</h2>
 <table><tr><th>Part (from the CAD model)</th><th class="n">Elongated</th><th class="n">Hybrid</th></tr>
-<tr><td>Carbon face sheet, top (4 mm)</td><td class="n">304.2 g</td><td class="n">284.6 g</td></tr>
-<tr><td>Wave-rib core with frame (PA-CF)</td><td class="n">178.6 g</td><td class="n">170.2 g</td></tr>
-<tr><td>Carbon face sheet, bottom (4 mm)</td><td class="n">304.2 g</td><td class="n">284.6 g</td></tr>
-<tr><td>Grip sleeve (TPU)</td><td class="n">26.3 g</td><td class="n">26.3 g</td></tr>
-<tr><td>Grip wrap, PU (0.75 mm)</td><td class="n">9.5 g</td><td class="n">9.5 g</td></tr>
-<tr><td>Throat collar (TPU)</td><td class="n">1.7 g</td><td class="n">1.7 g</td></tr>
-<tr><td>Butt cap (TPU)</td><td class="n">5.0 g</td><td class="n">5.0 g</td></tr>
-<tr><td>Screw ISO 7380 M4 × 12</td><td class="n">1.8 g</td><td class="n">1.8 g</td></tr>
-<tr><td>Heat-set insert M4 (brass)</td><td class="n">1.1 g</td><td class="n">1.1 g</td></tr>
-<tr><td><b>Total</b></td><td class="n"><b>832 g</b></td><td class="n"><b>785 g</b></td></tr>
-<tr><td>Balance point from the butt</td><td class="n">239 mm</td><td class="n">234 mm</td></tr>
-<tr><td>Swing weight about a pivot 100 mm from the butt</td><td class="n">241 kg·cm²</td><td class="n">216 kg·cm²</td></tr></table></div>
+<tr><td>Carbon face sheet, top (4 mm)</td><td class="n">304.0 g</td><td class="n">284.4 g</td></tr>
+<tr><td>Wave-rib core with frame (PA-CF)</td><td class="n">178.5 g</td><td class="n">170.2 g</td></tr>
+<tr><td>Carbon face sheet, bottom (4 mm)</td><td class="n">304.0 g</td><td class="n">284.4 g</td></tr>
+<tr><td>Printed grip, PLA (Carbon Matrix)</td><td class="n">61.2 g</td><td class="n">61.2 g</td></tr>
+<tr><td>Screw DIN 7984 M3 × 12</td><td class="n">1.0 g</td><td class="n">1.0 g</td></tr>
+<tr><td>Heat-set insert M3 (brass)</td><td class="n">0.4 g</td><td class="n">0.4 g</td></tr>
+<tr><td><b>Total</b></td><td class="n"><b>849 g</b></td><td class="n"><b>802 g</b></td></tr>
+<tr><td>Balance point from the butt</td><td class="n">236 mm</td><td class="n">230 mm</td></tr>
+<tr><td>Swing weight about a pivot 100 mm from the butt</td><td class="n">242 kg·cm²</td><td class="n">216 kg·cm²</td></tr></table></div>
 <p>A typical competition paddle weighs 210–240 g (7.5–8.5 oz). Its swing weight is roughly 100–130 kg·cm² about
-the same pivot. These paddles are about 3.5 times as heavy and about twice the swing weight. The 4 mm carbon
-sheets make up 73 % of the mass. The printed core weighs
-179 g, an effective density of about
+the same pivot. These paddles are about 3.8 and 3.6 times as heavy and about twice the swing weight. The 4 mm carbon
+sheets make up 72 % of the mass. The printed core weighs
+178 g, an effective density of about
 455 kg/m³.
 A polypropylene honeycomb core is typically 80–120 kg/m³. The margins in §4 show how much strength there is to
 give up.</p>

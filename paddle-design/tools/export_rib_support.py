@@ -4,7 +4,7 @@
     python tools/export_rib_support.py
 
 For each paddle it writes to output/rib_support/:
-  <design>_rib_support_1piece.stl          one piece, 385 mm long: needs a bed of about 390 x 205 mm
+  <design>_rib_support_1piece.stl          one piece, 385 mm long: needs a bed of at least 391 x 206 (196) mm
   <design>_rib_support_2piece_A.stl        butt end to y = 242 (handle, throat, lower blade)
   <design>_rib_support_2piece_B.stl        y = 238 to the tip
 The two-piece version has a 7 mm solid splice band across the blade at y = 240 with 63 deg flute

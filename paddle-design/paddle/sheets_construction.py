@@ -73,7 +73,8 @@ def core_notes(o: Outline, mass: dict | None) -> list[str]:
         f"M3 HEAT-SET INSERT BORE Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
         f"{fmt(C.screw_relief_depth)} IN THE BUTT FACE (GRIP SCREW) – SEE PB-GR-002.",
         "BONDING: ABRADE (P120), DEGREASE, STRUCTURAL EPOXY, FILLET EVERY LAND EDGE.",
-        f"PRINT FILES output/rib_support/: {sp.key}_rib_support_1piece.stl (BED ≥ 390 × 205) OR _2piece_A + _B "
+        f"PRINT FILES output/rib_support/: {sp.key}_rib_support_1piece.stl "
+        f"(BED ≥ {fmt(sp.length - sp.cap_length + 6)} × {fmt(sp.width + 6)}) OR _2piece_A + _B "
         f"(256 BED):\n{fmt(SPLICE_BAND)} SOLID SPLICE BAND AT y = {fmt(SPLICE_Y)}, DOVETAIL JOINT 0.1 CLEARANCE PER "
         "SIDE - GLUE IT BEFORE BONDING THE SHEETS.",
         f"{m}y FROM THE GRIP BUTT FACE (y = 0); THE RIB SUPPORT STARTS AT y = {fmt(sp.cap_length)}.",

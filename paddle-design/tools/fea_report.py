@@ -94,7 +94,7 @@ figs = dict(deflection="fea_deflection.png", face="fea_face_sheet_stress.png", b
             cutaway=rel(ROOT / "output" / "render" / "paddles_3d_cutaway.png"))
 html = a.out / "paddle_stress_report.html"
 fr.write_report(dict(stats=stats, baseline=baseline, mesh=mesh, modal=modal,
-                     mass={k: mass[k] for k in outlines}, figs=figs, date=date.today().isoformat()), html)
+                     mass={k: mass[k] for k in ("grip", *outlines) if k in mass}, figs=figs, date=date.today().isoformat()), html)
 with Chromium() as ch:
     ch.html_pdf(html, html.with_suffix(".pdf"))
 print("report ->", html.with_suffix(".pdf"))
