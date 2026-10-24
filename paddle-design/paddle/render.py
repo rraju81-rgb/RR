@@ -1,6 +1,6 @@
 """2-D presentation render of the paddles (SVG, rasterised by Chromium).
 
-The face artwork (carbon weave, edge guard, accent line, grip, collar, butt cap)
+The face artwork (carbon weave, edge guard, accent line, the printed grip)
 is drawn once in paddle coordinates (mm, y up) and placed on the board through
 an affine matrix: plain scaling for the front views, the projected face plane
 for the 3/4 views.  The silhouette is always the exact CAD outline.
@@ -11,6 +11,7 @@ import math
 from xml.sax.saxutils import escape
 
 from .geometry import Line, Outline
+from .grip import PADDLE_GRIP, face_path
 from .pictorial import project, three_quarter
 from .svgkit import f, fmt
 
@@ -85,7 +86,7 @@ def defs_for(o: Outline, key: str, theme: dict) -> str:
   <stop offset="0.55" stop-color="#fff" stop-opacity="0.10"/><stop offset="0.7" stop-color="#fff" stop-opacity="0"/>
   <stop offset="1" stop-color="#000" stop-opacity="0.18"/>
 </linearGradient>
-<linearGradient id="gripshade-{key}" gradientUnits="userSpaceOnUse" x1="-15" y1="0" x2="15" y2="0">
+<linearGradient id="gripshade-{key}" gradientUnits="userSpaceOnUse" x1="-21" y1="0" x2="21" y2="0">
   <stop offset="0" stop-color="#000" stop-opacity="0.45"/><stop offset="0.35" stop-color="#fff" stop-opacity="0.10"/>
   <stop offset="0.6" stop-color="#fff" stop-opacity="0.04"/><stop offset="1" stop-color="#000" stop-opacity="0.5"/>
 </linearGradient>
@@ -104,6 +105,7 @@ def face_art(o: Outline, key: str, theme: dict) -> str:
     L, t = sp.length, sp.handle_length
     a = sp.width / 2
     path = model_path(o)
+    grip = face_path(PADDLE_GRIP[sp.key])
     name_y = o.pts["side_lo"][1] + 14
     return f"""
 <g clip-path="url(#clip-{key})">
@@ -117,12 +119,6 @@ def face_art(o: Outline, key: str, theme: dict) -> str:
     <path d="{path}" fill="none" stroke="#0d0e10" stroke-width="9"/>
     <path d="{path}" fill="none" stroke="#3a3d42" stroke-width="2.2" stroke-opacity="0.9"/>
   </g>
-  <rect x="-20" y="-1" width="40" height="{f(t - 1)}" fill="url(#grip-{key})"/>
-  <rect x="-20" y="-1" width="40" height="{f(t - 1)}" fill="url(#gripshade-{key})"/>
-  <rect x="-20" y="{f(t - 10)}" width="40" height="9" fill="url(#accent-{key})"/>
-  <rect x="-20" y="{f(t - 10)}" width="40" height="1" fill="#000" opacity="0.35"/>
-  <rect x="-20" y="-1" width="40" height="8" fill="url(#accent-{key})"/>
-  <rect x="-20" y="6.2" width="40" height="0.8" fill="#000" opacity="0.4"/>
   <g transform="translate(0 {f(name_y)}) scale(1 -1)">
     <text x="0" y="0" font-family="{SANS}" font-size="9.5" font-weight="700" letter-spacing="2.2"
           text-anchor="middle" fill="{theme['accent']}">{escape(sp.name)}</text>
@@ -133,6 +129,9 @@ def face_art(o: Outline, key: str, theme: dict) -> str:
   </g>
 </g>
 <path d="{path}" fill="none" stroke="#000" stroke-width="0.6" stroke-opacity="0.85"/>
+<path d="{grip}" fill="url(#grip-{key})"/>
+<path d="{grip}" fill="url(#gripshade-{key})"/>
+<path d="{grip}" fill="none" stroke="#000" stroke-width="0.5" stroke-opacity="0.9"/>
 """
 
 

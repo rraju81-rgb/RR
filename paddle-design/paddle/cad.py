@@ -1,9 +1,9 @@
-"""3-D solid model (build123d / OpenCASCADE) of the sandwich paddle and its grip.
+"""3-D solid model (build123d / OpenCASCADE) of the sandwich paddle and its butt fixing.
 
-Global axes match the 2-D drawings: x across the face, y from the butt (y = 0 is
-the bottom of the butt cap) to the tip, z through the thickness (z = 0 on the
-mid-plane).  Lay-up: bottom CF face sheet z = -8..-4, wave-rib core -4..+4,
-top CF face sheet +4..+8.
+Global axes match the 2-D drawings: x across the face, y from the butt (y = 0 is the
+butt face of the printed grip) to the tip, z through the thickness (z = 0 on the
+mid-plane).  Lay-up: bottom CF face sheet z = -8..-4, wave-rib core -4..+4, top CF
+face sheet +4..+8.  The printed grip itself is a mesh (paddle.grip).
 """
 from __future__ import annotations
 
@@ -11,16 +11,15 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
-from build123d import (Align, Box, Compound, Cylinder, Edge, Face, Kind, Location, Part, Plane, Pos,
-                       RectangleRounded, Rot, Vector, Wire, export_step, export_stl, extrude, fillet,
-                       offset)
+from build123d import (Align, Box, Compound, Cylinder, Edge, Face, Kind, Location, Part, Plane, Pos, Rot,
+                       Vector, Wire, export_step, export_stl, extrude, fillet, offset)
 
 from . import wave
 from .geometry import CONSTRUCTION as C
-from .geometry import Line, Outline, PaddleSpec, grip_dims
+from .geometry import GRIP, Line, Outline, PaddleSpec
 
 # densities [g/cm^3]
-DENSITY = {"cf": 1.55, "core": 1.18, "tpu": 1.21, "pu": 1.10, "steel": 7.9, "brass": 8.5}
+DENSITY = {"cf": 1.55, "core": 1.18, "pla": 1.24, "steel": 7.9, "brass": 8.5}
 
 
 @dataclass
@@ -86,8 +85,29 @@ def _axial_cylinder(d: float, y0: float, length: float):
     return Pos(0, y0, 0) * Rot(-90, 0, 0) * Cylinder(d / 2, length, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
 
-def rib_core(o: Outline, with_hole: bool = True):
-    """Closed perimeter frame + solid handle/throat zone + clipped sinusoidal wave rib, one part."""
+SPLICE_Y = 240.0        # joint of the two-piece rib support: both pieces fit a 256 x 256 mm bed
+SPLICE_BAND = 7.0       # solid band across the core at the joint (width at the far face sheet)
+SPLICE_RUNOUT = 4.0     # flute run-outs into the band: 63 deg, still printable without support
+
+
+def _band_region(s: int, y_mid: float, width: float, length: float):
+    """Prism across the core in which flutes opening towards side s are closed: `width` wide at the far
+    face sheet, widening by `length` each side towards the near one (sloped run-outs that print unsupported)."""
+    h = C.core_t / 2
+    zz = h + 1.0                                          # the flute cutters stick out 1 mm past each face
+
+    def half(z: float) -> float:
+        return width / 2 + length * (s * z + h) / (2 * h)
+    pts = [Vector(-200, y_mid - half(-zz), -zz), Vector(-200, y_mid + half(-zz), -zz),
+           Vector(-200, y_mid + half(zz), zz), Vector(-200, y_mid - half(zz), zz)]
+    face = Face(Wire([Edge.make_line(pts[i], pts[(i + 1) % 4]) for i in range(4)]))
+    return extrude(face, amount=400, dir=(1, 0, 0))
+
+
+def rib_core(o: Outline, with_hole: bool = True, splice: float | None = None):
+    """Closed perimeter frame + solid handle/throat zone + clipped sinusoidal wave rib, one part.
+
+    splice: y of a solid band across the blade, where the two-piece print version is joined."""
     sp = o.spec
     f = outline_face(o, -C.core_t / 2)
     slab = extrude(f, amount=C.core_t)
@@ -100,12 +120,45 @@ def rib_core(o: Outline, with_hole: bool = True):
                  for side, fc in flute_channel_faces(sp.width / 2 + C.rib_pitch, y0) if side == s]
         region = prism & (_runout_region(s, C.solid_to, C.runout_len) if C.runout_len > 0 else
                           Pos(0, (C.solid_to + 400) / 2, 0) * Box(400, 400 - C.solid_to, 40))
-        voids.append((Part() + chans) & region)
+        v = (Part() + chans) & region
+        if splice is not None:
+            v = v - _band_region(s, splice, SPLICE_BAND, SPLICE_RUNOUT)
+        voids.append(v)
     core = slab - voids[0] - voids[1]
     if with_hole:
         core = core - _axial_cylinder(C.insert_d, sp.cap_length, C.insert_depth) \
                     - _axial_cylinder(C.screw_relief_d, sp.cap_length, C.screw_relief_depth)
     return core
+
+
+def dovetail_regions(y_mid: float, x_edge: float, pitch: float = 20.0, neck: float = 8.0, flare: float = 1.8,
+                     depth: float = 5.0, gap: float = 0.1, margin: float = 4.0):
+    """Plan-view regions of the two rib-support pieces either side of a dovetail joint line at y_mid.
+
+    Piece A (handle side) carries dovetail tabs, centred on x = 0 at `pitch`, that lock into piece B; tabs
+    stay `margin` clear of the paddle edge (x_edge = half width at y_mid) so no slivers are cut off.  Each
+    region is pulled back by `gap` from the line: the printed pieces press together with 2 x gap for glue."""
+    from shapely.geometry import Polygon
+    lo, hi = y_mid - depth / 2, y_mid + depth / 2
+    reach = neck / 2 + flare + margin
+    k = int((x_edge - reach) // pitch)
+    line = [(-x_edge - 50.0, lo)]
+    for xm in (i * pitch for i in range(-k, k + 1)):
+        line += [(xm - neck / 2, lo), (xm - neck / 2 - flare, hi), (xm + neck / 2 + flare, hi), (xm + neck / 2, lo)]
+    line.append((x_edge + 50.0, lo))
+    big = 1000.0
+    a = Polygon([(line[0][0], -big)] + line + [(line[-1][0], -big)])
+    b = Polygon([(line[0][0], big)] + line + [(line[-1][0], big)])
+    return a.buffer(-gap, join_style=2), b.buffer(-gap, join_style=2)
+
+
+def split_core(core, y_mid: float, x_edge: float):
+    """Cut a (spliced) core into its two dovetailed print pieces (A: butt side, B: tip side)."""
+    out = []
+    for poly in dovetail_regions(y_mid, x_edge):
+        ring = [Vector(x, y, -10.0) for x, y in list(poly.exterior.coords)[:-1]]
+        out.append(core & extrude(Face(Wire.make_polygon(ring, close=True)), amount=20.0, dir=(0, 0, 1)))
+    return out
 
 
 def face_sheet(o: Outline, top: bool, edge_r: float = 0.8):
@@ -122,46 +175,21 @@ def face_sheet(o: Outline, top: bool, edge_r: float = 0.8):
     return plate
 
 
-def _rrect_prism(w: float, h: float, r: float, y0: float, y1: float):
-    pl = Plane(origin=(0, y0, 0), x_dir=(1, 0, 0), z_dir=(0, 1, 0))
-    return extrude(pl * RectangleRounded(w, h, r), amount=y1 - y0)
-
-
-def grip_parts(sp: PaddleSpec) -> list[PartDef]:
-    g = grip_dims(sp)
+def fixing_parts(sp: PaddleSpec) -> list[PartDef]:
+    """DIN 7984 M3 low-head cap screw through the grip base into an M3 heat-set insert in the core."""
+    yb = GRIP.cbore_depth                               # head bears on the floor of the grip's counterbore
+    hh = GRIP.screw_head_h
+    head = _axial_cylinder(GRIP.screw_head_d, yb - hh, hh)
+    try:
+        head = fillet(head.edges().filter_by(lambda e: abs(e.center().Y - (yb - hh)) < 1e-6), 0.4)
+    except Exception:
+        pass
+    hexsock = Pos(0, yb - hh - 0.01, 0) * Rot(-90, 0, 0) * extrude(Plane.XY * _hexagon(2.0), amount=1.3)
+    screw = head - hexsock + _axial_cylinder(3.0, yb, GRIP.screw_len)
     y0 = sp.cap_length
-    core_w, core_t = sp.handle_width + 2 * C.sleeve_clear, sp.thickness + 2 * C.sleeve_clear
-    sleeve = (_rrect_prism(g["sleeve_w"], g["sleeve_t"], C.sleeve_r, y0, g["sleeve_top"]) -
-              _rrect_prism(core_w, core_t, 0.6, y0 - 1, g["sleeve_top"] + 1))
-    wrap = (_rrect_prism(g["wrap_w"], g["wrap_t"], g["wrap_r"], g["wrap_bot"], g["wrap_top"]) -
-            _rrect_prism(g["sleeve_w"], g["sleeve_t"], C.sleeve_r, g["wrap_bot"] - 1, g["wrap_top"] + 1))
-    collar = (_rrect_prism(g["collar_w"], g["collar_t"], g["collar_r"], g["collar_bot"], g["collar_top"]) -
-              _rrect_prism(g["wrap_w"], g["wrap_t"], g["wrap_r"], g["collar_bot"] - 1, g["collar_top"] + 1))
-    cap =(_rrect_prism(g["cap_w"], g["cap_t"], g["cap_r"], 0.0, y0 + C.cap_skirt) -
-           _rrect_prism(g["sleeve_w"], g["sleeve_t"], C.sleeve_r, y0, y0 + C.cap_skirt + 1) -
-           _axial_cylinder(C.cb_d, -1.0, 1.0 + C.cb_depth) - _axial_cylinder(C.cap_hole_d, -1.0, y0 + 2))
-    try:
-        bottom = cap.edges().filter_by(lambda e: abs(e.center().Y) < 1e-6 and e.length > 5)
-        cap = fillet(bottom, 1.0)
-    except Exception:
-        pass
-    # ISO 7380 M4 x 12 button head screw: head dk 7.6, k 2.2, socket 2.5 AF
-    yb = C.cb_depth                                   # bearing face on the counterbore floor
-    head = _axial_cylinder(7.6, yb - 2.2, 2.2)
-    try:
-        head = fillet(head.edges().filter_by(lambda e: abs(e.center().Y - (yb - 2.2)) < 1e-6), 1.6)
-    except Exception:
-        pass
-    hexsock = Pos(0, yb - 2.2 - 0.01, 0) * Rot(-90, 0, 0) * \
-        extrude(Plane.XY * _hexagon(2.5), amount=1.4)
-    screw = head - hexsock + _axial_cylinder(4.0, yb, C.screw_len)
-    insert = _axial_cylinder(C.insert_d, y0, 8.1) - _axial_cylinder(3.4, y0 - 1, 10.1)
-    return [PartDef("grip_sleeve", sleeve, "tpu", (0.10, 0.10, 0.11)),
-            PartDef("grip_wrap", wrap, "pu", (0.06, 0.06, 0.07)),
-            PartDef("throat_collar", collar, "tpu", (0.9, 0.9, 0.9)),
-            PartDef("butt_cap", cap, "tpu", (0.9, 0.9, 0.9)),
-            PartDef("screw_M4x12_ISO7380", screw, "steel", (0.75, 0.75, 0.78)),
-            PartDef("insert_M4_heatset", insert, "brass", (0.78, 0.6, 0.25))]
+    insert = _axial_cylinder(C.insert_d, y0, C.insert_len) - _axial_cylinder(2.5, y0 - 1, C.insert_len + 2)
+    return [PartDef("screw_M3x12_DIN7984", screw, "steel", (0.75, 0.75, 0.78)),
+            PartDef("insert_M3_heatset", insert, "brass", (0.78, 0.6, 0.25))]
 
 
 def _hexagon(af: float):
@@ -172,28 +200,30 @@ def _hexagon(af: float):
 def assembly(o: Outline) -> list[PartDef]:
     return [PartDef("face_sheet_top", face_sheet(o, True), "cf", (0.12, 0.12, 0.13)),
             PartDef("rib_core", rib_core(o), "core", (0.85, 0.85, 0.2)),
-            PartDef("face_sheet_bottom", face_sheet(o, False), "cf", (0.12, 0.12, 0.13))] + grip_parts(o.spec)
+            PartDef("face_sheet_bottom", face_sheet(o, False), "cf", (0.12, 0.12, 0.13))] + fixing_parts(o.spec)
 
 
-def mass_properties(parts: list[PartDef], pivot_y: float = 100.0) -> dict:
-    """Mass [g], balance point [mm from butt], swing weight [kg cm^2 about x at y = pivot_y]."""
+def mass_properties(parts: list[PartDef], meshes=(), pivot_y: float = 100.0) -> dict:
+    """Mass [g], balance point [mm from butt], swing weight [kg cm^2 about x at y = pivot_y].
+
+    meshes: (name, trimesh, density g/cm^3) for parts that only exist as meshes (the printed grip)."""
     import trimesh
-    total, my, iyy = 0.0, 0.0, 0.0
-    per = {}
+    items = []
     for p in parts:
         v, f = tessellate(p.shape, 0.05)
-        m = trimesh.Trimesh(v, f, process=True)
-        rho = DENSITY[p.material] * 1e-3                      # g/mm^3
-        vol = p.shape.volume                                  # exact B-rep volume; the mesh gives COM + inertia
-        mass = vol * rho
+        items.append((p.name, trimesh.Trimesh(v, f, process=True), DENSITY[p.material], p.shape.volume))
+    items += [(name, m, rho, m.volume) for name, m, rho in meshes]
+    total, my, iyy = 0.0, 0.0, 0.0
+    per = {}
+    for name, m, rho, vol in items:
+        rho = rho * 1e-3                                      # g/mm^3
+        mass = vol * rho                                      # exact B-rep volume where there is one
         com = m.center_mass
-        inertia = m.moment_inertia * rho * vol / m.volume     # g mm^2 about COM (density-scaled)
-        ixx_c = inertia[0, 0]
-        ixx_pivot = ixx_c + mass * ((com[1] - pivot_y) ** 2 + com[2] ** 2)
-        per[p.name] = dict(volume_cm3=vol / 1000, mass_g=mass, watertight=bool(m.is_watertight))
+        inertia = m.moment_inertia * rho * vol / m.volume     # g mm^2 about the COM
+        per[name] = dict(volume_cm3=vol / 1000, mass_g=mass, watertight=bool(m.is_watertight))
         total += mass
         my += mass * com[1]
-        iyy += ixx_pivot
+        iyy += inertia[0, 0] + mass * ((com[1] - pivot_y) ** 2 + com[2] ** 2)
     return dict(parts=per, mass_g=total, balance_mm=my / total, swing_weight_kgcm2=iyy * 1e-5)
 
 

@@ -108,12 +108,12 @@ class PaddleSpec:
     key: str
     name: str
     drawing_no: str
-    length: float = 390.0           # overall length incl. butt cap, butt to tip
+    length: float = 390.0           # overall length incl. the grip's solid base, butt to tip
     width: float = 200.0            # blade width
-    handle_length: float = 130.0    # handle incl. butt cap: butt to the end of the straight 30 mm section
+    handle_length: float = 130.0    # handle incl. the grip base: butt to the end of the straight 30 mm section
     handle_width: float = 30.0
     thickness: float = 16.0
-    cap_length: float = 4.0         # butt-cap base below the body: plates + core start at y = cap_length
+    cap_length: float = 5.0         # solid base of the printed grip below the body: sheets + core start here
     head: str = "square"            # "square" (corner radii) or "dome"
     corner_r: float = 48.0          # square head: tip corner radius
     dome_r: float = 150.0           # dome head: crown radius
@@ -128,13 +128,13 @@ class PaddleSpec:
 
     @property
     def body_length(self) -> float:
-        """Length of the face plates / rib core (overall length minus the butt-cap base)."""
+        """Length of the face plates / rib core (overall length minus the grip base)."""
         return self.length - self.cap_length
 
 
 @dataclass(frozen=True)
 class Construction:
-    """Sandwich lay-up, wave-rib core and grip hardware shared by both paddles (mm)."""
+    """Sandwich lay-up, wave-rib core and butt fixing shared by both paddles (mm)."""
     face_t: float = 4.0          # carbon-fibre face sheet, top and bottom (identical parts)
     core_t: float = 8.0          # rib core height between the face sheets
     frame_w: float = 6.0         # closed perimeter frame of the rib core (covers the whole side)
@@ -145,23 +145,11 @@ class Construction:
     solid_to: float = 150.0      # core is solid from the butt up to this height (handle + throat)
     runout_len: float = 8.0      # flute run-out: 45 deg taper (printable without support) so the core
                                  # meets each face sheet in a thin wedge, not a square step; 0 = square
-    insert_d: float = 5.6        # M4 heat-set insert bore (OD 5.6, L 8.1) in the butt end of the core
-    insert_depth: float = 10.0
-    screw_relief_d: float = 4.5  # clearance bore beyond the insert for the screw tip
-    screw_relief_depth: float = 16.0
-    # grip hardware
-    sleeve_clear: float = 0.2    # per side, between handle core and sleeve
-    sleeve_wall: float = 1.8
-    sleeve_r: float = 3.0        # outer corner radius of the sleeve
-    wrap_t: float = 0.75         # replacement grip tape
-    collar_h: float = 10.0
-    collar_wall: float = 1.25
-    cap_skirt: float = 6.0       # butt-cap skirt over the sleeve end
-    cap_wall: float = 1.5
-    cb_d: float = 8.0            # counterbore for ISO 7380 M4 button head (head 7.6 x 2.2)
-    cb_depth: float = 2.4
-    cap_hole_d: float = 4.5
-    screw_len: float = 12.0      # ISO 7380 M4 x 12
+    insert_d: float = 4.0        # bore for an M3 heat-set insert (M3 x 5.7, knurl about 4.6) in the butt of the core
+    insert_depth: float = 7.0
+    insert_len: float = 5.7
+    screw_relief_d: float = 3.2  # clearance beyond the insert, deep enough for an M3 x 16 screw
+    screw_relief_depth: float = 15.0
 
     @property
     def thickness(self) -> float:
@@ -171,23 +159,34 @@ class Construction:
 CONSTRUCTION = Construction()
 
 
-def grip_dims(sp: PaddleSpec) -> dict[str, float]:
-    """Key sizes of the grip hardware (all derived from the handle core and CONSTRUCTION)."""
-    C = CONSTRUCTION
-    sw = sp.handle_width + 2 * (C.sleeve_clear + C.sleeve_wall)
-    st = sp.thickness + 2 * (C.sleeve_clear + C.sleeve_wall)
-    ww, wt = sw + 2 * C.wrap_t, st + 2 * C.wrap_t
-    wr = C.sleeve_r + C.wrap_t
-    cw, ct = sw + 2 * C.cap_wall, st + 2 * C.cap_wall
-    kw, kt = ww + 2 * C.collar_wall, wt + 2 * C.collar_wall
-    collar_top = sp.handle_length - 1.0
-    d = dict(sleeve_w=sw, sleeve_t=st, sleeve_bot=sp.cap_length, sleeve_top=collar_top,
-             wrap_w=ww, wrap_t=wt, wrap_r=wr, wrap_bot=sp.cap_length + C.cap_skirt, wrap_top=collar_top - C.collar_h,
-             cap_w=cw, cap_t=ct, cap_r=C.sleeve_r + C.cap_wall, collar_w=kw, collar_t=kt,
-             collar_r=wr + C.collar_wall, collar_bot=collar_top - C.collar_h, collar_top=collar_top)
-    # grip circumference on the wrap (rounded rectangle perimeter)
-    d["grip_circumference"] = 2 * (ww + wt) - 8 * wr + 2 * math.pi * wr
-    return d
+@dataclass(frozen=True)
+class GripInterface:
+    """The printed grip family (branch claude/kind-volta-vs8ck6, pickleball_grips revision 8) as the paddle sees it.
+
+    Ten surface designs share this interface; the grip slides over the handle and is pinned by one
+    low-head M3 screw through its solid base into an M3 heat-set insert in the core.  The grip's own
+    frame (z along its axis, slot wide axis x) maps to the paddle as x -> x, z -> y, y -> -z."""
+    length: float = 135.0        # butt face to the top of the grip
+    base: float = 5.0            # solid base under the slot (= PaddleSpec.cap_length)
+    slot_w: float = 30.2         # handle width 30 + 0.2 clearance
+    slot_t: float = 16.0         # handle thickness, as marked by the user (fit-test coupon: 15.6 / 16.0 / 16.4)
+    slit_depth: float = 20.0     # both 30-mm-direction end walls are open over the top 20 mm, for the throat flare
+    lead_in: float = 1.0         # 45 deg chamfer at the slot mouth
+    head_wall: float = 3.5       # minimum wall around the slot over the head
+    hole_d: float = 3.5          # screw hole through the base
+    cbore_d: float = 6.2         # counterbore for a DIN 7984 low-head M3 cap screw (head 5.5 x 2.0)
+    cbore_depth: float = 2.2     # leaves 2.8 mm of floor under the head
+    screw_head_d: float = 5.5
+    screw_head_h: float = 2.0
+    screw_len: float = 12.0      # DIN 7984 M3 x 12 (x 16 also fits the core bore)
+    pla_density: float = 1.24    # g/cm3, 100 % infill (the walls hold a sealed hollow core)
+
+    @property
+    def slot_depth(self) -> float:
+        return self.length - self.base
+
+
+GRIP = GripInterface()
 
 
 ELONGATED = PaddleSpec(key="elongated", name="ELONGATED", drawing_no="PB-EL-001",
@@ -270,7 +269,7 @@ def _taper(spec: PaddleSpec) -> dict:
 
 
 def build(spec: PaddleSpec) -> Outline:
-    """Outline of the paddle body (face plates / rib core); the butt cap fills y = 0 .. cap_length."""
+    """Outline of the paddle body (face plates / rib core); the grip base fills y = 0 .. cap_length."""
     a, h, t, L = spec.width / 2, spec.handle_width / 2, spec.handle_length, spec.length
     y0 = spec.cap_length
     b = math.radians(spec.taper_deg)

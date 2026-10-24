@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from paddle import cad, fea  # noqa: E402
+from paddle import fea  # noqa: E402
 from paddle import fea_report as fr  # noqa: E402
 from paddle.export import Chromium  # noqa: E402
 from paddle.geometry import CONSTRUCTION as C  # noqa: E402
@@ -58,7 +58,7 @@ fea.save_json(dict(note=f"bending modes of the half model (symmetric), grip clam
 
 mass_json = ROOT / "analysis" / "mass_properties.json"
 if not mass_json.exists():
-    mass_json.write_text(json.dumps({k: cad.mass_properties(cad.assembly(o)) for k, o in outlines.items()}, indent=1))
+    sys.exit(f"{mass_json} is missing: run tools/export_cad.py first (it weighs the assembly with the printed grip)")
 mass = json.loads(mass_json.read_text())
 
 mesh = {}

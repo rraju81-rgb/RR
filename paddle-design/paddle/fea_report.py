@@ -13,7 +13,7 @@ import numpy as np
 from . import fea, wave
 from . import fea_plots as fp
 from .geometry import CONSTRUCTION as C
-from .geometry import Outline
+from .geometry import GRIP, Outline
 
 Y_MIN = fea.GRIP_Y[1] + 8.0          # results closer than 8 mm to the rigid clamp edge are not assessed
 SETS = ("E_TOP", "E_CORE", "E_BOT")
@@ -279,7 +279,8 @@ def write_report(ctx: dict, out_html: Path) -> None:
     A = fea.ALLOW
     S, B, M, F = ctx["stats"], ctx["baseline"], ctx["mass"], ctx["figs"]
     names = list(S)                                   # ["ELONGATED", "HYBRID"]
-    keys = list(M)                                    # ["elongated", "hybrid"]
+    keys = [k for k in M if k != "grip"]              # ["elongated", "hybrid"]; M["grip"] names the drawn grip
+    typical = lambda k: M[k]["mass_g"] / 225.0                                # noqa: E731  vs a 210-240 g paddle
     el, hy = (S[n]["LC2"] for n in names)
     worst = lambda f: max(f(S[n][lc]) for n in names for lc in S[n])          # noqa: E731
     least = lambda f: min(f(S[n][lc]) for n in names for lc in S[n])          # noqa: E731
@@ -307,7 +308,8 @@ def write_report(ctx: dict, out_html: Path) -> None:
         ("Bond line, shear: local peak", *(f'{_f(S[n]["LC2"]["bond_shear"]["value"])} MPa' for n in names),
          _status(least(shear_rf))),
         ("First bending mode (grip held)", *(f"{f1[n]:.0f} Hz" for n in names), "—"),
-        ("Mass", *(f'{M[k]["mass_g"]:.0f} g' for k in keys), '<span class="warn">▲ 3.5 × typical</span>'),
+        ("Mass", *(f'{M[k]["mass_g"]:.0f} g' for k in keys),
+         f'<span class="warn">▲ {min(map(typical, keys)):.1f}–{max(map(typical, keys)):.1f} × typical</span>'),
     ])
 
     def detail(r1, r2, h1, h2):
@@ -357,13 +359,11 @@ def write_report(ctx: dict, out_html: Path) -> None:
         ("Tip deflection", f'{_f(b2["max_deflection"]["value"], 2)} mm', f'{_f(e2["max_deflection"]["value"], 2)} mm'),
     ])
 
-    parts = ("face_sheet_top", "rib_core", "face_sheet_bottom", "grip_sleeve", "grip_wrap", "throat_collar",
-             "butt_cap", "screw_M4x12_ISO7380", "insert_M4_heatset")
+    parts = ("face_sheet_top", "rib_core", "face_sheet_bottom", "grip", "screw_M3x12_DIN7984", "insert_M3_heatset")
+    grip = M.get("grip", {}).get("name", "rev 8").title()
     labels = {"face_sheet_top": "Carbon face sheet, top (4 mm)", "rib_core": "Wave-rib core with frame (PA-CF)",
-              "face_sheet_bottom": "Carbon face sheet, bottom (4 mm)", "grip_sleeve": "Grip sleeve (TPU)",
-              "grip_wrap": "Grip wrap, PU (0.75 mm)", "throat_collar": "Throat collar (TPU)",
-              "butt_cap": "Butt cap (TPU)", "screw_M4x12_ISO7380": "Screw ISO 7380 M4 × 12",
-              "insert_M4_heatset": "Heat-set insert M4 (brass)"}
+              "face_sheet_bottom": "Carbon face sheet, bottom (4 mm)", "grip": f"Printed grip, PLA ({grip})",
+              "screw_M3x12_DIN7984": "Screw DIN 7984 M3 × 12", "insert_M3_heatset": "Heat-set insert M3 (brass)"}
     mass_rows = _rows([(labels[p], *(f'{M[k]["parts"][p]["mass_g"]:.1f} g' for k in keys)) for p in parts] + [
         ("<b>Total</b>", *(f'<b>{M[k]["mass_g"]:.0f} g</b>' for k in keys)),
         ("Balance point from the butt", *(f'{M[k]["balance_mm"]:.0f} mm' for k in keys)),
@@ -382,7 +382,7 @@ def write_report(ctx: dict, out_html: Path) -> None:
     html_doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <title>Structural analysis – wave-rib sandwich paddles</title><style>{CSS}</style></head><body>
 
-<div class="kicker">Structural analysis · REV B · {ctx["date"]}</div>
+<div class="kicker">Structural analysis · REV C · {ctx["date"]}</div>
 <h1>Wave-rib sandwich pickleball paddles</h1>
 <p class="sub">PB-EL-001 Elongated (390 × 200 × 16 mm) and PB-HY-001 Hybrid (390 × 190 × 16 mm).
 Linear static and modal finite-element analysis.</p>
@@ -406,7 +406,7 @@ that band the 99th-percentile value is {worst(lambda r: r["bond_shear_stats"]["p
 impact and {S[names[0]]["LC1"]["max_deflection"]["value"]:.1f} mm at the sweet spot. With the grip held, the first
 bending mode is {f1[names[0]]:.0f} Hz (Elongated) and {f1[names[1]]:.0f} Hz (Hybrid).</li>
 <li><b>Weight.</b> The Elongated paddle weighs {M[keys[0]]["mass_g"]:.0f} g and the Hybrid {M[keys[1]]["mass_g"]:.0f} g,
-about 3.5 times a typical 210–240 g paddle. The two 4 mm carbon sheets alone weigh {faces[keys[0]]:.0f} g /
+about {typical(keys[0]):.1f} and {typical(keys[1]):.1f} times a typical 210–240 g paddle. The two 4 mm carbon sheets alone weigh {faces[keys[0]]:.0f} g /
 {faces[keys[1]]:.0f} g. §6 has the breakdown.</li>
 </ul>
 <table><tr><th>Worst case (tip impact, {lc2.force:.0f} N)</th><th class="n">{names[0].title()}</th>
@@ -424,10 +424,16 @@ the full outline, blade and handle.</li>
 wall {lay.rib_t:g} mm, amplitude {lay.rib_amp:g} mm. The flutes run along the paddle. The crests are cut flat
 where they meet the sheets, which gives bond lands {wave.land_width():.2f} mm wide.</li>
 <li><b>Solid zone.</b> The core is solid from the butt to y = {lay.solid_to:g} mm (handle and throat). Each flute
-starts with a 45° run-out, {lay.runout_len:g} mm long, which prints without support. The butt end holds an M4 heat-set
-insert for the butt-cap screw.</li>
-<li><b>Grip.</b> Sleeve, wrap, throat collar and butt cap are not load-carrying in this model. The hand is
+starts with a 45° run-out, {lay.runout_len:g} mm long, which prints without support. The butt end holds an M3 heat-set
+insert for the grip screw.</li>
+<li><b>Grip.</b> A printed PLA grip ({grip} drawn; any of the ten rev-8 designs fits) slides over the handle:
+{GRIP.length:g} mm long, slot {GRIP.slot_w:g} × {GRIP.slot_t:g} mm, solid {GRIP.base:g} mm base. A DIN 7984 M3 × 12 screw
+through the base into the insert holds it on. The grip is not load-carrying in this model. The hand is
 represented by a clamp (§3).</li>
+<li><b>Revision C.</b> The printed grip replaced the REV B sleeve, wrap, collar and butt cap, and the insert
+changed from M4 to M3. The body now starts {GRIP.base:g} mm above the butt, on the grip base, instead of 4 mm. All of
+this sits below or inside the clamped band (y = {fea.GRIP_Y[0]:g}–{fea.GRIP_Y[1]:g} mm), which carries no assessed
+stress, so the stress and modal results stand and the cases were not re-solved. The masses in §6 are REV C.</li>
 </ul>
 {fig("cutaway", "Cutaway render: the top sheet and the core are cut back to show the wave rib between the sheets.", "half")}
 
@@ -501,7 +507,7 @@ rounds that corner off.</p>
 <table><tr><th>Part (from the CAD model)</th><th class="n">{names[0].title()}</th><th class="n">{names[1].title()}</th></tr>
 {mass_rows}</table></div>
 <p>A typical competition paddle weighs 210–240 g (7.5–8.5 oz). Its swing weight is roughly 100–130 kg·cm² about
-the same pivot. These paddles are about 3.5 times as heavy and about twice the swing weight. The 4 mm carbon
+the same pivot. These paddles are about {typical(keys[0]):.1f} and {typical(keys[1]):.1f} times as heavy and about twice the swing weight. The 4 mm carbon
 sheets make up {100 * faces[keys[0]] / M[keys[0]]["mass_g"]:.0f} % of the mass. The printed core weighs
 {M[keys[0]]["parts"]["rib_core"]["mass_g"]:.0f} g, an effective density of about
 {M[keys[0]]["parts"]["rib_core"]["mass_g"] / M[keys[0]]["parts"]["face_sheet_top"]["volume_cm3"] * lay.face_t / lay.core_t * 1000:.0f} kg/m³.

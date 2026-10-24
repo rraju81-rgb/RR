@@ -263,15 +263,16 @@ class View:
         am = math.radians((a1 + a2) / 2)
         self.d.text((V[0] + tr * math.cos(am), V[1] - tr * math.sin(am) + size * 0.35), label, size)
 
-    def section_line(self, y: float, x0: float, x1: float, label: str, size: float = 5.0) -> None:
-        """Cutting plane across the view at model height y, viewed towards -y (arrows point down)."""
+    def section_line(self, y: float, x0: float, x1: float, label: str, size: float = 5.0, up: bool = False) -> None:
+        """Cutting plane across the view at model height y, viewed towards -y (arrows point down) or +y (up)."""
         a, b = self.P((x0, y)), self.P((x1, y))
+        k = -1 if up else 1
         self.d.line(a, b, "ctr")
         for p, s in ((a, 1), (b, -1)):
             self.d.line(p, (p[0] + s * 6, p[1]), "cut")
             tail = (p[0] + s * 3, p[1])
-            self.d.line(tail, (tail[0], tail[1] + 6), "thin")
-            self.d.arrow((tail[0], tail[1] + 7.5), (0, 1), 3.0, 1.4)
+            self.d.line(tail, (tail[0], tail[1] + k * 6), "thin")
+            self.d.arrow((tail[0], tail[1] + k * 7.5), (0, k), 3.0, 1.4)
             self.d.text((p[0] - s * 1.0, p[1] - 1.5), label, size, anchor="end" if s > 0 else "start",
                         weight="bold")
 

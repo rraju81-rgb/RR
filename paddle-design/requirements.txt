@@ -4,9 +4,12 @@ playwright>=1.45
 pypdf>=4.0
 numpy>=1.26
 shapely>=2.0
-# 3-D model, STEP/STL export, mass properties, renders  (tools/export_cad.py, tools/render_3d.py + Blender 4.x)
+trimesh>=4.0          # also cuts the printed-grip STL for the drawings
+networkx>=3.0         # trimesh mesh sections and 3MF export
+# 3-D model, STEP/STL/3MF export, rib-support STLs, mass properties, renders
+# (tools/export_cad.py, tools/export_rib_support.py, tools/render_3d.py + Blender 4.x)
 build123d>=0.8
-trimesh>=4.0
+lxml>=5.0             # trimesh 3MF export
 Pillow>=10.0
 # stress analysis  (tools/run_fea_case.py + CalculiX ccx, tools/fea_report.py)
 gmsh>=4.12

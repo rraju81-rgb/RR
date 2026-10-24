@@ -1,20 +1,22 @@
-"""Construction drawings (REV B): the printed rib core of each paddle and the shared grip assembly.
+"""Construction drawings (REV C): the printed rib support (core) of each paddle and the shared printed grip.
 
-  core_sheet(o)  - PB-xx-001 sheet 3: core plan view 1:2, section C-C across the wave 2:1,
-                   section D-D along a land through the flute run-out 2:1, print / bond notes.
-  grip_sheet()   - PB-GR-001: handle face view 1:1, section E-E across the grip 2:1,
-                   section F-F through the butt-cap screw 2:1, bill of materials, grip notes.
+  core_sheet(o)  - PB-xx-001 sheet 3: rib support plan view 1:2 (with the two-piece split line), section C-C
+                   across the wave 2:1, section D-D along a land through the flute run-out 2:1, print notes.
+  grip_sheet()   - PB-GR-002: handle in the printed grip 1:1, sections E-E / G-G across the grip and F-F through
+                   the M3 screw and insert 2:1, fit-test coupon, bill of materials, notes.
 """
 from __future__ import annotations
 
 import math
 
-from shapely.geometry import LineString, box
+import numpy as np
+from shapely.geometry import LineString, Polygon, box
 
 from . import wave
 from .geometry import CONSTRUCTION as C
-from .geometry import Outline, PaddleSpec, grip_dims
-from .sheets import (GREY, SHEETS, cell, core_inner, fill, grip_front, hatches, notes_block, rrect_path,
+from .cad import SPLICE_BAND, SPLICE_Y
+from .geometry import GRIP, Outline, PaddleSpec
+from .sheets import (GREY, SHEETS, cell, core_inner, fill, grip_front, hatches, notes_block, polygon_path,
                      title_block)
 from .svgkit import Doc, View, f, fmt, frame_iso
 
@@ -68,11 +70,13 @@ def core_notes(o: Outline, mass: dict | None) -> list[str]:
         f"LANDS {wave.land_width():.2f} ON BOTH FACES.",
         f"FRAME {fmt(C.frame_w)}, CLOSED. SOLID TO y = {fmt(C.solid_to)}; EACH FLUTE STARTS WITH A 45° RUN-OUT, "
         f"{fmt(C.runout_len)} LONG (D–D).",
-        f"M4 INSERT BORE Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
-        f"{fmt(C.screw_relief_depth)} IN THE BUTT FACE – SEE PB-GR-001.",
+        f"M3 HEAT-SET INSERT BORE Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
+        f"{fmt(C.screw_relief_depth)} IN THE BUTT FACE (GRIP SCREW) – SEE PB-GR-002.",
         "BONDING: ABRADE (P120), DEGREASE, STRUCTURAL EPOXY, FILLET EVERY LAND EDGE.",
-        f"{m}3D MODEL: output/cad/{sp.key}_rib_core.step / .stl. y FROM THE BUTT-CAP BASE (CORE STARTS AT "
-        f"y = {fmt(sp.cap_length)}).",
+        f"PRINT FILES output/rib_support/: {sp.key}_rib_support_1piece.stl (BED ≥ 390 × 205) OR _2piece_A + _B "
+        f"(256 BED):\n{fmt(SPLICE_BAND)} SOLID SPLICE BAND AT y = {fmt(SPLICE_Y)}, DOVETAIL JOINT 0.1 CLEARANCE PER "
+        "SIDE - GLUE IT BEFORE BONDING THE SHEETS.",
+        f"{m}y FROM THE GRIP BUTT FACE (y = 0); THE RIB SUPPORT STARTS AT y = {fmt(sp.cap_length)}.",
     ]
 
 
@@ -129,9 +133,9 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     d.dim_linear(P((-hb, y0)), P((0, L)), "y", xl2, fmt(L - y0))
     d.leader_note(P((a - C.frame_w / 2, 300)), (P((a, 0))[0] + 10, P((0, 312))[1]), f"FRAME {fmt(C.frame_w)}", 3.0)
     xr_land = sum(next(iv for iv in lands if iv[0] > C.rib_pitch / 2)) / 2
-    d.leader_note(P((xr_land, 245)), (P((a, 0))[0] + 10, P((0, 236))[1]),
+    d.leader_note(P((xr_land, 262)), (P((a, 0))[0] + 10, P((0, 256))[1]),
                   f"LANDS {wave.land_width():.2f} @ {fmt(C.rib_pitch)}", 3.0, dot=True, arrow=False)
-    d.leader_note(P((0.0, y0 + 8)), (P((0, 0))[0] + 22, P((0, y0 + 26))[1]), "M4 INSERT BORE", 3.0)
+    d.leader_note(P((0.0, y0 + 8)), (P((0, 0))[0] + 22, P((0, y0 + 26))[1]), "M3 INSERT BORE", 3.0)
     # cutting planes: C-C across the blade, D-D along the centre land
     pv.section_line(280.0, -a - 12, a + 12, "C")
     ya_d, yb_d = 128.0, 196.0
@@ -141,6 +145,10 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
         d.line((p[0], p[1] + s * 3), (p[0] - 6, p[1] + s * 3), "thin")
         d.arrow((p[0] - 7.5, p[1] + s * 3), (-1, 0), 3.0, 1.4)
         d.text((p[0] + 1.2, p[1] - (1.5 if s > 0 else -4.5)), "D", 5.0, anchor="start", weight="bold")
+    hw = o.half_width_at(SPLICE_Y)                # two-piece print option: joint line
+    pv.line((-hw - 8, SPLICE_Y), (hw + 8, SPLICE_Y), "phan")
+    d.text((P((hw + 9, 0))[0], P((0, SPLICE_Y))[1] + 1.0), f"2-PIECE JOINT y = {fmt(SPLICE_Y)}", 2.4, anchor="start",
+           fill=GREY)
     view_label(d, cx, 259, "PLAN VIEW (TOP FACE)", "SCALE 1:2 · BOTTOM LANDS OFFSET ½ PITCH")
 
     # ---- section C-C (partial, at y = 280, right-hand edge), 2:1
@@ -218,118 +226,147 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
 
     # ---- notes + title block
     notes_block(d, 228.0, 192.0, core_notes(o, mass), size=2.3, lead=3.4)
-    title_block(d, 225.0, 236.0, sp, f"RIB CORE  ·  3D-PRINTED PA-CF  ·  {fmt(L - sp.cap_length)} × "
+    title_block(d, 225.0, 236.0, sp, f"RIB SUPPORT (CORE)  ·  3D-PRINTED PA-CF  ·  {fmt(L - sp.cap_length)} × "
                 f"{fmt(sp.width)} × {fmt(C.core_t)} mm", "1:2, 2:1", f"3 / {SHEETS}", "A3",
-                title=f"RIB CORE – {sp.name}", material="PA-CF (NOTE 1)")
+                title=f"RIB SUPPORT – {sp.name}", material="PA-CF (NOTE 1)")
     return d
 
 
-# --------------------------------------------------------------------------- PB-GR-001: grip assembly
-GRIP_NO = "PB-GR-001"
+# --------------------------------------------------------------------------- PB-GR-002: printed grip interface
+GRIP_NO = "PB-GR-002"
 
 
-def grip_notes(sp: PaddleSpec) -> list[str]:
-    g = grip_dims(sp)
+def grip_notes(sp: PaddleSpec, g: dict, masses: dict | None) -> list[str]:
+    tot = " / ".join(f"{masses[k]['mass_g']:.0f}" for k in ("elongated", "hybrid")) if masses else "–"
     return [
-        f"GRIP: {fmt(g['wrap_w'])} × {fmt(g['wrap_t'])} R{g['wrap_r']:g} OVER THE WRAP = CIRCUMFERENCE "
-        f"{g['grip_circumference']:.1f} (4¼ in). WRAP LENGTH {fmt(g['wrap_top'] - g['wrap_bot'])}.",
-        f"HANDLE {fmt(sp.handle_length)} INCL. BUTT CAP. BODY {fmt(sp.handle_width)} × {fmt(sp.thickness)} "
-        f"(CF {fmt(C.face_t)} / CORE {fmt(C.core_t)} / CF {fmt(C.face_t)}).",
-        f"SLEEVE (2): BOND TO THE HANDLE WITH EPOXY, {fmt(C.sleeve_clear)} GAP PER SIDE FOR THE ADHESIVE.",
-        "WRAP (3): REPLACEABLE PU GRIP, SPIRAL FROM THE CAP SKIRT UP TO UNDER THE COLLAR.",
-        f"COLLAR (4): SLIDE OVER THE WRAP END, BOND TO THE SLEEVE; TOP AT y = {fmt(g['collar_top'])}.",
-        f"INSERT (7): HEAT-SET AT ≈250 °C, FLUSH WITH THE CORE BUTT FACE (y = {fmt(sp.cap_length)}), SQUARE WITHIN 1°.",
-        "SCREW (6): LOW-STRENGTH THREADLOCKER; TIGHTEN UNTIL THE CAP SEATS, MAX 0.8 N·m.",
-        f"BUTT CAP (5): BASE {fmt(sp.cap_length)} + SKIRT {fmt(C.cap_skirt)} OVER THE SLEEVE; THE BASE COUNTS IN "
-        f"THE {fmt(sp.length)} OVERALL LENGTH.",
-        "SAME HANDLE ON PB-EL-001 AND PB-HY-001. ALL DIMENSIONS IN mm.",
+        f"GRIP (3): ANY OF THE TEN REV-8 PRINTED GRIPS (pickleball_grips) - SAME INTERFACE, DIFFERENT SURFACE; DRAWN: "
+        f"{g['name']}.\nPLA 60–65 g ({g['mass_g']:.1f} g DRAWN). PRINT UPRIGHT, BUTT DOWN, 100 % INFILL, NO SUPPORTS.",
+        f"SLOT {fmt(GRIP.slot_w)} × {fmt(GRIP.slot_t)} × {fmt(GRIP.slot_depth)} DEEP, {fmt(GRIP.lead_in)} LEAD-IN; "
+        f"HANDLE {fmt(sp.handle_width)} × {fmt(sp.thickness)} NOMINAL. THE BONDED 4/8/4 STACK MAY\nMEASURE 16.1–16.5: "
+        "MEASURE IT, PRINT THE FIT-TEST COUPON AND SET SLOT_T (pickleball_grips/scripts/grip_core.py) TO SUIT.",
+        f"END WALLS SLIT OVER THE TOP {fmt(GRIP.slit_depth)} (y {fmt(GRIP.length - GRIP.slit_depth)}–{fmt(GRIP.length)}) "
+        f"SO THE THROAT FLARE (FROM y = {fmt(sp.handle_length)}) PASSES;\nTHE GRIP SEATS ON THE BODY BUTT AT "
+        f"y = {fmt(sp.cap_length)} (= GRIP BASE {fmt(GRIP.base)}).",
+        f"INSERT (5): HEAT-SET M3 × {fmt(C.insert_len)} INTO THE Ø{fmt(C.insert_d)} BORE, FLUSH WITH THE CORE BUTT, "
+        "BEFORE THE FACE SHEETS ARE BONDED.",
+        f"SCREW (4): DIN 7984 M3 × {fmt(GRIP.screw_len)} LOW-HEAD (M3 × 16 ALSO FITS), LOW-STRENGTH THREADLOCKER, "
+        f"HAND-TIGHT (≈0.5 N·m)\nSO THE PLA BASE DOES NOT CRACK; {fmt(GRIP.base - GRIP.cbore_depth)} OF FLOOR UNDER "
+        "THE HEAD.",
+        f"OVERALL LENGTH {fmt(sp.length)} INCL. THE {fmt(GRIP.base)} GRIP BASE; HANDLE {fmt(sp.handle_length)} FROM THE "
+        f"BUTT TO THE THROAT. MASS WITH GRIP {tot} g (EL / HY).",
+        "SAME GRIP ON PB-EL-001 AND PB-HY-001. ALL DIMENSIONS IN mm.",
     ]
 
 
 def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
-    """masses: {design key: mass_properties} for the BOM mass column (optional)."""
-    g = grip_dims(sp)
-    d = Doc(420, 297, f"{GRIP_NO} grip and butt-cap assembly")
+    """PB-GR-002: the printed grip on the paddle handle (shared by both paddles).
+
+    masses: the mass_properties.json content (optional, for the BOM mass column)."""
+    from shapely.geometry import box as sbox
+
+    from .geometry import build
+    from .grip import drawing_data, fit_test_section
+    g = drawing_data()
+    d = Doc(420, 297, f"{GRIP_NO} printed grip - paddle interface")
     H = hatches(d)
     frame_iso(d)
     h, T, hc, y0 = sp.handle_width / 2, sp.thickness / 2, C.core_t / 2, sp.cap_length
-    yc = sp.cap_length + C.cap_skirt
+    o = build(sp)
+    gw = float(g["face"][:, 0].max())
+    gy = float(g["face"][int(np.argmax(g["face"][:, 0])), 1])
 
-    # ---- face view of the handle, 1:1 (y = 0 .. 160)
-    cx, butt_y = 72.0, 248.0
+    # ---- face view of the handle in the grip, 1:1
+    cx, butt_y = 80.0, 250.0
     fv = View(d, (cx, butt_y), 1.0)
     P = fv.P
-    from .geometry import build
-    o = build(sp)
-    clip = box(-200, g["collar_top"] - 0.01, 200, 140)
-    from shapely.geometry import Polygon
-    outline = Polygon(o.polyline(0.3))
-    for seg in _segments(outline.exterior.intersection(clip)):
+    y_cut = 152.0
+    for seg in _segments(Polygon(o.polyline(0.3)).exterior.intersection(sbox(-200, GRIP.length - 0.01, 200, y_cut))):
         d.poly([P(q) for q in seg], "vis")
-    break_line(d, P((-25, 140)), P((25, 140)), 1.2)
-    grip_front(d, fv, sp)
-    fv.line((0, -6), (0, 146), "ctr")
-    xl, xl2 = cx - g["collar_w"] / 2 - 10, cx - g["collar_w"] / 2 - 19
-    d.dim_linear(P((-g["cap_w"] / 2, 0)), P((-g["cap_w"] / 2, yc)), "y", xl, fmt(yc), outside=True)
-    d.dim_linear(P((-g["wrap_w"] / 2, g["wrap_bot"])), P((-g["wrap_w"] / 2, g["wrap_top"])), "y", xl,
-                 fmt(g["wrap_top"] - g["wrap_bot"]))
-    d.dim_linear(P((-g["collar_w"] / 2, g["collar_bot"])), P((-g["collar_w"] / 2, g["collar_top"])), "y", xl,
-                 fmt(C.collar_h), outside=True)
-    d.dim_linear(P((-g["cap_w"] / 2, 0)), P((-h, sp.handle_length)), "y", xl2, fmt(sp.handle_length))
-    d.dim_linear(P((-g["cap_w"] / 2, 0)), P((g["cap_w"] / 2, 0)), "x", butt_y + 13, fmt(g["cap_w"]))
-    d.dim_linear(P((-g["collar_w"] / 2, g["collar_top"])), P((g["collar_w"] / 2, g["collar_top"])), "x",
-                 P((0, 147))[1], fmt(g["collar_w"]))
-    d.dim_linear(P((-g["wrap_w"] / 2, 95)), P((g["wrap_w"] / 2, 95)), "x", P((0, 95))[1], fmt(g["wrap_w"]))
-    # cutting planes E-E (across) and F-F (along the centre line)
-    fv.section_line(70.0, -g["wrap_w"] / 2 - 9, g["wrap_w"] / 2 + 9, "E")
+    half_cut = o.half_width_at(y_cut)
+    break_line(d, P((-half_cut - 4, y_cut)), P((half_cut + 4, y_cut)), 1.2)
+    grip_front(d, fv, o)
+    fv.line((0, -6), (0, y_cut + 4), "ctr")
+    fv.line((-gw - 12, sp.handle_length), (gw + 4, sp.handle_length), "phan")
+    d.text((P((-gw - 6.5, 0))[0], P((0, sp.handle_length))[1] - 1.0), "THROAT", 2.2, fill=GREY)
+    xl, xl2 = cx - gw - 14, cx - gw - 23
+    d.dim_linear(P((-gw, 0)), P((-gw, GRIP.base)), "y", xl, fmt(GRIP.base), outside=True)
+    d.dim_linear(P((-gw, GRIP.base)), P((-gw, GRIP.length)), "y", xl, fmt(GRIP.slot_depth))
+    d.dim_linear(P((-gw, 0)), P((-gw, GRIP.length)), "y", xl2, fmt(GRIP.length))
+    d.dim_linear(P((gw, GRIP.length - GRIP.slit_depth)), P((gw, GRIP.length)), "y", cx + gw + 14, fmt(GRIP.slit_depth))
+    d.text((cx + gw + 17.5, P((0, GRIP.length - GRIP.slit_depth / 2))[1]), "SLITS", 2.4, rot=-90, fill=GREY)
+    d.dim_linear(P((-gw, gy)), P((gw, gy)), "x", butt_y + 13, f"{2 * gw:.1f}")
+    fv.section_line(70.0, -gw - 4, gw + 4, "E")
+    fv.section_line(120.0, -gw - 4, gw + 4, "G", up=True)        # looking up keeps the arrows clear of the 20 dim
     for p, s in ((P((0, 46)), 1), (P((0, -6.5)), -1)):  # plane x = 0, looking towards -x
         d.line(p, (p[0], p[1] + s * 4), "cut")
         tail = (p[0], p[1] + s * 2)
         d.line(tail, (tail[0] - 6, tail[1]), "thin")
         d.arrow((tail[0] - 7.5, tail[1]), (-1, 0), 3.0, 1.4)
         d.text((tail[0] - 9.5, tail[1] + 1.8), "F", 5.0, anchor="end", weight="bold")
-    for k, (n, y) in enumerate(((5, 4.0), (3, 60.0), (4, 124.0))):
-        hw = (g["cap_w"], g["wrap_w"], g["collar_w"])[k] / 2
-        _balloon(d, P((hw, y)), (P((hw, y))[0] + 16, P((hw, y))[1] - 6), n)
-    view_label(d, cx, 270, "HANDLE (FACE VIEW)", "SCALE 1:1")
+    _balloon(d, P((gw - 1.5, 92)), (P((gw, 92))[0] + 14, P((0, 98))[1]), 3)
+    _balloon(d, P((h - 4, y_cut - 6)), (P((gw, 0))[0] + 10.7, P((0, 141.5))[1]), 1)
+    view_label(d, cx, 270, "HANDLE IN THE GRIP (FACE VIEW)", f"SCALE 1:1 · DRAWN: {g['name']}")
 
-    # ---- section E-E across the grip, 2:1
     S2 = 2.0
-    xe, ze = 160.0, 62.0
+    # ---- section E-E across the grip at y = 70, 2:1 (sealed hollow core of the grip shown white)
+    xe, ze = 163.0, 64.0
 
     def E(x: float, z: float):
         return (xe + x * S2, ze - z * S2)
 
+    d.path(polygon_path(g["sec_e"], E), "vis", extra=f'style="fill:{H["grip"]}" fill-rule="evenodd"')
     for zb, zt, key in ((hc, T, "cf"), (-hc, hc, "core"), (-T, -hc, "cf")):
         p, q = E(-h, zt), E(h, zb)
         d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H[key]))
-    ci_w, ci_t = sp.handle_width + 2 * C.sleeve_clear, sp.thickness + 2 * C.sleeve_clear
-    d.path(rrect_path(xe, ze, g["sleeve_w"] * S2, g["sleeve_t"] * S2, C.sleeve_r * S2) + " " +
-           rrect_path(xe, ze, ci_w * S2, ci_t * S2, 0.6 * S2), "vis",
-           extra=f'style="fill:{H["grip"]}" fill-rule="evenodd"')
-    d.path(rrect_path(xe, ze, g["wrap_w"] * S2, g["wrap_t"] * S2, g["wrap_r"] * S2) + " " +
-           rrect_path(xe, ze, g["sleeve_w"] * S2, g["sleeve_t"] * S2, C.sleeve_r * S2), "vis",
-           extra='style="fill:#000" fill-rule="evenodd"')
-    ww, wt = g["wrap_w"] / 2, g["wrap_t"] / 2
-    d.dim_linear(E(-h, T), E(h, T), "x", ze - wt * S2 - 5, fmt(sp.handle_width))
-    d.dim_linear(E(-g["sleeve_w"] / 2, g["sleeve_t"] / 2), E(g["sleeve_w"] / 2, g["sleeve_t"] / 2), "x",
-                 ze - wt * S2 - 11, fmt(g["sleeve_w"]))
-    d.dim_linear(E(-ww, wt), E(ww, wt), "x", ze - wt * S2 - 17, fmt(g["wrap_w"]))
-    d.dim_linear(E(h, T), E(h, -T), "y", xe + ww * S2 + 5, fmt(sp.thickness))
-    d.dim_linear(E(g["sleeve_w"] / 2, g["sleeve_t"] / 2), E(g["sleeve_w"] / 2, -g["sleeve_t"] / 2), "y",
-                 xe + ww * S2 + 11, fmt(g["sleeve_t"]))
-    d.dim_linear(E(ww, wt), E(ww, -wt), "y", xe + ww * S2 + 17, fmt(g["wrap_t"]))
-    d.leader_note(E(-g["sleeve_w"] / 2 + 0.9, -3.0), (E(-ww, 0)[0] - 7, ze + 9),
-                  f"SLEEVE (2) R{fmt(C.sleeve_r)}, WALL {fmt(C.sleeve_wall)}", 2.6, dot=True, arrow=False)
-    d.leader_note(E(-ww + 0.35, -wt + 4.0), (E(-ww, 0)[0] - 7, ze + 17),
-                  f"WRAP (3) {C.wrap_t:g}, R{g['wrap_r']:g}", 2.6)
-    d.line((xe - ww * S2 - 4, ze), (xe + ww * S2 + 2, ze), "ctr")
-    d.line((xe, ze - wt * S2 - 2), (xe, ze + wt * S2 + 3), "ctr")
-    view_label(d, xe, ze + wt * S2 + 18, "SECTION E–E", "SCALE 2:1")
+    ex0, ez0, ex1, ez1 = g["sec_e"].bounds
+    d.dim_linear(E(-h, T), E(h, T), "x", ze - ez1 * S2 - 5, fmt(sp.handle_width))
+    d.dim_linear(E(ex0, ez1), E(ex1, ez1), "x", ze - ez1 * S2 - 11, f"{ex1 - ex0:.1f} MAX")
+    d.dim_linear(E(h, T), E(h, -T), "y", xe + ex1 * S2 + 5, fmt(sp.thickness))
+    d.dim_linear(E(ex1, ez1), E(ex1, ez0), "y", xe + ex1 * S2 + 11, f"{ez1 - ez0:.1f} MAX")
+    d.leader_note(E(-h - 0.05, -4.0), (E(ex0, 0)[0] - 5, ze + 14),
+                  f"SLOT {fmt(GRIP.slot_w)} × {fmt(GRIP.slot_t)}", 2.6)
+    cav = max((Polygon(r) for r in g["sec_e"].interiors), key=lambda q: q.centroid.y)     # topmost cavity
+    d.leader_note(E(cav.centroid.x - 4.0, cav.centroid.y), (E(ex0, 0)[0] - 5, ze - 12), "SEALED HOLLOW CORE", 2.4,
+                  dot=True, arrow=False)
+    d.line((xe + ex0 * S2 - 3, ze), (xe + ex1 * S2 + 2, ze), "ctr")
+    view_label(d, xe, ze + ez1 * S2 + 15, "SECTION E–E", "SCALE 2:1")
+
+    # ---- section G-G through the head at y = 125: end walls slit away, two plates remain, 2:1
+    xg, zg = 163.0, 156.0
+
+    def Gp(x: float, z: float):
+        return (xg + x * S2, zg - z * S2)
+
+    d.path(polygon_path(g["sec_g"], Gp), "vis", extra=f'style="fill:{H["grip"]}" fill-rule="evenodd"')
+    for zb, zt, key in ((hc, T, "cf"), (-hc, hc, "core"), (-T, -hc, "cf")):
+        p, q = Gp(-h, zt), Gp(h, zb)
+        d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H[key]))
+    gx0, gz0, gx1, gz1 = g["sec_g"].bounds
+    plate = min(gz1 - T, -T - gz0)
+    d.dim_linear(Gp(gx0, gz1), Gp(gx1, gz1), "x", zg - gz1 * S2 - 5, f"{gx1 - gx0:.1f}")
+    d.dim_linear(Gp(gx1, gz1), Gp(gx1, T), "y", xg + gx1 * S2 + 5, f"{plate:.1f}", outside=True)
+    d.leader_note(Gp(gx1 - 0.6, 0.0), (Gp(gx1, 0)[0] + 9, zg + gz1 * S2 + 6), "OPEN SLIT", 2.4)
+    d.line((xg + gx0 * S2 - 3, zg), (xg + gx1 * S2 + 2, zg), "ctr")
+    view_label(d, xg, zg + gz1 * S2 + 16, "SECTION G–G", "SCALE 2:1 · HEAD, IN THE SLIT ZONE (y = 120)")
+
+    # ---- fit-test coupon, plan section, 1:1
+    cpn = fit_test_section()
+    xc, yc = 163.0, 228.0
+
+    def K(x: float, y: float):
+        return (xc + y, yc + x)                       # coupon turned 90 deg: its long axis across the sheet
+
+    d.path(polygon_path(cpn, K), "vis", extra=f'style="fill:{H["grip"]}" fill-rule="evenodd"')
+    for hole, label in zip(sorted(cpn.interiors, key=lambda r: Polygon(r).bounds[1]), ("15.6", "16.0", "16.4")):
+        b0, b1, b2, b3 = Polygon(hole).bounds
+        d.text((xc + (b1 + b3) / 2, yc + 1.0), label, 2.6, weight="bold")
+    cb = cpn.bounds
+    view_label(d, xc, yc + cb[2] + 10, "FIT-TEST COUPON (fit_test_slot.stl)",
+               "SCALE 1:1 · 8 THK · SLOTS 15.6 / 16.0 / 16.4 × 30.2")
 
     # ---- section F-F through the screw, butt end (y = 0 .. 40), 2:1
     yf1 = 40.0
-    xf, zf = 270.0, 62.0
+    xf, zf = 268.0, 60.0
 
     def F(y: float, z: float):
         return (xf + y * S2, zf - z * S2)
@@ -338,7 +375,8 @@ def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
         p, q = F(y_a, max(z_a, z_b)), F(y_b, min(z_a, z_b))
         d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], cls, extra=style)
 
-    # body: face sheets and core (with the insert bore and the screw clearance)
+    longf = g["long"].intersection(sbox(-1, -40, yf1, 40))
+    d.path(polygon_path(longf, F), "vis", extra=f'style="fill:{H["grip"]}" fill-rule="evenodd"')
     for zb, zt in ((hc, T), (-T, -hc)):
         box_(y0, yf1, zb, zt, fill(H["cf"]))
     r1, r2 = C.insert_d / 2, C.screw_relief_d / 2
@@ -346,93 +384,76 @@ def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
     core = [F(y0, r1), F(yi, r1), F(yi, r2), F(yr, r2), F(yr, -r2), F(yi, -r2), F(yi, -r1), F(y0, -r1),
             F(y0, -hc), F(yf1, -hc), F(yf1, hc), F(y0, hc)]
     d.poly(core, "vis", closed=True, extra=fill(H["core"]))
-    # sleeve and wrap
-    zs0, zs1 = sp.thickness / 2 + C.sleeve_clear, g["sleeve_t"] / 2
+    ins_i = 1.25
     for s in (1, -1):
-        box_(y0, yf1, s * zs0, s * zs1, fill(H["grip"]))
-        box_(g["wrap_bot"], yf1, s * zs1, s * wt, 'style="fill:#000"')
-    # butt cap: base with counterbore + hole, skirt over the sleeve
-    zc0 = g["cap_t"] / 2
-    cb, hole = C.cb_d / 2, C.cap_hole_d / 2
-    for s in (1, -1):
-        cap = [F(0, s * cb), F(C.cb_depth, s * cb), F(C.cb_depth, s * hole), F(y0, s * hole), F(y0, s * zs1),
-               F(yc, s * zs1), F(yc, s * zc0), F(0, s * zc0)]
-        d.poly(cap, "vis", closed=True, extra=fill(H["cap"]))
-    # heat-set insert (sectioned) and screw (not sectioned, ISO 128-50)
-    ins_l, ins_i = 8.1, 1.7
-    for s in (1, -1):
-        box_(y0, y0 + ins_l, s * ins_i, s * r1, fill(H["metal"]))
-    yb = C.cb_depth
-    head = [F(yb - 2.2, 3.0), F(yb - 2.2, -3.0), F(yb - 1.4, -3.8), F(yb, -3.8), F(yb, 3.8), F(yb - 1.4, 3.8)]
+        box_(y0, y0 + C.insert_len, s * ins_i, s * r1, fill(H["metal"]))
+    yb = GRIP.cbore_depth
+    hr = GRIP.screw_head_d / 2
+    head = [F(yb - GRIP.screw_head_h, hr - 0.4), F(yb - GRIP.screw_head_h, -hr + 0.4), F(yb - GRIP.screw_head_h + 0.4, -hr),
+            F(yb, -hr), F(yb, hr), F(yb - GRIP.screw_head_h + 0.4, hr)]
     d.poly(head, "vis", closed=True, extra='style="fill:#fff"')
-    box_(yb, yb + C.screw_len, -2.0, 2.0, 'style="fill:#fff"')
-    for s in (1, -1):                                 # thread root lines
-        d.line(F(y0 + 0.3, s * 1.62), F(yb + C.screw_len - 0.4, s * 1.62), "thin")
-    d.line(F(yb - 2.2, 1.25), F(yb - 2.2 + 1.3, 1.25), "thin")   # hex socket
-    d.line(F(yb - 2.2, -1.25), F(yb - 2.2 + 1.3, -1.25), "thin")
-    d.line(F(yb - 2.2 + 1.3, 1.25), F(yb - 2.2 + 1.3, -1.25), "thin")
-    break_line(d, F(yf1, wt + 1.5), F(yf1, -wt - 1.5))
+    box_(yb, yb + GRIP.screw_len, -1.5, 1.5, 'style="fill:#fff"')
+    for s in (1, -1):                                 # thread root lines over the engaged length
+        d.line(F(y0 + 0.3, s * 1.23), F(yb + GRIP.screw_len - 0.4, s * 1.23), "thin")
+    break_line(d, F(yf1, 19.5), F(yf1, -19.5))
     d.line(F(-3, 0), F(yf1 + 3, 0), "ctr")
-    # dimensions / callouts
-    d.dim_linear(F(0, zc0), F(yc, zc0), "x", zf - zc0 * S2 - 6, fmt(yc))
-    d.dim_linear(F(0, zc0), F(y0, zc0), "x", zf - zc0 * S2 - 12, fmt(y0), outside=True)
-    d.dim_linear(F(yc, -zc0), F(yc, zc0), "y", xf - 9, fmt(g["cap_t"]))
-    d.leader_note(F(C.cb_depth / 2, -cb), (F(0, 0)[0] - 4, zf + wt * S2 + 9), f"⌴Ø{fmt(C.cb_d)} ↧{fmt(C.cb_depth)}, "
-                  f"Ø{fmt(C.cap_hole_d)} THRU", 2.6)
-    d.leader_note(F(y0 + 3.5, -r1), (F(y0, 0)[0] + 14, zf + wt * S2 + 9),
+    lz0, lz1 = longf.bounds[1], longf.bounds[3]
+    d.dim_linear(F(0, lz1), F(GRIP.base, lz1), "x", zf - lz1 * S2 - 6, fmt(GRIP.base), outside=True)
+    d.dim_linear(F(0, lz0), F(0, lz1), "y", xf - 9, f"{lz1 - lz0:.1f}")
+    d.leader_note(F(GRIP.cbore_depth / 2, -GRIP.cbore_d / 2), (F(0, 0)[0] - 4, zf + 19.5 * S2 + 8),
+                  f"⌴Ø{fmt(GRIP.cbore_d)} ↧{fmt(GRIP.cbore_depth)}, Ø{fmt(GRIP.hole_d)} THRU", 2.6)
+    d.leader_note(F(y0 + 3.5, -r1), (F(y0, 0)[0] + 16, zf + 19.5 * S2 + 8),
                   f"BORE Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)}, Ø{fmt(C.screw_relief_d)} × "
                   f"{fmt(C.screw_relief_depth)}", 2.6)
-    d.leader_note(F(y0 + 6, ins_i + 0.4), (F(16, 0)[0] + 18, zf - zc0 * S2 - 6), "INSERT M4 Ø5.6 × 8.1 (7)", 2.6)
-    d.leader_note(F(yb + 9, 0.5), (F(yf1, 0)[0] + 8, zf - 3), "ISO 7380 M4 × 12 (6)", 2.6, dot=True, arrow=False)
-    view_label(d, F(yf1 / 2, 0)[0], zf + wt * S2 + 18, "SECTION F–F (BUTT END)", "SCALE 2:1")
+    d.leader_note(F(y0 + 3.0, ins_i + 0.35), (F(16, 0)[0] + 16, zf - lz1 * S2 - 4), f"INSERT M3 × {fmt(C.insert_len)} (5)", 2.6)
+    d.leader_note(F(yb + 9, 0.4), (F(yf1, 0)[0] + 8, zf - 3), f"DIN 7984 M3 × {fmt(GRIP.screw_len)} (4)", 2.6,
+                  dot=True, arrow=False)
+    view_label(d, F(yf1 / 2, 0)[0], zf + 19.5 * S2 + 17, "SECTION F–F (BUTT END)", "SCALE 2:1")
 
     # ---- bill of materials
-    bx, by = 130.0, 128.0
-    cols = (("ITEM", 11), ("PART", 50), ("MATERIAL / SPECIFICATION", 92), ("QTY", 11), ("MASS g (EL / HY)", 33))
+    bx, by = 228.0, 124.0
+    cols = (("ITEM", 11), ("PART", 34), ("MATERIAL / SPECIFICATION", 86), ("QTY", 10), ("MASS g EL / HY", 31))
     rh = 5.4
     xx = bx
     for cap, w in cols:
-        cell(d, xx, by, w, rh + 0.6, "", cap, 2.5, weight="bold")
+        cell(d, xx, by, w, rh + 0.6, "", cap, 2.4, weight="bold")
         xx += w
 
     def mass(part: str) -> str:
         if not masses:
             return "–"
-        v = [masses[k]["parts"][part]["mass_g"] for k in masses]
-        return " / ".join(f"{x:.1f}" if x < 10 else f"{x:.0f}" for x in v) if len(set(round(x, 1) for x in v)) > 1 \
-            else (f"{v[0]:.1f}" if v[0] < 10 else f"{v[0]:.0f}")
-    rows = [("1", "Face sheet", f"Woven carbon/epoxy plate {fmt(C.face_t)} thk, cut to profile DXF", "2",
+        v = [masses[k]["parts"][part]["mass_g"] for k in ("elongated", "hybrid")]
+        if abs(v[0] - v[1]) < 0.05:
+            return f"{v[0]:.1f}" if v[0] < 10 else f"{v[0]:.0f}"
+        return " / ".join(f"{x:.0f}" for x in v)
+    rows = [("1", "Face sheet", f"Woven carbon/epoxy plate {fmt(C.face_t)} thk, cut to the profile DXF", "2",
              mass("face_sheet_top")),
-            ("1a", "Rib core", "PA-CF, 3D printed – sheet 3 of PB-EL-001 / PB-HY-001", "1", mass("rib_core")),
-            ("2", "Grip sleeve", f"TPU 95A, printed or moulded, {fmt(g['sleeve_w'])} × {fmt(g['sleeve_t'])} "
-             f"R{fmt(C.sleeve_r)}", "1", mass("grip_sleeve")),
-            ("3", "Grip wrap", f"PU replacement grip {C.wrap_t:g} thk, {fmt(g['wrap_top'] - g['wrap_bot'])} long",
-             "1", mass("grip_wrap")),
-            ("4", "Throat collar", f"TPU 95A, {fmt(g['collar_w'])} × {fmt(g['collar_t'])} × {fmt(C.collar_h)}", "1",
-             mass("throat_collar")),
-            ("5", "Butt cap", f"TPU 95A, {fmt(g['cap_w'])} × {fmt(g['cap_t'])}, base {fmt(y0)} + skirt "
-             f"{fmt(C.cap_skirt)}", "1", mass("butt_cap")),
-            ("6", "Screw", "ISO 7380-1 M4 × 12 button head, A2 stainless", "1", mass("screw_M4x12_ISO7380")),
-            ("7", "Threaded insert", "M4 heat-set, brass, OD 5.6 × 8.1", "1", mass("insert_M4_heatset")),
-            ("8", "Adhesive", "Structural epoxy (core–sheets, sleeve, collar)", "a/r", "–")]
+            ("2", "Rib support", "PA-CF printed, 1 or 2 pieces – sheet 3 of PB-EL-001 / PB-HY-001", "1",
+             mass("rib_core")),
+            ("3", "Grip", f"PLA printed, any rev-8 design (drawn {g['name']}), 60–65 g", "1", mass("grip")),
+            ("4", "Screw", f"DIN 7984 M3 × {fmt(GRIP.screw_len)} low-head cap screw, A2 stainless", "1",
+             mass("screw_M3x12_DIN7984")),
+            ("5", "Threaded insert", f"M3 heat-set, brass, {fmt(C.insert_len)} long, in a Ø{fmt(C.insert_d)} bore",
+             "1", mass("insert_M3_heatset")),
+            ("6", "Adhesive", "Structural epoxy (rib support to face sheets)", "a/r", "–")]
     for i, r in enumerate(rows):
         yy = by + rh + 0.6 + i * rh
         xx = bx
         for k, (cap, w) in enumerate(cols):
-            cell(d, xx, yy, w, rh, "", r[k], 2.45, anchor="start" if k in (1, 2) else "middle")
+            cell(d, xx, yy, w, rh, "", r[k], 2.35, anchor="start" if k in (1, 2) else "middle")
             xx += w
     if masses:
         yy = by + rh + 0.6 + len(rows) * rh
-        tot = " / ".join(f"{masses[k]['mass_g']:.0f}" for k in masses)
-        cell(d, bx, yy, sum(w for _, w in cols[:4]), rh, "", "COMPLETE PADDLE (3D MODEL)", 2.45, weight="bold",
-             anchor="start")
-        cell(d, bx + sum(w for _, w in cols[:4]), yy, cols[4][1], rh, "", tot, 2.45, weight="bold")
+        tot = " / ".join(f"{masses[k]['mass_g']:.0f}" for k in ("elongated", "hybrid"))
+        cell(d, bx, yy, sum(w for _, w in cols[:4]), rh, "", "COMPLETE PADDLE WITH GRIP (3D MODEL)", 2.35,
+             weight="bold", anchor="start")
+        cell(d, bx + sum(w for _, w in cols[:4]), yy, cols[4][1], rh, "", tot, 2.35, weight="bold")
 
     # ---- notes + title block
-    notes_block(d, 228.0, 192.0, grip_notes(sp), size=2.3, lead=3.5)
-    title_block(d, 225.0, 236.0, None, f"HANDLE {fmt(sp.handle_length)} × {fmt(sp.handle_width)} × "
-                f"{fmt(sp.thickness)}  ·  GRIP {g['grip_circumference']:.1f} (4¼ in)  ·  BOTH PADDLES",
-                "1:1, 2:1", "1 / 1", "A3", title="GRIP AND BUTT-CAP ASSEMBLY", drawing_no=GRIP_NO,
+    notes_block(d, 228.0, 172.0, grip_notes(sp, g, masses), size=2.25, lead=3.3)
+    title_block(d, 225.0, 236.0, None, f"PRINTED GRIP {fmt(GRIP.length)} LONG, SLOT {fmt(GRIP.slot_w)} × "
+                f"{fmt(GRIP.slot_t)}  ·  M3 LOW-HEAD SCREW + HEAT-SET INSERT  ·  BOTH PADDLES",
+                "1:1, 2:1", "1 / 1", "A3", title="PRINTED GRIP – PADDLE INTERFACE", drawing_no=GRIP_NO,
                 material="SEE BOM")
     return d
 

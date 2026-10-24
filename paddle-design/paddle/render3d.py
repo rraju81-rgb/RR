@@ -12,6 +12,7 @@ from pathlib import Path
 
 from .cad import PartDef, assembly, tessellate
 from .geometry import Outline
+from .grip import PADDLE_GRIP
 from .render import SANS, THEMES, defs_for, inset_polyline, model_path
 from .svgkit import f, fmt
 
@@ -105,18 +106,16 @@ def materials(key: str, tex: dict) -> dict:
         f"core_{key}": dict(color=acc, roughness=0.55, specular=0.35,
                             bump=dict(type="bands", direction="Z", scale=1100.0, strength=0.08, distance=0.0002)),
         f"accent_{key}": dict(color=acc, roughness=0.32, specular=0.5),
-        "grip_wrap": dict(color=(0.012, 0.012, 0.013), roughness=0.78,
-                          bump=dict(type="bands", direction="DIAGONAL", scale=26.0, rotation=(0, 0, 0), strength=0.6,
-                                    distance=0.0006)),
-        "grip_sleeve": dict(color=(0.02, 0.02, 0.022), roughness=0.6),
+        f"grip_{key}": dict(color=GRIP_COLOUR[key], roughness=0.58, specular=0.32),     # printed PLA grip
         "steel": dict(color=(0.62, 0.63, 0.66), metallic=1.0, roughness=0.22),
         "brass": dict(color=(0.75, 0.55, 0.22), metallic=1.0, roughness=0.28),
     }
 
 
-PART_MATERIAL = {"face_sheet_top": "cf_top", "face_sheet_bottom": "cf_bottom", "rib_core": "core",
-                 "grip_sleeve": "grip_sleeve", "grip_wrap": "grip_wrap", "throat_collar": "accent",
-                 "butt_cap": "accent", "screw_M4x12_ISO7380": "steel", "insert_M4_heatset": "brass"}
+PART_MATERIAL = {"face_sheet_top": "cf_top", "face_sheet_bottom": "cf_bottom", "rib_core": "core", "grip": "grip",
+                 "screw_M3x12_DIN7984": "steel", "insert_M3_heatset": "brass", "piece_A": "core", "piece_B": "core"}
+GRIPS = PADDLE_GRIP                     # any of the ten grips fits both paddles
+GRIP_COLOUR = {"elongated": (0.022, 0.022, 0.025), "hybrid": (0.05, 0.052, 0.058)}
 
 
 def part_list(key: str, meshes: dict[str, str], offsets: dict | None = None, skip=()) -> list[dict]:
@@ -125,7 +124,7 @@ def part_list(key: str, meshes: dict[str, str], offsets: dict | None = None, ski
         if name in skip:
             continue
         mat = PART_MATERIAL[name]
-        if mat in ("cf_top", "cf_bottom", "core", "accent"):
+        if mat in ("cf_top", "cf_bottom", "core", "accent", "grip"):
             mat = f"{mat}_{key}"
         out.append(dict(name=name, mesh=mesh, material=mat, offset=(offsets or {}).get(name, (0, 0, 0)),
                         smooth_angle=28))
@@ -174,13 +173,13 @@ def cutaway(o: Outline):
     return top, core
 
 
-SHOTS = ("hero", "cutaway", "exploded_elongated", "exploded_hybrid", "handle")
-EXPLODE = {"face_sheet_top": (0, 0, 58), "face_sheet_bottom": (0, 0, -58), "butt_cap": (0, -34, 0),
-           "screw_M4x12_ISO7380": (0, -66, 0), "insert_M4_heatset": (0, -15, 0)}
-HANDLE_EXPLODE = {"butt_cap": (0, -26, 0), "screw_M4x12_ISO7380": (0, -50, 0), "insert_M4_heatset": (0, -10, 0)}
+SHOTS = ("hero", "cutaway", "exploded_elongated", "exploded_hybrid", "handle", "rib_support")
+EXPLODE = {"face_sheet_top": (0, 0, 58), "face_sheet_bottom": (0, 0, -58), "grip": (0, -150, 0),
+           "screw_M3x12_DIN7984": (0, -185, 0), "insert_M3_heatset": (0, -8, 0)}
+HANDLE_EXPLODE = {"grip": (0, -175, 0), "screw_M3x12_DIN7984": (0, -215, 0), "insert_M3_heatset": (0, -9, 0)}
 
 
-def shot_scene(shot: str, meshes: dict, cut: dict) -> tuple[list[dict], dict, tuple]:
+def shot_scene(shot: str, meshes: dict, cut: dict, pieces: dict | None = None) -> tuple[list[dict], dict, tuple]:
     """Paddle groups (placement in metres / degrees), camera and light target of one shot."""
     def parts(key, offsets=None, cutaway=False):
         p = part_list(key, meshes[key], offsets)
@@ -201,29 +200,40 @@ def shot_scene(shot: str, meshes: dict, cut: dict) -> tuple[list[dict], dict, tu
         key = shot.split("_", 1)[1]
         return ([dict(name="X", location=(0.02, -0.02, 0.135), rotation=(10, 0, -32), parts=parts(key, EXPLODE))],
                 dict(location=(0.50, -0.62, 0.52), target=(0.075, 0.13, 0.11), lens=42), (0.05, 0.12, 0.12))
-    if shot == "handle":
-        return ([dict(name="H", location=(0.0, 0.0, 0.035), rotation=(18, 0, -28),
+    if shot == "handle":                          # grip pulled off the handle: slot mouth, slits, insert, screw
+        return ([dict(name="H", location=(0.0, 0.0, 0.0184), rotation=(0, 0, -60),
                       parts=parts("elongated", HANDLE_EXPLODE))],
-                dict(location=(0.075, -0.185, 0.115), target=(-0.012, 0.018, 0.03), lens=60,
-                     dof=dict(fstop=5.6, distance=0.2)), (0, 0, 0.03))
+                dict(location=(0.135, -0.269, 0.228), target=(-0.032, -0.022, 0.012), lens=45,
+                     dof=dict(fstop=8.0, distance=0.38)), (-0.03, -0.02, 0.02))
+    if shot == "rib_support":                     # the two print pieces of the core, lying flat, joint opened up
+        ps = part_list("elongated", pieces["elongated"], {"piece_B": (0, 22, 0)})
+        return ([dict(name="R", location=(-0.05, -0.06, 0.004), rotation=(0, 0, -35), parts=ps)],
+                dict(location=(-0.21, -0.31, 0.27), target=(0.075, 0.105, 0.0), lens=48), (0.07, 0.1, 0.0))
     raise ValueError(shot)
 
 
 def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samples: int = 128,
                shots=SHOTS, log=print) -> list[Path]:
     """Export meshes + textures from the CAD and render every shot to out/paddles_3d_<shot>.png."""
+    from .cad import SPLICE_Y, rib_core, split_core
+    from .grip import load as load_grip
     work = out / "_work"
-    meshes, cut, mats = {}, {}, {}
+    meshes, cut, pieces, mats = {}, {}, {}, {}
     for o in outlines:
         key = o.spec.key
         meshes[key] = export_meshes(assembly(o), work / "mesh", key)
+        meshes[key]["grip"] = str(work / "mesh" / f"{key}_grip.ply")
+        load_grip(GRIPS[key]).export(meshes[key]["grip"])
         top, core = cutaway(o)
         cut[key] = export_meshes([PartDef("face_sheet_top", top, "cf", (0, 0, 0)),
                                   PartDef("rib_core", core, "core", (0, 0, 0))], work / "mesh", key + "_cut")
+        a, b = split_core(rib_core(o, splice=SPLICE_Y), SPLICE_Y, o.half_width_at(SPLICE_Y))
+        pieces[key] = export_meshes([PartDef("piece_A", a, "core", (0, 0, 0)), PartDef("piece_B", b, "core", (0, 0, 0))],
+                                    work / "mesh", key + "_split")
         mats.update(materials(key, write_textures(o, work / "tex")))
     done = []
     for shot in shots:
-        groups, cam, target = shot_scene(shot, meshes, cut)
+        groups, cam, target = shot_scene(shot, meshes, cut, pieces)
         png = out / f"paddles_3d_{shot}.png"
         scene = write_scene(work / f"{shot}.json", resolution=list(resolution), samples=samples, materials=mats,
                             groups=groups, lights=studio_lights(target), camera=cam, output=str(png), **STUDIO)

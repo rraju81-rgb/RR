@@ -49,7 +49,7 @@ def main() -> None:
     d = OUT / "grip"
     d.mkdir(parents=True, exist_ok=True)
     doc = grip_sheet(DESIGNS[0], mass or None)
-    p = d / f"{GRIP_NO}_grip_and_butt_cap.svg"
+    p = d / f"{GRIP_NO}_printed_grip_interface.svg"
     p.write_text(doc.svg(), encoding="utf-8")
     jobs.append((p, doc))
 

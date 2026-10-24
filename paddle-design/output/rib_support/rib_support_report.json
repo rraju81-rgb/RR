@@ -1,0 +1,157 @@
+{
+ "note": "rib support = 8 mm wave-rib core, frame 6 mm, wave pitch 18 / wall 1.6 / amplitude 4 mm, solid to y = 150 with 45 deg run-outs, M3 insert bore in the butt; print flat, 100 % infill, no supports",
+ "splice": {
+  "y": 240.0,
+  "band_mm": 7.0,
+  "runout_mm": 4.0,
+  "joint": "dovetail tabs on piece A, 20 mm pitch, 5 mm deep, 4 mm clear of the edge, 0.1 mm clearance per side"
+ },
+ "designs": {
+  "elongated": {
+   "1piece": {
+    "file": "elongated_rib_support_1piece.stl",
+    "triangles": 52664,
+    "watertight": true,
+    "bodies": 1,
+    "volume_cm3": 150.99,
+    "cad_volume_cm3": 151.27,
+    "size_mm": [
+     200.0,
+     385.0,
+     8.0
+    ],
+    "mass_g": {
+     "PA-CF": 178.2,
+     "PETG": 191.8,
+     "PLA": 187.2
+    },
+    "fits_bed": [
+     "420 x 420 (large format)"
+    ]
+   },
+   "2piece_A": {
+    "file": "elongated_rib_support_2piece_A.stl",
+    "triangles": 40714,
+    "watertight": true,
+    "bodies": 1,
+    "volume_cm3": 84.14,
+    "cad_volume_cm3": 84.24,
+    "size_mm": [
+     200.0,
+     237.4,
+     8.0
+    ],
+    "mass_g": {
+     "PA-CF": 99.3,
+     "PETG": 106.9,
+     "PLA": 104.3
+    },
+    "fits_bed": [
+     "256 x 256 (Bambu X1/P1/A1)",
+     "250 x 210 (Prusa MK4)",
+     "300 x 300",
+     "350 x 350",
+     "420 x 420 (large format)"
+    ]
+   },
+   "2piece_B": {
+    "file": "elongated_rib_support_2piece_B.stl",
+    "triangles": 48212,
+    "watertight": true,
+    "bodies": 1,
+    "volume_cm3": 80.39,
+    "cad_volume_cm3": 80.47,
+    "size_mm": [
+     200.0,
+     152.4,
+     8.0
+    ],
+    "mass_g": {
+     "PA-CF": 94.9,
+     "PETG": 102.1,
+     "PLA": 99.7
+    },
+    "fits_bed": [
+     "256 x 256 (Bambu X1/P1/A1)",
+     "250 x 210 (Prusa MK4)",
+     "300 x 300",
+     "350 x 350",
+     "420 x 420 (large format)"
+    ]
+   }
+  },
+  "hybrid": {
+   "1piece": {
+    "file": "hybrid_rib_support_1piece.stl",
+    "triangles": 50936,
+    "watertight": true,
+    "bodies": 1,
+    "volume_cm3": 144.09,
+    "cad_volume_cm3": 144.21,
+    "size_mm": [
+     190.0,
+     385.0,
+     8.0
+    ],
+    "mass_g": {
+     "PA-CF": 170.0,
+     "PETG": 183.0,
+     "PLA": 178.7
+    },
+    "fits_bed": [
+     "420 x 420 (large format)"
+    ]
+   },
+   "2piece_A": {
+    "file": "hybrid_rib_support_2piece_A.stl",
+    "triangles": 38652,
+    "watertight": true,
+    "bodies": 1,
+    "volume_cm3": 82.85,
+    "cad_volume_cm3": 82.91,
+    "size_mm": [
+     190.0,
+     237.4,
+     8.0
+    ],
+    "mass_g": {
+     "PA-CF": 97.8,
+     "PETG": 105.2,
+     "PLA": 102.7
+    },
+    "fits_bed": [
+     "256 x 256 (Bambu X1/P1/A1)",
+     "250 x 210 (Prusa MK4)",
+     "300 x 300",
+     "350 x 350",
+     "420 x 420 (large format)"
+    ]
+   },
+   "2piece_B": {
+    "file": "hybrid_rib_support_2piece_B.stl",
+    "triangles": 45936,
+    "watertight": true,
+    "bodies": 1,
+    "volume_cm3": 74.02,
+    "cad_volume_cm3": 74.02,
+    "size_mm": [
+     190.0,
+     152.4,
+     8.0
+    ],
+    "mass_g": {
+     "PA-CF": 87.3,
+     "PETG": 94.0,
+     "PLA": 91.8
+    },
+    "fits_bed": [
+     "256 x 256 (Bambu X1/P1/A1)",
+     "250 x 210 (Prusa MK4)",
+     "300 x 300",
+     "350 x 350",
+     "420 x 420 (large format)"
+    ]
+   }
+  }
+ }
+}

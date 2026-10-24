@@ -303,7 +303,7 @@ def evaluate(m: Mesh, o: Outline, stresses: dict[str, np.ndarray], y_min: float 
     """Peak stresses, locations and reserve factors for one load case.
 
     Results within 8 mm of the rigid grip clamp (y < y_min) are excluded: the idealised
-    clamp edge is a stress singularity that a real hand + grip sleeve does not produce."""
+    clamp edge is a stress singularity that a real hand + printed grip does not produce."""
     cent = {k: element_ip_coords(m, k) for k in ("TOP", "CORE", "BOT")}
 
     def rows_xyz(key: str, rows: np.ndarray) -> np.ndarray:
