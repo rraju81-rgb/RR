@@ -60,17 +60,18 @@
     ],
     "lever_deg": 30.0,
     "clamp_len": 40.0,
-    "clamp_front": 10.0,
     "clamp_wall": 3.0,
-    "clamp_lip": 2.5,
-    "clamp_lip_t": 2.0,
-    "clamp_clear": 0.15,
-    "clamp_screw_inset": 8.0,
-    "clamp_pocket": 4.0,
+    "clamp_back": 2.0,
+    "clamp_clear": 0.3,
+    "clamp_screw_inset": 9.0,
+    "clamp_boss_d": 11.0,
+    "clamp_boss_h": 6.0,
+    "insert_d": 5.6,
+    "insert_len": 6.2,
     "clamp_pos": 15.0,
     "m6_len": 45.0,
     "m5_len": 14.0,
-    "m4_len": 25.0
+    "m4_len": 8.0
   },
   "derived": {
     "slot_length": 27.3,
@@ -113,26 +114,26 @@
     "diffuser": {
       "length_mm": 230.0,
       "ahead_of_bar_axis_mm": [
-        59.6,
+        43.0,
         100.8
       ],
       "above_bar_axis_mm": 48.8,
-      "below_bar_axis_mm": 50.4,
+      "below_bar_axis_mm": 54.3,
       "inboard_of_bar_end_mm": 218.2,
       "travel_mm": 45.0,
       "lever_clearance_mm": [
-        14.5,
-        14.5
+        14.0,
+        14.0
       ],
       "perch_clearance_mm": [
         26.0,
         26.0
       ],
       "hand_clearance_mm": [
-        20.1,
-        22.0
+        22.4,
+        24.3
       ],
-      "kit_grams": 95.0
+      "kit_grams": 65.1
     },
     "blade_path_length_mm": 162.6,
     "protrusion_beyond_bar_end_mm": 33.75,
@@ -177,24 +178,24 @@
     "diffuser": {
       "length_mm": 230.0,
       "ahead_of_bar_axis_mm": [
-        60.5,
+        43.0,
         101.6
       ],
       "above_bar_axis_mm": 48.3,
-      "below_bar_axis_mm": 50.9,
+      "below_bar_axis_mm": 54.3,
       "inboard_of_bar_end_mm": 217.1,
       "travel_mm": 45.0,
       "lever_clearance_mm": [
-        13.6,
-        13.6
+        13.0,
+        13.0
       ],
       "perch_clearance_mm": [
         27.1,
         27.1
       ],
       "hand_clearance_mm": [
-        21.2,
-        23.0
+        23.5,
+        25.3
       ]
     },
     "blade_path_length_mm": 162.6,
@@ -224,26 +225,26 @@
   "diffuser": {
     "length_mm": 230.0,
     "ahead_of_bar_axis_mm": [
-      59.6,
+      43.0,
       100.8
     ],
     "above_bar_axis_mm": 48.8,
-    "below_bar_axis_mm": 50.4,
+    "below_bar_axis_mm": 54.3,
     "inboard_of_bar_end_mm": 218.2,
     "travel_mm": 45.0,
     "lever_clearance_mm": [
-      14.5,
-      14.5
+      14.0,
+      14.0
     ],
     "perch_clearance_mm": [
       26.0,
       26.0
     ],
     "hand_clearance_mm": [
-      20.1,
-      22.0
+      22.4,
+      24.3
     ],
-    "kit_grams": 95.0,
+    "kit_grams": 65.1,
     "gusset": {
       "radius_mm": 38.3,
       "blend_radius_mm": 4.0,
@@ -299,19 +300,15 @@
     },
     "06_wind_guard_shell_RH": {
       "material": "hdpe",
-      "grams": 54.9
+      "grams": 62.4
     },
     "06b_wind_guard_shell_LH": {
       "material": "hdpe",
-      "grams": 54.9
-    },
-    "07_wind_guard_clamp_half": {
-      "material": "al6061",
-      "grams": 14.9
+      "grams": 62.4
     }
   },
   "hardware_grams_per_side": 20.0,
   "mass_per_side_grams_carbon_blade": 122.7,
-  "mass_per_side_grams_with_diffuser": 217.7,
+  "mass_per_side_grams_with_diffuser": 187.8,
   "all_checks_passed": true
 }

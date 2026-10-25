@@ -6,12 +6,12 @@ Parametric CAD for a universal **racing handguard / brake and clutch lever prote
 [Darpan Sarvan "Racing Handguard/Lever Protector Carbon Finish Universal Fit For All Bikes"](https://darpansarvanstore.com/product/racing-handguard-lever-protector-carbon-finish-universal-fit-for-all-bikes/):
 an anodised CNC-aluminium bar-end mount and arm with a carbon-finish guard blade that fits any
 7/8" (22.2 mm) handlebar with an open end. The blade is 6 mm thick with a gusset filling the inside
-of the bend. An optional moulded wind guard, styled after motocross handguards, clamps onto the
-blade and slides along it.
+of the bend. An optional moulded wind guard, styled after motocross handguards, is one piece with a
+slotted mount that the blade runs through, so it slides along the blade and locks with two grub screws.
 
 | ![Wind guard seen from the front](docs/renders/wind_guard_front.png) | ![Exploded view](docs/renders/exploded.png) |
 |---|---|
-| ![Gusset inside the bend](docs/renders/bend_gusset_detail.png) | ![Wind guard clamp from below](docs/renders/wind_guard_mount_detail.png) |
+| ![Gusset inside the bend](docs/renders/bend_gusset_detail.png) | ![Wind guard's slotted mount from below](docs/renders/wind_guard_mount_detail.png) |
 
 ![Anodise colours: red, blue, gold, black, silver](docs/renders/colours.png)
 
@@ -49,7 +49,7 @@ real part once it is in hand: measure it or send close-up photos, change the num
 | `exports/step/` | STEP for every part, plus the assembled guard with and without a reference handlebar (CNC, CAD) |
 | `exports/stl/` | STL for every part, already turned to its 3D-print orientation |
 | `exports/stl/assembly_*.stl` | The whole guard as one mesh each: right side, left side (mirror image, with the left-hand shell) and right side without the wind guard. See [Assembly STLs](#assembly-stls) |
-| `docs/drawings/lever_guard_drawings.pdf` | 6 dimensioned A3 sheets: general arrangement, adapter, arm, blade with gusset, expander set, wind guard and clamp |
+| `docs/drawings/lever_guard_drawings.pdf` | 6 dimensioned A3 sheets: general arrangement, adapter, arm, blade with gusset, expander set, wind guard with its slotted mount |
 | `docs/renders/` | Rendered views, including all five anodise colours |
 | `docs/renders/bike/` | The guards fitted to a motorcycle, in red, blue and gold |
 | `docs/viewer.html` | Interactive 3D viewer: turn the arm in its 10° steps, slide the blade and the wind guard, change colour, explode |
@@ -71,16 +71,14 @@ real part once it is in hand: measure it or send close-up photos, change the num
 | LG-03b | Guard blade, 8 mm, printable | PA12-CF / PETG-CF, carbon hydro-dip | (alternative) | 31.4 g |
 | LG-04 | Expander sleeve S / M / L | TPU 95A or NBR 70A | 1 | 2–3 g |
 | LG-05 | Expander cone nut S / M / L, M6 | 6061-T6 or zinc-plated steel | 1 | 2–4 g |
-| LG-06 / 06b | Wind guard shell, right / left (mirror pair; optional) | HDPE or PP, injection moulded, colour to order (or printed ASA / PA12) | 1 | 55 g |
-| LG-07 | Wind guard clamp half, same part used twice (optional) | 6061-T6, hard anodised | 2 | 14.9 g each |
+| LG-06 / 06b | Wind guard with slotted mount, right / left (mirror pair, one piece each; optional) | HDPE or PP, injection moulded, colour to order (or printed ASA / PA12) | 1 | 62 g |
 | H1 | Socket cap screw M6 × 45, ISO 4762 | A2-70 or 10.9 black | 1 | |
 | H2 | Button head screw M5 × 14, ISO 7380 (M5 × 16 with LG-03b) | A2-70 | 2 | |
 | H3 | Washer M5, ISO 7089 | A2 | 2 | |
-| H4 | Socket cap screw M4 × 25, ISO 4762, fitted from below (wind guard) | A2-70 | 2 | |
-| H5 | Nyloc nut M4, DIN 985, captive in the upper clamp half (wind guard) | A2 | 2 | |
-| H6 | Compression sleeve Ø6 / Ø4.2 × 3, pressed into the shell's flange (wind guard) | aluminium | 2 | |
+| H4 | Heat-set insert M4 × 5.7 (Ø5.6 hole), pressed into the mount's bosses (wind guard) | brass | 2 | |
+| H5 | Grub screw M4 × 8, ISO 4029 cup point, nylon-tipped if available, from below onto the blade (wind guard) | A2 | 2 | |
 
-About 123 g per side with the carbon blade and steel screws, 218 g with the wind guard.
+About 123 g per side with the carbon blade and steel screws, 188 g with the wind guard.
 
 1. **Mount.** The adapter sits on the open bar end. Inside the bar, one M6 bolt pulls the cone
    nut into the slit elastomer sleeve, which grips the bar bore. Three sleeve sizes cover bar
@@ -107,17 +105,18 @@ About 123 g per side with the carbon blade and steel screws, 218 g with the wind
    plain 6 mm section with the adjustment slot running through it, so it is now the weakest part
    of the blade. It is shortest (under 1 mm) with the blade slid fully toward the lever and up
    to 10 mm long with it slid fully away.
-6. **Wind guard.** A moulded shell in the style of a motocross handguard. Its flat flange is held
-   between two identical clamp halves that wrap the blade run. From the flange it bends up into
+6. **Wind guard.** A moulded shell in the style of a motocross handguard, made in one piece with
+   its mount. The mount is a sleeve with a slot closed on all four sides (6.6 × 22.6 mm, 0.3 mm
+   clearance round the blade) that the blade run passes through; the shell's flat flange runs
+   forward from it. From the flange it bends up into
    a shield that stands in front of the hand, convex to the wind and curling back over the
    knuckles. Seen from the front it is tall at the outboard end and sweeps down to a rounded,
    pointed tip past the brake perch. A crease runs diagonally from the outboard top to the tip,
-   like the spine on the reference guards; it also stiffens the shell. Two M4 screws, put in
-   from below, squeeze the clamp halves onto the blade's top and bottom edges. Their nyloc nuts
-   sit captive in the upper half, and two aluminium sleeves in the flange carry the clamp load,
-   so the plastic does not creep. Loosen the screws and the guard slides 45 mm along the run;
-   tighten them where it sits. There are no holes in the blade, and it fits without taking the
-   guard off.
+   like the spine on the reference guards; it also stiffens the shell. Two M4 grub screws, in
+   brass heat-set inserts in two bosses under the mount, are turned up from below onto the blade's
+   lower edge and press its upper edge against the slot. Loosen them and the guard slides 45 mm
+   along the run; tighten them where it sits. There are no holes in the blade, and the mount
+   slides on from the blade tip without taking the guard off the bar.
 7. **Left and right.** Every part except the wind guard shell is symmetric about the lever plane,
    so the clutch-side guard is the same set of parts with the arm turned over. Like any
    handguard, the shell comes as a mirror-image pair (LG-06 right, LG-06b left).
@@ -134,7 +133,7 @@ About 123 g per side with the carbon blade and steel screws, 218 g with the wind
 | Run covers the lever inboard of the bar end | 90 mm |
 | Sticks out past the bar end | 33.75 mm (to the M5 screw heads) |
 | Blade face ahead of the bar axis, start of run (slot −5 / 0 / +5) | 57.6 / 62.6 / 67.6 mm |
-| Wind guard shell | 230 mm long, 3 mm wall; on the bike 60–101 mm ahead of the bar axis, from 50 mm below to 49 mm above it; slides 45 mm along the run |
+| Wind guard | 230 mm long, 3 mm wall, 40 mm slotted mount; on the bike 43–101 mm ahead of the bar axis (mount included), from 54 mm below to 49 mm above it; slides 45 mm along the run |
 | Adapter body / spigot | Ø32 × 12 / Ø12.4 × 6 mm |
 | Angle steps | 36 teeth → 10° |
 | Fore-aft adjustment | ±5 mm |
@@ -157,10 +156,10 @@ All dimensions are on the drawings in `docs/drawings/`.
 - Slide the blade until there is **at least 10 mm all round the lever**. With the reference
   sport-bike lever in the CAD the closest gap is 11.3 / 16.3 / 21.3 mm at slot −5 / 0 / +5
   (10.3 / 15.3 / 20.3 mm with the 8 mm printed blade).
-- With the wind guard fitted, keep the blade slot at −4 or more. At −5 the clamp's lip comes within
-  9.7 mm of the reference lever. With the blade at the middle of its slot, the wind guard keeps
-  14.5 mm from the lever, 26 mm from the brake perch and 20 mm from a Ø100 mm gloved-hand
-  envelope round the grip, anywhere along its travel.
+- With the wind guard fitted, keep the blade slot at −4 or more. At −5 the mount's lever-side wall
+  comes within 9.0 mm of the reference lever. With the blade at the middle of its slot, the wind
+  guard keeps 14 mm from the lever, 26 mm from the brake perch and 22 mm (shield) from a Ø100 mm
+  gloved-hand envelope round the grip, anywhere along its travel.
 - The shell reaches 218–263 mm inboard of the bar end (depending on where it is slid) and 101 mm
   ahead of the bar axis. Turn the bars lock to lock and check the fork, fairing, tank, mirrors and
   fluid reservoir before riding. Slide it outboard if anything is close.
@@ -174,10 +173,10 @@ All dimensions are on the drawings in `docs/drawings/`.
 3. Turn the arm to the lever's angle, settle it into the serration and tighten the M6 bolt to
    **8 N·m** with medium threadlocker.
 4. Fit the blade with the two M5 × 14 screws and washers. Set the gap, then tighten to **4 N·m**.
-5. Wind guard (optional): press the two aluminium sleeves into the shell's flange. Hold one clamp
-   half above the blade run and one below, with the flange between their front blocks and the
-   nyloc nuts in the upper half's pockets. Fit the two M4 × 25 screws from below, slide the
-   guard to where you want it and tighten to **2.5 N·m**.
+5. Wind guard (optional): press the two M4 heat-set inserts into the bosses under the mount
+   (soldering iron at about 230 °C, flush with the boss face). Slide the mount onto the blade run
+   from the blade tip, shield in front of the lever, move it to where you want it and turn the
+   two M4 × 8 grub screws up onto the blade's lower edge, **1 N·m**.
 6. Pull the lever through its full travel, use the reach adjuster across its range, and turn the
    bars lock to lock. Nothing may touch the guard, the fairing, the tank or the mirrors.
 7. Re-check all torques after the first ride.
@@ -211,19 +210,19 @@ carbon in the same cure. Then CNC-trim the outline and slot from the STEP. For a
 on a cheaper part, machine the blade from 25 mm 6061-T6 plate and hydro-dip it with a carbon
 pattern. The gusset rules out bending it from strip.
 
-**Wind guard (LG-06, LG-07).** The shell is a moulded part like a motocross handguard. Injection
-mould it in HDPE or PP, in any colour, from the STEP files: `06_wind_guard_shell_RH` for the
-right side and `06b_wind_guard_shell_LH` for the left. Break the edges R1. For one-offs, print
-it (see below). Machine the clamp half from 6061-T6 and anodise it to match the arm; it is a
-single part used twice.
+**Wind guard (LG-06).** Shell, flange and slotted mount are one part, like a motocross handguard.
+Injection mould it in HDPE or PP, in any colour, from the STEP files: `06_wind_guard_shell_RH`
+for the right side and `06b_wind_guard_shell_LH` for the left. Break the edges R1. For one-offs,
+print it (see below). The slot core is a straight pull along the run.
 
 **3D print.** For prototypes or low cost:
 - `03b_guard_blade_8mm_3dprint.stl`: PA12-CF or PETG-CF, lying flat, 6 walls, 50 % gyroid.
   Hydro-dip or wrap it for the carbon look, and use M5 × 16 screws.
-- Wind guard shells `06` / `06b`: ASA or PA12, 100 % infill (3 mm wall). Print with the flange
-  flat on the bed and tree supports under the bend and the top edge.
-- Adapter, arm and wind guard clamp halves: PA12-CF, 100 % infill, for a test fit only. Ride on
-  aluminium parts.
+- Wind guard `06` / `06b`: ASA or PA12, 100 % infill (3 mm wall). The STL stands on the two boss
+  faces with the shield up and the slot running horizontally; use a brim, and tree supports under
+  the flange, the bend and the top edge (none needed inside the slot, which bridges 6.6 mm). If the blade is
+  tight in the slot, ream it with a file rather than scaling the print.
+- Adapter and arm: PA12-CF, 100 % infill, for a test fit only. Ride on aluminium parts.
 - Sleeve: TPU 95A, 100 % infill.
 
 The STLs are already turned to these orientations.
@@ -235,7 +234,7 @@ also holds the assembled guard as one mesh:
 
 | File | Contents |
 |---|---|
-| `assembly_right_guard.stl` | right (brake side) guard with the wind guard, its clamp and screws |
+| `assembly_right_guard.stl` | right (brake side) guard with the wind guard, its inserts and grub screws |
 | `assembly_left_guard.stl` | left (clutch side) guard: the mirror image, so it carries the left-hand shell |
 | `assembly_right_guard_without_wind_guard.stl` | right guard with the blade only |
 
@@ -266,7 +265,8 @@ The parameters most likely to change when matching the real part, all in `Params
 | `haunch_len`, `haunch_seat_gap`, `haunch_blend_r` | 14, 1, 4 | where the gusset's edge runs out on the run / crosses the seat face / blend radius into the seat face |
 | `shell_len`, `shell_crest`, `shell_crease` | 230, 84, (60, −4) | wind guard length, height and crease line (outboard end, tip) |
 | `lever_deg` | 30 | lever angle below horizontal; sets "up" and "forward" for the wind guard |
-| `clamp_pos` | 15 | wind guard clamp position along the run (15–60 mm from the bend) |
+| `clamp_pos` | 15 | wind guard mount position along the run (15–60 mm from the bend) |
+| `clamp_clear` | 0.3 | slot clearance round the blade; lower it for a moulded part, raise it for a loose printer |
 | `body_d`, `pitch_x` | 32, 12 | adapter diameter and length outside the bar |
 | `teeth` | 36 | serration teeth (360 / teeth = angle step) |
 | `adjust` | 5 | slot travel each way |
@@ -295,9 +295,10 @@ All pass for both blade versions:
 - M6 thread engagement in the cone nut 8.5 mm; M5 engagement in the arm 7 mm (≥ 1.2 d)
 - blade ≥ 10 mm from the reference lever at the nominal slot position; adapter, arm and screws ≥ 27 mm
 - with the blade at the nominal slot position and the wind guard at either end of its travel,
-  the wind guard sits on the blade with no overlap. Its clamp halves bear on the blade edges, and
-  it stays ≥ 13.5 mm from the lever, ≥ 26 mm from the perch, ≥ 20 mm from a Ø100 mm gloved-hand
-  envelope round the grip and ≥ 45 mm from the grip.
+  the wind guard sits on the blade with no overlap, the blade slides in the slot with 0.3 mm
+  clearance and the grub screws bear on it. It stays ≥ 14 mm from the lever, ≥ 26 mm from the
+  perch and ≥ 45 mm from the grip; the shield stays ≥ 22 mm from a Ø100 mm gloved-hand envelope
+  round the grip, and the mount no closer to it than the blade itself.
 - finger room between grip and blade run ≥ 40 mm
 - each sleeve and cone slides into the smallest bar of its range
 

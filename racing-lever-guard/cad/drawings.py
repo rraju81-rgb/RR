@@ -371,8 +371,8 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
     v.hdim((0, p.body_d / 2), (head_x, p.screw_v[1] + 4.75), lvl1, fmt(head_x))
     v.tag((-150, shell_top - 12), "LG-06 WIND GUARD SHELL (phantom, RH shown)", color=SHELL)
     clamp_mid = p.run_point(p.clamp_pos + p.clamp_len / 2, -p.blade_t / 2)
-    v.leader((clamp_mid[0], clamp_mid[1] + p.clamp_front), (-50, shell_top - 26),
-             f"LG-07 clamp: slides {fmt(p.clamp_range[1] - p.clamp_range[0])} along the run, 2x M4", ha="right")
+    v.leader((clamp_mid[0], clamp_mid[1] + p.clamp_wall), (-50, shell_top - 26),
+             f"slotted mount: slides {fmt(p.clamp_range[1] - p.clamp_range[0])} along the run, 2x M4 grub", ha="right")
     rs = p.run_point(0, p.blade_t / 2)
     v.vdim((rs[0], rs[1]), (40, 0), 48, f"{fmt(rs[1])} to blade face")
     # gap to the reference lever at its closest point (toward the blade tip)
@@ -632,25 +632,25 @@ def sheet_expander(p: lg.Params, n_sheets: int) -> Sheet:
 
 
 def sheet_wind_guard(p: lg.Params, n_sheets: int) -> Sheet:
-    s = Sheet("WIND GUARD SHELL + SLIDING CLAMP", "LG-06 / LG-07",
-              "LG-06 HDPE or PP, moulded (ASA / PA12 printed); LG-07 EN AW-6061-T6",
-              "LG-06 colour to order, edges R1; LG-07 hard anodise", "1:1 / 2:1", "1 pair + 2 halves", 6, n_sheets)
-    c, L, F, t = p.clamp_clear, p.clamp_len, p.clamp_front, p.shell_t
+    s = Sheet("WIND GUARD SHELL WITH SLOTTED MOUNT", "LG-06",
+              "HDPE or PP, moulded; ASA / PA12 printed", "colour to order, edges R1", "1:1 / 2:1",
+              "1 pair (RH + LH)", 6, n_sheets)
+    c, L, t, w = p.clamp_clear, p.clamp_len, p.shell_t, p.clamp_wall
     shell = lg.wind_guard_local(p).val()
-    upper = lg.clamp_half_local(p)
-    lower = lg._turn_over(p, upper)
     blade_bar = cq.Workplane("XY").box(L + 30, p.blade_t, p.blade_h).translate((L / 2, p.blade_t / 2, 0)).val()
     holes = lg._clamp_screw_xy(p)
+    h, sy0, sy1 = lg._slot(p)
+    yb, zb = sy1 + p.clamp_back, lg._boss_face(p)
     a = math.radians(p.lever_deg)
 
     # LG-06 seen from the front of the bike, 1:1
     v = View(s, (0, -math.cos(a), math.sin(a)), (1, 0, 0), (44, 172), 1.0)
     v.draw(shell, lw=0.7, hidden=False)
-    v.draw(cq.Compound.makeCompound([upper.val(), blade_bar]), color=REF, lw=0.4, hidden=False, smooth=False)
+    v.draw(blade_bar, color=REF, lw=0.4, hidden=False, smooth=False)
     uv = np.array([v.uv((q.x, q.y, q.z)) for q in shell.tessellate(0.05, 0.1)[0]])
     lo, hi = uv.min(axis=0), uv.max(axis=0)
     crest = uv[np.argmax(uv[:, 1])]
-    v.caption((lo[0] + (hi[0] - lo[0]) / 2, lo[1] - 16), "LG-06 SHELL (RH), SEEN FROM THE FRONT OF THE BIKE  -  clamp and blade phantom")
+    v.caption((lo[0] + (hi[0] - lo[0]) / 2, lo[1] - 16), "LG-06 SHELL (RH), SEEN FROM THE FRONT OF THE BIKE  -  blade phantom")
     v.hdim((lo[0], lo[1]), (hi[0], lo[1]), lo[1] - 7)
     v.vdim((lo[0], lo[1]), (lo[0], hi[1]), lo[0] - 8)
     v.hdim((lo[0], hi[1]), tuple(crest), hi[1] + 6)
@@ -659,59 +659,60 @@ def sheet_wind_guard(p: lg.Params, n_sheets: int) -> Sheet:
     v.leader((xc, uc), (xc + 40, uc + 34), "crease R4, outboard top to tip")
     v.leader((hi[0] - 2, lo[1] + 3), (hi[0] + 6, lo[1] + 16), "tip ≈ R5")
 
-    # flange seen from below, 1:1 (view up = forward, away from the blade)
+    # flange and mount seen from below, 1:1 (view up = forward, away from the blade)
     x0, y0, yf = -p.shell_out, -p.shell_gap, -p.shell_flange
-    flange = shell.intersect(cq.Solid.makeBox(p.clamp_len + 20 - x0, 30, 2 * t, cq.Vector(x0, yf - 1, -t)))
-    b = View(s, (0, 0, -1), (1, 0, 0), (44, 112), 1.0)
-    b.draw(flange, lw=0.7, hidden=False)
-    b.draw(cq.Compound.makeCompound([lower.val(), blade_bar]), color=REF, lw=0.4, hidden=False, smooth=False)
-    b.caption((25, -16), "FLANGE FROM BELOW (pinched by the clamp)")
+    base = shell.intersect(cq.Solid.makeBox(L + 20 - x0, yb - yf + 2, t / 2 - zb + 1, cq.Vector(x0, yf - 1, zb - 1)))
+    b = View(s, (0, 0, -1), (1, 0, 0), (44, 106), 1.0)
+    b.draw(base, lw=0.7, hidden=False)
+    b.caption((25, -yb - 30), "FLANGE AND SLOTTED MOUNT FROM BELOW")
     (hx0, hy), (hx1, _) = holes
-    b.hdim((x0, -y0), (hx0, -hy), -yf + 5)
-    b.hdim((hx0, -hy), (hx1, -hy), -yf + 5)
-    b.vdim((hx1, -y0), (hx1, -hy), hx1 + 8, fmt(round(y0 - hy, 2)))
-    b.vdim((p.clamp_len + 20, -y0), (p.clamp_len + 20, -yf), p.clamp_len + 26, f"flange {fmt(y0 - yf)}")
-    b.leader((hx1 + 2.1, -hy + 2.1), (hx1 + 14, -yf + 10), f"2x Ø6 for sleeves Ø6 / Ø4.2 x {fmt(t)}")
+    b.hdim((x0, -y0), (0, -sy0 + w), -yf + 5)
+    b.hdim((0, -yb), (L, -yb), -yb - 6)
+    b.hdim((0, -hy), (hx0, -hy), -yb - 13)
+    b.hdim((hx0, -hy), (hx1, -hy), -yb - 13)
+    b.vdim((L + 20, -y0), (L + 20, -yf), L + 26, f"flange {fmt(y0 - yf)}")
+    b.leader((hx1 + p.clamp_boss_d / 2 * 0.7, -hy + p.clamp_boss_d / 2 * 0.7), (hx1 + 6, -yb - 40),
+             f"2x boss Ø{fmt(p.clamp_boss_d)}, Ø{fmt(p.insert_d)} x {fmt(p.insert_len)} for M4 heat-set insert, Ø4.2 thru")
 
-    # LG-07 clamp half, top view 2:1
-    t_ = View(s, (0, 0, 1), (1, 0, 0), (150, 70), 2.0)
-    t_.draw(upper.val(), lw=0.7, hidden=True)
-    t_.caption((L / 2, -24), "LG-07 CLAMP HALF, outer face (2:1)")
-    t_.hdim((0, -(c + F)), (L, -(c + F)), -(c + F) - 6)
-    t_.hdim((0, 0), holes[0], 12)
-    t_.hdim(holes[0], holes[1], 12)
-    t_.vdim((L, -(c + F)), (L, p.blade_t + c + p.clamp_lip_t), L + 6)
-    t_.leader((holes[1][0] + 2.5, holes[1][1] + 2.5), (L - 6, 24), "hex 7.1 A/F x 4 deep, Ø4.5 thru")
+    # mount seen along the run, 2:1
+    m = View(s, (1, 0, 0), (0, 1, 0), (192, 62), 2.0)
+    m.draw(lg.mount_local(p).val(), lw=0.7, hidden=True)
+    m.draw(blade_bar, color=REF, lw=0.4, hidden=False, smooth=False)
+    m.caption(((sy0 + yb) / 2, h + w + 19), "SLOTTED MOUNT, END VIEW (2:1)")
+    m.hdim((sy0, h), (sy1, h), h + w + 5, f"slot {fmt(round(sy1 - sy0, 2))}")
+    m.hdim((sy0 - w, h + w), (yb, h + w), h + w + 11)
+    m.vdim((yb, -h), (yb, h), yb + 6, f"slot {fmt(round(2 * h, 2))}")
+    m.vdim((sy0 - w, zb), (sy0 - w, h + w), sy0 - w - 6)
+    m.tag((p.blade_t / 2, 0), "blade", size=6.0, color=CL)
 
-    # section through a screw, looking along the run, 1:1
+    # section through a grub screw, looking along the run, 1:1
     xs = holes[0][0]
     keep = cq.Solid.makeBox(200, 200, 200, cq.Vector(xs - 200, -100, -100))
     x_sec = View(s, (1, 0, 0), (0, 1, 0), (318, 150), 1.0)
-    for shape, hatch in ((upper.val(), "////"), (lower.val(), "////"), (shell, "\\\\\\")):
-        cut = shape.intersect(keep)
-        x_sec.draw(cut, lw=0.6, hidden=False, smooth=False)
-        x_sec.hatch_plane(cut, (xs, 0, 0), (1, 0, 0), hatch)
+    cut = shell.intersect(keep)
+    x_sec.draw(cut, lw=0.6, hidden=False, smooth=False)
+    x_sec.hatch_plane(cut, (xs, 0, 0), (1, 0, 0), "\\\\\\")
     x_sec.draw(blade_bar.intersect(keep), color=REF, lw=0.5, hidden=False, smooth=False)
-    x_sec.draw(lg.m4_screw_nut_local(p, *holes[0]).val().intersect(keep), lw=0.4, hidden=False, smooth=False)
-    x_sec.caption((10, -24), "SECTION THROUGH A SCREW (1:1)")
-    sec = np.array([x_sec.uv((q.x, q.y, q.z)) for q in shell.intersect(keep).tessellate(0.05, 0.1)[0]])
+    x_sec.draw(lg.m4_grub_insert_local(p, *holes[0]).val().intersect(keep), lw=0.4, hidden=False, smooth=False)
+    x_sec.caption((10, -30), "SECTION THROUGH A GRUB SCREW (1:1)")
+    sec = np.array([x_sec.uv((q.x, q.y, q.z)) for q in cut.tessellate(0.05, 0.1)[0]])
     x_sec.vdim((sec[:, 0].min(), -t / 2), (sec[:, 0].min(), sec[:, 1].max()), sec[:, 0].min() - 6)
     x_sec.leader((-p.shell_flange - 6, 3), (-44, 14), f"bend R{fmt(p.shell_bend_r)}")
-    x_sec.leader((-(p.shell_gap + p.shell_flange) / 2 - 3, -t / 2), (-40, -12), f"flange {fmt(t)}, pinched")
+    x_sec.leader((-(p.shell_gap + p.shell_flange) / 2 - 3, -t / 2), (-40, -12), f"flange {fmt(t)}")
     band = shell.intersect(cq.Solid.makeBox(1, 200, 4, cq.Vector(xs - 1, -100, 38))).BoundingBox()
     x_sec.leader((band.ymax, 40), (band.ymax + 22, 32), f"wall {fmt(t)}")
-    x_sec.tag((p.blade_t / 2, 0), "blade", size=6.0, color=CL)
+    x_sec.leader((p.blade_t / 2 + 2, zb + 2), (30, zb - 6), "M4 x 8 grub screw, ISO 4029")
 
     s.notes(286, 112, [
         "1. LG-06 surface as the STEP files 06 (RH) / 06b (LH, mirror image).",
-        "    Injection-moulded HDPE or PP, or printed ASA / PA12 (flange on",
-        "    the bed, tree supports under the bend and the top). Edges R1.",
-        "2. Press the two aluminium sleeves into the flange holes: the clamp",
-        "    load goes through them, not the plastic.",
-        "3. LG-07 is one part used twice: the lower half is the upper turned over.",
-        "4. Fit with the guard on the bike: halves above and below the blade run,",
-        "    shell flange between their front blocks, 2x M4 x 25 ISO 4762 from",
-        "    below, DIN 985 nyloc nuts captive in the upper half, 2.5 N·m.",
+        "    One piece: shell, flange and slotted mount. Injection-moulded HDPE",
+        "    or PP, or printed ASA / PA12 with tree supports. Edges R1.",
+        "2. Press an M4 x 5.7 brass heat-set insert into each boss (soldering",
+        "    iron at about 230 °C), flush with the boss face.",
+        "3. Slide the mount onto the blade run from the blade tip, shell in",
+        "    front of the lever. The slot closes round the blade on all sides.",
+        "4. Lock with 2x M4 x 8 grub screws (ISO 4029, cup point, nylon-tipped",
+        "    if available) from below onto the blade's lower edge, 1 N·m.",
         f"5. Loosen to slide: {fmt(p.clamp_range[0])}-{fmt(p.clamp_range[1])} mm from the bend. No holes in the blade.",
         "6. Keep the blade slot at -4 or more with the shell fitted (>= 10 mm",
         "    to the reference lever). Check steering lock, mirrors, reservoir.",

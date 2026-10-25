@@ -34,8 +34,6 @@ MATERIAL = {
     "ref_grip": "grip",
     "ref_lever": "lever",
     "diffuser_shell": "shell",
-    "diffuser_clamp_upper": "anodised",
-    "diffuser_clamp_lower": "anodised",
     "diffuser_screw_1": "steel",
     "diffuser_screw_2": "steel",
 }
@@ -52,8 +50,6 @@ EXPLODE = {
     "m5_screw_2": (66, 0, 0),
     "m6_bolt": (92, 0, 0),
     "diffuser_shell": (44, 18, 30),
-    "diffuser_clamp_upper": (44, 0, 24),
-    "diffuser_clamp_lower": (44, 0, -24),
     "diffuser_screw_1": (44, 0, -48),
     "diffuser_screw_2": (44, 0, -48),
 }
@@ -70,11 +66,9 @@ LABEL = {
     "ref_handlebar": "Handlebar (reference)",
     "ref_grip": "Grip (reference)",
     "ref_lever": "Brake lever (reference)",
-    "diffuser_shell": "Wind guard shell (right)",
-    "diffuser_clamp_upper": "Wind guard clamp half",
-    "diffuser_clamp_lower": "Wind guard clamp half",
-    "diffuser_screw_1": "M4 x 25 screw, nyloc nut, sleeve",
-    "diffuser_screw_2": "M4 x 25 screw, nyloc nut, sleeve",
+    "diffuser_shell": "Wind guard with slotted mount (right)",
+    "diffuser_screw_1": "M4 heat-set insert, M4 x 8 grub screw",
+    "diffuser_screw_2": "M4 heat-set insert, M4 x 8 grub screw",
 }
 
 

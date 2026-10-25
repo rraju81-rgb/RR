@@ -94,30 +94,31 @@ class Params:
     cone_min_d: float = 8.0  # keeps >= 1 mm wall around the M6 thread
     cone_tap_d: float = 5.0  # M6 tap drill
 
-    # ---- wind guard: moulded shell held by a two-piece clamp that slides on the blade run ----
-    shell_t: float = 3.0  # wall; the flat flange is pinched between the clamp halves
+    # ---- wind guard: one moulded / printed piece; a slotted mount on it slides along the run ----
+    shell_t: float = 3.0  # wall
     shell_gap: float = 1.0  # flange rear edge to the blade's outer face
     shell_flange: float = 14.0  # flange runs this far ahead of the blade's outer face, then bends up
     shell_bend_r: float = 12.0  # flange-to-shield bend (centre line)
-    shell_out: float = 14.0  # shell starts this far outboard of the clamp's outboard end
+    shell_out: float = 14.0  # shell starts this far outboard of the mount's outboard end
     shell_len: float = 230.0  # outboard end to tip, along the run
     shell_crest: float = 84.0  # highest point above the blade's outer face, measured up on the bike
     shell_crease: tuple[float, float] = (60.0, -4.0)  # crease height at the outboard end / at the tip
     lever_deg: float = 30.0  # lever plane below horizontal: sets "up" and "forward" for the shell
-    clamp_len: float = 40.0
-    clamp_front: float = 10.0  # clamp block depth ahead of the blade (holds the shell's flange)
-    clamp_wall: float = 3.0  # wall over the blade's top / bottom edge
-    clamp_lip: float = 2.5  # hook over the blade's lever-side face
-    clamp_lip_t: float = 2.0
-    clamp_clear: float = 0.15
-    clamp_screw_inset: float = 8.0  # M4 screw distance from the clamp ends
-    clamp_pocket: float = 4.0  # hex pocket depth for the M4 head / nyloc nut
-    clamp_pos: float = 15.0  # clamp outboard end along the run, from the bend (see clamp_range)
+    clamp_len: float = 40.0  # slotted mount length along the run
+    clamp_wall: float = 3.0  # mount wall ahead of, over and under the blade
+    clamp_back: float = 2.0  # mount wall on the blade's lever-side face (keeps >= 10 mm to the lever at slot -4)
+    clamp_clear: float = 0.3  # slot clearance all round the blade
+    clamp_screw_inset: float = 9.0  # grub screws from the mount ends
+    clamp_boss_d: float = 11.0  # bosses under the mount for the M4 heat-set inserts
+    clamp_boss_h: float = 6.0
+    insert_d: float = 5.6  # hole for an M4 x 5.7 heat-set insert
+    insert_len: float = 6.2
+    clamp_pos: float = 15.0  # mount outboard end along the run, from the bend (see clamp_range)
 
     # ---- hardware -----------------------------------------------------------------------------
     m6_len: float = 45.0  # ISO 4762 M6 x 45 in expander mode
     m5_len: float = 14.0  # ISO 7380 M5 x 14 for the 6 mm blade
-    m4_len: float = 25.0  # ISO 4762 M4 x 25 from below + DIN 985 nyloc nut through the clamp
+    m4_len: float = 8.0  # ISO 4029 M4 x 8 cup-point grub screw, up through the insert onto the blade
 
     # ---- derived ------------------------------------------------------------------------------
     @property
@@ -184,8 +185,8 @@ class Params:
 
     @property
     def clamp_range(self) -> tuple[float, float]:
-        """Travel of the diffuser clamp's outboard end along the run: from just past the bend
-        gusset to where the clamp still sits fully on the blade."""
+        """Travel of the wind guard mount's outboard end along the run: from just past the bend
+        gusset to where the mount still sits fully on the blade."""
         return (self.haunch_len + 1.0, self.front_len - self.clamp_len)
 
     @property
@@ -546,7 +547,7 @@ def expander_cone(p: Params, size: str) -> cq.Workplane:
 
 
 # ------------------------------------------------------------------------------------------------
-# wind guard: moulded shell on a two-piece clamp that slides along the blade run
+# wind guard: moulded shell with a slotted mount that slides along the blade run
 # ------------------------------------------------------------------------------------------------
 def run_frame(p: Params, s: float, shift: float = 0.0) -> cq.Location:
     """Frame on the outer face of the blade run, s mm along it from the bend: local x runs
@@ -561,43 +562,36 @@ def _box(x0, x1, y0, y1, z0, z1) -> cq.Workplane:
     return cq.Workplane("XY").box(x1 - x0, y1 - y0, z1 - z0, centered=False).translate((x0, y0, z0))
 
 
-def _clamp_top(p: Params) -> float:
-    return p.blade_h / 2 + p.clamp_wall
+def _slot(p: Params) -> tuple[float, float, float]:
+    """Slot half-height and its y limits (front, lever side) in the run frame."""
+    c = p.clamp_clear
+    return p.blade_h / 2 + c, -c, p.blade_t + c
 
 
 def _clamp_screw_xy(p: Params) -> list[tuple[float, float]]:
-    y = -(p.clamp_clear + p.clamp_front / 2)
-    return [(p.clamp_screw_inset, y), (p.clamp_len - p.clamp_screw_inset, y)]
+    return [(p.clamp_screw_inset, p.blade_t / 2), (p.clamp_len - p.clamp_screw_inset, p.blade_t / 2)]
 
 
-def clamp_half_local(p: Params) -> cq.Workplane:
-    """Upper diffuser clamp half in the run frame. The lower half is the same part turned
-    over (180 deg about local y), so both halves come off one drawing."""
-    t, c, L = p.blade_t, p.clamp_clear, p.clamp_len
-    h2, top, g = p.blade_h / 2, _clamp_top(p), p.shell_t / 2
-    lip_y = t + c + p.clamp_lip_t
-    body = (
-        _box(0, L, -(c + p.clamp_front), -c, g, top)  # block ahead of the blade, grips the flange
-        .union(_box(0, L, -c - 0.01, t + c, h2, top))  # wall over the blade's edge
-        .union(_box(0, L, t + c, lip_y, h2 - p.clamp_lip, top))  # hook over the lever-side face
-    )
-    front_y = -(c + p.clamp_front)
-    body = _fillet_sharp(
-        body, 0.8,
-        keep=lambda m: m.z > top - 0.01 or m.y < front_y + 0.01 or m.y > lip_y - 0.01
-        or m.x < 0.01 or m.x > L - 0.01,
-    )
-    pocket = 7.1 / math.cos(math.pi / 6)  # hex 7.1 across flats: M4 head or M4 nyloc nut
+def _boss_face(p: Params) -> float:
+    return -(_slot(p)[0] + p.clamp_wall + p.clamp_boss_h)
+
+
+def mount_local(p: Params) -> cq.Workplane:
+    """Slotted mount in the run frame: a sleeve closed all round the blade run, which slides
+    through it, with two bosses underneath for the M4 heat-set inserts and grub screws that lock
+    it. It is moulded / printed in one piece with the shell (see wind_guard_local)."""
+    h, y0, y1 = _slot(p)
+    w, L = p.clamp_wall, p.clamp_len
+    body = _box(0, L, y0 - w, y1 + p.clamp_back, -(h + w), h + w).edges("|X").fillet(1.0)
     for x, y in _clamp_screw_xy(p):
-        body = body.cut(_box(x - 2.25, x + 2.25, y - 2.25, y + 2.25, 0, top + 1).edges("|Z").fillet(2.2))
-        body = body.cut(
-            cq.Workplane("XY", origin=(x, y, top - p.clamp_pocket)).polygon(6, pocket).extrude(p.clamp_pocket + 1)
+        body = body.union(
+            cq.Workplane("XY", origin=(x, y, _boss_face(p))).circle(p.clamp_boss_d / 2).extrude(p.clamp_boss_h + w / 2)
         )
+    body = body.cut(_box(-1, L + 1, y0, y1, -h, h))
+    for x, y in _clamp_screw_xy(p):
+        body = body.cut(cq.Workplane("XY", origin=(x, y, _boss_face(p) - 1)).circle(p.insert_d / 2).extrude(p.insert_len + 1))
+        body = body.cut(cq.Workplane("XY", origin=(x, y, _boss_face(p))).circle(2.1).extrude(p.clamp_boss_h + w + 1))
     return body
-
-
-def _turn_over(p: Params, wp: cq.Workplane) -> cq.Workplane:
-    return wp.rotate((p.clamp_len / 2, 0, 0), (p.clamp_len / 2, 1, 0), 180)
 
 
 # Front-view outline of the wind guard, as (distance along the run from the shell's outboard
@@ -648,7 +642,7 @@ def _shell_section(p: Params, x: float, phi0: float, sig_a: float, sig_b: float)
 def wind_guard_local(p: Params, left: bool = False) -> cq.Workplane:
     """Moulded wind guard shell in the run frame (right-hand; left=True gives the mirror image).
 
-    A flat flange, pinched between the clamp halves, bends up into a shield that stands in front
+    A flat flange, joined to the slotted mount that rides on the blade, bends up into a shield that stands in front
     of the hand on the bike, convex to the wind and curling back over the knuckles. A crease runs
     from the high outboard end down to the pointed tip. The shield is lofted through sections
     that lean back more at both ends, so it wraps round the hand, then trimmed to its front-view
@@ -699,40 +693,30 @@ def wind_guard_local(p: Params, left: bool = False) -> cq.Workplane:
         .threePointArc((fl_end - 5, y0 - 4.5), (fl_end, ys)).lineTo(x0, ys).close()
         .extrude(t).translate((0, 0, -t / 2))
     )
-    shell = shell.union(flange)
-    for x, y in _clamp_screw_xy(p):  # holes for the compression sleeves
-        shell = shell.cut(cq.Workplane("XY", origin=(x, y, -t)).circle(3.0).extrude(2 * t))
+    shell = shell.union(flange).union(mount_local(p))
     return shell.mirror("XY") if left else shell
 
 
-def m4_screw_nut_local(p: Params, x: float, y: float) -> cq.Workplane:
-    """ISO 4762 M4 cap screw (head 7 x 4) from below in the lower half's pocket, DIN 985 M4 nyloc
-    nut captive in the upper half's pocket, and a 6 / 4 x shell_t aluminium compression sleeve
-    in the shell's flange that keeps the clamp load off the plastic."""
-    z_pocket = _clamp_top(p) - p.clamp_pocket
-    head = cq.Workplane("XY", origin=(x, y, -z_pocket - 4.0)).circle(3.5).extrude(4.0)
-    head = head.cut(cq.Workplane("XY", origin=(x, y, -z_pocket - 4.1)).polygon(6, 3.0 / math.cos(math.pi / 6)).extrude(2.1))
-    shank = cq.Workplane("XY", origin=(x, y, -z_pocket)).circle(2.0).extrude(p.m4_len)
-    nut = (
-        cq.Workplane("XY", origin=(x, y, z_pocket)).polygon(6, 7.0 / math.cos(math.pi / 6)).extrude(5.0)
-        .cut(cq.Workplane("XY", origin=(x, y, z_pocket - 1.0)).circle(2.0).extrude(7.0))
+def m4_grub_insert_local(p: Params, x: float, y: float) -> cq.Workplane:
+    """M4 x 5.7 brass heat-set insert in the boss and an ISO 4029 M4 cup-point grub screw
+    turned up through it until its tip bears on the blade's lower edge."""
+    zb = _boss_face(p)
+    insert = (
+        cq.Workplane("XY", origin=(x, y, zb)).circle(p.insert_d / 2).extrude(p.insert_len - 0.5)
+        .cut(cq.Workplane("XY", origin=(x, y, zb - 1)).circle(2.0).extrude(p.insert_len + 1))
     )
-    sleeve = cq.Workplane("XY", origin=(x, y, -p.shell_t / 2)).circle(3.0).extrude(p.shell_t)
-    return head.union(shank).union(nut).union(sleeve)
+    grub = cq.Workplane("XY", origin=(x, y, -p.blade_h / 2 - p.m4_len)).circle(2.0).extrude(p.m4_len)
+    return insert.union(grub)
 
 
 def diffuser_parts(p: Params = Params(), pos: float | None = None, shift: float = 0.0):
-    """Wind guard shell, both clamp halves and the two M4 screws, placed on the blade in G."""
+    """Wind guard (shell with its slotted mount) and the two insert + grub screw sets, placed on
+    the blade in G."""
     loc = run_frame(p, p.clamp_pos if pos is None else pos, shift)
     place = lambda wp: cq.Workplane(obj=wp.val().moved(loc))  # noqa: E731
-    upper = clamp_half_local(p)
-    items = [
-        ("diffuser_shell", place(wind_guard_local(p))),
-        ("diffuser_clamp_upper", place(upper)),
-        ("diffuser_clamp_lower", place(_turn_over(p, upper))),
-    ]
+    items = [("diffuser_shell", place(wind_guard_local(p)))]
     for i, (x, y) in enumerate(_clamp_screw_xy(p)):
-        items.append((f"diffuser_screw_{i + 1}", place(m4_screw_nut_local(p, x, y))))
+        items.append((f"diffuser_screw_{i + 1}", place(m4_grub_insert_local(p, x, y))))
     return items
 
 

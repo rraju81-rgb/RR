@@ -190,7 +190,7 @@
         <div class="ctl-head"><label for="dpos">Wind guard position</label><span class="readout" id="dposOut">0 mm</span></div>
         <input type="range" id="dpos" min="0" max="45" step="1" value="0">
         <div class="toggles"><label><input type="checkbox" id="diffuser" checked> Fit wind guard</label></div>
-        <p class="note">The clamp wraps the blade. Two M4 screws lock it; loosen them and it slides along the run.</p>
+        <p class="note">The wind guard's slotted mount wraps the blade. Two M4 grub screws lock it from below; loosen them and it slides along the run.</p>
       </div>
 
       <div class="ctl">
@@ -309,7 +309,7 @@ fillTable("dims", ["Feature", "Value"], [
   ["Angle adjustment", `${P.teeth || 36} teeth → ${360 / (P.teeth || 36)}° steps`],
   ["Fore-aft adjustment", `±${fmt(P.adjust)} mm slot`],
   ["Wind guard shell", DF.length_mm ? `${fmt(DF.length_mm)} long, ${fmt(DF.above_bar_axis_mm)} above / ${fmt(DF.below_bar_axis_mm)} below the bar axis, ${fmt(P.shell_t)} mm wall` : "–"],
-  ["Wind guard travel along the blade", DF.travel_mm ? `${fmt(DF.travel_mm)} mm (2 × M4 lock)` : "–"],
+  ["Wind guard travel along the blade", DF.travel_mm ? `${fmt(DF.travel_mm)} mm (2 × M4 grub screw)` : "–"],
   ["Mass per side (carbon blade, without / with wind guard)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} / ${fmt(S.mass_per_side_grams_with_diffuser, 0)} g` : "–"],
 ]);
 const lc = C4.lever_clearance_mm || {};
@@ -318,8 +318,8 @@ fillTable("checks", ["Fit check (CAD)", "Result"], [
   ["Half a tooth out", `<span class="pill">clashes, cannot slip</span>`],
   ["Blade to reference lever (slot −5 / 0 / +5)", lc["+0"] ? `${lc["-5"]} / ${lc["+0"]} / ${lc["+5"]} mm` : "–"],
   ["Finger room, grip to blade run", C4.finger_room_mm ? `${fmt(C4.finger_room_mm)} mm` : "–"],
-  ["Wind guard to lever (clamp travel ends)", DF.lever_clearance_mm ? `${DF.lever_clearance_mm.join(" / ")} mm` : "–"],
-  ["Wind guard to brake perch (clamp travel ends)", DF.perch_clearance_mm ? `${DF.perch_clearance_mm.join(" / ")} mm` : "–"],
+  ["Wind guard to lever (travel ends)", DF.lever_clearance_mm ? `${DF.lever_clearance_mm.join(" / ")} mm` : "–"],
+  ["Wind guard to brake perch (travel ends)", DF.perch_clearance_mm ? `${DF.perch_clearance_mm.join(" / ")} mm` : "–"],
   ["Wind guard to a gloved hand (Ø100 round the grip)", DF.hand_clearance_mm ? `${DF.hand_clearance_mm.join(" / ")} mm` : "–"],
   ["M6 bolt thread in cone nut", `${fmt(C4.m6_engagement_mm)} mm`],
   ["M5 blade screws in arm", `${fmt(C4.m5_engagement_mm)} mm`],
@@ -341,14 +341,12 @@ fillTable("bom", ["#", "Part", "Material / finish", "Qty per side", "Mass"], [
   ["03b", "Guard blade 8 mm (printable)", "PA12-CF or PETG-CF, carbon hydro-dip", "alt.", g("03b_guard_blade_8mm_3dprint")],
   ["04", "Expander sleeve S / M / L", "TPU 95A or NBR 70 Shore A", "1", g("04_expander_sleeve_M_bar_id_15-17")],
   ["05", "Expander cone nut S / M / L, M6", "6061-T6 or zinc-plated steel", "1", g("05_expander_cone_M_bar_id_15-17")],
-  ["06 / 06b", "Wind guard shell, right / left (mirror pair)", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("06_wind_guard_shell_RH")],
-  ["07", "Wind guard clamp half (same part twice)", "6061-T6, hard anodised", "2", g("07_wind_guard_clamp_half")],
+  ["06 / 06b", "Wind guard shell with slotted mount, right / left (one piece each)", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("06_wind_guard_shell_RH")],
   ["H1", "Socket cap screw M6 × 45, ISO 4762", "A2-70 stainless or 10.9 black", "1", ""],
   ["H2", "Button head screw M5 × 14, ISO 7380", "A2-70 stainless", "2", ""],
   ["H3", "Washer M5, ISO 7089", "A2 stainless", "2", ""],
-  ["H4", "Socket cap screw M4 × 25, ISO 4762, from below", "A2-70 stainless", "2", ""],
-  ["H5", "Nyloc nut M4, DIN 985, captive in the upper half", "A2 stainless", "2", ""],
-  ["H6", "Compression sleeve Ø6 / Ø4.2 × 3 (in the shell flange)", "Aluminium", "2", ""],
+  ["H4", "Heat-set insert M4 × 5.7, pressed into the mount's bosses", "Brass", "2", ""],
+  ["H5", "Grub screw M4 × 8, ISO 4029 cup point, from below onto the blade", "A2 stainless", "2", ""],
 ]);
 
 // ---------------------------------------------------------------- three.js scene

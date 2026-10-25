@@ -64,6 +64,14 @@ class Report:
         return all(ok for _, ok, _ in self.rows)
 
 
+def _shield(p: lg.Params, pos: float | None, shift: float = 0.0) -> cq.Shape:
+    """The wind guard without its slotted mount (everything ahead of the mount's front face),
+    placed on the blade."""
+    front = lg._slot(p)[1] - p.clamp_wall - 0.01
+    shell = lg.wind_guard_local(p).val().intersect(cq.Solid.makeBox(600, 200, 300, cq.Vector(-300, front - 200, -150)))
+    return shell.moved(lg.run_frame(p, p.clamp_pos if pos is None else pos, shift))
+
+
 def run_checks(p: lg.Params) -> tuple[Report, dict]:
     rep = Report()
     info: dict = {}
@@ -179,11 +187,16 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
         dp = {n: wp.val() for n, wp in lg.diffuser_parts(p, pos)}
         ov = max(s.intersect(blade0).Volume() for s in dp.values())
         rep.check(f"wind guard at {pos:g} mm sits on the blade", ov < 1e-3, f"overlap {ov:.4f} mm3")
-        bear = max(dp["diffuser_clamp_upper"].distance(blade0), dp["diffuser_clamp_lower"].distance(blade0))
-        rep.check(f"wind guard at {pos:g} mm: clamp halves bear on the blade edges", bear < 0.01, f"gap {bear:.3f} mm")
+        gap = dp["diffuser_shell"].distance(blade0)
+        rep.check(f"wind guard at {pos:g} mm: blade slides in the slot", 0.0 < gap <= p.clamp_clear + 0.01, f"clearance {gap:.2f} mm")
+        bear = max(dp[n].distance(blade0) for n in dp if n.startswith("diffuser_screw"))
+        rep.check(f"wind guard at {pos:g} mm: grub screws bear on the blade", bear < 0.01, f"gap {bear:.3f} mm")
         dl = min(s.distance(lever_blade) for s in dp.values())
         dpp = min(s.distance(perch) for s in dp.values())
-        dh = dp["diffuser_shell"].distance(hand)
+        dh = _shield(p, pos).distance(hand)  # the slotted mount wraps the blade: compared to it below
+        dm = dp["diffuser_shell"].distance(hand)
+        rep.check(f"wind guard at {pos:g} mm: mount no closer to the hand than the blade", dm >= blade0.distance(hand) - p.clamp_wall - p.clamp_clear - 0.01,
+                  f"mount {dm:.1f} mm, blade {blade0.distance(hand):.1f} mm")
         lever_gaps.append(round(dl, 1))
         perch_gaps.append(round(dpp, 1))
         hand_gaps.append(round(dh, 1))
@@ -195,7 +208,7 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
     for shift in (-p.adjust, p.adjust):
         ds = {n: wp.val() for n, wp in lg.diffuser_parts(p, None, shift)}
         dl = min(s.distance(lever) for s in ds.values())
-        dh = ds["diffuser_shell"].distance(hand)
+        dh = _shield(p, None, shift).distance(hand)
         print(f"  [info] blade moved {shift:+.0f} mm: wind guard to lever {dl:.1f} mm, to the hand {dh:.1f} mm")
     # size on the bike (lever plane lever_deg below horizontal), default clamp position
     shell = dict((n, wp.val()) for n, wp in lg.diffuser_parts(p))["diffuser_shell"]
@@ -263,15 +276,13 @@ def to_print_pose(name: str, wp: cq.Workplane) -> cq.Workplane:
         wp = wp.rotate((0, 0, 0), (0, 1, 0), -90)
     elif name.startswith("06b"):  # left-hand shell: flange on the bed, shield up like the right one
         wp = wp.rotate((0, 0, 0), (1, 0, 0), 180)
-    elif name.startswith("07"):  # clamp half: outer face on the bed, cavity open upward
-        wp = wp.rotate((0, 0, 0), (1, 0, 0), 180)
     bb = wp.val().BoundingBox()
     return wp.translate((-(bb.xmin + bb.xmax) / 2, -(bb.ymin + bb.ymax) / 2, -bb.zmin))
 
 
 def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]]:
     """Every exported part: (file name, solid, material). The wind guard parts are exported in
-    their own run frame (shell flange flat on XY, clamp half with the blade run along X)."""
+    their own run frame (shell flange flat on XY, the slot of its mount along X)."""
     parts = [
         ("01_bar_end_adapter", lg.adapter(p), "al6061"),
         ("01b_bar_end_adapter_oem_thread", lg.adapter(p, spigot=False), "al6061"),
@@ -286,7 +297,6 @@ def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]
     parts += [
         ("06_wind_guard_shell_RH", lg.wind_guard_local(p), "hdpe"),
         ("06b_wind_guard_shell_LH", lg.wind_guard_local(p, left=True), "hdpe"),
-        ("07_wind_guard_clamp_half", lg.clamp_half_local(p), "al6061"),
     ]
     return parts
 
@@ -357,7 +367,7 @@ def main() -> int:
         + hw
     )
     diffuser_kit = (
-        masses["06_wind_guard_shell_RH"]["grams"] + 2 * masses["07_wind_guard_clamp_half"]["grams"] + hw_diffuser
+        masses["06_wind_guard_shell_RH"]["grams"] + hw_diffuser
     )
     info["diffuser"]["kit_grams"] = round(diffuser_kit, 1)
     summary = {
