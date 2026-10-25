@@ -10,6 +10,8 @@ meshed with, so the thin-skin lay-up is checked by hand instead:
   2. skin:     the skin between two bond lands under the ball's contact pressure, as a clamped strip with
                immovable edges, solved with membrane stretching (large deflection) -> local skin stress;
   3. dimpling: compression buckling of the skin between lands, k = 4 (simply supported long plate).
+Cases: REV C (4 / 8 / 4, printed PA-CF core), REV D (0.3 / 10 / 0.3, PA-CF core) and REV E (the same
+lay-up with the rib support moulded in carbon fibre).
 The same method run on the REV C lay-up (4 / 8 / 4) is compared with its FEA to give calibration factors
 for the skin stress (FEA / beam = 1.4: the throat fillet and plate effects) and the deflection (1.7: shear
 and the flexible handle).  The core is quoted as the plain beam bending stress: its REV C FEA peak was a
@@ -29,9 +31,15 @@ import numpy as np  # noqa: E402
 from paddle import fea, wave  # noqa: E402
 from paddle.geometry import CONSTRUCTION, DESIGNS, build  # noqa: E402
 
-EF, NUF, EC = fea.CF["E1"], fea.CF["nu12"], fea.CORE["E"]
+EF, NUF = fea.CF["E1"], fea.CF["nu12"]
 A = fea.ALLOW
+# core materials: modulus [MPa] and bending allowable [MPa].  Moulded chopped carbon/epoxy is taken
+# conservatively for a hand-laid part with some voids (pressed SMC-grade parts reach 35-40 GPa, 250 MPa).
+CORES = {"PA-CF print": dict(E=fea.CORE["E"], allow=A["core_vm"]), "moulded carbon": dict(E=25000.0, allow=120.0)}
+CORE = dict(CORES["PA-CF print"])
 REV_C = dict(face_t=4.0, core_t=8.0, rib_amp=4.0, runout_len=8.0)      # analysed by FEA
+LAYUP = dict(face_t=0.3, core_t=10.0, rib_amp=5.2, runout_len=10.0)     # REV D and E
+CASES = (("REV_C", REV_C, "PA-CF print"), ("REV_D", LAYUP, "PA-CF print"), ("REV_E", LAYUP, "moulded carbon"))
 FEA_C = dict(LC1=dict(deflection=2.25), LC2=dict(deflection=3.85, cf=141.0, core=17.5))   # elongated, REV C report
 
 
@@ -66,7 +74,7 @@ def section(o, y: float, i_wave: float) -> tuple[float, float, float]:
         i_core = w * (2 * h) ** 3 / 12
     else:                                        # closed frame both sides + wave walls in between
         i_core = 2 * C.frame_w * (2 * h) ** 3 / 12 + max(w - 2 * C.frame_w, 0.0) * i_wave
-    return w, EF * i_skin + EC * i_core, h + t
+    return w, EF * i_skin + CORE["E"] * i_core, h + t
 
 
 def beam(o, y_load: float, P: float = 500.0) -> dict:
@@ -79,7 +87,7 @@ def beam(o, y_load: float, P: float = 500.0) -> dict:
     EI = np.array([s[1] for s in secs])
     z_out = np.array([s[2] for s in secs])
     sig_f = M * EF * z_out / EI                  # skin outer fibre
-    sig_c = M * EC * (C.core_t / 2) / EI          # core extreme fibre
+    sig_c = M * CORE["E"] * (C.core_t / 2) / EI   # core extreme fibre
     ok = ys >= y0 + 8.0                          # the FEA does not assess the first 8 mm above the clamp
     k = int(np.argmax(np.where(ok, sig_f, 0)))
     y_tip = o.spec.length
@@ -128,11 +136,13 @@ def main() -> None:
     out = {}
     outlines = {sp.key: build(sp) for sp in DESIGNS}  # plan outlines do not depend on the lay-up
     p = 500.0 / (math.pi * 15.0 ** 2)             # ball contact pressure, 500 N on a 30 mm patch
-    for tag, kw in (("REV_C", REV_C), ("REV_D", dict(face_t=0.3, core_t=10.0, rib_amp=5.2, runout_len=10.0))):
+    for tag, kw, core in CASES:
         lay_up(**kw)
+        CORE.update(CORES[core])
         C = CONSTRUCTION
         b = C.rib_pitch - wave.land_width()
-        res = dict(lay_up=f"{C.face_t:g} / {C.core_t:g} / {C.face_t:g}", span_between_lands=round(b, 2), designs={})
+        res = dict(lay_up=f"{C.face_t:g} / {C.core_t:g} / {C.face_t:g}", core=core, core_E=CORE["E"],
+                   core_allow=CORE["allow"], span_between_lands=round(b, 2), designs={})
         for key, o in outlines.items():
             res["designs"][key] = {lc.key: beam(o, lc.y) for lc in fea.LOADS}
         sk = skin_strip(p, b, C.face_t)
@@ -144,11 +154,11 @@ def main() -> None:
     cal = dict(skin=FEA_C["LC2"]["cf"] / bc["LC2"]["skin_max"],
                deflection=float(np.mean([FEA_C[k]["deflection"] / bc[k]["tip_deflection"] for k in ("LC1", "LC2")])))
     out["calibration_fea_over_beam"] = cal
-    for tag in ("REV_C", "REV_D"):
+    for tag, _, _ in CASES:
         for key, d in out[tag]["designs"].items():
             for lc, r in d.items():
                 r["skin_expected"] = r["skin_max"] * cal["skin"]
-                r["rf_core"] = A["core_vm"] / r["core_max"]       # bending only: no factor, see the docstring
+                r["rf_core"] = out[tag]["core_allow"] / r["core_max"]   # bending only: no factor, see the docstring
                 r["deflection_expected"] = r["tip_deflection"] * cal["deflection"]
                 r["rf_skin"] = A["cf_c"] / r["skin_expected"]
                 r["rf_dimpling"] = out[tag]["dimpling_stress"] / max(r["skin_blade_max"], 1e-9)
@@ -159,14 +169,15 @@ def main() -> None:
         sk = out[tag]["skin_between_lands"]
         sk["rf"] = round(A["cf_c"] / sk["stress"], 3)
     out["calibration_fea_over_beam"] = {k: round(v, 3) for k, v in cal.items()}
-    out["allowables_MPa"] = dict(cf_tension=A["cf_t"], cf_compression=A["cf_c"], core_von_mises=A["core_vm"])
-    lay_up(face_t=0.3, core_t=10.0, rib_amp=5.2, runout_len=10.0)
+    out["allowables_MPa"] = dict(cf_tension=A["cf_t"], cf_compression=A["cf_c"],
+                                 **{f"core_{k}": v["allow"] for k, v in CORES.items()})
+    lay_up(**LAYUP)
     (ROOT / "analysis" / "hand_check.json").write_text(json.dumps(out, indent=1))
 
     print("calibration FEA / beam (REV C elongated):", out["calibration_fea_over_beam"])
-    for tag in ("REV_C", "REV_D"):
+    for tag, _, _ in CASES:
         r = out[tag]
-        print(f"\n{tag}  lay-up {r['lay_up']}  span between lands {r['span_between_lands']} mm")
+        print(f"\n{tag}  lay-up {r['lay_up']}, core {r['core']}  span between lands {r['span_between_lands']} mm")
         for key, d in r["designs"].items():
             for lc, v in d.items():
                 print(f"  {key:9s} {lc}: skin {v['skin_expected']:7.0f} MPa (beam {v['skin_max']:6.0f} at y {v['skin_at_y']:5.0f})"

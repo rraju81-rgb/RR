@@ -62,19 +62,20 @@ def core_notes(o: Outline, mass: dict | None) -> list[str]:
     sp = o.spec
     m = f"MASS {mass['parts']['rib_core']['mass_g']:.0f} g. " if mass else ""
     return [
-        "MATERIAL: PA-CF (CARBON-FIBRE-FILLED NYLON), E ≈ 4 GPa, ρ 1.18 g/cm³. DRY THE FILAMENT BEFORE PRINTING.",
-        f"PRINT FLAT, 100 % SOLID: WALL {fmt(C.rib_t)} = 4 PERIMETERS (0.4 NOZZLE), 0.2 LAYERS. NO SUPPORTS (45° RUN-OUTS).",
-        f"THICKNESS {fmt(C.core_t)} ±0.1. BOTH FACES ARE BOND SURFACES, FLAT WITHIN 0.1.",
+        "MATERIAL: CARBON FIBRE / EPOXY, MOULDED IN ONE PIECE IN THE SHEET-4 MOULD (CHOPPED FIBRE 10–25 LONG,\n"
+        "≈ 40 % BY VOLUME, ρ ≈ 1.5 g/cm³). THE PRINTED STL (NOTE 8) IS A TRIAL PIECE / PRINTED ALTERNATIVE.",
+        f"THICKNESS {fmt(C.core_t)}, SET BY THE LID SEATING ON THE TRAY RIM. BOTH FACES ARE BOND SURFACES.",
         f"WAVE RIB λ{fmt(C.rib_pitch)}, WALL {fmt(C.rib_t)}, CENTRE-LINE AMPLITUDE {fmt(C.rib_amp)}; CRESTS CUT FLAT = "
         f"LANDS {wave.land_width():.2f} ON BOTH FACES.",
-        f"FRAME {fmt(C.frame_w)}, CLOSED. SOLID TO y = {fmt(C.solid_to)}; EACH FLUTE STARTS WITH A 45° RUN-OUT, "
-        f"{fmt(C.runout_len)} LONG (D–D).",
-        f"M3 HEAT-SET INSERT BORE Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
-        f"{fmt(C.screw_relief_depth)} IN THE BUTT FACE (GRIP SCREW) – SEE PB-GR-002.",
-        "BONDING: ABRADE (P120) AND DEGREASE BOTH FACES; THE SHEETS ARE LAMINATED ON IN THE MOULD (SHEET 4).",
-        f"PRINT FILE output/rib_support/{sp.key}_rib_support.stl: ONE PIECE, FLAT, BED ≥ "
-        f"{fmt(sp.length - sp.cap_length + 6)} × {fmt(sp.width + 6)}.\nIT DROPS INTO THE MOULD POCKET "
-        f"(+0.2 CLEARANCE); PLUG THE INSERT BORE BEFORE MOULDING.",
+        f"FRAME {fmt(C.frame_w)}, CLOSED. SOLID TO y = {fmt(C.solid_to)}; EACH FLUTE ENDS IN A 45° RAMP, "
+        f"{fmt(C.runout_len)} LONG, LONGEST AT\nITS OPEN FACE (D–D), SO THE MOULD TEETH PULL STRAIGHT OUT.",
+        f"AFTER MOULDING DRILL Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
+        f"{fmt(C.screw_relief_depth)} IN THE BUTT FACE AND BOND AN M3 BRASS INSERT\n(EPOXY) FOR THE GRIP SCREW "
+        "– SEE PB-GR-002.",
+        "BONDING THE SKINS: ABRADE (P120) AND DEGREASE BOTH FACES, EPOXY, PRESS FLAT BETWEEN PLATENS OR IN A "
+        "VACUUM BAG.",
+        f"PRINT FILE output/rib_support/{sp.key}_rib_support.stl (TRIAL PIECE: CHECKS THE MOULD CLOSES): FLAT, BED ≥ "
+        f"{fmt(sp.length - sp.cap_length + 6)} × {fmt(sp.width + 6)}.",
         f"{m}y FROM THE GRIP BUTT FACE (y = 0); THE RIB SUPPORT STARTS AT y = {fmt(sp.cap_length)}.",
     ]
 
@@ -85,7 +86,7 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     H = hatches(d)
     frame_iso(d)
     a, L, hc = sp.width / 2, sp.length, C.core_t / 2
-    y_open = C.solid_to + C.runout_len           # the flutes open at the face sheets from here
+    y_open = C.solid_to                          # the flutes open at the face sheets from here
     inner = core_inner(o)
 
     # ---- plan view (top face of the core), 1:2
@@ -113,7 +114,7 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
         pts = []
         for i in range(61):
             xs_, zs_ = wave.surface_point(ua + (ub - ua) * i / 60, +1)
-            pts.append((xs_, C.solid_to + C.runout_len * (zs_ + hc_) / (2 * hc_)))
+            pts.append((xs_, C.solid_to + C.runout_len * (hc_ - zs_) / (2 * hc_)))
         for seg in _segments(LineString(pts).intersection(inner)):
             d.poly([P(q) for q in seg], "vis")
     y0 = sp.cap_length                            # insert bore + clearance (hidden)
@@ -198,32 +199,31 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     for z0 in (hc, -hc - C.face_t):
         phantom_rect(d, D(yd0, z0 + C.face_t), D(yd1, z0))
     z_top = C.rib_amp - C.rib_t / 2                   # lower surface of the wall under the land (x = 0)
-    y_foot = C.solid_to + C.runout_len                # run-out meets the bottom face here
-    y_head = C.solid_to + (hc - z_top) * C.runout_len / C.core_t
+    y_foot = C.solid_to                               # the bottom flute opens at the bottom face here
+    y_head = C.solid_to + (hc + z_top) * C.runout_len / C.core_t     # ... and reaches the wall here
     solid = [D(yd0, -hc), D(y_foot, -hc), D(y_head, z_top), D(yd1, z_top), D(yd1, hc), D(yd0, hc)]
     d.poly(solid, "vis", closed=True, extra=fill(H["core"]))
-    d.line(D(y_head, z_top), D(C.solid_to, hc), "hid")
+    d.line(D(C.solid_to, hc), D(C.solid_to + (hc + z_top) * C.runout_len / C.core_t, -z_top), "hid")   # top flutes
     for yy in (yd0, yd1):
         break_line(d, D(yy, hc + C.face_t + 1), D(yy, -hc - C.face_t - 1))
-    d.dim_linear(D(C.solid_to, hc), D(y_foot, -hc), "x", zd + (hc + C.face_t) * S2 + 7, fmt(C.runout_len))
+    d.dim_linear(D(C.solid_to, -hc), D(C.solid_to + C.runout_len, -hc), "x", zd + (hc + C.face_t) * S2 + 7,
+                 fmt(C.runout_len))
     d.line(D(C.solid_to, hc), D(C.solid_to, -hc - C.face_t - 1), "thin")
-    v = View(d, D(y_foot, -hc), S2)
-    d.path(f"M{f(D(y_foot, -hc)[0] - 9)},{f(D(y_foot, -hc)[1])} "
-           f"A9,9 0 0 1 {f(D(y_foot, -hc)[0] - 9 * math.cos(math.pi / 4))},{f(D(y_foot, -hc)[1] - 9 * math.sin(math.pi / 4))}",
+    fx, fy = D(y_foot, -hc)
+    d.path(f"M{f(fx + 9)},{f(fy)} A9,9 0 0 0 {f(fx + 9 * math.cos(math.pi / 4))},{f(fy - 9 * math.sin(math.pi / 4))}",
            "thin")
-    del v
-    d.text((D(y_foot, -hc)[0] - 13.5, D(y_foot, -hc)[1] - 2.0), "45°", 3.0)
+    d.text((fx + 14.0, fy - 2.0), "45°", 3.0)
     d.dim_linear(D(yd1, z_top), D(yd1, hc), "y", D(yd1, 0)[0] + 7, f"{wave.under_land_wall():.1f}", outside=True)
     d.text(D(170, -1.5), "BOTTOM FLUTE", 2.6, fill=GREY)
     d.text((D(yd0, 0)[0] + 18, D(yd0, 0)[1] + 1), "SOLID CORE", 2.6, fill=GREY)
     view_label(d, (D(yd0, 0)[0] + D(yd1, 0)[0]) / 2, zd + (hc + C.face_t) * S2 + 15, "SECTION D–D (PART)",
-               f"SCALE 2:1 · ON THE CENTRE LAND (x = 0), RUN-OUT FROM y = {fmt(C.solid_to)}; TOP FLUTES MIRROR IT")
+               f"SCALE 2:1 · ON THE CENTRE LAND (x = 0), RAMP FROM y = {fmt(C.solid_to)}; TOP FLUTES MIRROR IT")
 
     # ---- notes + title block
     notes_block(d, 228.0, 192.0, core_notes(o, mass), size=2.3, lead=3.4)
-    title_block(d, 225.0, 236.0, sp, f"RIB SUPPORT (CORE)  ·  3D-PRINTED PA-CF  ·  {fmt(L - sp.cap_length)} × "
+    title_block(d, 225.0, 236.0, sp, f"RIB SUPPORT (CORE)  ·  MOULDED CARBON, ONE PIECE  ·  {fmt(L - sp.cap_length)} × "
                 f"{fmt(sp.width)} × {fmt(C.core_t)} mm", "1:2, 2:1", f"3 / {SHEETS}", "A3",
-                title=f"RIB SUPPORT – {sp.name}", material="PA-CF (NOTE 1)")
+                title=f"RIB SUPPORT – {sp.name}", material="CARBON / EPOXY (NOTE 1)")
     return d
 
 
@@ -244,8 +244,8 @@ def grip_notes(sp: PaddleSpec, g: dict, masses: dict | None) -> list[str]:
         f"END WALLS SLIT OVER THE TOP {fmt(GRIP.slit_depth)} (y {fmt(GRIP.length - GRIP.slit_depth)}–{fmt(GRIP.length)}) "
         f"SO THE THROAT FLARE (FROM y = {fmt(sp.handle_length)}) PASSES;\nTHE GRIP SEATS ON THE BODY BUTT AT "
         f"y = {fmt(sp.cap_length)} (= GRIP BASE {fmt(GRIP.base)}).",
-        f"INSERT (5): HEAT-SET M3 × {fmt(C.insert_len)} INTO THE Ø{fmt(C.insert_d)} BORE, FLUSH WITH THE CORE BUTT, "
-        "BEFORE MOULDING; KEEP A SCREW IN IT SO NO RESIN GETS IN.",
+        f"INSERT (5): BRASS M3 × {fmt(C.insert_len)}, BONDED WITH EPOXY INTO THE Ø{fmt(C.insert_d)} BORE DRILLED "
+        "IN THE MOULDED CORE BUTT, FLUSH.",
         f"SCREW (4): DIN 7984 M3 × {fmt(GRIP.screw_len)} LOW-HEAD (M3 × 16 ALSO FITS), LOW-STRENGTH THREADLOCKER, "
         f"HAND-TIGHT (≈0.5 N·m)\nSO THE PLA BASE DOES NOT CRACK; {fmt(GRIP.base - GRIP.cbore_depth)} OF FLOOR UNDER "
         "THE HEAD.",
@@ -426,14 +426,14 @@ def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
         return " / ".join(f"{x:.0f}" for x in v)
     rows = [("1", "Face sheet", f"Woven carbon/epoxy {fmt(C.face_t)} thk, cut to the profile DXF", "2",
              mass("face_sheet_top")),
-            ("2", "Rib support", "PA-CF printed in one piece – sheet 3 of PB-EL-001 / PB-HY-001", "1",
+            ("2", "Rib support", "Moulded carbon, one piece – sheets 3 + 4 of PB-EL/HY-001", "1",
              mass("rib_core")),
             ("3", "Grip", f"PLA printed, rev 8 (drawn {g['name']}), slot: note 2", "1", mass("grip")),
             ("4", "Screw", f"DIN 7984 M3 × {fmt(GRIP.screw_len)} low-head cap screw, A2 stainless", "1",
              mass("screw_M3x12_DIN7984")),
-            ("5", "Threaded insert", f"M3 heat-set, brass, {fmt(C.insert_len)} long, in a Ø{fmt(C.insert_d)} bore",
-             "1", mass("insert_M3_heatset")),
-            ("6", "Adhesive", "Laminating epoxy, sheets onto the rib support in the mould", "a/r", "–")]
+            ("5", "Threaded insert", f"M3 brass, {fmt(C.insert_len)} long, bonded in a Ø{fmt(C.insert_d)} bore",
+             "1", mass("insert_M3")),
+            ("6", "Adhesive", "Epoxy: skins onto the rib support, insert", "a/r", "–")]
     for i, r in enumerate(rows):
         yy = by + rh + 0.6 + i * rh
         xx = bx
@@ -450,7 +450,7 @@ def grip_sheet(sp: PaddleSpec, masses: dict | None = None) -> Doc:
     # ---- notes + title block
     notes_block(d, 228.0, 172.0, grip_notes(sp, g, masses), size=2.25, lead=3.3)
     title_block(d, 225.0, 236.0, None, f"PRINTED GRIP {fmt(GRIP.length)} LONG, SLOT {fmt(GRIP.slot_w)} × "
-                f"{fmt(GRIP.slot_t)}  ·  M3 LOW-HEAD SCREW + HEAT-SET INSERT  ·  BOTH PADDLES",
+                f"{fmt(GRIP.slot_t)}  ·  M3 LOW-HEAD SCREW + BONDED INSERT  ·  BOTH PADDLES",
                 "1:1, 2:1", "1 / 1", "A3", title="PRINTED GRIP – PADDLE INTERFACE", drawing_no=GRIP_NO,
                 material="SEE BOM")
     return d

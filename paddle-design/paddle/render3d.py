@@ -114,7 +114,7 @@ def materials(key: str, tex: dict) -> dict:
 
 
 PART_MATERIAL = {"face_sheet_top": "cf_top", "face_sheet_bottom": "cf_bottom", "rib_core": "core", "grip": "grip",
-                 "screw_M3x12_DIN7984": "steel", "insert_M3_heatset": "brass", "mould_bottom": "mould",
+                 "screw_M3x12_DIN7984": "steel", "insert_M3": "brass", "mould_bottom": "mould",
                  "mould_top": "mould", "dowel_pins": "steel"}
 GRIPS = PADDLE_GRIP                     # any of the ten grips fits both paddles
 GRIP_COLOUR = {"elongated": (0.022, 0.022, 0.025), "hybrid": (0.05, 0.052, 0.058)}
@@ -177,10 +177,9 @@ def cutaway(o: Outline):
 
 SHOTS = ("hero", "cutaway", "exploded_elongated", "exploded_hybrid", "handle", "mould")
 EXPLODE = {"face_sheet_top": (0, 0, 58), "face_sheet_bottom": (0, 0, -58), "grip": (0, -150, 0),
-           "screw_M3x12_DIN7984": (0, -185, 0), "insert_M3_heatset": (0, -8, 0)}
-HANDLE_EXPLODE = {"grip": (0, -175, 0), "screw_M3x12_DIN7984": (0, -215, 0), "insert_M3_heatset": (0, -9, 0)}
-MOULD_EXPLODE = {"face_sheet_bottom": (0, 0, 30), "rib_core": (0, 0, 62), "face_sheet_top": (0, 0, 94),
-                 "mould_top": (0, 0, 140)}            # mm above the closed position, bottom half on the floor
+           "screw_M3x12_DIN7984": (0, -185, 0), "insert_M3": (0, -8, 0)}
+HANDLE_EXPLODE = {"grip": (0, -175, 0), "screw_M3x12_DIN7984": (0, -215, 0), "insert_M3": (0, -9, 0)}
+MOULD_EXPLODE = {"rib_core": (0, 0, 45), "mould_top": (275, 0, 0)}   # mm: part lifted out, lid opened beside it
 
 
 def shot_scene(shot: str, meshes: dict, cut: dict, moulds: dict | None = None) -> tuple[list[dict], dict, tuple]:
@@ -209,12 +208,13 @@ def shot_scene(shot: str, meshes: dict, cut: dict, moulds: dict | None = None) -
                       parts=parts("elongated", HANDLE_EXPLODE))],
                 dict(location=(0.135, -0.269, 0.228), target=(-0.032, -0.022, 0.012), lens=45,
                      dof=dict(fstop=8.0, distance=0.38)), (-0.03, -0.02, 0.02))
-    if shot == "mould":                           # open compression mould: half, skin, rib support, skin, half
+    if shot == "mould":                           # opened mould: tray with the part lifted out, lid beside it
         from .mould import MOULD
-        sandwich = {k: v for k, v in meshes["elongated"].items() if k in ("face_sheet_bottom", "rib_core", "face_sheet_top")}
-        ps = part_list("elongated", {**moulds["elongated"], **sandwich}, MOULD_EXPLODE)
-        return ([dict(name="M", location=(0.0, -0.02, MOULD.height / 1000), rotation=(0, 0, -32), parts=ps)],
-                dict(location=(0.50, -0.56, 0.56), target=(0.07, 0.115, 0.055), lens=46), (0.06, 0.12, 0.08))
+        part = {"rib_core": meshes["elongated"]["rib_core"]}
+        ps = part_list("elongated", {**moulds["elongated"], **part}, MOULD_EXPLODE)
+        return ([dict(name="M", location=(-0.1375, -0.03, (MOULD.h + MOULD.floor) / 1000), rotation=(0, 0, 0),
+                      parts=ps)],
+                dict(location=(0.0, -0.50, 0.60), target=(0.0, 0.17, 0.0), lens=40), (0.0, 0.17, 0.02))
     raise ValueError(shot)
 
 
@@ -222,7 +222,9 @@ def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samp
                shots=SHOTS, log=print) -> list[Path]:
     """Export meshes + textures from the CAD and render every shot to out/paddles_3d_<shot>.png."""
     from .grip import load as load_grip
-    from .mould import dowel_pins, mould_half, top_half
+    from build123d import Pos
+
+    from .mould import MOULD, dowel_pins, mould_halves, print_pose
     work = out / "_work"
     meshes, cut, moulds, mats = {}, {}, {}, {}
     for o in outlines:
@@ -234,9 +236,10 @@ def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samp
         cut[key] = export_meshes([PartDef("face_sheet_top", top, "cf", (0, 0, 0)),
                                   PartDef("rib_core", core, "core", (0, 0, 0))], work / "mesh", key + "_cut")
         if key == "elongated":                    # only the elongated mould is shown
-            half = mould_half(o)
-            moulds[key] = export_meshes([PartDef("mould_bottom", half, "pla", (0, 0, 0)),
-                                         PartDef("mould_top", top_half(half), "pla", (0, 0, 0)),
+            tray, lid = mould_halves(o)
+            lid_open = Pos(0, 0, -MOULD.h - MOULD.floor) * print_pose(lid, True)   # teeth up, on the floor
+            moulds[key] = export_meshes([PartDef("mould_bottom", tray, "pla", (0, 0, 0)),
+                                         PartDef("mould_top", lid_open, "pla", (0, 0, 0)),
                                          PartDef("dowel_pins", dowel_pins(o), "steel", (0, 0, 0))],
                                         work / "mesh", key + "_mould")
         mats.update(materials(key, write_textures(o, work / "tex")))

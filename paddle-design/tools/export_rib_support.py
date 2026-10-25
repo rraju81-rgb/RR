@@ -5,8 +5,9 @@
 
 For each paddle it writes output/rib_support/<design>_rib_support.stl: the whole rib support in one
 piece, lying flat (z = 0 .. core thickness) in the print orientation, centred on x = y = 0, mm.  It is
-385 mm long, so it needs a large-format bed.  It drops straight into the compression mould
-(tools/export_mould.py).  Checks (closed mesh, one body, volume, size, bed fit) go to
+385 mm long, so it needs a large-format bed.  The real part is moulded in carbon fibre in the
+two-half wave mould (tools/export_mould.py); this print is the trial piece that checks the mould
+closes, or a printed alternative.  Checks (closed mesh, one body, volume, size, bed fit) go to
 output/rib_support/rib_support_report.json.
 """
 import json

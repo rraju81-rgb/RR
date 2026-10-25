@@ -284,11 +284,11 @@
 <rect x="239" y="135.4" width="34" height="5.4" class="thin" />
 <text x="241.5" y="138.922" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >Rib support</text>
 <rect x="273" y="135.4" width="86" height="5.4" class="thin" />
-<text x="275.5" y="138.922" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >PA-CF printed in one piece – sheet 3 of PB-EL-001 / PB-HY-001</text>
+<text x="275.5" y="138.922" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >Moulded carbon, one piece – sheets 3 + 4 of PB-EL/HY-001</text>
 <rect x="359" y="135.4" width="10" height="5.4" class="thin" />
 <text x="364" y="138.922" font-size="2.35" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
 <rect x="369" y="135.4" width="31" height="5.4" class="thin" />
-<text x="384.5" y="138.922" font-size="2.35" text-anchor="middle" font-weight="normal" fill="#000" >214 / 204</text>
+<text x="384.5" y="138.922" font-size="2.35" text-anchor="middle" font-weight="normal" fill="#000" >270 / 257</text>
 <rect x="228" y="140.8" width="11" height="5.4" class="thin" />
 <text x="233.5" y="144.322" font-size="2.35" text-anchor="middle" font-weight="normal" fill="#000" >3</text>
 <rect x="239" y="140.8" width="34" height="5.4" class="thin" />
@@ -314,7 +314,7 @@
 <rect x="239" y="151.6" width="34" height="5.4" class="thin" />
 <text x="241.5" y="155.122" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >Threaded insert</text>
 <rect x="273" y="151.6" width="86" height="5.4" class="thin" />
-<text x="275.5" y="155.122" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >M3 heat-set, brass, 5.7 long, in a Ø4 bore</text>
+<text x="275.5" y="155.122" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >M3 brass, 5.7 long, bonded in a Ø4 bore</text>
 <rect x="359" y="151.6" width="10" height="5.4" class="thin" />
 <text x="364" y="155.122" font-size="2.35" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
 <rect x="369" y="151.6" width="31" height="5.4" class="thin" />
@@ -324,7 +324,7 @@
 <rect x="239" y="157" width="34" height="5.4" class="thin" />
 <text x="241.5" y="160.522" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >Adhesive</text>
 <rect x="273" y="157" width="86" height="5.4" class="thin" />
-<text x="275.5" y="160.522" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >Laminating epoxy, sheets onto the rib support in the mould</text>
+<text x="275.5" y="160.522" font-size="2.35" text-anchor="start" font-weight="normal" fill="#000" >Epoxy: skins onto the rib support, insert</text>
 <rect x="359" y="157" width="10" height="5.4" class="thin" />
 <text x="364" y="160.522" font-size="2.35" text-anchor="middle" font-weight="normal" fill="#000" >a/r</text>
 <rect x="369" y="157" width="31" height="5.4" class="thin" />
@@ -332,7 +332,7 @@
 <rect x="228" y="162.4" width="141" height="5.4" class="thin" />
 <text x="230.5" y="165.922" font-size="2.35" text-anchor="start" font-weight="bold" fill="#000" >COMPLETE PADDLE WITH GRIP (3D MODEL)</text>
 <rect x="369" y="162.4" width="31" height="5.4" class="thin" />
-<text x="384.5" y="165.922" font-size="2.35" text-anchor="middle" font-weight="bold" fill="#000" >323 / 309</text>
+<text x="384.5" y="165.922" font-size="2.35" text-anchor="middle" font-weight="bold" fill="#000" >379 / 362</text>
 <text x="228" y="172" font-size="3.5" text-anchor="start" font-weight="bold" fill="#000" >NOTES</text>
 <text x="228" y="177.6" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >1.</text>
 <text x="233" y="177.6" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >GRIP (3): ANY OF THE TEN REV-8 PRINTED GRIPS (pickleball_grips) - SAME INTERFACE, DIFFERENT SURFACE; DRAWN: CARBON MATRIX.</text>
@@ -344,24 +344,24 @@
 <text x="233" y="191.6" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >END WALLS SLIT OVER THE TOP 20 (y 115–135) SO THE THROAT FLARE (FROM y = 130) PASSES;</text>
 <text x="233" y="194.9" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >THE GRIP SEATS ON THE BODY BUTT AT y = 5 (= GRIP BASE 5).</text>
 <text x="228" y="198.6" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >4.</text>
-<text x="233" y="198.6" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >INSERT (5): HEAT-SET M3 × 5.7 INTO THE Ø4 BORE, FLUSH WITH THE CORE BUTT, BEFORE MOULDING; KEEP A SCREW IN IT SO NO RESIN GETS IN.</text>
+<text x="233" y="198.6" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >INSERT (5): BRASS M3 × 5.7, BONDED WITH EPOXY INTO THE Ø4 BORE DRILLED IN THE MOULDED CORE BUTT, FLUSH.</text>
 <text x="228" y="202.3" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >5.</text>
 <text x="233" y="202.3" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >SCREW (4): DIN 7984 M3 × 12 LOW-HEAD (M3 × 16 ALSO FITS), LOW-STRENGTH THREADLOCKER, HAND-TIGHT (≈0.5 N·m)</text>
 <text x="233" y="205.6" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >SO THE PLA BASE DOES NOT CRACK; 2.8 OF FLOOR UNDER THE HEAD.</text>
 <text x="228" y="209.3" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >6.</text>
-<text x="233" y="209.3" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >OVERALL LENGTH 390 INCL. THE 5 GRIP BASE; HANDLE 130 FROM THE BUTT TO THE THROAT. MASS WITH GRIP 323 / 309 g (EL / HY).</text>
+<text x="233" y="209.3" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >OVERALL LENGTH 390 INCL. THE 5 GRIP BASE; HANDLE 130 FROM THE BUTT TO THE THROAT. MASS WITH GRIP 379 / 362 g (EL / HY).</text>
 <text x="228" y="213" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >7.</text>
 <text x="233" y="213" font-size="2.25" text-anchor="start" font-weight="normal" fill="#000" >SAME GRIP ON PB-EL-001 AND PB-HY-001. ALL DIMENSIONS IN mm.</text>
 <rect x="225" y="236" width="180" height="46" class="frame" />
 <rect x="225" y="236" width="180" height="16" class="thin" />
 <text x="228" y="243.6" font-size="5.6" text-anchor="start" font-weight="bold" fill="#000" >PRINTED GRIP – PADDLE INTERFACE</text>
-<text x="228" y="249.2" font-size="3" text-anchor="start" font-weight="normal" fill="#000" >PRINTED GRIP 135 LONG, SLOT 30.2 × 16  ·  M3 LOW-HEAD SCREW + HEAT-SET INSERT  ·  BOTH PADDLES</text>
+<text x="228" y="249.2" font-size="3" text-anchor="start" font-weight="normal" fill="#000" >PRINTED GRIP 135 LONG, SLOT 30.2 × 16  ·  M3 LOW-HEAD SCREW + BONDED INSERT  ·  BOTH PADDLES</text>
 <rect x="225" y="252" width="45" height="10" class="thin" />
 <text x="226.2" y="254.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DRAWN</text>
 <text x="247.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >Claude Code</text>
 <rect x="270" y="252" width="45" height="10" class="thin" />
 <text x="271.2" y="254.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DATE</text>
-<text x="292.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >2026-10-24</text>
+<text x="292.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >2026-10-25</text>
 <rect x="315" y="252" width="45" height="10" class="thin" />
 <text x="316.2" y="254.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >CHECKED</text>
 <rect x="360" y="252" width="45" height="10" class="thin" />
@@ -371,7 +371,7 @@
 <text x="251" y="269.19" font-size="3.4" text-anchor="middle" font-weight="bold" fill="#000" >PB-GR-002</text>
 <rect x="277" y="262" width="16" height="10" class="thin" />
 <text x="278.2" y="264.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >REV</text>
-<text x="285" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >D</text>
+<text x="285" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >E</text>
 <rect x="293" y="262" width="22" height="10" class="thin" />
 <text x="294.2" y="264.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SHEET</text>
 <text x="304" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >1 / 1</text>

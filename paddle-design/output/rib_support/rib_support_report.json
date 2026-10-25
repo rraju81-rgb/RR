@@ -3,20 +3,20 @@
  "designs": {
   "elongated": {
    "file": "elongated_rib_support.stl",
-   "triangles": 65038,
+   "triangles": 61170,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 179.88,
-   "cad_volume_cm3": 181.75,
+   "volume_cm3": 178.38,
+   "cad_volume_cm3": 180.26,
    "size_mm": [
     200.0,
     385.0,
     10.0
    ],
    "mass_g": {
-    "PA-CF": 212.3,
-    "PETG": 228.5,
-    "PLA": 223.1
+    "PA-CF": 210.5,
+    "PETG": 226.5,
+    "PLA": 221.2
    },
    "fits_bed": [
     "400 x 400",
@@ -25,20 +25,20 @@
   },
   "hybrid": {
    "file": "hybrid_rib_support.stl",
-   "triangles": 62808,
+   "triangles": 58924,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 172.05,
-   "cad_volume_cm3": 172.76,
+   "volume_cm3": 170.55,
+   "cad_volume_cm3": 171.28,
    "size_mm": [
     190.0,
     385.0,
     10.0
    ],
    "mass_g": {
-    "PA-CF": 203.0,
-    "PETG": 218.5,
-    "PLA": 213.3
+    "PA-CF": 201.3,
+    "PETG": 216.6,
+    "PLA": 211.5
    },
    "fits_bed": [
     "400 x 400",

@@ -1,6 +1,9 @@
 {
  "REV_C": {
   "lay_up": "4 / 8 / 4",
+  "core": "PA-CF print",
+  "core_E": 4000.0,
+  "core_allow": 45.0,
   "span_between_lands": 13.75,
   "designs": {
    "elongated": {
@@ -72,6 +75,9 @@
  },
  "REV_D": {
   "lay_up": "0.3 / 10 / 0.3",
+  "core": "PA-CF print",
+  "core_E": 4000.0,
+  "core_allow": 45.0,
   "span_between_lands": 13.72,
   "designs": {
    "elongated": {
@@ -141,6 +147,80 @@
   },
   "dimpling_stress": 94.6
  },
+ "REV_E": {
+  "lay_up": "0.3 / 10 / 0.3",
+  "core": "moulded carbon",
+  "core_E": 25000.0,
+  "core_allow": 120.0,
+  "span_between_lands": 13.72,
+  "designs": {
+   "elongated": {
+    "LC1": {
+     "skin_max": 252.86,
+     "skin_at_y": 120.039,
+     "core_max": 99.395,
+     "tip_deflection": 9.454,
+     "skin_blade_max": 97.784,
+     "skin_blade_at_y": 160.108,
+     "skin_expected": 358.586,
+     "rf_core": 1.207,
+     "deflection_expected": 15.66,
+     "rf_skin": 1.394,
+     "rf_dimpling": 0.968
+    },
+    "LC2": {
+     "skin_max": 392.192,
+     "skin_at_y": 120.162,
+     "core_max": 154.164,
+     "tip_deflection": 17.102,
+     "skin_blade_max": 171.847,
+     "skin_blade_at_y": 160.193,
+     "skin_expected": 556.177,
+     "rf_core": 0.778,
+     "deflection_expected": 28.326,
+     "rf_skin": 0.899,
+     "rf_dimpling": 0.551
+    }
+   },
+   "hybrid": {
+    "LC1": {
+     "skin_max": 252.86,
+     "skin_at_y": 120.039,
+     "core_max": 99.395,
+     "tip_deflection": 9.5,
+     "skin_blade_max": 97.784,
+     "skin_blade_at_y": 160.108,
+     "skin_expected": 358.586,
+     "rf_core": 1.207,
+     "deflection_expected": 15.734,
+     "rf_skin": 1.394,
+     "rf_dimpling": 0.968
+    },
+    "LC2": {
+     "skin_max": 392.192,
+     "skin_at_y": 120.162,
+     "core_max": 154.164,
+     "tip_deflection": 17.255,
+     "skin_blade_max": 171.847,
+     "skin_blade_at_y": 160.193,
+     "skin_expected": 556.177,
+     "rf_core": 0.778,
+     "deflection_expected": 28.581,
+     "rf_skin": 0.899,
+     "rf_dimpling": 0.551
+    }
+   }
+  },
+  "skin_between_lands": {
+   "pressure": 0.707,
+   "stress": 556.201,
+   "membrane": 64.922,
+   "deflection": 0.288,
+   "linear_stress": 739.639,
+   "rf": 0.899
+  },
+  "dimpling_stress": 94.6
+ },
  "calibration_fea_over_beam": {
   "skin": 1.418,
   "deflection": 1.656
@@ -148,6 +228,7 @@
  "allowables_MPa": {
   "cf_tension": 600.0,
   "cf_compression": 500.0,
-  "core_von_mises": 45.0
+  "core_PA-CF print": 45.0,
+  "core_moulded carbon": 120.0
  }
 }

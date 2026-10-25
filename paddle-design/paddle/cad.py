@@ -2,8 +2,8 @@
 
 Global axes match the 2-D drawings: x across the face, y from the butt (y = 0 is the
 butt face of the printed grip) to the tip, z through the thickness (z = 0 on the
-mid-plane).  Lay-up: bottom CF face sheet z = -8..-4, wave-rib core -4..+4, top CF
-face sheet +4..+8.  The printed grip itself is a mesh (paddle.grip).
+mid-plane).  Lay-up: bottom CF skin, wave-rib core (moulded carbon), top CF skin, sizes from
+geometry.CONSTRUCTION.  The printed grip itself is a mesh (paddle.grip).
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from .geometry import CONSTRUCTION as C
 from .geometry import GRIP, Line, Outline, PaddleSpec
 
 # densities [g/cm^3]
-DENSITY = {"cf": 1.55, "core": 1.18, "pla": 1.24, "steel": 7.9, "brass": 8.5}
+DENSITY = {"cf": 1.55, "core": 1.50, "pla": 1.24, "steel": 7.9, "brass": 8.5}   # core: moulded chopped carbon/epoxy
 
 
 @dataclass
@@ -68,14 +68,14 @@ def _xz(p: tuple[float, float], y: float) -> tuple[float, float, float]:
 def _runout_region(s: int, y_start: float, length: float):
     """Half-space where flutes opening towards side s (+1 top, -1 bottom) may exist.
 
-    With length > 0 the flute end is a chamfer: the flute starts at y_start next to the far
-    face sheet but only at y_start + length next to the near one.  The solid throat zone thus
-    runs out under each face sheet as a thin tapered wedge (like a scarfed adherend) instead of
-    a square step, which lowers the peel peak in the bond line; at 45 deg it prints without support."""
+    With length > 0 the flute end is a 45 deg ramp: the flute starts at y_start at its open face
+    and reaches the wave at the far side only at y_start + length.  The flute is therefore
+    longest where it opens, so the mould tooth that forms it pulls straight out (a wedge under
+    the face sheet would lock the tooth in), and the ramp still prints without support."""
     h, zz = C.core_t / 2, 12.0
 
     def y_at(z: float) -> float:
-        return y_start + length * (s * z + h) / (2 * h)
+        return y_start + length * (h - s * z) / (2 * h)
     pts = [Vector(-200, y_at(-zz), -zz), Vector(-200, y_at(zz), zz), Vector(-200, 600, zz), Vector(-200, 600, -zz)]
     face = Face(Wire([Edge.make_line(pts[i], pts[(i + 1) % 4]) for i in range(4)]))
     return extrude(face, amount=400, dir=(1, 0, 0))
@@ -85,22 +85,31 @@ def _axial_cylinder(d: float, y0: float, length: float):
     return Pos(0, y0, 0) * Rot(-90, 0, 0) * Cylinder(d / 2, length, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
 
-def rib_core(o: Outline, with_hole: bool = True):
-    """Closed perimeter frame + solid handle/throat zone + clipped sinusoidal wave rib, one part."""
+def flute_voids(o: Outline) -> dict[int, Part]:
+    """The open flutes of the rib support, {+1: opening to the top face, -1: to the bottom face}.
+
+    Each solid runs 1 mm past its open face.  Subtracted from the slab they leave the rib support;
+    in the mould they are the teeth of the top and bottom halves."""
     sp = o.spec
     f = outline_face(o, -C.core_t / 2)
-    slab = extrude(f, amount=C.core_t)
     inner = offset(f, amount=-C.frame_w, kind=Kind.ARC)
     prism = extrude(inner.moved(Location((0, 0, -2))), amount=C.core_t + 4)
     y0, y1 = C.solid_to - 2, sp.length + 2
-    voids = []
+    voids = {}
     for s in (+1, -1):
         chans = [extrude(fc, amount=y1 - y0, dir=(0, 1, 0))
                  for side, fc in flute_channel_faces(sp.width / 2 + C.rib_pitch, y0) if side == s]
         region = prism & (_runout_region(s, C.solid_to, C.runout_len) if C.runout_len > 0 else
                           Pos(0, (C.solid_to + 400) / 2, 0) * Box(400, 400 - C.solid_to, 40))
-        voids.append((Part() + chans) & region)
-    core = slab - voids[0] - voids[1]
+        voids[s] = (Part() + chans) & region
+    return voids
+
+
+def rib_core(o: Outline, with_hole: bool = True):
+    """Closed perimeter frame + solid handle/throat zone + clipped sinusoidal wave rib, one part."""
+    sp = o.spec
+    voids = flute_voids(o)
+    core = extrude(outline_face(o, -C.core_t / 2), amount=C.core_t) - voids[+1] - voids[-1]
     if with_hole:
         core = core - _axial_cylinder(C.insert_d, sp.cap_length, C.insert_depth) \
                     - _axial_cylinder(C.screw_relief_d, sp.cap_length, C.screw_relief_depth)
@@ -122,7 +131,7 @@ def face_sheet(o: Outline, top: bool, edge_r: float = 0.8):
 
 
 def fixing_parts(sp: PaddleSpec) -> list[PartDef]:
-    """DIN 7984 M3 low-head cap screw through the grip base into an M3 heat-set insert in the core."""
+    """DIN 7984 M3 low-head cap screw through the grip base into an M3 brass insert bonded into the core."""
     yb = GRIP.cbore_depth                               # head bears on the floor of the grip's counterbore
     hh = GRIP.screw_head_h
     head = _axial_cylinder(GRIP.screw_head_d, yb - hh, hh)
@@ -135,7 +144,7 @@ def fixing_parts(sp: PaddleSpec) -> list[PartDef]:
     y0 = sp.cap_length
     insert = _axial_cylinder(C.insert_d, y0, C.insert_len) - _axial_cylinder(2.5, y0 - 1, C.insert_len + 2)
     return [PartDef("screw_M3x12_DIN7984", screw, "steel", (0.75, 0.75, 0.78)),
-            PartDef("insert_M3_heatset", insert, "brass", (0.78, 0.6, 0.25))]
+            PartDef("insert_M3", insert, "brass", (0.78, 0.6, 0.25))]
 
 
 def _hexagon(af: float):

@@ -143,9 +143,9 @@ class Construction:
     rib_amp: float = 5.2         # wave centre-line amplitude; crests are cut flat at the faces = bond lands
                                  # (5.2 -> 4.28 mm wide lands in the 10 mm core, as REV C had 4.25 in 8 mm)
     solid_to: float = 150.0      # core is solid from the butt up to this height (handle + throat)
-    runout_len: float = 10.0     # flute run-out: 45 deg taper (printable without support) so the core
-                                 # meets each face sheet in a thin wedge, not a square step; 0 = square
-    insert_d: float = 4.0        # bore for an M3 heat-set insert (M3 x 5.7, knurl about 4.6) in the butt of the core
+    runout_len: float = 10.0     # flute run-out: 45 deg ramp, longest at the flute's open face so the mould
+                                 # tooth pulls straight out (and it prints without support); 0 = square
+    insert_d: float = 4.0        # bore drilled in the moulded core butt for a bonded M3 x 5.7 brass insert
     insert_depth: float = 7.0
     insert_len: float = 5.7
     screw_relief_d: float = 3.2  # clearance beyond the insert, deep enough for an M3 x 16 screw
@@ -164,7 +164,7 @@ class GripInterface:
     """The printed grip family (branch claude/kind-volta-vs8ck6, pickleball_grips revision 8) as the paddle sees it.
 
     Ten surface designs share this interface; the grip slides over the handle and is pinned by one
-    low-head M3 screw through its solid base into an M3 heat-set insert in the core.  The grip's own
+    low-head M3 screw through its solid base into an M3 insert bonded in the core.  The grip's own
     frame (z along its axis, slot wide axis x) maps to the paddle as x -> x, z -> y, y -> -z."""
     length: float = 135.0        # butt face to the top of the grip
     base: float = 5.0            # solid base under the slot (= PaddleSpec.cap_length)

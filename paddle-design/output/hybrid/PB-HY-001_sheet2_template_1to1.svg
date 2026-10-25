@@ -214,7 +214,7 @@
 <text x="200" y="389.62" font-size="3.2" text-anchor="middle" font-weight="bold" fill="#000" >PB-HY-001</text>
 <rect x="222" y="383" width="16" height="9" class="thin" />
 <text x="223.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >REV</text>
-<text x="230" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >D</text>
+<text x="230" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >E</text>
 <rect x="238" y="383" width="20" height="9" class="thin" />
 <text x="239.2" y="385.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SHEET</text>
 <text x="248" y="389.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >2 / 4</text>
@@ -223,7 +223,7 @@
 <text x="272" y="389.62" font-size="3.2" text-anchor="middle" font-weight="bold" fill="#000" >1:1</text>
 <rect x="178" y="392" width="44" height="9" class="thin" />
 <text x="179.2" y="394.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DATE</text>
-<text x="200" y="398.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >2026-10-24</text>
+<text x="200" y="398.55" font-size="3" text-anchor="middle" font-weight="normal" fill="#000" >2026-10-25</text>
 <rect x="222" y="392" width="36" height="9" class="thin" />
 <text x="223.2" y="394.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DRAWN</text>
 <text x="240" y="398.48" font-size="2.8" text-anchor="middle" font-weight="normal" fill="#000" >Claude Code</text>

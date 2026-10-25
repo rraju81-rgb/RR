@@ -359,11 +359,11 @@ def write_report(ctx: dict, out_html: Path) -> None:
         ("Tip deflection", f'{_f(b2["max_deflection"]["value"], 2)} mm', f'{_f(e2["max_deflection"]["value"], 2)} mm'),
     ])
 
-    parts = ("face_sheet_top", "rib_core", "face_sheet_bottom", "grip", "screw_M3x12_DIN7984", "insert_M3_heatset")
+    parts = ("face_sheet_top", "rib_core", "face_sheet_bottom", "grip", "screw_M3x12_DIN7984", "insert_M3")
     grip = M.get("grip", {}).get("name", "rev 8").title()
     labels = {"face_sheet_top": "Carbon face sheet, top (4 mm)", "rib_core": "Wave-rib core with frame (PA-CF)",
               "face_sheet_bottom": "Carbon face sheet, bottom (4 mm)", "grip": f"Printed grip, PLA ({grip})",
-              "screw_M3x12_DIN7984": "Screw DIN 7984 M3 × 12", "insert_M3_heatset": "Heat-set insert M3 (brass)"}
+              "screw_M3x12_DIN7984": "Screw DIN 7984 M3 × 12", "insert_M3": "Insert M3 (brass)"}
     mass_rows = _rows([(labels[p], *(f'{M[k]["parts"][p]["mass_g"]:.1f} g' for k in keys)) for p in parts] + [
         ("<b>Total</b>", *(f'<b>{M[k]["mass_g"]:.0f} g</b>' for k in keys)),
         ("Balance point from the butt", *(f'{M[k]["balance_mm"]:.0f} mm' for k in keys)),
