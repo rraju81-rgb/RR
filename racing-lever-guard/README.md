@@ -15,6 +15,17 @@ blade and slides along it.
 
 ![Anodise colours: red, blue, gold, black, silver](docs/renders/colours.png)
 
+### On a bike
+
+| ![Guards on a naked bike, front three-quarter view](docs/renders/bike/bike_front_three_quarter.png) | ![Right guard close up](docs/renders/bike/bike_handlebar_closeup.png) |
+|---|---|
+| ![Rider's view of both guards](docs/renders/bike/bike_cockpit.png) | ![Side view](docs/renders/bike/bike_side.png) |
+
+The bike is a stylised stand-in built in code, not a real model. The guards on it are the CAD
+meshes, fitted to both bar ends at the 30° lever angle; the left one is the mirror image, with the
+left-hand shell. More views are in [`docs/renders/bike/`](docs/renders/bike/), and
+[`docs/bike.html`](docs/bike.html) shows the bike in 3D.
+
 ## About the reference product
 
 The store page could not be opened from the build environment (its network policy blocks the
@@ -37,9 +48,12 @@ real part once it is in hand: measure it or send close-up photos, change the num
 |---|---|
 | `exports/step/` | STEP for every part, plus the assembled guard with and without a reference handlebar (CNC, CAD) |
 | `exports/stl/` | STL for every part, already turned to its 3D-print orientation |
+| `exports/stl/assembly_*.stl` | The whole guard as one mesh each: right side, left side (mirror image, with the left-hand shell) and right side without the wind guard. See [Assembly STLs](#assembly-stls) |
 | `docs/drawings/lever_guard_drawings.pdf` | 6 dimensioned A3 sheets: general arrangement, adapter, arm, blade with gusset, expander set, wind guard and clamp |
 | `docs/renders/` | Rendered views, including all five anodise colours |
+| `docs/renders/bike/` | The guards fitted to a motorcycle, in red, blue and gold |
 | `docs/viewer.html` | Interactive 3D viewer: turn the arm in its 10° steps, slide the blade and the wind guard, change colour, explode |
+| `docs/bike.html` | The guards on the bike in 3D: drag to orbit; add `?scheme=blue` or `?scheme=gold` to the address for the other colours |
 | `exports/summary.json` | Key numbers, masses and fit-check results written by the build |
 | `cad/lever_guard.py` | The parametric model (all parts, hardware and reference bike parts) |
 | `cad/build.py` | Fit checks and STEP/STL export |
@@ -214,6 +228,21 @@ single part used twice.
 
 The STLs are already turned to these orientations.
 
+### Assembly STLs
+
+For mock-ups, renders and checking the look on a bike model (not for printing), `exports/stl/`
+also holds the assembled guard as one mesh:
+
+| File | Contents |
+|---|---|
+| `assembly_right_guard.stl` | right (brake side) guard with the wind guard, its clamp and screws |
+| `assembly_left_guard.stl` | left (clutch side) guard: the mirror image, so it carries the left-hand shell |
+| `assembly_right_guard_without_wind_guard.stl` | right guard with the blade only |
+
+They are in bike axes, in mm: X to the rider's right, Y forward, Z up, with the origin at the
+centre of that side's bar-end face and the lever plane 30° below horizontal (`lever_deg`). Put
+each origin on its bar end and the guard sits as fitted. They show the M expander (bar ID 15–17 mm).
+
 ## Changing the design
 
 ```bash
@@ -243,7 +272,14 @@ The parameters most likely to change when matching the real part, all in `Params
 | `adjust` | 5 | slot travel each way |
 
 The viewer and renders are rebuilt with `tools/scene.py`, `tools/make_viewer.py` and
-`tools/render.mjs` (Node + Playwright).
+`tools/render.mjs` (Node + Playwright). The bike page uses the same scene file with the other
+template, and its shot list is in `tools/bike_shots.json`:
+
+```bash
+python tools/scene.py scene.json
+python tools/make_viewer.py scene.json docs/bike.html --template bike_template.html
+SHOTS_FILE=tools/bike_shots.json node tools/render.mjs docs/bike.html docs/renders/bike
+```
 
 ## CAD checks (`cad/build.py`)
 

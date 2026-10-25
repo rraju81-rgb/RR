@@ -291,6 +291,22 @@ def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]
     return parts
 
 
+def export_assembly_stl(p: lg.Params, stl_dir: Path) -> None:
+    """The assembled guard as one STL each, in bike axes (X to the rider's right, Y forward, Z up;
+    origin at the centre of the bar-end face, lever plane lever_deg below horizontal): right side
+    with and without the wind guard, and the left side (mirror image, so it carries the left-hand
+    shell)."""
+    for label, wind in (("assembly_right_guard", True), ("assembly_right_guard_without_wind_guard", False)):
+        shapes = [wp.val() for _, wp, _ in lg.guard_parts(p, size="M", diffuser=wind)]
+        comp = cq.Compound.makeCompound(shapes).rotate(cq.Vector(0, 0, 0), cq.Vector(1, 0, 0), -p.lever_deg)
+        cq.exporters.export(cq.Workplane(obj=comp), str(stl_dir / f"{label}.stl"), tolerance=0.03, angularTolerance=0.15)
+        print(f"  exported {label}.stl")
+        if wind:
+            cq.exporters.export(cq.Workplane(obj=comp.mirror("YZ")), str(stl_dir / "assembly_left_guard.stl"),
+                                tolerance=0.03, angularTolerance=0.15)
+            print("  exported assembly_left_guard.stl")
+
+
 def export_all(p: lg.Params, parts) -> None:
     step_dir, stl_dir = EXPORTS / "step", EXPORTS / "stl"
     step_dir.mkdir(parents=True, exist_ok=True)
@@ -301,6 +317,8 @@ def export_all(p: lg.Params, parts) -> None:
             to_print_pose(name, wp), str(stl_dir / f"{name}.stl"), tolerance=0.02, angularTolerance=0.1
         )
         print(f"  exported {name}")
+
+    export_assembly_stl(p, stl_dir)
 
     for label, with_ref in (("assembly_right_guard", False), ("assembly_right_guard_on_reference_bar", True)):
         assy = lg.assembly(p, with_reference=with_ref, size="M")

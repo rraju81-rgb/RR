@@ -1,6 +1,6 @@
 """Inline scene.json into the viewer template.
 
-    python make_viewer.py scene.json ../docs/viewer.html [--fragment out.html]
+    python make_viewer.py scene.json ../docs/viewer.html [--fragment out.html] [--template bike_template.html]
 
 The docs copy gets a full HTML skeleton; --fragment also writes the bare page body that
 the claude.ai artifact publisher wraps itself.
@@ -17,7 +17,8 @@ HERE = Path(__file__).resolve().parent
 def main() -> None:
     scene_path, out_path = Path(sys.argv[1]), Path(sys.argv[2])
     fragment_path = Path(sys.argv[sys.argv.index("--fragment") + 1]) if "--fragment" in sys.argv else None
-    page = (HERE / "viewer_template.html").read_text()
+    template = sys.argv[sys.argv.index("--template") + 1] if "--template" in sys.argv else "viewer_template.html"
+    page = (HERE / template).read_text()
     page = page.replace("__SCENE_JSON__", scene_path.read_text().replace("</", "<\\/"))
     if fragment_path:
         fragment_path.write_text(page)

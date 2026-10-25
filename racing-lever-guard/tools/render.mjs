@@ -2,6 +2,9 @@
 //
 //   node render.mjs <viewer.html> <out_dir> [three_dir]
 //
+// SHOTS_FILE=shots.json replaces the built-in shot list (e.g. tools/bike_shots.json for the bike
+// page); SHOTS=a.png,b.png renders only those files.
+//
 // three_dir: a local copy of the three@0.160.0 npm package; when given, CDN requests for three
 // are served from it (for machines without internet access).
 import fs from "node:fs";
@@ -14,7 +17,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
 const [viewer, outDir, threeDir] = process.argv.slice(2);
 fs.mkdirSync(outDir, { recursive: true });
 
-const SHOTS = [
+const DEFAULT_SHOTS = [
   {
     file: "hero.png", colour: "red", size: [1600, 1100], fov: 26,
     camera: { pos: [215, 285, 185], target: [-58, 34, -10] },
@@ -46,6 +49,8 @@ const SHOTS = [
     camera: { pos: [210, 250, 170], target: [-62, 42, -2] },
   })),
 ];
+
+const SHOTS = process.env.SHOTS_FILE ? JSON.parse(fs.readFileSync(process.env.SHOTS_FILE, "utf8")) : DEFAULT_SHOTS;
 
 const browser = await chromium.launch({
   executablePath: process.env.CHROME || undefined,

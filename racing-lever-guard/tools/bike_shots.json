@@ -1,0 +1,16 @@
+[
+  {"file": "bike_front_three_quarter.png", "scheme": "red", "size": [1600, 1000], "fov": 30,
+   "camera": {"pos": [1750, 1300, 1150], "target": [0, -580, 680]}},
+  {"file": "bike_handlebar_closeup.png", "scheme": "red", "size": [1600, 1000], "fov": 23,
+   "camera": {"pos": [520, 900, 1180], "target": [250, -420, 1080]}},
+  {"file": "bike_cockpit.png", "scheme": "red", "size": [1600, 1000], "fov": 52,
+   "camera": {"pos": [0, -1180, 1480], "target": [0, -330, 1000]}},
+  {"file": "bike_side.png", "scheme": "red", "size": [1600, 1000], "fov": 30,
+   "camera": {"pos": [3300, -650, 760], "target": [0, -650, 560]}},
+  {"file": "bike_front.png", "scheme": "red", "size": [1600, 1000], "fov": 26,
+   "camera": {"pos": [350, 2600, 1150], "target": [0, -380, 800]}},
+  {"file": "bike_blue.png", "scheme": "blue", "size": [1600, 1000], "fov": 33,
+   "camera": {"pos": [-1750, 1300, 1150], "target": [0, -600, 640]}},
+  {"file": "bike_gold.png", "scheme": "gold", "size": [1600, 1000], "fov": 34,
+   "camera": {"pos": [2000, 500, 1050], "target": [0, -650, 720]}}
+]
