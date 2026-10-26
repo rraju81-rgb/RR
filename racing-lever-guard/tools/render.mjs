@@ -19,34 +19,34 @@ fs.mkdirSync(outDir, { recursive: true });
 
 const DEFAULT_SHOTS = [
   {
-    file: "hero.png", colour: "red", size: [1600, 1100], fov: 26,
-    camera: { pos: [215, 285, 185], target: [-58, 34, -10] },
+    file: "hero.png", colour: "red", size: [1600, 1100], fov: 30,
+    camera: { pos: [300, 420, 270], target: [-70, 95, 0] },
   },
   { file: "plan_view.png", view: "plan", colour: "red", size: [1600, 1000] },
   { file: "front_view.png", view: "front", colour: "red", size: [1600, 900] },
   {
-    file: "bar_end_view.png", colour: "red", size: [1400, 1000], fov: 24,
-    camera: { pos: [330, 60, 70], target: [0, 28, -14] },
+    file: "bar_end_view.png", colour: "red", size: [1400, 1000], fov: 28,
+    camera: { pos: [460, 100, 60], target: [0, 75, -15] },
   },
   {
-    file: "exploded.png", colour: "red", reference: false, explode: 1, size: [1800, 1000], fov: 31,
-    camera: { pos: [250, 250, 200], target: [-34, 38, -4] },
+    file: "exploded.png", colour: "red", reference: false, explode: 1, size: [1800, 1000], fov: 34,
+    camera: { pos: [380, 400, 320], target: [-40, 100, 10] },
   },
   {
     file: "bend_gusset_detail.png", colour: "red", diffuser: false, size: [1400, 1000], fov: 34,
-    camera: { pos: [-10, 95, 84], target: [10, 43, -25] },
+    camera: { pos: [-40, 30, 70], target: [10, 95, -55] },
   },
   {
     file: "wind_guard_front.png", colour: "red", size: [1600, 1000], fov: 28,
-    camera: { pos: [60, 420, 120], target: [-80, 40, 0] },
+    camera: { pos: [-60, 700, 160], target: [-90, 110, 20] },
   },
   {
     file: "wind_guard_mount_detail.png", colour: "red", reference: false, size: [1400, 1000], fov: 30,
-    camera: { pos: [95, 70, -205], target: [-25, 58, -34] },
+    camera: { pos: [180, 280, -230], target: [-20, 120, -25] },
   },
   ...["red", "blue", "gold", "black", "silver"].map((c) => ({
-    file: `colour_${c}.png`, colour: c, reference: false, size: [800, 640], fov: 34,
-    camera: { pos: [210, 250, 170], target: [-62, 42, -2] },
+    file: `colour_${c}.png`, colour: c, reference: false, size: [800, 640], fov: 36,
+    camera: { pos: [300, 380, 240], target: [-70, 95, 0] },
   })),
 ];
 

@@ -336,7 +336,7 @@ def quadrant_cut(wp: cq.Workplane) -> cq.Shape:
 
 
 def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
-    s = Sheet("GENERAL ARRANGEMENT", "LG-00", "see part sheets", "see part sheets", "1 : 1", "1 set",
+    s = Sheet("GENERAL ARRANGEMENT", "LG-00", "see part sheets", "see part sheets", "1 : 2", "1 set",
               1, n_sheets)
     outside = cq.Solid.makeBox(300, 300, 300, cq.Vector(0, -150, -150))
     parts = {n: wp.val() for n, wp, _ in lg.guard_parts(p)}
@@ -351,7 +351,7 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
                                     lg.ref_handlebar(p).val().intersect(cq.Solid.makeBox(110, 60, 60, cq.Vector(-235, -30, -30)))])
 
     # plan view: drawing plane = lever plane
-    v = View(s, (0, 0, 1), (1, 0, 0), (270, 125), 1.0)
+    v = View(s, (0, 0, 1), (1, 0, 0), (300, 112), 0.5)
     v.draw(ref, color=REF, lw=0.45, hidden=False, smooth=False)
     v.draw(guard, lw=0.7, hidden=False)
     v.draw(shell, color=SHELL, lw=0.4, hidden=False)
@@ -388,7 +388,7 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
     v.leader((-112, -15.6), (-135, -25), "reference grip, bar and lever (phantom)", ha="right")
 
     # bar-end view (from outboard), aligned with the plan
-    e = View(s, (1, 0, 0), (0, 0, -1), (390, 125), 1.0)
+    e = View(s, (1, 0, 0), (0, 0, -1), (395, 112), 0.5)
     e.draw(guard, lw=0.7, hidden=False)
     e.centerline((-22, 0), (22, 0))
     e.centerline((0, -22), (0, 60))
@@ -397,7 +397,7 @@ def sheet_ga(p: lg.Params, n_sheets: int) -> Sheet:
     e.diameter((0, 0), p.body_d / 2, -135, f"Ø{fmt(p.body_d)}", outside=8)
 
     # front view (looking back at the lever), aligned with the plan
-    f = View(s, (0, 1, 0), (1, 0, 0), (270, 72), 1.0)
+    f = View(s, (0, 1, 0), (1, 0, 0), (300, 64), 0.5)
     f.draw(guard, lw=0.7, hidden=False)
     f.centerline((-240, 0), (60, 0))
     f.caption((-90, -16), "FRONT VIEW (wind guard shell not shown)")
@@ -506,12 +506,12 @@ def sheet_arm(p: lg.Params, n_sheets: int) -> Sheet:
 
 
 def sheet_blade(p: lg.Params, pp: lg.Params, n_sheets: int) -> Sheet:
-    s = Sheet("GUARD BLADE WITH BEND GUSSET", "LG-03", "3K 2x2 twill carbon / epoxy, forged-carbon gusset",
-              "Gloss clear coat, edges R0.6", "3 : 2", "1", 4, n_sheets)
-    k = 1.5
+    s = Sheet("GUARD BAR (L) WITH BEND GUSSET", "LG-03", "PA6-GF30 / PP-GF moulded; PA12-CF / PETG-CF printed",
+              "Black, edges R0.6", "1 : 1", "1", 4, n_sheets)
+    k = 1.0
     part = lg.blade(p).val()
     t, h = p.blade_t, p.blade_h
-    v = View(s, (0, 0, 1), (1, 0, 0), (232, 120), k)
+    v = View(s, (0, 0, 1), (1, 0, 0), (300, 95), k)
     v.draw(part, lw=0.7, hidden=True)
     v.caption((-30, -2), "PLAN (lever plane)")
     v.vdim((p.blade_seat_x + t, p.blade_rear), (p.blade_seat_x + t, p.bend_start), p.blade_seat_x + t + 9,
@@ -534,10 +534,10 @@ def sheet_blade(p: lg.Params, pp: lg.Params, n_sheets: int) -> Sheet:
     b = p.run_point(p.front_len, -t / 2)
     v.adim(b, a, 10.0, f"{fmt(p.front_len)} straight run (toe-out {fmt(p.front_toe_deg)}°)")
 
-    o = View(s, (1, 0, 0), (0, 0, -1), (352, 120), k)
+    o = View(s, (1, 0, 0), (0, 0, -1), (382, 95), k)
     o.draw(part, lw=0.7, hidden=False)
     o.centerline((0, p.blade_rear - 4), (0, p.bend_start + 4))
-    o.caption((0, 2), "REAR PLATE (outboard)")
+    o.caption((0, -10), "REAR PLATE (outboard)")
     o.hdim((-h / 2, p.blade_rear + 8), (h / 2, p.blade_rear + 8), p.blade_rear - 5)
     s0 = p.slot_center - p.slot_len / 2
     o.vdim((p.slot_w / 2, s0), (p.slot_w / 2, s0 + p.slot_len), h / 2 + 5, f"slot {fmt(p.slot_len)}")
@@ -545,25 +545,24 @@ def sheet_blade(p: lg.Params, pp: lg.Params, n_sheets: int) -> Sheet:
     o.leader((p.slot_w / 2, p.slot_center), (h / 2 + 2, p.bend_start + 12), f"{fmt(p.slot_w)} wide")
     o.leader((-h / 2 + 1.8, p.blade_rear + 1.8), (-h / 2 - 3, p.blade_rear - 9), f"2x R{fmt(p.blade_rear_r)}")
 
-    f = View(s, (0, 1, 0), (1, 0, 0), (232, 74), k)
+    f = View(s, (0, 1, 0), (1, 0, 0), (300, 72), k)
     f.draw(part, lw=0.7, hidden=False)
     f.caption((-30, -14), "FRONT VIEW (outer face)")
     tip_x = p.tip_x
     f.vdim((tip_x + 20, h / 2), (tip_x + 20, -h / 2), tip_x - 6)
     f.leader((tip_x + 2.4, h / 2 - 2.4), (tip_x - 8, h / 2 + 8), f"2x R{fmt(p.tip_r)}")
 
-    s.notes(18, 270, [
+    s.notes(18, 160, [
         f"1. Centre-line length {fmt(round(p.blade_path_len, 1))} mm: {fmt(p.bend_start - p.blade_rear)} straight + "
         f"{fmt(p.bend_angle_deg)}° bend on R{fmt(p.bend_r)} + {fmt(p.front_len)} straight.",
         f"2. Gusset inside the bend: section {fmt(round(lg.bend_section(p, False), 1))} -> {fmt(round(lg.bend_section(p), 1))} mm across the bend, "
         f"about {fmt(round((lg.bend_section(p) / lg.bend_section(p, False)) ** 2, 1))}x the bending strength where a fall loads the blade.",
         "    Its edge is tangent all along (blend into the seat face, arc, run-out on the run): no corner to start a crack.",
-        f"3. LG-03 carbon: skin {fmt(t)} ± 0.2 moulded over a male tool, gusset filled with forged (chopped) carbon in the same cure;",
-        "    CNC-trim the outline and slot. Lay plies continuous round the bend; no cut fibres at the gusset edge.",
-        "4. LG-03 aluminium option: machine from 6061-T6 25 mm plate (the gusset rules out bending strip), carbon hydro-dip.",
-        f"5. LG-03b 3D print: same outline, {fmt(pp.blade_t)} thick,",
-        "    PA12-CF / PETG-CF, lying flat (lever plane on the bed),",
-        "    6 walls, 50 % gyroid; hydro-dip or wrap for the carbon finish.",
+        "3. Shape after the reference bar (photos): long leg ~150 mm, short leg ~120 mm to the outer corner,",
+        f"    faceted outer corner, channel {fmt(p.pocket_depth)} deep in the run's lever side ({fmt(p.pocket_wall)} mm flanges).",
+        f"4. LG-03 {fmt(t)} thick: injection-moulded PA6-GF30 or PP-GF, or printed PA12-CF / PETG-CF lying flat",
+        "    (lever plane on the bed, channel up), 6 walls, 50 % gyroid.",
+        f"5. LG-03b heavy duty: same outline, {fmt(pp.blade_t)} thick, gusset run-out {fmt(pp.haunch_len)} mm, printed as LG-03.",
         f"6. Slot lets the blade slide ±{fmt(p.adjust)} mm toward / away from the lever.",
     ], size=6.6)
     return s
@@ -632,11 +631,12 @@ def sheet_expander(p: lg.Params, n_sheets: int) -> Sheet:
 
 
 def sheet_wind_guard(p: lg.Params, n_sheets: int) -> Sheet:
-    s = Sheet("WIND GUARD SHELL WITH SLOTTED MOUNT", "LG-06",
-              "HDPE or PP, moulded; ASA / PA12 printed", "colour to order, edges R1", "1:1 / 2:1",
-              "1 pair (RH + LH)", 6, n_sheets)
+    s = Sheet("WIND GUARD SHIELD + BRACKET", "LG-06 / LG-07",
+              "HDPE or PP, moulded; ASA / PA12 printed", "colour to order, edges R1", "see views",
+              "1 pair each (RH + LH)", 6, n_sheets)
     c, L, t, w = p.clamp_clear, p.clamp_len, p.shell_t, p.clamp_wall
     shell = lg.wind_guard_local(p).val()
+    bracket = lg.wind_guard_bracket_local(p).val()
     blade_bar = cq.Workplane("XY").box(L + 30, p.blade_t, p.blade_h).translate((L / 2, p.blade_t / 2, 0)).val()
     holes = lg._clamp_screw_xy(p)
     h, sy0, sy1 = lg._slot(p)
@@ -644,33 +644,31 @@ def sheet_wind_guard(p: lg.Params, n_sheets: int) -> Sheet:
     a = math.radians(p.lever_deg)
 
     # LG-06 seen from the front of the bike, 1:1
-    v = View(s, (0, -math.cos(a), math.sin(a)), (1, 0, 0), (44, 172), 1.0)
-    v.draw(shell, lw=0.7, hidden=False)
+    v = View(s, (0, -math.cos(a), math.sin(a)), (1, 0, 0), (44, 150), 0.6)
+    v.draw(cq.Compound.makeCompound([shell, bracket]), lw=0.7, hidden=False)
     v.draw(blade_bar, color=REF, lw=0.4, hidden=False, smooth=False)
     uv = np.array([v.uv((q.x, q.y, q.z)) for q in shell.tessellate(0.05, 0.1)[0]])
     lo, hi = uv.min(axis=0), uv.max(axis=0)
     crest = uv[np.argmax(uv[:, 1])]
-    v.caption((lo[0] + (hi[0] - lo[0]) / 2, lo[1] - 16), "LG-06 SHELL (RH), SEEN FROM THE FRONT OF THE BIKE  -  blade phantom")
+    v.caption((lo[0] + (hi[0] - lo[0]) / 2, lo[1] - 16), "LG-06 SHIELD ON LG-07 BRACKET (RH), FROM THE FRONT OF THE BIKE (1:1.67)  -  bar phantom")
     v.hdim((lo[0], lo[1]), (hi[0], lo[1]), lo[1] - 7)
     v.vdim((lo[0], lo[1]), (lo[0], hi[1]), lo[0] - 8)
     v.hdim((lo[0], hi[1]), tuple(crest), hi[1] + 6)
     xc = 100.0  # crease height there, as in lg.wind_guard_local
     uc = p.shell_crease[0] + (p.shell_crease[1] - p.shell_crease[0]) * (xc + p.shell_out) / (226.0 * p.shell_len / 230.0)
+    uc += p.shell_lift * math.cos(a)
     v.leader((xc, uc), (xc + 40, uc + 34), "crease R4, outboard top to tip")
     v.leader((hi[0] - 2, lo[1] + 3), (hi[0] + 6, lo[1] + 16), "tip ≈ R5")
 
-    # flange and mount seen from below, 1:1 (view up = forward, away from the blade)
-    x0, y0, yf = -p.shell_out, -p.shell_gap, -p.shell_flange
-    base = shell.intersect(cq.Solid.makeBox(L + 20 - x0, yb - yf + 2, t / 2 - zb + 1, cq.Vector(x0, yf - 1, zb - 1)))
-    b = View(s, (0, 0, -1), (1, 0, 0), (44, 106), 1.0)
-    b.draw(base, lw=0.7, hidden=False)
-    b.caption((25, -yb - 30), "FLANGE AND SLOTTED MOUNT FROM BELOW")
+    # slotted mount seen from below, 1:1 (view up = forward, away from the blade)
+    b = View(s, (0, 0, -1), (1, 0, 0), (44, 96), 1.0)
+    b.draw(lg.mount_local(p).val(), lw=0.7, hidden=False)
+    b.caption((L / 2, -yb - 30), "LG-07 SLOTTED MOUNT FROM BELOW")
     (hx0, hy), (hx1, _) = holes
-    b.hdim((x0, -y0), (0, -sy0 + w), -yf + 5)
     b.hdim((0, -yb), (L, -yb), -yb - 6)
     b.hdim((0, -hy), (hx0, -hy), -yb - 13)
     b.hdim((hx0, -hy), (hx1, -hy), -yb - 13)
-    b.vdim((L + 20, -y0), (L + 20, -yf), L + 26, f"flange {fmt(y0 - yf)}")
+    b.vdim((L, -yb), (L, -(sy0 - w)), L + 6)
     b.leader((hx1 + p.clamp_boss_d / 2 * 0.7, -hy + p.clamp_boss_d / 2 * 0.7), (hx1 + 6, -yb - 40),
              f"2x boss Ø{fmt(p.clamp_boss_d)}, Ø{fmt(p.insert_d)} x {fmt(p.insert_len)} for M4 heat-set insert, Ø4.2 thru")
 
@@ -685,37 +683,44 @@ def sheet_wind_guard(p: lg.Params, n_sheets: int) -> Sheet:
     m.vdim((sy0 - w, zb), (sy0 - w, h + w), sy0 - w - 6)
     m.tag((p.blade_t / 2, 0), "blade", size=6.0, color=CL)
 
-    # section through a grub screw, looking along the run, 1:1
-    xs = holes[0][0]
+    # section through the web, looking along the run, 1:2
+    xs = L / 2
     keep = cq.Solid.makeBox(200, 200, 200, cq.Vector(xs - 200, -100, -100))
-    x_sec = View(s, (1, 0, 0), (0, 1, 0), (318, 150), 1.0)
+    x_sec = View(s, (1, 0, 0), (0, 1, 0), (330, 150), 0.5)
     cut = shell.intersect(keep)
     x_sec.draw(cut, lw=0.6, hidden=False, smooth=False)
     x_sec.hatch_plane(cut, (xs, 0, 0), (1, 0, 0), "\\\\\\")
+    bcut = bracket.intersect(keep)
+    x_sec.draw(bcut, lw=0.6, hidden=False, smooth=False)
+    x_sec.hatch_plane(bcut, (xs, 0, 0), (1, 0, 0), "////")
+    for x, z, yf, yb in lg._bracket_bolts(p, lg._shield_raw(p)):
+        x_sec.draw(lg.m4_bolt_insert_local(p, x, z, yf, yb).val(), lw=0.4, hidden=False, smooth=False)
     x_sec.draw(blade_bar.intersect(keep), color=REF, lw=0.5, hidden=False, smooth=False)
     x_sec.draw(lg.m4_grub_insert_local(p, *holes[0]).val().intersect(keep), lw=0.4, hidden=False, smooth=False)
-    x_sec.caption((10, -30), "SECTION THROUGH A GRUB SCREW (1:1)")
+    x_sec.caption((10, -50), "SECTION THROUGH THE WEB (1:2)")
     sec = np.array([x_sec.uv((q.x, q.y, q.z)) for q in cut.tessellate(0.05, 0.1)[0]])
     x_sec.vdim((sec[:, 0].min(), -t / 2), (sec[:, 0].min(), sec[:, 1].max()), sec[:, 0].min() - 6)
-    x_sec.leader((-p.shell_flange - 6, 3), (-44, 14), f"bend R{fmt(p.shell_bend_r)}")
-    x_sec.leader((-(p.shell_gap + p.shell_flange) / 2 - 3, -t / 2), (-40, -12), f"flange {fmt(t)}")
-    band = shell.intersect(cq.Solid.makeBox(1, 200, 4, cq.Vector(xs - 1, -100, 38))).BoundingBox()
-    x_sec.leader((band.ymax, 40), (band.ymax + 22, 32), f"wall {fmt(t)}")
-    x_sec.leader((p.blade_t / 2 + 2, zb + 2), (30, zb - 6), "M4 x 8 grub screw, ISO 4029")
+    zl = p.shell_lift
+    x_sec.leader((-p.shell_flange - 6, zl + 3), (-80, zl - 10), f"bend R{fmt(p.shell_bend_r)}")
+    band = shell.intersect(cq.Solid.makeBox(1, 200, 4, cq.Vector(xs - 1, -100, zl + 26))).BoundingBox()
+    x_sec.leader((band.ymax, zl + 28), (band.ymax + 40, zl + 40), f"wall {fmt(t)}")
+    x_sec.leader((p.blade_t / 2 + 4, zl * 0.6), (50, zl * 0.6), f"LG-07 web {fmt(p.web_w)} wide, up to {fmt(p.web_reach)} on the back face")
+    x_sec.leader((-30, zl + p.bolt_z[1]), (-80, zl + p.bolt_z[1] + 14), "2x M4 x 10 ISO 7380 + heat-set inserts")
+    x_sec.leader((p.blade_t / 2 + 2, zb + 2), (50, zb - 10), "M4 x 8 grub screw, ISO 4029")
 
     s.notes(286, 112, [
-        "1. LG-06 surface as the STEP files 06 (RH) / 06b (LH, mirror image).",
-        "    One piece: shell, flange and slotted mount. Injection-moulded HDPE",
-        "    or PP, or printed ASA / PA12 with tree supports. Edges R1.",
-        "2. Press an M4 x 5.7 brass heat-set insert into each boss (soldering",
-        "    iron at about 230 °C), flush with the boss face.",
-        "3. Slide the mount onto the blade run from the blade tip, shell in",
-        "    front of the lever. The slot closes round the blade on all sides.",
-        "4. Lock with 2x M4 x 8 grub screws (ISO 4029, cup point, nylon-tipped",
-        "    if available) from below onto the blade's lower edge, 1 N·m.",
-        f"5. Loosen to slide: {fmt(p.clamp_range[0])}-{fmt(p.clamp_range[1])} mm from the bend. No holes in the blade.",
-        "6. Keep the blade slot at -4 or more with the shell fitted (>= 10 mm",
-        "    to the reference lever). Check steering lock, mirrors, reservoir.",
+        "1. LG-06 shield and LG-07 bracket as the STEP files 06 / 07 (RH) and",
+        "    06b / 07b (LH, mirror images). Moulded HDPE / PP, or printed ASA /",
+        "    PA12: shield flange-down, bracket on its flat lever-side face. R1 edges.",
+        "2. Press M4 x 5.7 brass heat-set inserts into the bracket: 2 in the",
+        "    bosses under the sleeve, 2 in the web (iron ~230 °C), flush.",
+        "3. Bolt the shield to the web: 2x M4 x 10 ISO 7380 + washers, 1 N·m.",
+        "4. Slide the bracket onto the bar's long leg from its tip, shield in",
+        "    front of the lever; the slot closes round the bar on all sides.",
+        "5. Lock with 2x M4 x 8 grub screws (ISO 4029, cup point) from below",
+        f"    onto the bar's lower edge, 1 N·m. Slides {fmt(p.clamp_range[0])}-{fmt(p.clamp_range[1])} mm from the bend.",
+        f"6. Shield's lower edge {fmt(p.shell_lift)} above the bar (shell_lift). Check steering",
+        "    lock, mirrors and reservoir before riding.",
     ], size=6.4, step=4.0)
     return s
 

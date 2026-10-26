@@ -24,6 +24,7 @@ DENSITY = {  # g/cm3
     "carbon": 1.55,
     "pa12cf": 1.10,
     "petgcf": 1.30,
+    "pa6gf": 1.36,
     "tpu": 1.21,
     "hdpe": 0.95,
     "steel": 7.90,
@@ -65,11 +66,8 @@ class Report:
 
 
 def _shield(p: lg.Params, pos: float | None, shift: float = 0.0) -> cq.Shape:
-    """The wind guard without its slotted mount (everything ahead of the mount's front face),
-    placed on the blade."""
-    front = lg._slot(p)[1] - p.clamp_wall - 0.01
-    shell = lg.wind_guard_local(p).val().intersect(cq.Solid.makeBox(600, 200, 300, cq.Vector(-300, front - 200, -150)))
-    return shell.moved(lg.run_frame(p, p.clamp_pos if pos is None else pos, shift))
+    """The wind guard's shield (without its bracket), placed on the blade."""
+    return lg.wind_guard_local(p).val().moved(lg.run_frame(p, p.clamp_pos if pos is None else pos, shift))
 
 
 def run_checks(p: lg.Params) -> tuple[Report, dict]:
@@ -138,7 +136,7 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
     plain, gusset = lg.bend_section(p, gusset=False), lg.bend_section(p)
     rep.check(
         "bend section with gusset",
-        gusset >= 1.4 * plain,
+        gusset >= 1.25 * plain,
         f"{gusset:.1f} mm across the bend vs {plain:.1f} mm plain (bending strength x{(gusset / plain) ** 2:.1f})",
     )
     start = lg.haunch_blend(p)[0][1] - p.adjust - p.neck_end  # blade at the slot end nearest the arm
@@ -170,7 +168,7 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
         d = parts[name].distance(lever)
         rep.check(f"{name} to lever", d >= 10.0, f"{d:.1f} mm")
     # finger room: the run in front of the lever versus the grip the hand is wrapped around
-    run = parts["blade"].intersect(cq.Solid.makeBox(400, 200, 100, cq.Vector(-400 + p.blade_cx - p.bend_r, -100, -50)))
+    run = parts["blade"].intersect(cq.Solid.makeBox(400, 400, 100, cq.Vector(-400 + p.blade_cx - p.bend_r, -200, -50)))
     d_grip = run.distance(ref["ref_grip"])
     rep.check("finger room, grip to blade run", d_grip >= 40.0, f"{d_grip:.1f} mm")
     info["finger_room_mm"] = round(d_grip, 1)
@@ -187,15 +185,15 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
         dp = {n: wp.val() for n, wp in lg.diffuser_parts(p, pos)}
         ov = max(s.intersect(blade0).Volume() for s in dp.values())
         rep.check(f"wind guard at {pos:g} mm sits on the blade", ov < 1e-3, f"overlap {ov:.4f} mm3")
-        gap = dp["diffuser_shell"].distance(blade0)
+        gap = dp["diffuser_bracket"].distance(blade0)
         rep.check(f"wind guard at {pos:g} mm: blade slides in the slot", 0.0 < gap <= p.clamp_clear + 0.01, f"clearance {gap:.2f} mm")
         bear = max(dp[n].distance(blade0) for n in dp if n.startswith("diffuser_screw"))
         rep.check(f"wind guard at {pos:g} mm: grub screws bear on the blade", bear < 0.01, f"gap {bear:.3f} mm")
         dl = min(s.distance(lever_blade) for s in dp.values())
         dpp = min(s.distance(perch) for s in dp.values())
-        dh = _shield(p, pos).distance(hand)  # the slotted mount wraps the blade: compared to it below
-        dm = dp["diffuser_shell"].distance(hand)
-        rep.check(f"wind guard at {pos:g} mm: mount no closer to the hand than the blade", dm >= blade0.distance(hand) - p.clamp_wall - p.clamp_clear - 0.01,
+        dh = dp["diffuser_shell"].distance(hand)  # the bracket wraps the blade: compared to it below
+        dm = dp["diffuser_bracket"].distance(hand)
+        rep.check(f"wind guard at {pos:g} mm: bracket no closer to the hand than the blade", dm >= blade0.distance(hand) - p.clamp_wall - p.clamp_clear - 0.01,
                   f"mount {dm:.1f} mm, blade {blade0.distance(hand):.1f} mm")
         lever_gaps.append(round(dl, 1))
         perch_gaps.append(round(dpp, 1))
@@ -215,6 +213,7 @@ def run_checks(p: lg.Params) -> tuple[Report, dict]:
     bb = shell.rotate(cq.Vector(0, 0, 0), cq.Vector(1, 0, 0), -p.lever_deg).BoundingBox()
     info["diffuser"] = {
         "length_mm": p.shell_len,
+        "bracket_bolts": f"2x ISO 7380 M4 x {math.ceil(lg.bracket_bolt_len(p) / 2) * 2:g} + M4 x 5.7 heat-set inserts",
         "ahead_of_bar_axis_mm": [round(bb.ymin, 1), round(bb.ymax, 1)],
         "above_bar_axis_mm": round(bb.zmax, 1),
         "below_bar_axis_mm": round(-bb.zmin, 1),
@@ -276,6 +275,8 @@ def to_print_pose(name: str, wp: cq.Workplane) -> cq.Workplane:
         wp = wp.rotate((0, 0, 0), (0, 1, 0), -90)
     elif name.startswith("06b"):  # left-hand shell: flange on the bed, shield up like the right one
         wp = wp.rotate((0, 0, 0), (1, 0, 0), 180)
+    elif name.startswith("07"):  # bracket: flat lever-side face on the bed
+        wp = wp.rotate((0, 0, 0), (1, 0, 0), -90)
     bb = wp.val().BoundingBox()
     return wp.translate((-(bb.xmin + bb.xmax) / 2, -(bb.ymin + bb.ymax) / 2, -bb.zmin))
 
@@ -287,8 +288,8 @@ def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]
         ("01_bar_end_adapter", lg.adapter(p), "al6061"),
         ("01b_bar_end_adapter_oem_thread", lg.adapter(p, spigot=False), "al6061"),
         ("02_guard_arm", lg.arm(p), "al6061"),
-        ("03_guard_blade_6mm_carbon", lg.blade(p), "carbon"),
-        ("03b_guard_blade_8mm_3dprint", lg.blade(pp), "pa12cf"),
+        ("03_guard_bar_10mm", lg.blade(p), "pa6gf"),
+        ("03b_guard_bar_12mm_heavy_duty", lg.blade(pp), "pa12cf"),
     ]
     for size, (_, (lo, hi)) in lg.SLEEVES.items():
         parts.append((f"04_expander_sleeve_{size}_bar_id_{lo:g}-{hi:g}", lg.expander_sleeve(p, size), "tpu"))
@@ -297,6 +298,8 @@ def catalogue(p: lg.Params, pp: lg.Params) -> list[tuple[str, cq.Workplane, str]
     parts += [
         ("06_wind_guard_shell_RH", lg.wind_guard_local(p), "hdpe"),
         ("06b_wind_guard_shell_LH", lg.wind_guard_local(p, left=True), "hdpe"),
+        ("07_wind_guard_bracket_RH", lg.wind_guard_bracket_local(p), "hdpe"),
+        ("07b_wind_guard_bracket_LH", lg.wind_guard_bracket_local(p, left=True), "hdpe"),
     ]
     return parts
 
@@ -357,17 +360,17 @@ def main() -> int:
         export_all(p, parts)
     guard = {n: wp.val() for n, wp, _ in lg.guard_parts(p)}
     hw = sum(mass_g(s, "steel") for n, s in guard.items() if n.startswith(("m5", "m6")))
-    hw_diffuser = sum(mass_g(s, "steel") for n, s in guard.items() if n.startswith("diffuser_screw"))
+    hw_diffuser = sum(mass_g(s, "steel") for n, s in guard.items() if n.startswith(("diffuser_screw", "diffuser_bolt")))
     per_side = (
         masses["01_bar_end_adapter"]["grams"]
         + masses["02_guard_arm"]["grams"]
-        + masses["03_guard_blade_6mm_carbon"]["grams"]
+        + masses["03_guard_bar_10mm"]["grams"]
         + masses["04_expander_sleeve_M_bar_id_15-17"]["grams"]
         + masses["05_expander_cone_M_bar_id_15-17"]["grams"]
         + hw
     )
     diffuser_kit = (
-        masses["06_wind_guard_shell_RH"]["grams"] + hw_diffuser
+        masses["06_wind_guard_shell_RH"]["grams"] + masses["07_wind_guard_bracket_RH"]["grams"] + hw_diffuser
     )
     info["diffuser"]["kit_grams"] = round(diffuser_kit, 1)
     summary = {

@@ -36,6 +36,9 @@ MATERIAL = {
     "diffuser_shell": "shell",
     "diffuser_screw_1": "steel",
     "diffuser_screw_2": "steel",
+    "diffuser_bracket": "shell",
+    "diffuser_bolt_1": "steel",
+    "diffuser_bolt_2": "steel",
 }
 
 # exploded-view offsets in G (mm): guard parts fan out along the bar axis, the wind guard rides
@@ -52,6 +55,9 @@ EXPLODE = {
     "diffuser_shell": (44, 18, 30),
     "diffuser_screw_1": (44, 0, -48),
     "diffuser_screw_2": (44, 0, -48),
+    "diffuser_bracket": (44, 0, 0),
+    "diffuser_bolt_1": (44, 50, 30),
+    "diffuser_bolt_2": (44, 50, 30),
 }
 
 LABEL = {
@@ -59,16 +65,19 @@ LABEL = {
     "arm": "Guard arm",
     "blade": "Carbon blade",
     "m6_bolt": "M6 x 45 cap screw",
-    "m5_screw_1": "M5 x 14 button screw",
-    "m5_screw_2": "M5 x 14 button screw",
+    "m5_screw_1": "M5 x 18 button screw",
+    "m5_screw_2": "M5 x 18 button screw",
     "expander_sleeve": "Expander sleeve (M)",
     "expander_cone": "Expander cone nut",
     "ref_handlebar": "Handlebar (reference)",
     "ref_grip": "Grip (reference)",
     "ref_lever": "Brake lever (reference)",
-    "diffuser_shell": "Wind guard with slotted mount (right)",
+    "diffuser_shell": "Wind guard shield (right)",
     "diffuser_screw_1": "M4 heat-set insert, M4 x 8 grub screw",
     "diffuser_screw_2": "M4 heat-set insert, M4 x 8 grub screw",
+    "diffuser_bracket": "Wind guard bracket: slotted mount and web",
+    "diffuser_bolt_1": "M4 x 10 button screw, heat-set insert",
+    "diffuser_bolt_2": "M4 x 10 button screw, heat-set insert",
 }
 
 

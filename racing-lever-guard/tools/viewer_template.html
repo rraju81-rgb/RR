@@ -157,7 +157,7 @@
     <div class="eyebrow">Universal bar-end fit &middot; 7/8&Prime; (22.2 mm) bars &middot; bar ID 13&ndash;19 mm</div>
     <h1>Racing Lever Guard <span>/</span> Carbon + CNC</h1>
     <p class="lede">Parametric CAD of a bar-end racing lever protector: anodised 6061 adapter and arm,
-      a 6 mm carbon blade with a gusset inside the bend, an expander for hollow bars and a moulded
+      an L-shaped guard bar (150 &times; 120 mm, 10 mm thick) with a gusset inside the bend, an expander for hollow bars and a moulded
       wind guard that slides along the blade. Turn the guard in its 10&deg; serration steps, slide
       the blade and the wind guard, and check the gap to the lever.</p>
   </header>
@@ -190,7 +190,7 @@
         <div class="ctl-head"><label for="dpos">Wind guard position</label><span class="readout" id="dposOut">0 mm</span></div>
         <input type="range" id="dpos" min="0" max="45" step="1" value="0">
         <div class="toggles"><label><input type="checkbox" id="diffuser" checked> Fit wind guard</label></div>
-        <p class="note">The wind guard's slotted mount wraps the blade. Two M4 grub screws lock it from below; loosen them and it slides along the run.</p>
+        <p class="note">The wind guard's bracket wraps the bar in a closed slot and rises behind the shield to hold it by its back face. Two M4 grub screws lock it from below; loosen them and it slides along the run.</p>
       </div>
 
       <div class="ctl">
@@ -310,7 +310,7 @@ fillTable("dims", ["Feature", "Value"], [
   ["Fore-aft adjustment", `±${fmt(P.adjust)} mm slot`],
   ["Wind guard shell", DF.length_mm ? `${fmt(DF.length_mm)} long, ${fmt(DF.above_bar_axis_mm)} above / ${fmt(DF.below_bar_axis_mm)} below the bar axis, ${fmt(P.shell_t)} mm wall` : "–"],
   ["Wind guard travel along the blade", DF.travel_mm ? `${fmt(DF.travel_mm)} mm (2 × M4 grub screw)` : "–"],
-  ["Mass per side (carbon blade, without / with wind guard)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} / ${fmt(S.mass_per_side_grams_with_diffuser, 0)} g` : "–"],
+  ["Mass per side (without / with wind guard)", S.mass_per_side_grams_carbon_blade ? `${fmt(S.mass_per_side_grams_carbon_blade, 0)} / ${fmt(S.mass_per_side_grams_with_diffuser, 0)} g` : "–"],
 ]);
 const lc = C4.lever_clearance_mm || {};
 fillTable("checks", ["Fit check (CAD)", "Result"], [
@@ -337,16 +337,18 @@ fillTable("bom", ["#", "Part", "Material / finish", "Qty per side", "Mass"], [
   ["01", "Bar-end adapter (spigot)", "6061-T6, hard anodised", "1", g("01_bar_end_adapter")],
   ["01b", "Bar-end adapter, flat (OEM thread)", "6061-T6, hard anodised", "alt.", g("01b_bar_end_adapter_oem_thread")],
   ["02", "Guard arm, 36T serration", "6061-T6, hard anodised", "1", g("02_guard_arm")],
-  ["03", "Guard blade 6 mm with bend gusset", "3K twill carbon, gloss clear coat", "1", g("03_guard_blade_6mm_carbon")],
-  ["03b", "Guard blade 8 mm (printable)", "PA12-CF or PETG-CF, carbon hydro-dip", "alt.", g("03b_guard_blade_8mm_3dprint")],
+  ["03", "Guard bar, L-shaped, 10 mm, with bend gusset", "PA6-GF30 moulded, or PA12-CF / PETG-CF printed", "1", g("03_guard_bar_10mm")],
+  ["03b", "Guard bar 12 mm, heavy duty", "PA12-CF or PETG-CF printed", "alt.", g("03b_guard_bar_12mm_heavy_duty")],
   ["04", "Expander sleeve S / M / L", "TPU 95A or NBR 70 Shore A", "1", g("04_expander_sleeve_M_bar_id_15-17")],
   ["05", "Expander cone nut S / M / L, M6", "6061-T6 or zinc-plated steel", "1", g("05_expander_cone_M_bar_id_15-17")],
-  ["06 / 06b", "Wind guard shell with slotted mount, right / left (one piece each)", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("06_wind_guard_shell_RH")],
+  ["06 / 06b", "Wind guard shield, right / left", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("06_wind_guard_shell_RH")],
+  ["07 / 07b", "Wind guard bracket (slotted mount + web), right / left", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("07_wind_guard_bracket_RH")],
   ["H1", "Socket cap screw M6 × 45, ISO 4762", "A2-70 stainless or 10.9 black", "1", ""],
-  ["H2", "Button head screw M5 × 14, ISO 7380", "A2-70 stainless", "2", ""],
+  ["H2", "Button head screw M5 × 18, ISO 7380", "A2-70 stainless", "2", ""],
   ["H3", "Washer M5, ISO 7089", "A2 stainless", "2", ""],
-  ["H4", "Heat-set insert M4 × 5.7, pressed into the mount's bosses", "Brass", "2", ""],
-  ["H5", "Grub screw M4 × 8, ISO 4029 cup point, from below onto the blade", "A2 stainless", "2", ""],
+  ["H4", "Heat-set insert M4 × 5.7: 2 in the mount's bosses, 2 in the web", "Brass", "4", ""],
+  ["H5", "Grub screw M4 × 8, ISO 4029 cup point, from below onto the bar", "A2 stainless", "2", ""],
+  ["H6", "Button head screw M4 × 10, ISO 7380, with washer: shield to bracket", "A2 stainless", "2", ""],
 ]);
 
 // ---------------------------------------------------------------- three.js scene
@@ -479,14 +481,14 @@ document.getElementById("dpos").max = String(DRANGE[1] - DRANGE[0]);
 const state = { angle: LEVER_DEG, shift: 0, explode: 0, colour: "red", reference: true, diffuser: true, dpos: 0 };
 const live = { angle: LEVER_DEG, shift: 0, explode: 0, dpos: 0 };
 const VIEWS = {
-  "three-quarter": { pos: B(250, 330, 210), target: B(-45, 32, -6), up: B(0, 0, 1) },
+  "three-quarter": { pos: B(330, 470, 260), target: B(-60, 95, 0), up: B(0, 0, 1) },
   plan: (() => {
     const t = THREE.MathUtils.degToRad(LEVER_DEG);
-    const tgt = B(-40, 34 * Math.cos(t), -34 * Math.sin(t));
-    return { pos: tgt.clone().add(B(0, Math.sin(t), Math.cos(t)).multiplyScalar(520)), target: tgt, up: B(0, Math.cos(t), -Math.sin(t)) };
+    const tgt = B(-70, 95 * Math.cos(t), -95 * Math.sin(t));
+    return { pos: tgt.clone().add(B(0, Math.sin(t), Math.cos(t)).multiplyScalar(700)), target: tgt, up: B(0, Math.cos(t), -Math.sin(t)) };
   })(),
-  front: { pos: B(-80, 470, 30), target: B(-80, 30, -14), up: B(0, 0, 1) },
-  outboard: { pos: B(460, 70, 80), target: B(0, 30, -10), up: B(0, 0, 1) },
+  front: { pos: B(-90, 680, 40), target: B(-90, 90, 0), up: B(0, 0, 1) },
+  outboard: { pos: B(600, 110, 60), target: B(0, 80, -10), up: B(0, 0, 1) },
 };
 function setView(name) {
   const v = VIEWS[name];
