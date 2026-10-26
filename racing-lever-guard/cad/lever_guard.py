@@ -28,7 +28,6 @@ exception: it rises toward the rider's knuckles, so it comes as a mirror-image p
 from __future__ import annotations
 
 import math
-from functools import lru_cache
 from dataclasses import dataclass, replace
 
 import cadquery as cq
@@ -106,23 +105,23 @@ class Params:
     shell_bend_r: float = 12.0  # flange-to-shield bend (centre line)
     shell_out: float = 14.0  # shell starts this far outboard of the mount's outboard end
     shell_len: float = 230.0  # outboard end to tip, along the run
-    shell_crest: float = 84.0  # highest point above the blade's outer face, measured up on the bike
+    shell_crest: float = 150.0  # highest point above the blade's outer face, measured up on the bike
     shell_crease: tuple[float, float] = (60.0, -4.0)  # crease height at the outboard end / at the tip
     lever_deg: float = 30.0  # lever plane below horizontal: sets "up" and "forward" for the shell
-    clamp_len: float = 40.0  # slotted mount length along the run
+    clamp_len: float = 64.0  # slotted mount length along the run: long, so the shield cannot rock
     clamp_wall: float = 3.0  # mount wall ahead of, over and under the blade
     clamp_back: float = 2.0  # mount wall on the blade's lever-side face (keeps >= 10 mm to the lever at slot -4)
     clamp_clear: float = 0.3  # slot clearance all round the blade
-    clamp_screw_inset: float = 9.0  # grub screws from the mount ends
-    clamp_boss_d: float = 11.0  # bosses under the mount for the M4 heat-set inserts
-    clamp_boss_h: float = 6.0
+    clamp_screw_inset: float = 12.0  # grub screws from the mount ends
+    clamp_boss_h: float = 6.0  # flat pad under the whole mount, for the M4 heat-set inserts
     insert_d: float = 5.6  # hole for an M4 x 5.7 heat-set insert
     insert_len: float = 6.2
     clamp_pos: float = 20.0  # mount outboard end along the run, from the bend (see clamp_range)
-    shell_lift: float = 65.0  # shield's lower edge this far above the blade (normal to the lever plane)
-    web_w: float = 16.0  # web that rises from the mount, behind the shield, to its back face
-    web_reach: float = 50.0  # how far up the shield's back face the web holds it
-    bolt_z: tuple[float, float] = (12.0, 38.0)  # M4 bolts, shield to bracket: heights above the shield's lower edge
+    tip_len: float = 36.0  # faceted end guard over the free tip of the long leg
+    tip_h: float = 40.0  # its height (bar 22)
+    tip_front: float = 10.0  # how far it stands ahead of the bar's outer face
+    tip_back: float = 3.0  # wall on the lever side
+    tip_facet: float = 12.0  # big facet on its inboard lower corner (as on the reference mock-up)
 
     # ---- hardware -----------------------------------------------------------------------------
     m6_len: float = 45.0  # ISO 4762 M6 x 45 in expander mode
@@ -196,7 +195,8 @@ class Params:
     def clamp_range(self) -> tuple[float, float]:
         """Travel of the wind guard mount's outboard end along the run: from just past the bend
         gusset to where the mount still sits fully on the blade."""
-        return (self.haunch_len + 1.0, self.front_len - self.clamp_len)
+        end = self.front_len - self.clamp_len - (self.tip_len + 7.0 if self.tip_len > 0 else 0.0)
+        return (self.haunch_len + 1.0, end)
 
     @property
     def blade_path_len(self) -> float:
@@ -508,6 +508,9 @@ def blade(p: Params = Params(), shift: float = 0.0) -> cq.Workplane:
             .edges("|Y").fillet(min(5.0, h2 - 0.1))
         )
         body = body.cut(cq.Workplane(obj=cutter.val().moved(run_frame(p, 0.0))))
+    if p.tip_len > 0:  # hole for the end guard's bolt
+        hole = cq.Solid.makeCylinder(2.25, t + 2, cq.Vector(_tip_bolt_x(p), -1, 0), cq.Vector(0, 1, 0))
+        body = body.cut(cq.Workplane(obj=hole.moved(run_frame(p, 0.0))))
     return body.translate((0, shift, 0))
 
 
@@ -611,15 +614,12 @@ def _boss_face(p: Params) -> float:
 
 def mount_local(p: Params) -> cq.Workplane:
     """Slotted mount in the run frame: a sleeve closed all round the blade run, which slides
-    through it, with two bosses underneath for the M4 heat-set inserts and grub screws that lock
-    it. It is moulded / printed in one piece with the shell (see wind_guard_local)."""
+    through it, on a flat pad that runs its full length and holds the M4 heat-set inserts for the
+    grub screws that lock it. The long pad gives the shield a broad base, on the bar and on the
+    print bed. It is moulded / printed in one piece with the shell (see wind_guard_local)."""
     h, y0, y1 = _slot(p)
     w, L = p.clamp_wall, p.clamp_len
-    body = _box(0, L, y0 - w, y1 + p.clamp_back, -(h + w), h + w).edges("|X").fillet(1.0)
-    for x, y in _clamp_screw_xy(p):
-        body = body.union(
-            cq.Workplane("XY", origin=(x, y, _boss_face(p))).circle(p.clamp_boss_d / 2).extrude(p.clamp_boss_h + w / 2)
-        )
+    body = _box(0, L, y0 - w, y1 + p.clamp_back, _boss_face(p), h + w).edges("|X").fillet(1.0)
     body = body.cut(_box(-1, L + 1, y0, y1, -h, h))
     for x, y in _clamp_screw_xy(p):
         body = body.cut(cq.Workplane("XY", origin=(x, y, _boss_face(p) - 1)).circle(p.insert_d / 2).extrude(p.insert_len + 1))
@@ -629,7 +629,7 @@ def mount_local(p: Params) -> cq.Workplane:
 
 # Front-view outline of the wind guard, as (distance along the run from the shell's outboard
 # end, height "up" on the bike above the blade's outer face) for shell_len = 230 and
-# shell_crest = 84; scaled to the parameters. Points below 0 shape the rounded tip.
+# shell_crest = 84; scaled to the parameters (shell_crest). Points below 0 shape the rounded tip.
 _SHELL_TOP = [(0, 2), (6, 38), (16, 61), (30, 75), (54, 84), (89, 82), (126, 70), (162, 49),
               (190, 26), (211, 5), (222, -3), (228, -9), (230, -16)]
 _SHELL_X = (0, 29, 64, 104, 144, 184, 242)  # loft sections, same scale
@@ -675,7 +675,7 @@ def _shell_section(p: Params, x: float, phi0: float, sig_a: float, sig_b: float)
 def wind_guard_local(p: Params, left: bool = False) -> cq.Workplane:
     """Moulded wind guard shell in the run frame (right-hand; left=True gives the mirror image).
 
-    A flat flange, joined to the slotted mount that rides on the blade, bends up into a shield that stands in front
+    A flat flange, joined to the long slotted mount that rides on the blade, bends up into a shield that stands in front
     of the hand on the bike, convex to the wind and curling back over the knuckles. A crease runs
     from the high outboard end down to the pointed tip. The shield is lofted through sections
     that lean back more at both ends, so it wraps round the hand, then trimmed to its front-view
@@ -720,73 +720,14 @@ def wind_guard_local(p: Params, left: bool = False) -> cq.Workplane:
     )
     shell = shell.intersect(outline)
 
-    y0, ys, fl_end, t = -p.shell_gap, -p.shell_flange, p.clamp_len + 20.0, p.shell_t
+    y0, ys, fl_end, t = -p.shell_gap, -p.shell_flange, p.clamp_len + 6.0, p.shell_t
     flange = (
         cq.Workplane("XY").moveTo(x0, y0).lineTo(fl_end - 16, y0)
         .threePointArc((fl_end - 5, y0 - 4.5), (fl_end, ys)).lineTo(x0, ys).close()
         .extrude(t).translate((0, 0, -t / 2))
     )
-    shell = shell.union(flange).translate((0, 0, p.shell_lift)).val()
-    for x, z, _, _ in _bracket_bolts(p, shell):  # clearance holes for the bracket bolts
-        shell = shell.cut(cq.Solid.makeCylinder(2.25, 200, cq.Vector(x, -100, z), cq.Vector(0, 1, 0)))
-    shell = cq.Workplane(obj=shell)
+    shell = shell.union(flange).union(mount_local(p))
     return shell.mirror("XY") if left else shell
-
-
-def _probe_y(shell: cq.Shape, x: float, z: float, y_max: float) -> tuple[float, float]:
-    """Front and back face of the shield's wall where a line along y at (x, z), short of y_max,
-    passes through it."""
-    bb = shell.intersect(cq.Solid.makeBox(0.2, 160, 0.2, cq.Vector(x - 0.1, y_max - 160, z - 0.1))).BoundingBox()
-    return bb.ymin, bb.ymax
-
-
-def _bracket_bolts(p: Params, shell: cq.Shape) -> list[tuple[float, float, float, float]]:
-    """The two bolts that hold the shield on the bracket's web: (x, z, front face, back face)."""
-    y_front = _slot(p)[1] - p.clamp_wall
-    out = []
-    for dz in p.bolt_z:
-        x, z = p.clamp_len / 2, p.shell_lift + dz
-        out.append((x, z) + _probe_y(shell, x, z, y_front))
-    return out
-
-
-@lru_cache(maxsize=4)
-def _shield_raw(p: Params) -> cq.Shape:
-    """The shield before its bolt holes (used to fit the bracket to its back face)."""
-    return wind_guard_local(replace(p, bolt_z=()), False).val()
-
-
-def wind_guard_bracket_local(p: Params, left: bool = False) -> cq.Workplane:
-    """Bracket in the run frame: the slotted mount on the blade and the web that rises from it,
-    behind the shield, to the shield's back face. Two M4 heat-set inserts in the web take the
-    bolts through the shield. Printed / moulded on its own, flat lever-side face down."""
-    shield = _shield_raw(p)
-    body = cq.Workplane(obj=_mount_web(p, shield)).union(mount_local(p)).val().cut(shield)  # fits the back face exactly
-    for x, z, _, yb in _bracket_bolts(p, shield):
-        body = body.cut(cq.Solid.makeCylinder(p.insert_d / 2, p.insert_len + 3, cq.Vector(x, yb - 3, z), cq.Vector(0, 1, 0)))
-        body = body.cut(cq.Solid.makeCylinder(2.1, 30, cq.Vector(x, yb, z), cq.Vector(0, 1, 0)))
-    wp = cq.Workplane(obj=body)
-    return wp.mirror("XY") if left else wp
-
-
-def _mount_web(p: Params, shell: cq.Shape) -> cq.Shape:
-    """Web that rises from the slotted mount, behind the shield, to the shield's back face from its
-    lower edge up to web_reach. Its front edge follows the back face (sampled, touching it); its
-    rear edge stays flush with the mount's lever-side face, clear of the lever."""
-    h, y0, y1 = _slot(p)
-    top = h + p.clamp_wall
-    y_front, y_back = y0 - p.clamp_wall + 0.5, y1 + p.clamp_back
-    z0, z1 = p.shell_lift, p.shell_lift + p.web_reach
-    zs = [z1 - (z1 - z0) * k / 12 for k in range(13)]
-    xm = p.clamp_len / 2
-    wires = []
-    for x in (xm - p.web_w / 2, xm, xm + p.web_w / 2):
-        back = []
-        for z in zs:
-            back.append((_probe_y(shell, x, z, y_front)[1], z))
-        pts = [(y_front, top - 0.5), (y_back, top - 0.5), (y_back, z1 - 12.0)] + back + [(y_front, z0 - 2.0)]
-        wires.append(cq.Wire.makePolygon([cq.Vector(x, y, z) for y, z in pts], close=True))
-    return cq.Solid.makeLoft(wires, True)
 
 
 def m4_grub_insert_local(p: Params, x: float, y: float) -> cq.Workplane:
@@ -801,39 +742,49 @@ def m4_grub_insert_local(p: Params, x: float, y: float) -> cq.Workplane:
     return insert.union(grub)
 
 
-_HEAD_PTS = [(0.0, 0.0), (3.8, 0.0), (-3.8, 0.0), (0.0, 3.8), (0.0, -3.8), (2.7, 2.7), (-2.7, 2.7), (2.7, -2.7), (-2.7, -2.7)]
+def _tip_bolt_x(p: Params) -> float:
+    return p.front_len - p.tip_len / 2
 
 
-def m4_bolt_insert_local(p: Params, x: float, z: float, y_front: float, y_back: float) -> cq.Workplane:
-    """ISO 7380 M4 button head screw through the shield into an M4 x 5.7 heat-set insert in the
-    bracket's web. The head sits on the most forward point of the shield's front face under it."""
-    shell = _shield_raw(p)
-    y_head = min(_probe_y(shell, x + dx, z + dz, _slot(p)[1] - p.clamp_wall)[0] for dx, dz in _HEAD_PTS)
-    lim = _slot(p)[1] - p.clamp_wall  # the insert starts clear of the (sloping) back face under it
-    y_ins = max(_probe_y(shell, x + 0.74 * dx, z + 0.74 * dz, lim)[1] for dx, dz in _HEAD_PTS) + 0.3
-    y_end = y_back + p.insert_len
-    head = cq.Solid.makeCylinder(3.8, 2.2, cq.Vector(x, y_head - 2.2, z), cq.Vector(0, 1, 0))
-    shank = cq.Solid.makeCylinder(2.0, y_end - y_head, cq.Vector(x, y_head, z), cq.Vector(0, 1, 0))
-    insert = cq.Solid.makeCylinder(p.insert_d / 2, y_end - y_ins, cq.Vector(x, y_ins, z), cq.Vector(0, 1, 0))
-    return cq.Workplane(obj=head).union(shank).union(insert)
+def tip_guard_local(p: Params) -> cq.Workplane:
+    """Faceted end guard over the free tip of the long leg (after the taped mock-up on the
+    reference part): taller and thicker than the bar, standing tip_front ahead of it, with a big
+    facet on its inboard lower corner and chamfered front edges. It slips over the tip and is held
+    by one M4 bolt across it. Run frame, like the wind guard."""
+    t, h, c = p.blade_t, p.blade_h, 0.3
+    x0, x1 = p.front_len - p.tip_len, p.front_len + 4.0
+    y_back, y_front = t + c + p.tip_back, -p.tip_front
+    H, F = p.tip_h / 2, p.tip_facet
+    pts = [(x0, -H), (x1 - F, -H), (x1, -H + F), (x1, H - F / 2), (x1 - F / 2, H), (x0, H)]
+    body = cq.Workplane("XZ", origin=(0, y_back, 0)).polyline(pts).close().extrude(y_back - y_front)
+    body = body.faces("<Y").chamfer(3.0).edges("|Y").fillet(1.5)
+    return body.cut(_box(x0 - 1, p.front_len + c, -c, t + c, -h / 2 - c, h / 2 + c)).cut(
+        cq.Workplane("XZ", origin=(0, y_back + 1, 0)).center(_tip_bolt_x(p), 0).circle(2.25).extrude(y_back - y_front + 2))
 
 
-def bracket_bolt_len(p: Params) -> float:
-    shell = _shield_raw(p)
-    x, z, yf, yb = _bracket_bolts(p, shell)[0]
-    return yb + p.insert_len - min(_probe_y(shell, x + dx, z + dz, _slot(p)[1] - p.clamp_wall)[0] for dx, dz in _HEAD_PTS)
+def tip_bolt_local(p: Params) -> cq.Workplane:
+    """ISO 7380 M4 button head from the front, DIN 985 nyloc nut on the lever side."""
+    x, yf, yb = _tip_bolt_x(p), -p.tip_front, p.blade_t + 0.3 + p.tip_back
+    head = cq.Solid.makeCylinder(3.8, 2.2, cq.Vector(x, yf - 2.2, 0), cq.Vector(0, 1, 0))
+    shank = cq.Solid.makeCylinder(2.0, yb - yf + 4.5, cq.Vector(x, yf, 0), cq.Vector(0, 1, 0))
+    nut = cq.Workplane("XZ", origin=(0, yb + 5.0, 0)).center(x, 0).polygon(6, 7.0 / math.cos(math.pi / 6)).extrude(5.0)
+    return cq.Workplane(obj=head).union(shank).union(nut)
+
+
+def tip_parts(p: Params, shift: float = 0.0):
+    loc = run_frame(p, 0.0, shift)
+    place = lambda wp: cq.Workplane(obj=wp.val().moved(loc))  # noqa: E731
+    return [("tip_guard", place(tip_guard_local(p))), ("tip_bolt", place(tip_bolt_local(p)))]
 
 
 def diffuser_parts(p: Params = Params(), pos: float | None = None, shift: float = 0.0):
-    """Wind guard shield, its bracket (slotted mount + web), the two insert + grub screw sets that
-    lock the bracket on the blade and the two bolts that hold the shield on it, placed in G."""
+    """Wind guard (shield with its slotted mount) and the two insert + grub screw sets that lock it
+    on the blade, placed in G."""
     loc = run_frame(p, p.clamp_pos if pos is None else pos, shift)
     place = lambda wp: cq.Workplane(obj=wp.val().moved(loc))  # noqa: E731
-    items = [("diffuser_shell", place(wind_guard_local(p))), ("diffuser_bracket", place(wind_guard_bracket_local(p)))]
+    items = [("diffuser_shell", place(wind_guard_local(p)))]
     for i, (x, y) in enumerate(_clamp_screw_xy(p)):
         items.append((f"diffuser_screw_{i + 1}", place(m4_grub_insert_local(p, x, y))))
-    for i, (x, z, yf, yb) in enumerate(_bracket_bolts(p, _shield_raw(p))):
-        items.append((f"diffuser_bolt_{i + 1}", place(m4_bolt_insert_local(p, x, z, yf, yb))))
     return items
 
 
@@ -934,6 +885,8 @@ def guard_parts(p: Params = Params(), size: str = "M", shift: float = 0.0, spigo
     ]
     for i, v in enumerate(p.screw_v):
         parts.append((f"m5_screw_{i + 1}", m5_button(p, v), STEEL_RGB))
+    for name, wp in tip_parts(p, shift):
+        parts.append((name, wp, STEEL_RGB if name == "tip_bolt" else ANODISE[colour]))
     if spigot:
         parts += [
             ("expander_sleeve", expander_sleeve(p, size), (0.12, 0.12, 0.12)),

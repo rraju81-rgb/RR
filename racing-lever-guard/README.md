@@ -9,12 +9,12 @@ an anodised CNC-aluminium bar-end mount and arm with an L-shaped guard bar that 
 photos: a 150 mm long leg in front of the lever, a 120 mm short leg back to the bar end, a faceted
 outer corner and a channel moulded into the back of the long leg. It is 10 mm thick, with a gusset
 filling the inside of the bend. An optional wind guard, styled after motocross handguards, sits
-up in front of the hand: its bracket slides along the bar in a closed slot, locks with two grub
-screws and rises behind the shield to hold it by its back face.
+up in front of the hand. It is one piece with a long slotted mount that slides along the bar in
+a closed slot and locks with two grub screws. A faceted end guard caps the bar's free tip.
 
 | ![Wind guard seen from the front](docs/renders/wind_guard_front.png) | ![Exploded view](docs/renders/exploded.png) |
 |---|---|
-| ![Gusset inside the bend](docs/renders/bend_gusset_detail.png) | ![Wind guard bracket: slotted mount and web behind the shield](docs/renders/wind_guard_mount_detail.png) |
+| ![Gusset inside the bend](docs/renders/bend_gusset_detail.png) | ![Wind guard's long slotted mount from below](docs/renders/wind_guard_mount_detail.png) |
 
 ![Anodise colours: red, blue, gold, black, silver](docs/renders/colours.png)
 
@@ -52,7 +52,7 @@ real part once it is in hand: measure it or send close-up photos, change the num
 | `exports/step/` | STEP for every part, plus the assembled guard with and without a reference handlebar (CNC, CAD) |
 | `exports/stl/` | STL for every part, already turned to its 3D-print orientation |
 | `exports/stl/assembly_*.stl` | The whole guard as one mesh each: right side, left side (mirror image, with the left-hand shell) and right side without the wind guard. See [Assembly STLs](#assembly-stls) |
-| `docs/drawings/lever_guard_drawings.pdf` | 6 dimensioned A3 sheets: general arrangement, adapter, arm, guard bar with gusset, expander set, wind guard shield and bracket |
+| `docs/drawings/lever_guard_drawings.pdf` | 6 dimensioned A3 sheets: general arrangement, adapter, arm, guard bar with gusset, expander set, wind guard with its slotted mount, bar tip guard |
 | `docs/renders/` | Rendered views, including all five anodise colours |
 | `docs/renders/bike/` | The guards fitted to a motorcycle, in red, blue and gold |
 | `docs/viewer.html` | Interactive 3D viewer: turn the arm in its 10° steps, slide the bar and the wind guard, change colour, explode |
@@ -74,16 +74,16 @@ real part once it is in hand: measure it or send close-up photos, change the num
 | LG-03b | Guard bar, 12 mm, heavy duty | PA12-CF / PETG-CF printed | (alternative) | 60 g |
 | LG-04 | Expander sleeve S / M / L | TPU 95A or NBR 70A | 1 | 2–3 g |
 | LG-05 | Expander cone nut S / M / L, M6 | 6061-T6 or zinc-plated steel | 1 | 2–4 g |
-| LG-06 / 06b | Wind guard shield, right / left (mirror pair; optional) | HDPE or PP, injection moulded, colour to order (or printed ASA / PA12) | 1 | 55 g |
-| LG-07 / 07b | Wind guard bracket: slotted mount + web, right / left (optional) | as LG-06 | 1 | 39 g |
+| LG-06 / 06b | Wind guard with 64 mm slotted mount, right / left (mirror pair, one piece each; optional) | HDPE or PP, injection moulded, colour to order (or printed ASA / PA12) | 1 | 109 g |
+| LG-08 | Bar tip guard: faceted end cap over the long leg's tip | PA12-CF / PETG-CF printed, or 6061 anodised | 1 | 28 g |
 | H1 | Socket cap screw M6 × 45, ISO 4762 | A2-70 or 10.9 black | 1 | |
 | H2 | Button head screw M5 × 18, ISO 7380 (M5 × 20 with LG-03b) | A2-70 | 2 | |
 | H3 | Washer M5, ISO 7089 | A2 | 2 | |
-| H4 | Heat-set insert M4 × 5.7 (Ø5.6 hole): 2 in the bracket's bosses, 2 in its web (wind guard) | brass | 4 | |
+| H4 | Heat-set insert M4 × 5.7 (Ø5.6 hole), in the pad under the wind guard's mount | brass | 2 | |
 | H5 | Grub screw M4 × 8, ISO 4029 cup point, nylon-tipped if available, from below onto the bar (wind guard) | A2 | 2 | |
-| H6 | Button head screw M4 × 10, ISO 7380, with washer: shield to bracket (wind guard) | A2 | 2 | |
+| H6 | Button head screw M4 × 30, ISO 7380, + DIN 985 nyloc nut: bar tip guard | A2 | 1 | |
 
-About 151 g per side with the moulded bar and steel screws, 252 g with the wind guard.
+About 184 g per side with the moulded bar, tip guard and steel screws, 296 g with the wind guard.
 
 1. **Mount.** The adapter sits on the open bar end. Inside the bar, one M6 bolt pulls the cone
    nut into the slit elastomer sleeve, which grips the bar bore. Three sleeve sizes cover bar
@@ -105,24 +105,23 @@ About 151 g per side with the moulded bar and steel screws, 252 g with the wind 
    R54.4 arc and runs out tangentially 18 mm along the long leg, with no corner or step for a crack
    to start from. The section across the bend goes from 10 to 13 mm, about 1.7× the bending
    strength of the plain bend (12 → 15.1 mm, 1.6×, on the 12 mm heavy-duty bar).
-6. **Wind guard.** Two parts, each printed in its best orientation:
-   - The **shield** (LG-06 / 06b) is a shell in the style of a motocross handguard, convex to
-     the wind and curling back over the knuckles, tall at the outboard end and sweeping down to
-     a rounded tip past the brake perch, with a diagonal crease that stiffens it.
-   - The **bracket** (LG-07 / 07b) is a sleeve with a slot closed on all four sides (10.6 × 22.6
-     mm, 0.3 mm clearance round the bar) and a 16 mm web that rises from it behind the shield.
-     The web's front face is shaped to the shield's back face and holds it over the 50 mm above
-     its lower edge, with two M4 button screws through the shield into heat-set inserts.
-
-   Mounting the shield on a web behind it, instead of on a flange at its foot, lifts it
-   65 mm off the bar (normal to the lever plane), so on the bike it covers the knuckles: it runs
-   from 22 mm below to 77 mm above the bar axis, where before it sat low and threw the air up
-   onto them. Two M4 grub screws in heat-set inserts under the sleeve lock the bracket on the
-   bar's lower edge; loosen them and the guard slides 74 mm along the long leg. There are no
-   holes in the bar, and the bracket slides on from the bar's tip.
-7. **Left and right.** Every part except the wind guard is symmetric about the lever plane, so
+6. **Wind guard.** One piece, in the style of a motocross handguard: convex to the wind and
+   curling back over the knuckles, tall at the outboard end and sweeping down to a rounded tip
+   past the brake perch, with a diagonal crease that stiffens it. It stands straight up from a
+   64 mm slotted mount (a sleeve closed on all four sides round the bar, 10.6 × 22.6 mm, 0.3 mm
+   clearance) on a flat pad that runs its full length. The long mount and pad stop it rocking
+   on the bar under vibration, and give it a broad, flat base on the print bed. The shield is
+   150 mm tall (`shell_crest`), so on the bike it reaches 87 mm above the bar axis and covers
+   the knuckles. Two M4 grub screws in heat-set inserts in the pad lock it on the bar's lower
+   edge; loosen them and it slides 7 mm (the mount and the tip guard share the 150 mm leg).
+   There are no holes in the bar for it.
+7. **Bar tip guard.** A faceted end cap (LG-08) over the long leg's free tip, after the taped
+   mock-up on the reference part: 36 mm long, 40 mm tall (the bar is 22), standing 10 mm ahead
+   of the bar's face, with a 12 mm facet on its lower inboard corner and chamfered front edges.
+   It takes the first hit when the bike goes down and is held by one M4 bolt across the tip.
+8. **Left and right.** Every part except the wind guard is symmetric about the lever plane, so
    the clutch-side guard is the same set of parts with the arm turned over. Like any handguard,
-   the shield and bracket come as mirror-image pairs (LG-06 / 07 right, LG-06b / 07b left).
+   the wind guard comes as a mirror-image pair (LG-06 right, LG-06b left).
 
 ## Key dimensions
 
@@ -137,7 +136,8 @@ About 151 g per side with the moulded bar and steel screws, 252 g with the wind 
 | Long leg covers the lever inboard of the bar end | 116 mm |
 | Sticks out past the bar end | 37.75 mm (to the M5 screw heads) |
 | Bar face ahead of the bar axis, start of the long leg (slot −5 / 0 / +5) | 110 / 115 / 120 mm |
-| Wind guard | 230 mm long, 3 mm wall, 40 mm slotted bracket; on the bike 141–182 mm ahead of the bar axis, from 22 mm below to 77 mm above it; slides 74 mm along the long leg |
+| Wind guard | 230 mm long, 150 mm tall, 3 mm wall, 64 mm slotted mount; on the bike 50–150 mm ahead of the bar axis, from 84 mm below (mount) to 87 mm above it; slides 7 mm |
+| Bar tip guard | 36 × 40 mm, 10 mm proud of the bar face |
 | Adapter body / spigot | Ø32 × 12 / Ø12.4 × 6 mm |
 | Angle steps | 36 teeth → 10° |
 | Fore-aft adjustment | ±5 mm |
@@ -160,8 +160,7 @@ All dimensions are on the drawings in `docs/drawings/`.
 - Keep **at least 10 mm all round the lever**. With the reference sport-bike lever in the CAD
   the closest gap is 39 mm at every slot position: the 120 mm short leg puts the long leg well
   ahead of a typical lever. Bikes with long or adjustable levers set far out still need a check.
-- With the wind guard fitted, it keeps at least 65 mm from the lever, 72 mm from the brake perch
-  and 92 mm from a Ø100 mm gloved-hand envelope round the grip, anywhere along its travel.
+- With the wind guard fitted, it keeps at least 66 mm from the lever, 74 mm from the brake perch
 - The shield reaches about 210–285 mm inboard of the bar end (depending on where it is slid) and
   182 mm ahead of the bar axis. Turn the bars lock to lock and check the fork, fairing, tank, mirrors and
   fluid reservoir before riding. Slide it outboard if anything is close.
@@ -175,11 +174,11 @@ All dimensions are on the drawings in `docs/drawings/`.
 3. Turn the arm to the lever's angle, settle it into the serration and tighten the M6 bolt to
    **8 N·m** with medium threadlocker.
 4. Fit the bar with the two M5 × 18 screws and washers. Set the gap, then tighten to **4 N·m**.
-5. Wind guard (optional): press the four M4 heat-set inserts into the bracket, two in the bosses
-   under the sleeve and two in the web (soldering iron at about 230 °C, flush). Bolt the shield to
-   the web with the two M4 × 10 button screws and washers, **1 N·m**. Slide the bracket onto the
-   bar's long leg from its tip, shield in front of the lever, move it to where you want it and
-   turn the two M4 × 8 grub screws up onto the bar's lower edge, **1 N·m**.
+5. Wind guard (optional): press the two M4 heat-set inserts into the pad under the mount
+   (soldering iron at about 230 °C, flush). Slide the mount onto the bar's long leg from its
+   tip, shield in front of the lever, and turn the two M4 × 8 grub screws up onto the bar's
+   lower edge, **1 N·m**. Then push the tip guard over the bar's tip and fit the M4 × 30 bolt
+   and nyloc nut, **2 N·m**.
 6. Pull the lever through its full travel, use the reach adjuster across its range, and turn the
    bars lock to lock. Nothing may touch the guard, the fairing, the tank or the mirrors.
 7. Re-check all torques after the first ride.
@@ -211,20 +210,18 @@ Hard anodise after machining in black, blue, gold, red or silver. Break all shar
 the channel on the long leg's back is a straight pull. For one-offs or a carbon look, print it
 (below) and hydro-dip or wrap it.
 
-**Wind guard (LG-06, LG-07).** Shield and bracket are separate parts so each can be made in its
-best orientation. Injection mould both in HDPE or PP, in any colour, from the STEP files:
-`06_wind_guard_shell_RH` / `07_wind_guard_bracket_RH` for the right side and the `06b` / `07b`
-files for the left. Break the edges R1. The bracket's slot core is a straight pull along the bar.
+**Wind guard (LG-06).** Injection mould it in HDPE or PP, in any colour, from the STEP files:
+`06_wind_guard_shell_RH` for the right side and `06b_wind_guard_shell_LH` for the left. Break
+the edges R1. The slot core is a straight pull along the bar.
 
 **3D print.** For prototypes or low cost:
 - Guard bar `03_guard_bar_10mm.stl` (or `03b_guard_bar_12mm_heavy_duty.stl`): PA12-CF or
   PETG-CF, lying flat (lever plane on the bed), 6 walls, 50 % gyroid. The channel opens
   sideways and its flange bridges 6 mm; no supports needed. Use M5 × 18 screws (M5 × 20 for 03b).
-- Wind guard shield `06` / `06b`: ASA or PA12, 100 % infill (3 mm wall). Print with the lower
-  flange flat on the bed, shield up, with tree supports under the bend and the top edge.
-- Wind guard bracket `07` / `07b`: ASA or PA12, 100 % infill. It lies on its flat lever-side face
-  (sleeve and web flush), so it needs no supports except a few under the insert bosses. If the
-  bar is tight in the slot, file the slot rather than scaling the print.
+- Wind guard `06` / `06b`: ASA or PA12, 100 % infill (3 mm wall). It stands on the mount's
+  flat 64 mm pad, shield up; use tree supports under the flange, the bend and the top edge.
+  If the bar is tight in the slot, file the slot rather than scaling the print.
+- Bar tip guard `08`: PA12-CF or PETG-CF, 100 % infill, closed end on the bed, pocket up.
 - Adapter and arm: PA12-CF, 100 % infill, for a test fit only. Ride on aluminium parts.
 - Sleeve: TPU 95A, 100 % infill.
 
@@ -237,7 +234,7 @@ also holds the assembled guard as one mesh:
 
 | File | Contents |
 |---|---|
-| `assembly_right_guard.stl` | right (brake side) guard with the wind guard, its bracket, inserts and screws |
+| `assembly_right_guard.stl` | right (brake side) guard with the wind guard, tip guard, inserts and screws |
 | `assembly_left_guard.stl` | left (clutch side) guard: the mirror image, so it carries the left-hand shell |
 | `assembly_right_guard_without_wind_guard.stl` | right guard with the bar only |
 
@@ -268,11 +265,11 @@ The parameters most likely to change when matching the real part, all in `Params
 | `blade_h`, `blade_t` | 22, 10 | bar section |
 | `pocket_depth`, `pocket_wall` | 6, 3 | channel on the long leg's lever side (0 = solid) |
 | `haunch_len`, `haunch_seat_gap`, `haunch_blend_r` | 18, 1, 4 | where the gusset's edge runs out on the long leg / crosses the seat face / blend radius into the seat face |
-| `shell_len`, `shell_crest`, `shell_crease` | 230, 84, (60, −4) | wind guard length, height and crease line (outboard end, tip) |
+| `shell_len`, `shell_crest`, `shell_crease` | 230, 150, (60, −4) | wind guard length, height and crease line (outboard end, tip) |
 | `lever_deg` | 30 | lever angle below horizontal; sets "up" and "forward" for the wind guard |
-| `clamp_pos` | 20 | wind guard bracket position along the long leg (19–93 mm from the bend) |
+| `clamp_pos`, `clamp_len` | 20, 64 | wind guard mount position along the long leg (19–26 mm from the bend) and length |
 | `clamp_clear` | 0.3 | slot clearance round the bar; lower it for a moulded part, raise it for a loose printer |
-| `shell_lift`, `web_reach` | 65, 50 | how high the shield sits above the bar (normal to the lever plane), and how far up its back face the web holds it |
+| `tip_len`, `tip_h`, `tip_front`, `tip_facet` | 36, 40, 10, 12 | bar tip guard size, how far it stands ahead of the bar, its corner facet |
 | `body_d`, `pitch_x` | 32, 12 | adapter diameter and length outside the bar |
 | `teeth` | 36 | serration teeth (360 / teeth = angle step) |
 | `adjust` | 5 | slot travel each way |
@@ -302,10 +299,10 @@ All pass for both bar versions (10 mm and 12 mm):
 - M6 thread engagement in the cone nut 8.5 mm; M5 engagement in the arm 7 mm (≥ 1.2 d)
 - bar ≥ 10 mm from the reference lever (39 mm); adapter, arm and screws ≥ 27 mm
 - with the bar at the nominal slot position and the wind guard at either end of its travel,
-  no part of the wind guard overlaps the bar or another part, the bar slides in the bracket's
-  slot with 0.3 mm clearance and the grub screws bear on it. The wind guard stays ≥ 65 mm from
-  the lever, ≥ 49 mm from the perch and ≥ 80 mm from the grip; the shield stays ≥ 90 mm from a
-  Ø100 mm gloved-hand envelope round the grip, and the bracket no closer to it than the bar
+  no part of the wind guard or tip guard overlaps the bar or another part, the bar slides in the
+  slot with 0.3 mm clearance and the grub screws bear on it. The wind guard stays ≥ 66 mm from
+  the lever, ≥ 74 mm from the perch and ≥ 80 mm from the grip; the shield stays ≥ 79 mm from a
+  Ø100 mm gloved-hand envelope round the grip, and the mount no closer to it than the bar
 - finger room between grip and the bar's long leg ≥ 40 mm (98 mm)
 - each sleeve and cone slides into the smallest bar of its range
 

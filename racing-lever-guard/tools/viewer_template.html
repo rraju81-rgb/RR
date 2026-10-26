@@ -190,7 +190,7 @@
         <div class="ctl-head"><label for="dpos">Wind guard position</label><span class="readout" id="dposOut">0 mm</span></div>
         <input type="range" id="dpos" min="0" max="45" step="1" value="0">
         <div class="toggles"><label><input type="checkbox" id="diffuser" checked> Fit wind guard</label></div>
-        <p class="note">The wind guard's bracket wraps the bar in a closed slot and rises behind the shield to hold it by its back face. Two M4 grub screws lock it from below; loosen them and it slides along the run.</p>
+        <p class="note">The wind guard is one piece with a 64 mm slotted mount that wraps the bar on all sides. Two M4 grub screws lock it from below; loosen them and it slides along the bar.</p>
       </div>
 
       <div class="ctl">
@@ -341,14 +341,14 @@ fillTable("bom", ["#", "Part", "Material / finish", "Qty per side", "Mass"], [
   ["03b", "Guard bar 12 mm, heavy duty", "PA12-CF or PETG-CF printed", "alt.", g("03b_guard_bar_12mm_heavy_duty")],
   ["04", "Expander sleeve S / M / L", "TPU 95A or NBR 70 Shore A", "1", g("04_expander_sleeve_M_bar_id_15-17")],
   ["05", "Expander cone nut S / M / L, M6", "6061-T6 or zinc-plated steel", "1", g("05_expander_cone_M_bar_id_15-17")],
-  ["06 / 06b", "Wind guard shield, right / left", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("06_wind_guard_shell_RH")],
-  ["07 / 07b", "Wind guard bracket (slotted mount + web), right / left", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("07_wind_guard_bracket_RH")],
+  ["06 / 06b", "Wind guard with 64 mm slotted mount, right / left (one piece each)", "HDPE or PP moulded, or ASA / PA12 printed", "1", g("06_wind_guard_shell_RH")],
+  ["08", "Bar tip guard (faceted end cap on the long leg)", "PA12-CF / PETG-CF printed, or anodised 6061", "1", g("08_bar_tip_guard")],
   ["H1", "Socket cap screw M6 × 45, ISO 4762", "A2-70 stainless or 10.9 black", "1", ""],
   ["H2", "Button head screw M5 × 18, ISO 7380", "A2-70 stainless", "2", ""],
   ["H3", "Washer M5, ISO 7089", "A2 stainless", "2", ""],
-  ["H4", "Heat-set insert M4 × 5.7: 2 in the mount's bosses, 2 in the web", "Brass", "4", ""],
+  ["H4", "Heat-set insert M4 × 5.7, in the pad under the mount", "Brass", "2", ""],
   ["H5", "Grub screw M4 × 8, ISO 4029 cup point, from below onto the bar", "A2 stainless", "2", ""],
-  ["H6", "Button head screw M4 × 10, ISO 7380, with washer: shield to bracket", "A2 stainless", "2", ""],
+  ["H6", "Button head screw M4 × 30, ISO 7380, + nyloc nut: bar tip guard", "A2 stainless", "1", ""],
 ]);
 
 // ---------------------------------------------------------------- three.js scene
