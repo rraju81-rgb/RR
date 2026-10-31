@@ -153,33 +153,43 @@ const cache = {};
 let current = null;
 let report = null;
 
+function prepare(gltf) {
+  const root = gltf.scene;
+  const inside = [];
+  root.traverse((o) => {
+    if (o.isMesh) {
+      o.castShadow = true;
+      o.receiveShadow = ['floor', 'tyre', 'rim'].includes(o.material.name);
+      o.userData.matName = o.material.name;
+      let p = o; while (p && p.name !== 'top_shell_skin') p = p.parent;
+      if (p) inside.push(o);
+      if (o.material.name === 'tyre' || o.material.name === 'rim' || o.material.name === 'floor') o.material.side = THREE.DoubleSide;
+    }
+  });
+  // raw-carbon interior of the shell (visible from below / behind)
+  for (const o of inside) {
+    const back = new THREE.Mesh(o.geometry, L.interior);
+    back.userData.matName = '__interior';
+    o.add(back);
+  }
+  return root;
+}
+
 async function loadVariant(v) {
   if (cache[v]) return cache[v];
   exportBase ??= await findExportBase();
-  return new Promise((resolve, reject) => {
-    loader.load(`${exportBase}/${v}/manta_${v}.glb`, (gltf) => {
-      const root = gltf.scene;
-      const inside = [];
-      root.traverse((o) => {
-        if (o.isMesh) {
-          o.castShadow = true;
-          o.receiveShadow = ['floor', 'tyre', 'rim'].includes(o.material.name);
-          o.userData.matName = o.material.name;
-          let p = o; while (p && p.name !== 'top_shell_skin') p = p.parent;
-          if (p) inside.push(o);
-          if (o.material.name === 'tyre' || o.material.name === 'rim' || o.material.name === 'floor') o.material.side = THREE.DoubleSide;
-        }
-      });
-      // raw-carbon interior of the shell (visible from below / behind)
-      for (const o of inside) {
-        const back = new THREE.Mesh(o.geometry, L.interior);
-        back.userData.matName = '__interior';
-        o.add(back);
-      }
-      cache[v] = root;
-      resolve(root);
-    }, undefined, reject);
-  });
+  let gltf;
+  try {
+    gltf = await loader.loadAsync(`${exportBase}/${v}/manta_${v}.glb`);
+  } catch (err) {
+    // hosts that cannot serve .glb get the same file base64-wrapped in JSON
+    const r = await fetch(`${exportBase}/${v}/manta_${v}.glb.json`);
+    if (!r.ok) throw err;
+    const bin = Uint8Array.from(atob((await r.json()).glb), (c) => c.charCodeAt(0));
+    gltf = await loader.parseAsync(bin.buffer, '');
+  }
+  cache[v] = prepare(gltf);
+  return cache[v];
 }
 
 async function loadReport(v) {

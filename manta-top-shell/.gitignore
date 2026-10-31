@@ -6,3 +6,5 @@ renders/_raw/
 exports/*/*.obj
 exports/*/*.mtl
 exports/*/*_solid_*.stl
+# hosted-viewer staging (base64-wrapped GLBs)
+.artifact/
