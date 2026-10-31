@@ -27,15 +27,34 @@
   .ok { color: #7ee2a8; } .bad { color: #ff8a80; }
   #msg { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); pointer-events: none; }
   body.shot .panel { display: none; }
+  body.hide-info #info { display: none; }
+  #title { cursor: pointer; user-select: none; }
+  #caret { font-size: 11px; color: var(--muted); display: none; }
+  @media (max-width: 720px) {
+    #caret { display: inline; }
+    body:not(.show-controls) #ctlbody { display: none; }
+    #controls { width: auto; right: 14px; padding: 10px 12px; }
+    #controls .row { gap: 4px; }
+    #info { display: none; top: auto; bottom: 14px; left: 14px; right: 14px; width: auto; max-height: 45%; }
+    body.show-info #info { display: block; }
+  }
 </style>
-<script type="importmap">{ "imports": { "three": "./vendor/three-bundle.min.js" } }</script>
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three-bundle.min.js",
+  "three/addons/controls/OrbitControls.js": "./vendor/three-bundle.min.js",
+  "three/addons/loaders/GLTFLoader.js": "./vendor/three-bundle.min.js",
+  "three/addons/environments/RoomEnvironment.js": "./vendor/three-bundle.min.js"
+} }
+</script>
 </head>
 <body>
 <div id="app"></div>
 <div id="msg">loading MANTA...</div>
 <div id="controls" class="panel">
-  <h1>MANTA</h1>
+  <h1 id="title">MANTA <span id="caret">&#9662;</span></h1>
   <div class="sub">manta-ray inspired top shell &middot; LMH / LMDh</div>
+  <div id="ctlbody">
   <div class="label">Class package</div>
   <div class="row" id="variants"></div>
   <div class="label">Show</div>
@@ -46,6 +65,8 @@
   <div class="row" id="looks"></div>
   <div class="label">View</div>
   <div class="row" id="views"></div>
+  <div class="row"><button id="checks" type="button">Rule checks</button></div>
+  </div>
 </div>
 <div id="info" class="panel"></div>
 <script type="module" src="./viewer.js"></script>

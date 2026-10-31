@@ -1,6 +1,18 @@
 // MANTA top shell viewer (three.js). Loads ../exports/<variant>/manta_<variant>.glb
 import * as THREE from 'three';
-import { OrbitControls, GLTFLoader, RoomEnvironment } from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// exports/ sits next to viewer/ in the repo, or next to the page when hosted flat
+const EXPORT_BASES = ['../exports', './exports'];
+let exportBase = null;
+async function findExportBase() {
+  for (const b of EXPORT_BASES) {
+    try { const r = await fetch(`${b}/lmdh/report.json`); if (r.ok) return b; } catch { /* try next */ }
+  }
+  return EXPORT_BASES[0];
+}
 
 const params = new URLSearchParams(location.search);
 const state = {
@@ -47,7 +59,7 @@ scene.add(hemi);
 const key = new THREE.DirectionalLight(0xffffff, 2.2);
 key.position.set(4.5, 8.0, 5.5);
 key.castShadow = true;
-key.shadow.mapSize.set(4096, 4096);
+key.shadow.mapSize.set(state.shot ? 4096 : 2048, state.shot ? 4096 : 2048);
 key.shadow.camera.left = -6; key.shadow.camera.right = 6;
 key.shadow.camera.top = 6; key.shadow.camera.bottom = -6;
 key.shadow.camera.near = 0.5; key.shadow.camera.far = 30;
@@ -141,10 +153,11 @@ const cache = {};
 let current = null;
 let report = null;
 
-function loadVariant(v) {
-  if (cache[v]) return Promise.resolve(cache[v]);
+async function loadVariant(v) {
+  if (cache[v]) return cache[v];
+  exportBase ??= await findExportBase();
   return new Promise((resolve, reject) => {
-    loader.load(`../exports/${v}/manta_${v}.glb`, (gltf) => {
+    loader.load(`${exportBase}/${v}/manta_${v}.glb`, (gltf) => {
       const root = gltf.scene;
       const inside = [];
       root.traverse((o) => {
@@ -170,7 +183,7 @@ function loadVariant(v) {
 }
 
 async function loadReport(v) {
-  try { const r = await fetch(`../exports/${v}/report.json`); return r.ok ? await r.json() : null; } catch { return null; }
+  try { const r = await fetch(`${exportBase}/${v}/report.json`); return r.ok ? await r.json() : null; } catch { return null; }
 }
 
 function applyState() {
@@ -241,7 +254,12 @@ function frame(view) {
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
   const tight = { top: 0.72, side: 0.74, front: 0.86, back: 0.86, hero: 0.66, rear: 0.66, low: 0.62 }[view] ?? 0.8;
-  const fit = radius / Math.sin(THREE.MathUtils.degToRad(fov) / 2) * tight * (state.stand ? 1.12 : 1) * Math.max(1, 1.45 / (W / H));
+  const margin = state.shot ? 1 : 1.2; // interactive: leave room for the panels
+  // fit to the narrower of the vertical and horizontal fields of view (phones in portrait)
+  const vhalf = THREE.MathUtils.degToRad(fov) / 2;
+  const hhalf = Math.atan(Math.tan(vhalf) * (W / H));
+  const portrait = W / H < 1 ? 1.2 : 1;
+  const fit = radius / Math.sin(Math.min(vhalf, hhalf)) * tight * margin * portrait * (state.stand ? 1.12 : 1);
   camera.position.copy(c).addScaledVector(d, fit);
   if (view === 'top') camera.up.set(1, 0, 0); else camera.up.set(0, 1, 0);
   controls.target.copy(c);
@@ -274,6 +292,14 @@ function updateUI() {
     info.innerHTML = `<b>${report.class_name}</b><br><span style="color:var(--muted)">regulation checks (generated)</span><table>${rows}</table>`;
   } else info.textContent = '';
 }
+
+document.getElementById('title').addEventListener('click', () => {
+  document.body.classList.toggle('show-controls');
+});
+
+document.getElementById('checks').addEventListener('click', () => {
+  document.body.classList.toggle(window.innerWidth <= 720 ? 'show-info' : 'hide-info');
+});
 
 for (const id of ['appendages', 'context', 'stand']) {
   document.getElementById(id).addEventListener('change', (e) => {

@@ -76,6 +76,8 @@ Then open http://localhost:8000/viewer/ . You can switch LMDh/LMH, three finishe
 (manta livery, clay, raw carbon), toggle the wing and mirrors, the reference
 wheels and floor, and a **display-stand mode** that shows the shell on its own.
 The panel on the right lists the live regulation checks for the selected class.
+`viewer/index-cdn.html` is the same viewer loading three.js from jsDelivr instead of
+the vendored bundle, for hosting the folder online (for example on GitHub Pages).
 
 ![viewer](renders/viewer_ui.jpg)
 
