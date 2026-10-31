@@ -1,0 +1,7 @@
+numpy
+scipy
+scikit-image
+manifold3d>=3.0
+trimesh
+rtree
+matplotlib
