@@ -1,0 +1,136 @@
+{
+  "class_key": "lmdh",
+  "class_name": "LMDh (Le Mans Daytona h)",
+  "envelope": {
+    "max_length": 5100.0,
+    "max_width": 2000.0,
+    "max_height": 1060.0
+  },
+  "package": {
+    "wheelbase": 3148.0,
+    "x_front": -1000.0,
+    "x_rear": 4100.0,
+    "front_track": 1650.0,
+    "rear_track": 1610.0,
+    "front_tyre": "29/71-18",
+    "rear_tyre": "34/71-18"
+  },
+  "measured": {
+    "length": 5097.4,
+    "width": 1998.0,
+    "height": 1056.3
+  },
+  "checks": [
+    {
+      "name": "Overall length",
+      "value": "5097 mm (max 5100)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Overall width",
+      "value": "1998 mm (max 2000)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Overall height above ref. plane",
+      "value": "1056 mm (max 1060)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Wheelbase",
+      "value": "3148 mm (3148 mm common wheelbase (spec LMP2-derived chassis))",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Wheels covered in plan view",
+      "value": "100.0 % (min of 4)",
+      "detail": "apart from the mandatory louvres (11 % of the front tyre footprint is visible through the gill slots)",
+      "pass": true
+    },
+    {
+      "name": "Tyre clearance (straight, +40 mm bump)",
+      "value": "17 mm (min 15)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Tyre clearance (12 deg lock, +15 mm bump)",
+      "value": "18 mm (min 15)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Front-wheel louvre area (per side)",
+      "value": "332 cm2 in 5 gill slots (assumed min 160)",
+      "detail": "projected plan area; all slots lie over the front tyre",
+      "pass": true
+    },
+    {
+      "name": "Engine-cover fin",
+      "value": "0.27 m2 side area, x 1881..4099 mm",
+      "detail": "on the centre plane, from the roof to behind the rear axle",
+      "pass": true
+    },
+    {
+      "name": "Helmet headroom (indicative)",
+      "value": "51 mm skin above helmet",
+      "detail": "helmet top 975 mm at x=1680, y=220",
+      "pass": true
+    },
+    {
+      "name": "Skin mesh is manifold & clean",
+      "value": "0 non-manifold edges, 0 degenerate faces",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Left/right symmetry",
+      "value": "0.000 mm max deviation",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "3 mm solid is watertight",
+      "value": "0 open edges, 0 non-manifold",
+      "detail": "",
+      "pass": true
+    }
+  ],
+  "metrics": {
+    "frontal_area_m2": 1.457,
+    "plan_area_m2": 8.924,
+    "skin_area_m2": 13.62,
+    "glazing_area_m2": 1.174,
+    "louvre_area_per_side_cm2": 332.2,
+    "fin_side_area_m2": 0.266,
+    "min_tyre_clearance_mm": {
+      "straight, +40 mm bump": 17.0,
+      "12 deg lock, +15 mm bump": 17.6
+    },
+    "skin_triangles": 230836
+  },
+  "sources": [
+    "Porsche 963 published data: 5100 x 2000 x 1060 mm, wheelbase 3148 mm, 1030 kg",
+    "Motor1 / BMWBlog LMDh coverage: <= 5100 mm long, <= 2000 mm wide, <= 1060 mm high",
+    "FIA LMDh Technical Regulations 2024.10.22, Art. 3 (overall dimensions, engine cover fin)",
+    "Michelin: LMDh runs 29/71-18 front, 34/71-18 rear"
+  ],
+  "notes": [
+    "Survival cell, roll structure, windscreen and door apertures come from the licensed chassis supplier (Dallara, Ligier, Multimatic, Oreca). The canopy surface in this design is styling intent and must be fitted to the chosen supplier's greenhouse hard points.",
+    "Engine cover fin is mandatory (FIA LMDh TR Art. 3)."
+  ],
+  "caveat": "Rule figures cross-checked from published specifications; verify against the current FIA/ACO Technical Regulations before use.",
+  "exports": [
+    "manta_lmdh.glb",
+    "manta_lmdh.mtl",
+    "manta_lmdh_aero_appendages.stl",
+    "manta_lmdh_display_1to5.stl",
+    "manta_lmdh_top_shell.obj",
+    "manta_lmdh_top_shell_solid_3mm.stl",
+    "manta_lmdh_top_shell_surface.stl"
+  ]
+}

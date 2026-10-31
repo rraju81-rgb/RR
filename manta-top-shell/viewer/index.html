@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MANTA top shell - LMH / LMDh viewer</title>
+<style>
+  :root { color-scheme: dark; --ink: #e9eef3; --muted: #8fa1b3; --panel: rgba(12,18,26,.78); --accent: #5fc7ff; }
+  html, body { margin: 0; height: 100%; background: #0d1117; font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); }
+  #app { position: fixed; inset: 0; }
+  canvas { display: block; }
+  .panel { position: fixed; background: var(--panel); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.08);
+           border-radius: 10px; padding: 12px 14px; }
+  #controls { top: 14px; left: 14px; width: 260px; }
+  #controls h1 { font-size: 15px; letter-spacing: .14em; margin: 0 0 2px; }
+  #controls .sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; margin-top: 10px; }
+  button { background: rgba(255,255,255,.06); color: var(--ink); border: 1px solid rgba(255,255,255,.14); border-radius: 6px;
+           padding: 5px 9px; font: inherit; font-size: 12px; cursor: pointer; }
+  button.on { background: var(--accent); color: #04121c; border-color: var(--accent); font-weight: 600; }
+  label.chk { display: flex; align-items: center; gap: 8px; font-size: 13px; margin: 4px 0; cursor: pointer; }
+  #info { top: 14px; right: 14px; width: 300px; max-height: calc(100% - 52px); overflow: auto; font-size: 12px; }
+  #info table { width: 100%; border-collapse: collapse; }
+  #info td { padding: 2px 0; }
+  #info td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .ok { color: #7ee2a8; } .bad { color: #ff8a80; }
+  #msg { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); pointer-events: none; }
+  body.shot .panel { display: none; }
+</style>
+<script type="importmap">{ "imports": { "three": "./vendor/three-bundle.min.js" } }</script>
+</head>
+<body>
+<div id="app"></div>
+<div id="msg">loading MANTA...</div>
+<div id="controls" class="panel">
+  <h1>MANTA</h1>
+  <div class="sub">manta-ray inspired top shell &middot; LMH / LMDh</div>
+  <div class="label">Class package</div>
+  <div class="row" id="variants"></div>
+  <div class="label">Show</div>
+  <label class="chk"><input type="checkbox" id="appendages" checked> Wing, endplates, mirrors</label>
+  <label class="chk"><input type="checkbox" id="context" checked> Wheels &amp; floor (reference only)</label>
+  <label class="chk"><input type="checkbox" id="stand"> Display stand (shell only)</label>
+  <div class="label">Finish</div>
+  <div class="row" id="looks"></div>
+  <div class="label">View</div>
+  <div class="row" id="views"></div>
+</div>
+<div id="info" class="panel"></div>
+<script type="module" src="./viewer.js"></script>
+</body>
+</html>

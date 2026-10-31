@@ -1,0 +1,136 @@
+{
+  "class_key": "lmh",
+  "class_name": "LMH (Le Mans Hypercar)",
+  "envelope": {
+    "max_length": 5000.0,
+    "max_width": 2000.0,
+    "max_height": 1150.0
+  },
+  "package": {
+    "wheelbase": 3100.0,
+    "x_front": -980.0,
+    "x_rear": 4020.0,
+    "front_track": 1650.0,
+    "rear_track": 1610.0,
+    "front_tyre": "29/71-18",
+    "rear_tyre": "34/71-18"
+  },
+  "measured": {
+    "length": 4998.0,
+    "width": 1998.0,
+    "height": 1145.0
+  },
+  "checks": [
+    {
+      "name": "Overall length",
+      "value": "4998 mm (max 5000)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Overall width",
+      "value": "1998 mm (max 2000)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Overall height above ref. plane",
+      "value": "1145 mm (max 1150)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Wheelbase",
+      "value": "3100 mm (free up to 3150 mm; this package uses 3100 mm)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Wheels covered in plan view",
+      "value": "100.0 % (min of 4)",
+      "detail": "apart from the mandatory louvres (11 % of the front tyre footprint is visible through the gill slots)",
+      "pass": true
+    },
+    {
+      "name": "Tyre clearance (straight, +40 mm bump)",
+      "value": "17 mm (min 15)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Tyre clearance (12 deg lock, +15 mm bump)",
+      "value": "17 mm (min 15)",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Front-wheel louvre area (per side)",
+      "value": "332 cm2 in 5 gill slots (assumed min 160)",
+      "detail": "projected plan area; all slots lie over the front tyre",
+      "pass": true
+    },
+    {
+      "name": "Engine-cover fin",
+      "value": "0.34 m2 side area, x 1853..4019 mm",
+      "detail": "on the centre plane, from the roof to behind the rear axle",
+      "pass": true
+    },
+    {
+      "name": "Helmet headroom (indicative)",
+      "value": "132 mm skin above helmet",
+      "detail": "helmet top 975 mm at x=1654, y=220",
+      "pass": true
+    },
+    {
+      "name": "Skin mesh is manifold & clean",
+      "value": "0 non-manifold edges, 0 degenerate faces",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "Left/right symmetry",
+      "value": "0.000 mm max deviation",
+      "detail": "",
+      "pass": true
+    },
+    {
+      "name": "3 mm solid is watertight",
+      "value": "0 open edges, 0 non-manifold",
+      "detail": "",
+      "pass": true
+    }
+  ],
+  "metrics": {
+    "frontal_area_m2": 1.538,
+    "plan_area_m2": 8.749,
+    "skin_area_m2": 13.62,
+    "glazing_area_m2": 1.225,
+    "louvre_area_per_side_cm2": 332.1,
+    "fin_side_area_m2": 0.34,
+    "min_tyre_clearance_mm": {
+      "straight, +40 mm bump": 16.9,
+      "12 deg lock, +15 mm bump": 17.4
+    },
+    "skin_triangles": 226722
+  },
+  "sources": [
+    "FIA LMH Technical Regulations (2021-2024 editions), Art. 3.1 overall dimensions",
+    "Le Mans Hypercar class summaries: <= 5000 mm long, <= 2000 mm wide",
+    "Toyota GR010 Hybrid published data: 4900 x 2000 x 1150 mm",
+    "Endurance-Info / Michelin: LMH homologated after 2022-12-31 use 29/71-18 F + 34/71-18 R; earlier 4WD LMH may run 31/71-18 all round"
+  ],
+  "notes": [
+    "LMH survival cell is bespoke, so the canopy shown here can be engineered as drawn (subject to the windscreen / visibility / door-aperture articles).",
+    "Legacy 4WD option: 31/71-18 on both axles (see TYRE_31_71_18)."
+  ],
+  "caveat": "Rule figures cross-checked from published specifications; verify against the current FIA/ACO Technical Regulations before use.",
+  "exports": [
+    "manta_lmh.glb",
+    "manta_lmh.mtl",
+    "manta_lmh_aero_appendages.stl",
+    "manta_lmh_display_1to5.stl",
+    "manta_lmh_top_shell.obj",
+    "manta_lmh_top_shell_solid_3mm.stl",
+    "manta_lmh_top_shell_surface.stl"
+  ]
+}

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+renders/_raw/
+# large, regenerable exports (python scripts/generate.py)
+exports/*/*.obj
+exports/*/*.mtl
+exports/*/*_solid_*.stl
