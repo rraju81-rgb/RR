@@ -9,7 +9,7 @@ X is the width of the car, Y is up, +Z points to the rear. The overall size is u
 |---|---|
 | **1 cm thick** | The part is now **solid**: one body, with no hollow cavity and no separate bottom plate. The spoiler is only 19 mm thick at its thickest, so 10 mm walls from the top and the bottom would meet in the middle. Wall count and infill are set in the slicer (see below). |
 | **3 pieces instead of 4** | It is cut at x = ±216.7 mm into LEFT, CENTRE and RIGHT pieces, each 433 mm long. Each one stands on its cut face on the Kobra 3 Max (420 × 420 × 500 mm). |
-| **Steps on the top of the back part, keep it flat** | v5 had a step line running the full width across the top surface of the rear part (z ≈ 170–182 mm). It was up to **0.95 mm** high, left over from v5's hollow construction. It has been smoothed into the surrounding surface over a 60 mm wide band, and the shape on either side is unchanged. The stepped glue ledges where the old bottom plate sat are also gone, because the part is now one solid piece. See `docs/v6_rear_step_before_after.png`. |
+| **Steps on the top of the back part, keep it flat** | v5 had a step line running the full width across the top surface of the rear part (z ≈ 170–182 mm). It was up to **0.95 mm** high, left over from v5's hollow construction. It has been smoothed into the surrounding surface over a band up to 60 mm wide, and the shape on either side is unchanged. The stepped glue ledges where the old bottom plate sat are also gone, because the part is now one solid piece. See `docs/v6_rear_step_before_after.png`. |
 | **Bow-tie locking** | Each seam has 2 bow-tie (double-dovetail) keys in pockets on the hidden underside, where the part is 13–19 mm thick. All 4 keys are identical. They drop in from below and finish flush with the underside, so the roof tape covers them. |
 
 ## Files
@@ -24,7 +24,7 @@ X is the width of the car, Y is up, +Z points to the rear. The overall size is u
 | `v6_BOWTIE_KEY_x4.stl` | 4 (+2 spare) | 56 × 23 × 6.25 | Flat, car-side face on the bed | None |
 | `v6_BOWTIE_KEYS_plate_of_6.stl` | 1 plate | 180 × 53 × 6.25 | 6 keys on one plate | None |
 
-`assembled/` holds the same parts in car coordinates (`L`, `C`, `R`, `KEY_1`–`KEY_4`). Load them together in the slicer to check the assembly.
+`assembled/` holds the same 3 pieces and 4 keys in car coordinates, already in their fitted positions. Load them together in the slicer to check the assembly.
 
 `docs/` holds the renders, the key drawing and the before/after of the step. The scripts are on the GitHub branch in `spoiler/v6/src/`: running `sh v6/src/run_all.sh` from `spoiler/` rebuilds everything from the v5 STLs in about a minute.
 
