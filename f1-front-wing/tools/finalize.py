@@ -7,9 +7,11 @@ def slit_scan(m, n=200000, seed=0, lo=0.05, hi=0.9):
     np.random.seed(seed)
     pts, fi = trimesh.sample.sample_surface(m, n)
     nn = m.face_normals[fi]; o = pts + nn * 0.002
-    locs, ridx, tidx = m.ray.intersects_location(o, nn, multiple_hits=False)
     d = np.full(n, np.inf); hn = np.zeros((n, 3))
-    d[ridx] = np.linalg.norm(locs - o[ridx], axis=1); hn[ridx] = m.face_normals[tidx]
+    for a in range(0, n, 10000):                        # batches keep ray-casting memory bounded
+        b = min(a + 10000, n)
+        locs, ridx, tidx = m.ray.intersects_location(o[a:b], nn[a:b], multiple_hits=False)
+        d[a + ridx] = np.linalg.norm(locs - o[a + ridx], axis=1); hn[a + ridx] = m.face_normals[tidx]
     sl = (np.einsum('ij,ij->i', nn, hn) < -0.9) & (d > lo) & (d < hi)
     return int(sl.sum())
 
