@@ -1,16 +1,16 @@
-import sys, pickle, numpy as np, trimesh
-sys.path.insert(0, 'tools')
+import os, sys, pickle, numpy as np, trimesh
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from merge import merge_group4, heal_slits, to_manifold, keep_main
 
-def slit_scan(m, n=200000, seed=0):
+def slit_scan(m, n=200000, seed=0, lo=0.05, hi=0.9):
     np.random.seed(seed)
     pts, fi = trimesh.sample.sample_surface(m, n)
     nn = m.face_normals[fi]; o = pts + nn * 0.002
     locs, ridx, tidx = m.ray.intersects_location(o, nn, multiple_hits=False)
     d = np.full(n, np.inf); hn = np.zeros((n, 3))
     d[ridx] = np.linalg.norm(locs - o[ridx], axis=1); hn[ridx] = m.face_normals[tidx]
-    sl = (np.einsum('ij,ij->i', nn, hn) < -0.9) & (d > 0.05) & (d < 0.9)
+    sl = (np.einsum('ij,ij->i', nn, hn) < -0.9) & (d > lo) & (d < hi)
     return int(sl.sum())
 
 def build(ids, label):
@@ -73,13 +73,15 @@ def separate_coincident(V, F, eps=0.004):
     dup = np.where(cnt[inv] > 1)[0]
     if len(dup) == 0:
         return V, 0
-    # vertex normals from the indexed (un-welded) topology
-    fn = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])
-    vn = np.zeros_like(V)
+    # move each copy towards the centre of its own incident faces: copies that belong to
+    # different sheets then always end up apart (moving along normals can leave them together)
+    cen = V[F].mean(1)
+    acc = np.zeros_like(V); cnt = np.zeros(len(V))
     for k in range(3):
-        np.add.at(vn, F[:, k], fn)
-    nrm = np.linalg.norm(vn[dup], axis=1); nrm[nrm == 0] = 1
-    V[dup] -= vn[dup] / nrm[:, None] * eps          # move into own material
+        np.add.at(acc, F[:, k], cen); np.add.at(cnt, F[:, k], 1)
+    dirv = acc[dup] / np.maximum(cnt[dup], 1)[:, None] - V[dup]
+    nrm = np.linalg.norm(dirv, axis=1); nrm[nrm == 0] = 1
+    V[dup] += dirv / nrm[:, None] * eps
     return V, len(dup)
 
 def export_clean2(m, T, path, tol=0.01):

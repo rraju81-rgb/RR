@@ -1,6 +1,6 @@
 """Merge posed parts into single solids: close tab clearances, boolean-union, drop internal voids."""
-import sys, pickle, numpy as np, trimesh, manifold3d as mf
-sys.path.insert(0, 'tools')
+import os, sys, pickle, numpy as np, trimesh, manifold3d as mf
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from faces import plane_groups
 
 def close_clearances(B, A, gmin=0.03, gmax=0.8, min_area=4.0):

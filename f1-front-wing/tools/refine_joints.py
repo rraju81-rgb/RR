@@ -3,9 +3,9 @@
 Reads assembly.pkl (from assemble.py) and matches.pkl, stores T_refined on each joint and
 rebuilds the connected components with the refined transforms.
 """
-import sys, pickle
+import os, sys, pickle
 import numpy as np
-sys.path.insert(0, '.')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from refine import boundary_vertices, icp_refine_exact
 from ends import part_ends

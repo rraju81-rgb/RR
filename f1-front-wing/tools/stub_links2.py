@@ -1,6 +1,6 @@
 """Element-end <-> end-plate-stub joints, computed in each part's own coordinates (part-to-part)."""
-import sys, pickle, numpy as np
-sys.path.insert(0, 'tools')
+import os, sys, pickle, numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from faces import frame_for, register2d_multi, mirror_poly, transform_from_match
 from endmatch import skin_continuity

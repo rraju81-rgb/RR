@@ -1,5 +1,5 @@
-import sys, time, pickle, itertools
-sys.path.insert(0, 'tools')
+import os, sys, time, pickle, itertools
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from faces import *
 

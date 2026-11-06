@@ -15,7 +15,7 @@ def look_rotation(azim_deg, elev_deg):
     return np.stack([right, true_up, d])  # rows
 
 def render(meshes, colors=None, azim=-60, elev=25, size=(900, 700), margin=20,
-           bg=(250, 250, 250), labels=None, scale=None, center=None, edge=False):
+           bg=(250, 250, 250), labels=None, scale=None, center=None, edge=False, base_img=None):
     """meshes: list of trimesh.Trimesh; colors: list of RGB tuples. Returns PIL image (and scale used)."""
     R = look_rotation(azim, elev)
     light = np.array([0.35, 0.55, 0.75]); light /= np.linalg.norm(light)
@@ -31,7 +31,7 @@ def render(meshes, colors=None, azim=-60, elev=25, size=(900, 700), margin=20,
         scale = min((W - 2 * margin) / max(hi[0] - lo[0], 1e-6), (H - 2 * margin) / max(hi[1] - lo[1], 1e-6))
     if center is None:
         center = (lo + hi) / 2
-    img = Image.new('RGB', size, bg)
+    img = base_img.copy() if base_img is not None else Image.new('RGB', size, bg)
     dr = ImageDraw.Draw(img)
     for i, (m, v) in enumerate(zip(meshes, pts_all)):
         col = np.array(colors[i] if colors else (180, 180, 190), float)

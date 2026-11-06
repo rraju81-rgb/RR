@@ -1,85 +1,88 @@
-# F1 front wing — 3-piece version
+# F1 front wing — 4 print files for a 420 × 420 × 450 mm printer
 
-The original split model (`f1+wing+with+rings+removed+FINAL_stls`: 43 printable parts
-`obj_1 … obj_43` plus 6 × `Ring_F1-006`) was reassembled digitally and merged into
-the three sections from the colour-coded photos:
+Your split model (`f1+wing+with+rings+removed+FINAL_stls`: 43 printable parts plus 6 rings)
+was reassembled digitally and merged into four print files. **All four are scaled to 52 %** so
+that every file fits a **420 × 420 × 450 mm** build volume. They are oriented ready to print.
 
-| Section | File | Made from original parts | Size at 100 % |
+| # | File (`stl/`) | Size on the bed | Original parts in it |
 |---|---|---|---|
-| **Body** (red) | `stl/1_body_RED.stl` | obj_3 (tip) → 2 → 39 → 40 → 1 (rear) | 849 × 227 × 185 mm |
-| **Wings** (green) | `stl/2_wing_GREEN.stl` — **waiting for obj_37** | 4 full-width elements, 27 parts (see below) | ≈ 1113 × 511 × 99 mm |
-| **End plate** (blue) | `stl/3_endplate_A_BLUE.stl` | obj_11 + obj_12 | 259 × 193 × 67 mm |
-| **End plate** (blue) | `stl/3_endplate_B_BLUE.stl` | obj_16 + obj_41 | 250 × 203 × 72 mm |
+| 1 | `1_body.stl` | 119 × 118 × **435** mm (standing) | obj_3 (tip), 2, 39, 40, 1 (rear) |
+| 2 | `2_left_wing.stl` | 274 × 270 × 42 mm | obj_10, 36, 35, 9, 32, 31, 7, 23, 24, 6, 26, 25 + left halves of obj_20, 4, 5 |
+| 3 | `3_right_wing.stl` | 277 × 280 × 41 mm | obj_27, 28, 13, 29, 30, 14, 33, 34, 43, 37\*, 38, 42 + right halves of obj_20, 4, 5 |
+| 4 | `4_end_plates.stl` | 214 × 135 × 38 mm (both plates) | left: obj_11 + 12 · right: obj_16 + 41 |
 
-Wing elements (each runs the full width, passing under the nose):
+\* obj_37 was never uploaded. It was rebuilt as the mirror image of its twin, obj_25 (see below).
 
-| Element | Parts, end plate A → end plate B |
-|---|---|
-| 1 | obj_10, 36, 35, **20**, 27, 28, 13 |
-| 2 | obj_9, 32, 31, **4**, 29, 30, 14 |
-| 3 | obj_7, 23, 24, **5**, 33, 34, 43 |
-| 4 | obj_6, 26, 25, **37 (missing)**, 38, 42 |
+Every file was re-loaded the way a slicer does: watertight, no non-manifold edges, one solid per
+piece (two in the end plate file), and no hairline gaps left from the old joints.
 
-End plate A takes the element ends obj_6 / 7 / 9 / 10, end plate B takes obj_13 / 14 / 42 / 43.
-The two end plates are mirror images of each other, so print one of each.
+Left and right are as the driver sees them. The lowest wing element (the main plane) is at the
+front.
 
-Every merged piece is a single watertight solid (checked after re-loading the STL the way a
-slicer does: no open edges, no non-manifold edges, one body).
+## Printing
 
-## Not included (unchanged)
-
-These parts have no cut face that matches anything; they are glued-on extras, so print them
-from your original set if you use them: obj_8 & obj_19 (pair), obj_15 & obj_17 (pair),
-obj_18, obj_21, obj_22 and the six `Ring_F1-006` (obj_44–49).
-
-## Choosing a scale
-
-The STLs are the same size as your original parts. **Scale all three sections by the same
-percentage** in the slicer so the end plates and body still fit the wing:
-
-| Printer bed | Largest scale (the wing is the limit) | Wing span / nose length |
-|---|---|---|
-| 220 × 220 × 250 (Sovol SV06) | 23 % | ≈ 26 cm / 20 cm |
-| 256 × 256 × 256 (Bambu A1 / P1 / X1) | 26 % | ≈ 29 cm / 22 cm |
-| 300 × 300 × 340 (Sovol SV06 Plus) | 31 % | ≈ 35 cm / 26 cm |
-
-These assume the piece lies flat and is rotated on the bed; tilting the wing can gain a few
-percent. Wall thickness at 100 %: body 6.2 mm, wing elements 6–9 mm, end plates 5–8.5 mm. At
-23 % the thinnest wall, the body, is about 1.4 mm (3 perimeters with a 0.4 mm nozzle). All
-pieces have curved overhangs, so print with supports.
+* **Body:** stand it on its rear opening, tip up, as it is in the file. That way nothing needs
+  supporting inside the hollow nose. Use a brim, because it is 435 mm tall with a ~3.2 mm wall.
+  The very tip may want light supports.
+* **Wings and end plates:** these lie flat. The aerofoils and the end plate stubs are curved,
+  so use supports (tree or organic supports work well).
+* Wall thickness at 52 %: body ≈ 3.2 mm, wing elements ≈ 3–4.8 mm, end plates ≈ 2.4–4.4 mm.
+* The two wing halves meet at the centre line, under the nose. Glue them there, glue the end
+  plates onto the wing tips (the stubs mate with the element ends exactly as before), then glue
+  the nose on top.
+* The small extras that are not part of these four files (obj_8, 19, 15, 17, 18, 21, 22 and the
+  6 `Ring_F1-006`) are unchanged. Print them from your original files **at 52 %** so they match.
 
 ## What changed compared with the original parts
 
-* **Joints filled.** The castellated / tabbed joints had 0.1–0.4 mm fit clearance on the tab
-  sides. Those slits were filled so each section prints as one solid with no seam gaps.
-* **Wing webs.** The four wing elements never touch each other (3–9 mm slot gaps); in the
-  original they were held together only by the end plates. Small 5 mm thick webs (at 100 %)
-  now tie neighbouring elements together, so the wing is one rigid piece: 3 webs near each
-  end plate, where real F1 wings have slot-gap separators, and 2 at the centre under the
-  nose.
-* All other geometry is the original. The end plate stubs still meet the wing element ends
-  exactly as before.
+* **Joints filled:** the tabbed joints had 0.1–0.4 mm fit clearance. Those gaps were filled, so
+  each file prints as one solid with no seam gaps.
+* **Wing split in two:** the three full-width elements were cut on the car's centre line (through
+  the middle of centre pieces obj_4, 5 and 20) to give separate left and right wings. The top
+  flap already stops about 10 cm either side of the centre in the original design, where the
+  nose sits.
+* **Webs:** the four wing elements never touched each other. Each wing half now has 6 small webs
+  (5 mm thick at full size, about 2.6 mm at 52 %), 15 cm and 44 cm from the centre, that tie its
+  elements into one rigid piece.
+* **obj_37 rebuilt:** the missing top-flap piece is the twin of obj_25. Its mirror image fits
+  onto obj_38 with 99.2 % cross-section overlap and a 0.4° surface kink, so the joint is
+  seamless.
+* **Nose base:** the nose's rear rim was uneven by 3.3 mm. 3.2 mm was trimmed off at full size
+  (1.7 mm at 52 %) so the whole rim sits flat on the bed.
+
+## Other printers / scales
+
+`stl/full_size/` holds the same pieces at 100 % (your original size), lying flat:
+`1_body.stl` (untrimmed), `2_left_wing.stl`, `3_right_wing.stl`, `4a_end_plate_left.stl`,
+`4b_end_plate_right.stl`. To repackage for another build volume, run from the working folder
+of the pipeline below:
+
+```
+python3 tools/package_build_volume.py --bed X Y Z --full stl/full_size --out <folder>
+```
+
+It picks the largest common scale that fits (the standing nose is usually the limit).
 
 ## How it was made (`tools/`)
 
 The parts had been exported in print orientation (laid out on slicer plates), so they were
 first put back together:
 
-1. **Cut faces.** Every flat, sharp-edged face that crosses a part is a joint candidate
+1. **Cut faces:** every flat, sharp-edged face that crosses a part is a joint candidate
    (`faces.py`, `ends.py`).
-2. **Matching.** The ends of each part are compared in 2D against mirror-image ends of the
-   other parts, including tab/notch complementarity, and scored by whether the skin
-   surface continues across the cut (`run_endmatch.py`, `stub_links2.py`). True joints
-   score < 0.3° of skin kink; false ones 4–36°.
-3. **Exact alignment.** Both sides of a cut share boundary vertices, so each joint is
-   refined by ICP on those vertices (`refine.py`). Then a global least-squares fit over all
-   joints closes the loops through the two end plates (`solve_poses.py`; worst joint
-   residual 0.03 mm).
-4. **Merging.** The groups are boolean-unioned with manifold3d, with clearance slits filled
-   and healed (`merge.py`, `finalize.py`). The wing webs come from `bridges.py`. The result
-   is oriented on its most stable resting face and exported (`export_all.py`).
+2. **Matching:** the ends of each part are compared in 2D against mirror-image ends of the
+   other parts, including tab/notch fit. Each candidate is then scored by whether the skin
+   surface continues across the cut (`run_endmatch.py`, `stub_links2.py`). True joints show
+   < 0.3° of kink; false ones 4–36°.
+3. **Exact alignment:** both sides of a cut share boundary vertices, so each joint is refined
+   by ICP (`refine_joints.py`). A global least-squares fit over all joints then closes the loops
+   through the two end plates (`solve_poses.py`; the worst joint is off by 0.03 mm).
+4. **Merging:** pieces are boolean-unioned with manifold3d, with the clearance slits filled and
+   healed (`merge.py`, `finalize.py`, `export_all.py`). The wing halves, webs and the rebuilt
+   obj_37 come from `build_left_right.py`. Final scaling and orientation is done by
+   `package_build_volume.py`.
 
-To re-run: put the original STLs in a folder, then from `tools/` run
-`F1_PARTS_DIR=<folder> python3 <script>.py` in this order: `match_all.py`, `run_endmatch.py`,
-`assemble.py`, `stub_links2.py`, `solve_poses.py`, `bridges.py`, `export_all.py`.
-Requires `trimesh`, `manifold3d`, `shapely`, `scipy` and `numpy`.
+Run order, from an empty working folder, with `F1_PARTS_DIR` pointing at the original STLs:
+`match_all.py`, `run_endmatch.py`, `assemble.py`, `refine_joints.py`, `stub_links2.py`,
+`solve_poses.py`, `make_bridges.py`, `export_all.py`, `build_left_right.py`, then
+`package_build_volume.py`. Requires `trimesh`, `manifold3d`, `shapely`, `scipy`, `numpy`.

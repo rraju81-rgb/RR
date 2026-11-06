@@ -1,33 +1,26 @@
-import sys, pickle, numpy as np, trimesh
-sys.path.insert(0, 'tools')
+"""Merge, heal and export the full-size BODY and the two END PLATES into <F1_OUT_DIR>/full_size/.
+(The wing halves are built by build_left_right.py.)"""
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import numpy as np, trimesh
 import finalize
+from merge import to_manifold
 from orient import stable_orient
+from package_build_volume import manifold_to_stl
 
-import os
-OUT = os.environ.get('F1_OUT_DIR', 'stl') + '/'
-WING_IDS = [10, 36, 35, 20, 27, 28, 13, 9, 32, 31, 4, 29, 30, 14, 7, 23, 24, 5, 33, 34, 43, 6, 26, 25, 38, 42]
+OUT = os.path.join(os.environ.get('F1_OUT_DIR', 'stl'), 'full_size')
 
-def run(which):
-    jobs = []
-    if 'body' in which:
-        jobs.append(('1_body_RED.stl', lambda: finalize.build([3, 2, 39, 40, 1], 'BODY')))
-    if 'endplates' in which:
-        jobs.append(('3_endplate_A_BLUE.stl', lambda: finalize.build([11, 12], 'ENDPLATE_A')))
-        jobs.append(('3_endplate_B_BLUE.stl', lambda: finalize.build([16, 41], 'ENDPLATE_B')))
-    if 'wing' in which:
-        ids = list(WING_IDS) + ([37] if 37 in __import__('joints').load_parts() else [])
-        name = '2_wing_GREEN.stl' if 37 in ids else '2_wing_GREEN_INCOMPLETE_missing_obj37.stl'
-        jobs.append((name, lambda: finalize.build_wing(ids, pickle.load(open('bridges.pkl', 'rb')), 'WING')))
-    for fname, fn in jobs:
-        m = fn()
-        T, p = stable_orient(m, top=1)[0]
-        for tol in (0.005, 0.01, 0.02):
-            r = finalize.export_clean2(m, T, OUT + fname, tol)
-            if r['watertight'] and r['bad_edges'] == 0 and r['solids'] == 1:
-                break
-        chk = trimesh.load(OUT + fname, force='mesh')
-        print(f"==> {fname}: tol {tol} | {r['tris']} tris | watertight {r['watertight']} | non-manifold edges {r['bad_edges']} | solids {r['solids']} | "
-              f"volume {r['volume']/1000:.1f} cm3 | size {np.round(r['extents'], 1)} mm | visible slits {finalize.slit_scan(chk)}")
+def run():
+    os.makedirs(OUT, exist_ok=True)
+    jobs = [('1_body.stl', [3, 2, 39, 40, 1], 'BODY'),
+            ('4a_end_plate_left.stl', [11, 12], 'END PLATE LEFT'),
+            ('4b_end_plate_right.stl', [16, 41], 'END PLATE RIGHT')]
+    for fname, ids, label in jobs:
+        m = finalize.build(ids, label)
+        T, _ = stable_orient(m, top=1)[0]
+        chk, bad = manifold_to_stl(to_manifold(m).transform(T[:3, :4]), os.path.join(OUT, fname))
+        print(f"==> {fname}: {np.round(chk.extents, 1)} mm | watertight {chk.is_watertight} | non-manifold edges {bad} | "
+              f"solids {len(chk.split(only_watertight=False))} | volume {chk.volume / 1000:.1f} cm3")
 
 if __name__ == '__main__':
-    run(sys.argv[1:] or ['body', 'endplates', 'wing'])
+    run()

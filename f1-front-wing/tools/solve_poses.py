@@ -1,6 +1,6 @@
 """Final pose solve: BFS initialisation over all part-to-part joints + global least squares."""
-import sys, pickle, numpy as np
-sys.path.insert(0, 'tools')
+import os, sys, pickle, numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from refine import boundary_vertices
 from ends import part_ends

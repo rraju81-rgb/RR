@@ -1,5 +1,5 @@
-import sys, pickle, numpy as np, trimesh
-sys.path.insert(0, 'tools')
+import os, sys, pickle, numpy as np, trimesh
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from faces import frame_for, register2d_multi, mirror_poly
 from shapely.geometry import Polygon

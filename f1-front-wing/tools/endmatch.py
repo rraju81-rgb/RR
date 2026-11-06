@@ -1,6 +1,6 @@
 """Match part 'ends' (tabbed or flat cut faces) and score them, incl. skin-continuity across the cut."""
-import sys, pickle, itertools, numpy as np
-sys.path.insert(0, 'tools')
+import os, sys, pickle, itertools, numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from faces import register2d, mirror_poly, transform_from_match, iou_after
 from ends import part_ends
 from shapely import affinity

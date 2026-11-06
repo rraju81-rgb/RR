@@ -3,11 +3,11 @@
 Writes symmetry.pkl (plane normal n, offset d) and bridges.pkl (list of trimesh webs, in the
 assembled frame of final_poses.pkl).
 """
-import sys, pickle
+import os, sys, pickle
 import numpy as np, trimesh
 from scipy.spatial import cKDTree
 from scipy.optimize import least_squares
-sys.path.insert(0, '.')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from bridges import bridge
 

@@ -1,6 +1,6 @@
 """Global pose-graph refinement: every joint contributes exact vertex correspondences."""
-import sys, pickle, numpy as np
-sys.path.insert(0, 'tools')
+import os, sys, pickle, numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scipy.optimize import least_squares
 from scipy.spatial import cKDTree
 from scipy.spatial.transform import Rotation as Rot

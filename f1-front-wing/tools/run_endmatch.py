@@ -1,5 +1,5 @@
-import sys, pickle, itertools, numpy as np
-sys.path.insert(0, 'tools')
+import os, sys, pickle, itertools, numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
 from faces import register2d, register2d_multi, mirror_poly, transform_from_match
 from ends import part_ends
