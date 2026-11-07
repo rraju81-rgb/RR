@@ -1,6 +1,7 @@
 """Merge, heal and export the full-size BODY and the two END PLATES into <F1_OUT_DIR>/full_size/.
-(The wing halves are built by build_left_right.py.)"""
-import os, sys
+(The wing halves are built by build_left_right.py.) Also keeps each piece in its assembled pose
+(1_body_posed.pkl, 4a_end_plate_left_posed.pkl, 4b_end_plate_right_posed.pkl) for print_ready.py."""
+import os, sys, pickle
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np, trimesh
 import finalize
@@ -17,6 +18,7 @@ def run():
             ('4b_end_plate_right.stl', [16, 41], 'END PLATE RIGHT')]
     for fname, ids, label in jobs:
         m = finalize.build(ids, label)
+        pickle.dump(m, open(fname.replace('.stl', '_posed.pkl'), 'wb'))   # assembled pose, for print_ready.py
         T, _ = stable_orient(m, top=1)[0]
         chk, bad = manifold_to_stl(to_manifold(m).transform(T[:3, :4]), os.path.join(OUT, fname))
         print(f"==> {fname}: {np.round(chk.extents, 1)} mm | watertight {chk.is_watertight} | non-manifold edges {bad} | "
