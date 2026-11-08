@@ -28,10 +28,10 @@ which is exactly where it snapped .
 
 ### 2. Material removed from the upper stacks
 On tiers 4, 5 and 6 the solid spacer block is cut down to an **open L shape**:
-a 6 mm floor on the bed plus a solid column under the arm, meeting at a plain
-90° corner. Everything between the rail and the arm is removed from the top,
-so there are no enclosed holes or bridges and no supports are needed.
-Part volume drops from 152.5 cm³ to 136.2 cm³ (−10.7 %).
+a **10 mm floor** on the bed plus a solid column under the arm. The inside
+corner gets a large **8 mm × 45° chamfer** (4 mm on the rail side), so the
+column is braced into the floor. There are no enclosed holes or bridges and no
+supports needed. Part volume drops from 152.5 cm³ to 140.1 cm³ (−8 %).
 
 ### 3. Edges supported for faster, cleaner printing
 * The three mounting holes are now 45° teardrops, so the hole tops don't sag.

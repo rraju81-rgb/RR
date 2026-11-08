@@ -26,9 +26,9 @@ Changes:
        rail side (1.2 mm on tier 0 where there is less room). The card side of
        the plate is left flat so the card still sits flush.
   2. Material removed from the wide upper tiers (k = 3, 4, 5): the solid
-     spacer block becomes an open L -- 6 mm floor on the bed + a solid column
-     under the arm, meeting at a plain 90 deg corner (prints without
-     supports or bridges).
+     spacer block becomes an open L -- 10 mm floor on the bed + a solid column
+     under the arm, with an 8 mm 45 deg chamfer in the inside corner (4 mm at
+     the rail side). No enclosed holes, no supports or bridges.
   3. Print-support fixes:
      - mounting holes turned into 45 deg teardrops (no drooping hole roof).
      - 0.45 mm flat ledge where the groove narrows into the tip slot (z 127)
@@ -63,7 +63,9 @@ PLATE_ROOT_CHAMFER = 3.0
 LIP_ROOT_CHAMFER = 2.5
 SLOT_CHAMFER = 0.5
 E = 0.05              # boolean overlap
-FLOOR = 6.0           # floor thickness of the L-shaped spacer
+FLOOR = 10.0          # floor thickness of the L-shaped spacer
+COLUMN_CHAMFER = 8.0  # 45 deg chamfer, floor -> column inside corner
+RAIL_CHAMFER = 4.0    # 45 deg chamfer, floor -> rail inside corner
 COLUMN_LAND = 1.0     # flat land between column edge and plate chamfer
 RAIL_H = 20.0         # rail height
 
@@ -145,14 +147,22 @@ def build_left():
 
         # --- 2. open L-shaped spacer on the wide tiers ----------------------
         # Everything between the rail and the arm is cut away from the top,
-        # leaving a floor on the bed + a solid column under the arm that meet
-        # at a plain 90 deg corner (no enclosed window, no overhangs).
+        # leaving a thick floor on the bed + a solid column under the arm.
+        # Both inside corners of the channel get large 45 deg chamfers.
         xc = X(PLATE_IN) - pc - COLUMN_LAND      # inner face of the column
-        if xc - RAIL_W >= 4.0:
+        w = xc - RAIL_W
+        if w >= 4.0:
+            cc, cr = COLUMN_CHAMFER, RAIL_CHAMFER
+            if cc + cr > w - 1.0:                # narrow channel: shrink both
+                cr = min(cr, (w - 1.0) / 2.0)
+                cc = w - 1.0 - cr
             # above the rail: lower the block back to rail height
             subs.append(box(-1.0, xc, Y(-0.5), Y(22.5), RAIL_H - E, 140.0))
-            # between rail and column: down to the floor
-            subs.append(box(RAIL_W - E, xc, Y(-0.5), Y(22.5), FLOOR, 140.0))
+            # channel between rail and column, chamfered at both bottom corners
+            subs.append(prism_y([(RAIL_W - E, 140.0), (RAIL_W - E, FLOOR + cr),
+                                 (RAIL_W + cr, FLOOR), (xc - cc, FLOOR),
+                                 (xc, FLOOR + cc), (xc, 140.0)],
+                                Y(-0.5), Y(22.5)))
 
     # --- 3a. teardrop mounting holes (point up, 45 deg) ----------------------
     a = HOLE_R / math.sqrt(2)
