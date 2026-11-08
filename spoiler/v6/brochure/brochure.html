@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ducktail Roof Spoiler</title>
+<style>
+  @font-face { font-family: 'Michroma'; src: url('assets/fonts/michroma.ttf'); }
+  @font-face { font-family: 'Space Grotesk'; src: url('assets/fonts/spacegrotesk-regular.ttf'); font-weight: 400; }
+  @font-face { font-family: 'Space Grotesk'; src: url('assets/fonts/spacegrotesk-medium.ttf'); font-weight: 500; }
+  @font-face { font-family: 'Space Grotesk'; src: url('assets/fonts/spacegrotesk-bold.ttf'); font-weight: 700; }
+  @font-face { font-family: 'JB Mono'; src: url('assets/fonts/jetbrainsmono-medium.ttf'); }
+  :root {
+    --bg: #0a0b0e; --bg2: #111319; --card: #15181f; --line: #262a35;
+    --text: #f4f5f7; --muted: #9aa3b2; --dim: #6b7280;
+    --orange: #ff5c1e; --orange2: #ff7a45;
+  }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #2a2d33; }
+  body { font-family: 'Space Grotesk', sans-serif; color: var(--text); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; position: relative; overflow: hidden; background: var(--bg); margin: 0 auto; page-break-after: always; break-after: page; }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+  @media screen { .page { margin-bottom: 10px; } }
+  .mono { font-family: 'JB Mono', monospace; }
+  .kicker { font-family: 'JB Mono', monospace; font-size: 7.6pt; letter-spacing: .22em; color: var(--orange); text-transform: uppercase; }
+  h1, h2, h3 { font-family: 'Michroma', sans-serif; font-weight: 400; letter-spacing: .02em; }
+  .muted { color: var(--muted); }
+
+  /* ---------- page 1 ---------- */
+  .p1 .topbar { position: absolute; left: 12mm; right: 12mm; top: 10mm; display: flex; align-items: center; justify-content: space-between; z-index: 3; }
+  .p1 .topbar img.c6 { height: 15mm; }
+  .p1 .topbar .maker { display: flex; align-items: center; gap: 3mm; text-align: right; }
+  .p1 .topbar .maker img { height: 12mm; width: 12mm; border-radius: 50%; }
+  .p1 .topbar .maker span { font-family: 'JB Mono', monospace; font-size: 6.4pt; letter-spacing: .14em; color: var(--muted); line-height: 1.45; }
+  .p1 .topbar .maker b { color: var(--text); font-weight: 400; }
+  .p1 .title { position: absolute; left: 12mm; right: 12mm; top: 33mm; z-index: 3; }
+  .p1 h1 { font-size: 35pt; line-height: 1.04; margin-top: 3.2mm; }
+  .p1 h1 .o { color: var(--orange); }
+  .p1 .lead { margin-top: 4.5mm; width: 128mm; font-size: 10.2pt; line-height: 1.5; color: #d9dde4; }
+  .p1 .hero { position: absolute; left: 0; right: 0; top: 84mm; height: 124mm; }
+  .p1 .hero img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; display: block; }
+  .p1 .hero::before, .p1 .hero::after { content: ''; position: absolute; left: 0; right: 0; height: 24mm; z-index: 1; }
+  .p1 .hero::before { top: 0; background: linear-gradient(var(--bg), rgba(10,11,14,0)); }
+  .p1 .hero::after { bottom: 0; background: linear-gradient(rgba(10,11,14,0), var(--bg)); }
+  .p1 .tag { position: absolute; z-index: 2; font-family: 'JB Mono', monospace; font-size: 6.4pt; letter-spacing: .14em; color: var(--muted); }
+  .p1 .tag::before { content: ''; display: inline-block; width: 7mm; height: .3mm; background: var(--orange); vertical-align: middle; margin-right: 2mm; }
+  .p1 .feats { position: absolute; left: 12mm; right: 12mm; top: 211mm; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; }
+  .p1 .feat { border-top: .35mm solid var(--line); padding-top: 3mm; }
+  .p1 .feat .n { font-family: 'JB Mono', monospace; font-size: 7pt; color: var(--orange); letter-spacing: .12em; }
+  .p1 .feat h3 { font-size: 7.6pt; margin: 1.8mm 0 1.6mm; line-height: 1.35; }
+  .p1 .feat p { font-size: 7.9pt; line-height: 1.45; color: var(--muted); }
+  .p1 .finishes { position: absolute; left: 12mm; top: 249mm; display: flex; gap: 5mm; align-items: center; }
+  .p1 .finishes .lab { font-family: 'JB Mono', monospace; font-size: 6.6pt; letter-spacing: .16em; color: var(--muted); margin-right: 1mm; }
+  .sw { display: flex; align-items: center; gap: 1.6mm; font-family: 'JB Mono', monospace; font-size: 6.6pt; letter-spacing: .08em; color: var(--text); }
+  .sw i { width: 4.6mm; height: 4.6mm; border-radius: 50%; display: inline-block; border: .3mm solid #3a3f4b; }
+  .p1 .cta { position: absolute; left: 0; right: 0; bottom: 0; height: 34mm; background: var(--orange); color: #0a0b0e; display: flex; align-items: center; padding: 0 12mm; gap: 7mm; }
+  .p1 .cta .big { font-family: 'Michroma', sans-serif; font-size: 15pt; line-height: 1.15; }
+  .p1 .cta .small { font-family: 'JB Mono', monospace; font-size: 7.4pt; letter-spacing: .1em; margin-top: 2mm; }
+  .p1 .cta .grow { flex: 1; }
+  .p1 .cta .qr { background: #fff; padding: 1.2mm; border-radius: 1.6mm; width: 25mm; height: 25mm; }
+  .p1 .cta .qr img { width: 100%; height: 100%; display: block; }
+  .p1 .cta .qrcap { font-family: 'JB Mono', monospace; font-size: 6.2pt; letter-spacing: .12em; text-align: center; margin-top: 1mm; }
+
+  /* ---------- page 2 ---------- */
+  .p2 .head { position: absolute; left: 12mm; right: 12mm; top: 11mm; display: flex; justify-content: space-between; align-items: flex-end; }
+  .p2 .head h2 { font-size: 19pt; margin-top: 2mm; }
+  .p2 .head img { height: 10mm; opacity: .9; }
+  .p2 .side { position: absolute; left: 0; right: 0; top: 30mm; height: 66mm; overflow: hidden; }
+  .p2 .side img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
+  .cap { font-family: 'JB Mono', monospace; font-size: 6.2pt; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+  .p2 .side .cap { position: absolute; left: 12mm; bottom: 3mm; }
+  .p2 .row2 { position: absolute; left: 12mm; right: 12mm; top: 100mm; height: 46mm; display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .p2 .row2 figure { position: relative; overflow: hidden; border-radius: 1.6mm; background: #000; }
+  .p2 .row2 img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .p2 .row2 .cap { position: absolute; left: 3mm; bottom: 2.4mm; color: #e6e8ec; text-shadow: 0 0 2mm rgba(0,0,0,.9); }
+  .p2 .bow { position: absolute; left: 12mm; right: 12mm; top: 151mm; height: 54mm; display: grid; grid-template-columns: 96mm 1fr; gap: 6mm; align-items: stretch; }
+  .p2 .bow figure { position: relative; overflow: hidden; border-radius: 1.6mm; }
+  .p2 .bow img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; display: block; }
+  .p2 .bow .cap { position: absolute; left: 3mm; bottom: 2.4mm; color: #2a2d33; }
+  .p2 .bow h3 { font-size: 11pt; line-height: 1.3; margin: 2mm 0 3mm; }
+  .p2 .bow p { font-size: 8.4pt; line-height: 1.55; color: #c9ced7; }
+  .p2 .bow p + p { margin-top: 2.2mm; }
+  .p2 .bow .key { color: var(--orange); }
+  .p2 .facts { position: absolute; left: 12mm; right: 12mm; top: 208mm; display: grid; grid-template-columns: 96mm 1fr; gap: 6mm; }
+  .spec { width: 100%; border-collapse: collapse; font-size: 7.8pt; }
+  .spec td { padding: 0.95mm 0; border-bottom: .3mm solid var(--line); vertical-align: top; }
+  .spec td:first-child { font-family: 'JB Mono', monospace; font-size: 6.6pt; letter-spacing: .12em; color: var(--muted); width: 25mm; padding-top: 1.45mm; }
+  .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4mm 4mm; margin-top: 1mm; }
+  .step .n { font-family: 'Michroma', sans-serif; font-size: 11pt; color: var(--orange); }
+  .step b { display: block; font-family: 'JB Mono', monospace; font-weight: 400; font-size: 7pt; letter-spacing: .14em; margin: .8mm 0 .8mm; }
+  .step p { font-size: 7.5pt; line-height: 1.42; color: var(--muted); }
+  .p2 .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 38.5mm; background: var(--bg2); border-top: .35mm solid var(--line); padding: 5mm 12mm 0; display: grid; grid-template-columns: 1fr 22mm 22mm; gap: 5mm; }
+  .p2 .foot .who { font-size: 7.8pt; line-height: 1.55; color: #c9ced7; }
+  .p2 .foot .who b { font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 8.6pt; color: var(--text); letter-spacing: .03em; }
+  .p2 .foot .who .ph { font-family: 'Michroma', sans-serif; font-size: 10.5pt; color: var(--orange); margin: 1mm 0 .6mm; display: block; }
+  .p2 .foot .qr { text-align: center; }
+  .p2 .foot .qr img { width: 22mm; height: 22mm; background: #fff; padding: 1mm; border-radius: 1.4mm; display: block; }
+  .p2 .foot .qr .cap { margin-top: 1.2mm; display: block; }
+  .p2 .fine { position: absolute; left: 12mm; right: 12mm; bottom: 3mm; font-size: 5.6pt; color: var(--dim); line-height: 1.4; }
+  /* weights: Regular for reading text, Medium for the small grey text on the dark background */
+  body { font-weight: 400; }
+  .p1 .feat p, .step p, .spec, .p2 .foot .who, .p2 .fine { font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ======================= PAGE 1 ======================= -->
+<section class="page p1">
+  <div class="topbar">
+    <img class="c6" src="assets/c6_logo_white.svg" alt="Carbon 6 Customization">
+    <div class="maker">
+      <span>3D PRINTED IN BANGALORE BY<br><b>PI.XL 3D PRINTING</b></span>
+      <img src="assets/pixl_logo.png" alt="">
+    </div>
+  </div>
+
+  <div class="title">
+    <div class="kicker">Aero add-on &nbsp;·&nbsp; VW Polo 6R / 6C hatchback</div>
+    <h1>DUCKTAIL<br><span class="o">ROOF</span> SPOILER</h1>
+    <p class="lead">A full-width roof spoiler shaped to the Polo's roof and tailgate, with end fins that wrap both rear pillars. Printed in three sections, locked with hidden bow-tie keys and finished in gloss black or your car's colour.</p>
+  </div>
+
+  <div class="hero"><img src="img/hero_white.jpg" alt="Roof spoiler fitted to a white VW Polo hatchback"></div>
+  <div class="tag" style="right: 12mm; top: 198mm;">1300 MM WIDE &nbsp;·&nbsp; GLOSS BLACK</div>
+
+  <div class="feats">
+    <div class="feat"><div class="n">01</div><h3>MADE FOR THE POLO</h3><p>Contoured to the 6R / 6C roof line, with fins that wrap the rear pillars.</p></div>
+    <div class="feat"><div class="n">02</div><h3>SOLID 3-PIECE BUILD</h3><p>Three one-piece sections from our 420 × 420 × 500 mm large-format printer. No hollow shell.</p></div>
+    <div class="feat"><div class="n">03</div><h3>BOW-TIE LOCKED</h3><p>Four hidden bow-tie keys lock the sections into one rigid part.</p></div>
+    <div class="feat"><div class="n">04</div><h3>TAPE-ON FITTING</h3><p>Bonds with 3M VHB automotive tape. No drilling, no holes in your car.</p></div>
+  </div>
+
+  <div class="finishes">
+    <span class="lab">FINISHES</span>
+    <span class="sw"><i style="background:#0b0b0c"></i>GLOSS BLACK</span>
+    <span class="sw"><i style="background:linear-gradient(135deg,#f2f3f5 50%,#b3121a 50%)"></i>BODY COLOUR</span>
+    <span class="sw"><i style="background:#8d9096"></i>PRIMER</span>
+  </div>
+
+  <div class="cta">
+    <div class="grow">
+      <div class="big">ASK FOR PRICE<br>&amp; PAINT OPTIONS</div>
+      <div class="small">WHATSAPP / CALL &nbsp;+91 99006 11996 &nbsp;·&nbsp; @C6_CUSTOMIZATION</div>
+    </div>
+    <div>
+      <div class="qr"><img src="assets/qr_whatsapp.svg" alt="WhatsApp QR"></div>
+      <div class="qrcap">SCAN TO WHATSAPP</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= PAGE 2 ======================= -->
+<section class="page p2">
+  <div class="head">
+    <div>
+      <div class="kicker">Fit &amp; finish</div>
+      <h2>SHAPED TO THE POLO</h2>
+    </div>
+    <img src="assets/c6_logo_white.svg" alt="">
+  </div>
+
+  <div class="side">
+    <img src="img/side.jpg" alt="Side profile with the spoiler fitted">
+    <div class="cap">Profile · the lip carries the roof line past the tailgate</div>
+  </div>
+
+  <div class="row2">
+    <figure><img src="img/top_rear.jpg" alt=""><figcaption class="cap">Full width · 1300 mm across the roof</figcaption></figure>
+    <figure><img src="img/detail_fin.jpg" alt=""><figcaption class="cap">End fins wrap the rear pillars</figcaption></figure>
+  </div>
+
+  <div class="bow">
+    <figure><img src="img/joints.jpg" alt="Underside of the three sections with bow-tie keys"><figcaption class="cap">Underside · keys shown in orange</figcaption></figure>
+    <div>
+      <div class="kicker">The joint</div>
+      <h3>THREE PIECES.<br>FOUR BOW-TIES.</h3>
+      <p>A 1.3 m spoiler is too big for one print, so we print it in three sections. Every seam is locked by two <span class="key">bow-tie (double-dovetail) keys</span> set into the hidden underside, with structural adhesive across the whole joint face.</p>
+      <p>The keys sit flush with the underside, under the mounting tape. On top, the seams are filled, primed and painted, so the finished spoiler shows one clean surface.</p>
+    </div>
+  </div>
+
+  <div class="facts">
+    <table class="spec">
+      <tr><td>FITS</td><td>VW Polo hatchback, 6R / 6C generation</td></tr>
+      <tr><td>SIZE</td><td>1300 × 292 × 147 mm (W × D × H)</td></tr>
+      <tr><td>BUILD</td><td>3 one-piece sections + 4 bow-tie keys</td></tr>
+      <tr><td>MATERIAL</td><td>PETG or ASA</td></tr>
+      <tr><td>FINISH</td><td>Primer, gloss black or colour-matched paint</td></tr>
+      <tr><td>WEIGHT</td><td>About 2–2.5 kg painted</td></tr>
+      <tr><td>FITTING</td><td>3M VHB automotive tape, no drilling</td></tr>
+    </table>
+    <div>
+      <div class="kicker" style="margin-bottom:2.4mm">How it's made</div>
+      <div class="steps">
+        <div class="step"><div class="n">01</div><b>PRINT</b><p>Three sections, each printed in one go.</p></div>
+        <div class="step"><div class="n">02</div><b>LOCK</b><p>Sections bonded and locked with four bow-tie keys.</p></div>
+        <div class="step"><div class="n">03</div><b>FINISH</b><p>Seams filled, then primed and painted in your colour.</p></div>
+        <div class="step"><div class="n">04</div><b>FIT</b><p>Taped on with 3M VHB. Leave 72 hours before a wash.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <b>CARBON 6 CUSTOMIZATION</b>
+      <span class="ph">+91 99006 11996</span>
+      carbon6customization@gmail.com &nbsp;·&nbsp; Instagram @c6_customization<br>
+      3D printed by <b style="font-size:7.6pt">PI.XL 3D PRINTING</b> &nbsp;·&nbsp; @pi.xl3dprinting<br>
+      Near Yelachenahalli Metro, opposite Pillar No. 114, Bangalore
+    </div>
+    <div class="qr"><img src="assets/qr_whatsapp.svg" alt=""><span class="cap">WhatsApp</span></div>
+    <div class="qr"><img src="assets/qr_instagram.svg" alt=""><span class="cap">Instagram</span></div>
+  </div>
+  <div class="fine">Images are 3D renders. VW and Polo are trademarks of Volkswagen AG; 3M and VHB are trademarks of 3M. This is an aftermarket accessory and is not made, endorsed or approved by Volkswagen.</div>
+</section>
+
+</body>
+</html>

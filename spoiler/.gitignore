@@ -7,3 +7,7 @@ work/__pycache__/
 work/asa_tds.pdf
 v6/out/
 v6/src/__pycache__/
+v6/car/out/
+v6/car/src/__pycache__/
+v6/car/renders/*.png
+v6/car/renders/*.log

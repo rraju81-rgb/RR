@@ -26,7 +26,7 @@ X is the width of the car, Y is up, +Z points to the rear. The overall size is u
 
 `assembled/` holds the same 3 pieces and 4 keys in car coordinates, already in their fitted positions. Load them together in the slicer to check the assembly.
 
-`docs/` holds the renders, the key drawing and the before/after of the step. The scripts are on the GitHub branch in `spoiler/v6/src/`: running `sh v6/src/run_all.sh` from `spoiler/` rebuilds everything from the v5 STLs in about a minute.
+`docs/` holds the renders, the key drawing and the before/after of the step. `car/` holds renders of the spoiler on a Polo-class car, and `brochure/` holds a two-page A4 brochure built from them; each has its own README. The scripts are on the GitHub branch in `spoiler/v6/src/`: running `sh v6/src/run_all.sh` from `spoiler/` rebuilds everything from the v5 STLs in about a minute.
 
 ## Checks on the delivered files
 
