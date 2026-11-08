@@ -23,3 +23,17 @@ Edit the `P = dict(...)` block at the top of `build.py` to change the wheelbase,
 
 ## Printing
 The underside rim follows the original ray's wing edges, which are mostly lifted off the plate. Print it upright with tree supports, as for the original figure. Supports are needed under the wing edges and arches.
+
+---
+
+# v2: Hypercar "mutant stingray" shell (`Stingray_Hypercar_shell.3mf`)
+
+A sculptural hypercar version. The wings themselves are morphed into the car (`scripts/build2.py`):
+
+* **Wheel pods:** the outer wings are bent upward over each wheel into rounded, flat-topped pods, so the shell edge waves up over the wheels. All four pods are levelled to about 31 mm. Front axle y = -35, rear axle y = +25.
+* **Waist:** the plan view is pinched between the pods, giving a guitar-shaped top view and a "dog-bone" open underside.
+* **Shell:** 2 mm thin wall with an open bottom, and the rear rounded off in plan view.
+* **Details:** a teardrop canopy over the spine, oval vents through the top of each pod, raked headlight recesses on the front pods, and a 2.6 mm dorsal blade fin replacing the tail, sweeping up to 57 mm behind the car.
+* **Size:** about 133 × 163 × 57 mm, watertight. Print upright with tree supports.
+
+Main knobs are in `P = dict(...)` in `build2.py`: `lift`, `pod_top`, `pod_len`, `waist`, axle positions and `wall`.
