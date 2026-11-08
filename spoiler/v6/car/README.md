@@ -11,7 +11,9 @@ It has no VW badges or logos. The rear plate reads CARBON 6.
 
 ## How the spoiler sits on the car
 
-- The car and the spoiler share the spoiler's coordinates: x across the car, y up, z to the rear, in mm. The spoiler files are used unchanged from `../assembled/`.
+- The car and the spoiler share the spoiler's coordinates: x across the car, y up, z to the rear, in mm.
+- The car views show the finished spoiler as one part, with seams filled and painted. That is the solid shape the three pieces are cut from: `v6/out/E2.stl`, built by `v6/src/run_all.sh`.
+- The joint and parts views use the printed pieces and keys from `../assembled/` unchanged.
 - The roof under the spoiler follows the measured underside of the v6 spoiler (`data/hump_profile.npz`). The spoiler sits on the roof with a **1.5 mm gap for the mounting tape**: that is the median, and 90% of points are between 1.2 and 2.7 mm. Under the fins, the C-pillars are pulled in to the same gap and blended back to their original shape over 70 mm. Along the inner faces of the fins, a few points get closer, down to touching near the fin tips. No point of the car is inside the spoiler.
 - This means the fit in the renders is **by construction**: the roof was shaped to the spoiler. The renders show how the part looks on the car. They don't prove that it fits a real Polo, so dry-fit as described in `../README.md`.
 

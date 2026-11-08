@@ -245,13 +245,10 @@ def build(paint='white', studio='dark', car_path='v6/car/out/car_body_conf.ply')
         tob.rotation_euler = (math.radians(90), 0, 0); tob.location = (c[0], ymin - 0.0006, c[2])
         cu.materials.append(M['ink'])
     except Exception as e: print('plate text failed', e)
-    for k in 'LCR':
-        sp_m = trimesh.load(f'v6/assembled/{k}.stl')
-        if NORMALS:
-            from car_zones import smooth_normals
-            new_mesh('spoiler_' + k, sp_m, [M['spoiler']], loop_normals=spoiler_normals(sp_m))
-        else:
-            new_mesh('spoiler_' + k, sp_m, [M['spoiler']], auto=30)
+    # the finished spoiler is one painted part (seams filled), i.e. the solid envelope the three pieces are cut from
+    sp_m = trimesh.load('v6/out/E2.stl')
+    if NORMALS: new_mesh('spoiler', sp_m, [M['spoiler']], loop_normals=spoiler_normals(sp_m))
+    else: new_mesh('spoiler', sp_m, [M['spoiler']], auto=30)
     # floor
     bpy.ops.mesh.primitive_plane_add(size=60, location=(0, 1.6, 0)); fl = bpy.context.active_object; fl.data.materials.append(M['floor'])
     # world
