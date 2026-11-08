@@ -25,9 +25,10 @@ Changes:
      - 3 mm x 45 deg chamfer where the 2.4 mm arm plate meets the block on the
        rail side (1.2 mm on tier 0 where there is less room). The card side of
        the plate is left flat so the card still sits flush.
-  2. Material removed from the wide upper tiers (k = 3, 4, 5): a through
-     window in each spacer block with a 45 deg peaked roof (prints without
-     supports), keeping >= 3 mm floor / roof and a solid column under the arm.
+  2. Material removed from the wide upper tiers (k = 3, 4, 5): the solid
+     spacer block becomes an open L -- 6 mm floor on the bed + a solid column
+     under the arm, meeting at a plain 90 deg corner (prints without
+     supports or bridges).
   3. Print-support fixes:
      - mounting holes turned into 45 deg teardrops (no drooping hole roof).
      - 0.45 mm flat ledge where the groove narrows into the tip slot (z 127)
@@ -62,7 +63,9 @@ PLATE_ROOT_CHAMFER = 3.0
 LIP_ROOT_CHAMFER = 2.5
 SLOT_CHAMFER = 0.5
 E = 0.05              # boolean overlap
-WALL = 3.0            # min floor / roof thickness around windows
+FLOOR = 6.0           # floor thickness of the L-shaped spacer
+COLUMN_LAND = 1.0     # flat land between column edge and plate chamfer
+RAIL_H = 20.0         # rail height
 
 HOLES_Y = (28.0, 138.0, 303.0)
 HOLE_Z = 10.0
@@ -140,16 +143,16 @@ def build_left():
                              (X(LIP_IN_GROOVE) + E, 127.0 - r - 2 * E)],
                             Y(3) - E, Y(4) - E))
 
-        # --- 2. lightening window through the wide spacer blocks ------------
-        xa = RAIL_W + 1.5
-        xb = X(PLATE_IN) - 2.5
-        w = xb - xa
-        if w >= 4.0:
-            apex = BLOCK_TOP - WALL
-            shoulder = apex - w / 2.0
-            subs.append(prism_y([(xa, WALL), (xb, WALL), (xb, shoulder),
-                                 ((xa + xb) / 2.0, apex), (xa, shoulder)],
-                                Y(-1), Y(23)))
+        # --- 2. open L-shaped spacer on the wide tiers ----------------------
+        # Everything between the rail and the arm is cut away from the top,
+        # leaving a floor on the bed + a solid column under the arm that meet
+        # at a plain 90 deg corner (no enclosed window, no overhangs).
+        xc = X(PLATE_IN) - pc - COLUMN_LAND      # inner face of the column
+        if xc - RAIL_W >= 4.0:
+            # above the rail: lower the block back to rail height
+            subs.append(box(-1.0, xc, Y(-0.5), Y(22.5), RAIL_H - E, 140.0))
+            # between rail and column: down to the floor
+            subs.append(box(RAIL_W - E, xc, Y(-0.5), Y(22.5), FLOOR, 140.0))
 
     # --- 3a. teardrop mounting holes (point up, 45 deg) ----------------------
     a = HOLE_R / math.sqrt(2)

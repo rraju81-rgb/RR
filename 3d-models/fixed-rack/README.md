@@ -6,7 +6,7 @@
 | `right_fixed_rack_PRINT_v2.stl` | **Print this** – modified right rack (exact mirror of left) |
 | `original/` | The STLs as received, untouched |
 | `modify_rack.py` | Script that produces v2 from `original/` (all dimensions are parameters at the top) |
-| `before_after.png`, `sections_before_after.png` | Visual comparison |
+| `before_after.png` | Visual comparison (original vs v2, with tier-6 cross-section) |
 
 Print orientation is unchanged (rail flat on the bed, arms pointing up, 32 × 350 × 136 mm).
 
@@ -16,7 +16,7 @@ Print orientation is unchanged (rail flat on the bed, arms pointing up, 32 × 35
 Root cause found in the original mesh: the gusset under each card-slot lip was
 **floating 0.1 mm above the block** (z 27.6 → 27.7), and there was a loose
 0.1 mm sliver at z ≈ 36.5. So the lip was only attached at its back wall,
-which is exactly where it snapped (see `sections_before_after.png`, left two columns).
+which is exactly where it snapped .
 
 * Lip + gusset rebuilt as one solid that is fused into the block.
 * 2.5 mm 45° chamfer added at the foot of the lip.
@@ -26,10 +26,12 @@ which is exactly where it snapped (see `sections_before_after.png`, left two col
   (1.2 mm on the first tier, where there is less room). The card side of the
   plate is left flat so the card still lies flush against it.
 
-### 2. Material removed from the wide upper tiers
-Tiers 4, 5 and 6 have a through-window in the spacer block, with a 45° peaked roof
-(no supports needed). There is still ≥ 3 mm of floor and roof, and a solid column
-under each arm. Part volume drops from 152.5 cm³ to 141.0 cm³ (−7.5 %).
+### 2. Material removed from the upper stacks
+On tiers 4, 5 and 6 the solid spacer block is cut down to an **open L shape**:
+a 6 mm floor on the bed plus a solid column under the arm, meeting at a plain
+90° corner. Everything between the rail and the arm is removed from the top,
+so there are no enclosed holes or bridges and no supports are needed.
+Part volume drops from 152.5 cm³ to 136.2 cm³ (−10.7 %).
 
 ### 3. Edges supported for faster, cleaner printing
 * The three mounting holes are now 45° teardrops, so the hole tops don't sag.
