@@ -1,12 +1,12 @@
 """Material zones on the procedural body, by face position/normal (car-relative s = from front bumper, h = height)."""
-import numpy as np, trimesh
+import numpy as np
 from matplotlib.path import Path
 from car_body import s_of, h_of, PLAN_CAB, tumble_cab
 MAT = ['paint', 'glass', 'trim_black', 'plastic_black', 'tail_lamp', 'head_lamp', 'grille_chrome', 'rev_lamp']
 def plan_halfwidth(poly, s):
-    P = np.asarray(poly); out = np.zeros_like(s)
+    P = np.asarray(poly)
     # max |x| of the polygon at each s (sample the outline)
-    ss = P[:, 1]; xx = np.abs(P[:, 0]); order = np.argsort(ss)
+    ss = P[:, 1]; xx = np.abs(P[:, 0])
     bins = np.linspace(ss.min(), ss.max(), 400); hw = np.zeros(len(bins))
     for i, b in enumerate(bins):
         m = np.abs(ss - b) < (bins[1] - bins[0]) * 1.5

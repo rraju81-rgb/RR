@@ -1,10 +1,9 @@
 """Blender Cycles studio scene for the Polo + v6 spoiler. Usage:
    python3 v6/car/src/blend_scene.py <view> <out.png> <W> <H> <samples> [paint=white|red|grey] [studio=dark|light]"""
-import os, sys, json, math, numpy as np
+import os, sys, math, numpy as np
 sys.path.insert(0, 'v6/car/src')
 import bpy, trimesh
-from car_body import Y_G, Z_F
-from car_mats import classify, MAT
+from car_body import Y_G
 
 def to_bl(V):   # car mm (x, y-up, z-rear) -> blender m (X, Y-forward, Z-up), ground at Z=0
     V = np.asarray(V, float)
@@ -120,7 +119,7 @@ def lights_only(sc):
     def aim(o, target):
         from mathutils import Vector
         d = Vector(target) - o.location; o.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
-    top = area('top', (0, 1.9, 5.2), (0, 0, 0), 2.4, 6.5, 200)
+    area('top', (0, 1.9, 5.2), (0, 0, 0), 2.4, 6.5, 200)
     k1 = area('key_rear_left', (-3.6, -2.8, 2.6), (0, 0, 0), 2.6, 1.6, 260); aim(k1, (0, -0.2, 1.0))
     k2 = area('fill_right', (3.8, 1.0, 2.0), (0, 0, 0), 3.0, 1.4, 110); aim(k2, (0, 1.0, 0.8))
     r1 = area('rim_left', (-3.2, 3.8, 1.6), (0, 0, 0), 0.5, 5.0, 200); aim(r1, (0, 1.4, 1.0))
@@ -174,7 +173,6 @@ def build_parts(mode='parts', studio='dark'):
             kl.apply_translation([sx * (433.3 / 2 + 75.0), -88.0, zz]); km = kl
         new_mesh(f'key_{i}', km, [M['key']], auto=30)
     # drop everything onto the floor
-    zmin = min(o.bound_box[0][2] for o in bpy.data.objects if o.type == 'MESH')
     mins = []
     for o in bpy.data.objects:
         if o.type == 'MESH':
@@ -222,7 +220,6 @@ def build(paint='white', studio='dark', car_path='v6/car/out/car_body_conf.ply')
         Ns = smooth_fields({'x': Nb[:, 0], 'y': Nb[:, 1], 'z': Nb[:, 2]}, np.asarray(base.faces), len(base.vertices), iters=25)
         Nz = np.column_stack([Ns['x'], Ns['y'], Ns['z']]); Nz /= np.maximum(np.linalg.norm(Nz, axis=1, keepdims=True), 1e-9)
         Fz = fields(base.vertices, Nz)
-        from car_zones import smooth_fields
         cov = np.load('v6/car/out/covered.npy')
         Fz['hidden'] = (cov * 2 - 1) * 10.0
         # only the binary under-spoiler mask is smoothed: uniform smoothing on this irregular mesh drifts the

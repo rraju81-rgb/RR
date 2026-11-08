@@ -8,7 +8,7 @@ A two-page A4 brochure for the v6 roof spoiler, branded Carbon 6 Customization a
 | `brochure_page1.png`, `brochure_page2.png` | The pages as images (about 2060 × 2920 px), for WhatsApp or Instagram. |
 | `brochure.html` | Source of both pages: all text and layout. |
 | `img/` | The renders as placed on the pages (made by `prep_images.py` from `../car/renders/`). |
-| `assets/` | Carbon 6 logo (white and dark versions), pi.XL logo, QR codes and fonts. |
+| `assets/` | Carbon 6 logo (white and dark versions), pi.XL logo, QR codes, and fonts with their licence files. |
 | `make_qr.py` | Makes the two QR codes. |
 | `export.js` | Writes the PDF and the page images from `brochure.html`. |
 
@@ -37,4 +37,4 @@ Run steps 1 and 3 from this folder. `prep_images.py` works from any folder.
 - **Printing:** the PDF is RGB with no bleed. That is fine for an office or digital printer. A print shop may want 3 mm bleed and CMYK, so ask them first.
 - **Disclaimers:** the images are labelled as 3D renders. The trademark note (VW, Polo, 3M, VHB) is at the bottom of page 2.
 
-The fonts (Michroma, Space Grotesk, JetBrains Mono) are all under the SIL Open Font License, so they can be embedded and printed freely.
+The fonts (Michroma, Space Grotesk, JetBrains Mono) are all under the SIL Open Font License, so they can be embedded and printed freely. The licence texts are in `assets/fonts/`.

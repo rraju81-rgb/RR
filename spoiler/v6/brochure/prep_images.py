@@ -6,7 +6,9 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = os.path.join(HERE, '..', 'car', 'renders'); O = os.path.join(HERE, 'img')
 NAMES = ['hero_white', 'hero_red', 'top_rear', 'side', 'detail_fin', 'joints', 'parts', 'rear']
-CROPS = {'side': (0.08, 0.18, 0.92, 0.86)}          # x0, y0, x1, y1 as fractions of the render
+# x0, y0, x1, y1 as fractions of the render. The side view goes in a 210 x 66 mm strip (3.18:1); in the render the car
+# spans x 0.17-0.83 and y 0.29-0.68, so this window keeps all of it, roof and spoiler lip included.
+CROPS = {'side': (0.031, 0.25, 0.965, 0.72)}
 os.makedirs(O, exist_ok=True)
 for k in NAMES:
     src = os.path.join(R, k + '.png')

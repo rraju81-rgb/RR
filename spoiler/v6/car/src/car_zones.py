@@ -1,7 +1,6 @@
 """Smooth per-vertex zone fields (positive inside) for paint / glass / trim / lamps / plastics.
 Blender's shader thresholds the interpolated fields, so zone borders are smooth inside triangles."""
 import numpy as np
-from matplotlib.path import Path
 from car_body import s_of, h_of, PLAN_CAB, tumble_cab
 from car_mats import plan_halfwidth, DLO
 

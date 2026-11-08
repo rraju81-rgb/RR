@@ -72,7 +72,8 @@
   .p2 .row2 { position: absolute; left: 12mm; right: 12mm; top: 100mm; height: 46mm; display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
   .p2 .row2 figure { position: relative; overflow: hidden; border-radius: 1.6mm; background: #000; }
   .p2 .row2 img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .p2 .row2 .cap { position: absolute; left: 3mm; bottom: 2.4mm; color: #e6e8ec; text-shadow: 0 0 2mm rgba(0,0,0,.9); }
+  .p2 .row2 figure::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 13mm; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.78)); }
+  .p2 .row2 .cap { position: absolute; left: 3mm; bottom: 2.4mm; color: #e6e8ec; text-shadow: 0 0 2mm rgba(0,0,0,.9); z-index: 2; }
   .p2 .bow { position: absolute; left: 12mm; right: 12mm; top: 151mm; height: 54mm; display: grid; grid-template-columns: 96mm 1fr; gap: 6mm; align-items: stretch; }
   .p2 .bow figure { position: relative; overflow: hidden; border-radius: 1.6mm; }
   .p2 .bow img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; display: block; }

@@ -1,7 +1,6 @@
 """Procedural VW Polo 6R/6C-class 5-door hatchback body (implicit surface + marching cubes), built in the
 spoiler's coordinates (x lateral, y up, z rearward, mm). Dimensions: L 3970, W 1682, H 1469, WB 2470."""
 import numpy as np
-from scipy.interpolate import CubicSpline
 from skimage import measure
 import trimesh
 
