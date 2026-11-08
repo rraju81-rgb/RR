@@ -61,7 +61,9 @@ def fields(V, N):
     ws = mn(s - 1150, 1895 - s, h - 975, (1402 - 0.00011 * ax ** 2) - h, (-nz - 0.40) * k, (cab_hw - 70) - ax)
     # rear window by position only (a normal test here left a ragged lower edge)
     rw = mn(s - 3585, 3810 - s, h - 1018, (1356 - 0.00010 * ax ** 2) - h, (cab_hw - 95) - ax)
-    dlo = mn(poly_signed(DLO, np.column_stack([s, h])), (np.abs(nx) - 0.42) * k)
+    # side windows: the outline sets the edges. The normal test only keeps glass off the roof's flat top; at 0.42 it ran
+    # alongside the outline's top edge and the two alternated, giving a zig-zag edge.
+    dlo = mn(poly_signed(DLO, np.column_stack([s, h])), (np.abs(nx) - 0.25) * k)
     bp = mn(dlo, 38 - np.abs(s - (2228 + (h - 1000) * 0.10)))
     glass = mx(ws, rw, mn(dlo, -bp))
     # tail lamps: one patch wrapped round each rear corner, by position only (the old |nx| / nz tests left ragged edges

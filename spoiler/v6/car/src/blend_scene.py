@@ -215,7 +215,13 @@ def build(paint='white', studio='dark', car_path='v6/car/out/car_body_conf.ply')
     try:
         base = trimesh.load('v6/car/out/car_body_base.ply', process=False)
         assert len(base.vertices) == len(car.vertices)
-        Fz = fields(base.vertices, cached_normals(base, 'base'))   # zones from the un-conformed body, de-noised normals
+        # zones from the un-conformed body. The normal components the zone tests read get extra isotropic smoothing
+        # (the position terms stay exact), so edges set by a normal test, like the side windows' top edge, are clean.
+        from car_zones import smooth_fields
+        Nb = cached_normals(base, 'base')
+        Ns = smooth_fields({'x': Nb[:, 0], 'y': Nb[:, 1], 'z': Nb[:, 2]}, np.asarray(base.faces), len(base.vertices), iters=25)
+        Nz = np.column_stack([Ns['x'], Ns['y'], Ns['z']]); Nz /= np.maximum(np.linalg.norm(Nz, axis=1, keepdims=True), 1e-9)
+        Fz = fields(base.vertices, Nz)
         from car_zones import smooth_fields
         cov = np.load('v6/car/out/covered.npy')
         Fz['hidden'] = (cov * 2 - 1) * 10.0
