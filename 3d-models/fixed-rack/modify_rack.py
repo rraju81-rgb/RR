@@ -26,9 +26,9 @@ Changes:
        rail side (1.2 mm on tier 0 where there is less room). The card side of
        the plate is left flat so the card still sits flush.
   2. Material removed from the wide upper tiers (k = 3, 4, 5): the solid
-     spacer block becomes an open L -- 10 mm floor on the bed + a solid column
-     under the arm, with an 8 mm 45 deg chamfer in the inside corner (4 mm at
-     the rail side). No enclosed holes, no supports or bridges.
+     spacer block gets a smooth curved scoop from the rail top down to a
+     10 mm floor and up into the solid column under the arm. Open upward:
+     no enclosed holes, no supports or bridges.
   3. Print-support fixes:
      - mounting holes turned into 45 deg teardrops (no drooping hole roof).
      - 0.45 mm flat ledge where the groove narrows into the tip slot (z 127)
@@ -63,9 +63,8 @@ PLATE_ROOT_CHAMFER = 3.0
 LIP_ROOT_CHAMFER = 2.5
 SLOT_CHAMFER = 0.5
 E = 0.05              # boolean overlap
-FLOOR = 10.0          # floor thickness of the L-shaped spacer
-COLUMN_CHAMFER = 8.0  # 45 deg chamfer, floor -> column inside corner
-RAIL_CHAMFER = 4.0    # 45 deg chamfer, floor -> rail inside corner
+FLOOR = 10.0          # lowest point of the curved scoop (floor thickness)
+SCOOP_STEPS = 48      # facets on the curved scoop
 COLUMN_LAND = 1.0     # flat land between column edge and plate chamfer
 RAIL_H = 20.0         # rail height
 
@@ -145,23 +144,24 @@ def build_left():
                              (X(LIP_IN_GROOVE) + E, 127.0 - r - 2 * E)],
                             Y(3) - E, Y(4) - E))
 
-        # --- 2. open L-shaped spacer on the wide tiers ----------------------
-        # Everything between the rail and the arm is cut away from the top,
-        # leaving a thick floor on the bed + a solid column under the arm.
-        # Both inside corners of the channel get large 45 deg chamfers.
-        xc = X(PLATE_IN) - pc - COLUMN_LAND      # inner face of the column
+        # --- 2. curved scoop in the wide spacer blocks --------------------
+        # Material between the rail and the arm column is removed from the top
+        # down to one smooth parabola: it leaves the rail top (z = RAIL_H),
+        # bottoms out at FLOOR and rises into the column at the block top.
+        # Steeper/more solid on the rail side, open upward -> no overhangs.
+        xc = X(PLATE_IN) - pc - COLUMN_LAND      # where the scoop meets the column
         w = xc - RAIL_W
         if w >= 4.0:
-            cc, cr = COLUMN_CHAMFER, RAIL_CHAMFER
-            if cc + cr > w - 1.0:                # narrow channel: shrink both
-                cr = min(cr, (w - 1.0) / 2.0)
-                cc = w - 1.0 - cr
+            d1, d2 = RAIL_H - FLOOR, BLOCK_TOP - FLOOR
+            xb = RAIL_W + w * math.sqrt(d1) / (math.sqrt(d1) + math.sqrt(d2))
+            kq = d1 / (xb - RAIL_W) ** 2
+            # end the curve just above the block top so it crosses it cleanly
+            xe = xb + math.sqrt((BLOCK_TOP + E - FLOOR) / kq)
+            xs = np.linspace(RAIL_W - E, xe, SCOOP_STEPS)
+            curve = [(x, FLOOR + kq * (x - xb) ** 2) for x in xs]
             # above the rail: lower the block back to rail height
-            subs.append(box(-1.0, xc, Y(-0.5), Y(22.5), RAIL_H - E, 140.0))
-            # channel between rail and column, chamfered at both bottom corners
-            subs.append(prism_y([(RAIL_W - E, 140.0), (RAIL_W - E, FLOOR + cr),
-                                 (RAIL_W + cr, FLOOR), (xc - cc, FLOOR),
-                                 (xc, FLOOR + cc), (xc, 140.0)],
+            subs.append(box(-1.0, RAIL_W, Y(-0.5), Y(22.5), RAIL_H - E, 140.0))
+            subs.append(prism_y(curve + [(xe, 140.0), (RAIL_W - E, 140.0)],
                                 Y(-0.5), Y(22.5)))
 
     # --- 3a. teardrop mounting holes (point up, 45 deg) ----------------------

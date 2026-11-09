@@ -27,11 +27,12 @@ which is exactly where it snapped .
   plate is left flat so the card still lies flush against it.
 
 ### 2. Material removed from the upper stacks
-On tiers 4, 5 and 6 the solid spacer block is cut down to an **open L shape**:
-a **10 mm floor** on the bed plus a solid column under the arm. The inside
-corner gets a large **8 mm × 45° chamfer** (4 mm on the rail side), so the
-column is braced into the floor. There are no enclosed holes or bridges and no
-supports needed. Part volume drops from 152.5 cm³ to 140.1 cm³ (−8 %).
+On tiers 4, 5 and 6 the solid spacer block now has a **smooth curved scoop**
+between the rail and the arm. It is one continuous curve that starts at the
+rail top, dips to a 10 mm-thick floor and rises into the solid column under the
+arm. The rail side stays solid and the column flows into the floor with no sharp
+corner. The scoop is open at the top, so it has no holes, bridges or overhangs.
+Part volume drops from 152.5 cm³ to 141.8 cm³ (−7 %).
 
 ### 3. Edges supported for faster, cleaner printing
 * The three mounting holes are now 45° teardrops, so the hole tops don't sag.
