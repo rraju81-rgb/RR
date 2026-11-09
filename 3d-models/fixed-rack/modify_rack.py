@@ -25,10 +25,9 @@ Changes:
      - 3 mm x 45 deg chamfer where the 2.4 mm arm plate meets the block on the
        rail side (1.2 mm on tier 0 where there is less room). The card side of
        the plate is left flat so the card still sits flush.
-  2. Material removed from the wide upper tiers (k = 3, 4, 5): the solid
-     spacer block gets a smooth curved scoop from the rail top down to a
-     10 mm floor and up into the solid column under the arm. Open upward:
-     no enclosed holes, no supports or bridges.
+  2. Spacer blocks are kept solid with a flat top (the earlier lightening
+     cut-outs were filled back in at the user's request). The optional
+     curved scoop can be switched back on with SPACER_SCOOP = True.
   3. Print-support fixes:
      - mounting holes turned into 45 deg teardrops (no drooping hole roof).
      - 0.45 mm flat ledge where the groove narrows into the tip slot (z 127)
@@ -65,6 +64,8 @@ SLOT_CHAMFER = 0.5
 E = 0.05              # boolean overlap
 FLOOR = 10.0          # lowest point of the curved scoop (floor thickness)
 SCOOP_STEPS = 48      # facets on the curved scoop
+SPACER_SCOOP = False  # True = cut the curved scoop into tiers 4-6 spacers;
+                      # False = keep them solid with a flat top (current choice)
 COLUMN_LAND = 1.0     # flat land between column edge and plate chamfer
 RAIL_H = 20.0         # rail height
 
@@ -151,7 +152,7 @@ def build_left():
         # Steeper/more solid on the rail side, open upward -> no overhangs.
         xc = X(PLATE_IN) - pc - COLUMN_LAND      # where the scoop meets the column
         w = xc - RAIL_W
-        if w >= 4.0:
+        if SPACER_SCOOP and w >= 4.0:
             d1, d2 = RAIL_H - FLOOR, BLOCK_TOP - FLOOR
             xb = RAIL_W + w * math.sqrt(d1) / (math.sqrt(d1) + math.sqrt(d2))
             kq = d1 / (xb - RAIL_W) ** 2

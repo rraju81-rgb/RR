@@ -26,13 +26,13 @@ which is exactly where it snapped .
   (1.2 mm on the first tier, where there is less room). The card side of the
   plate is left flat so the card still lies flush against it.
 
-### 2. Material removed from the upper stacks
-On tiers 4, 5 and 6 the solid spacer block now has a **smooth curved scoop**
-between the rail and the arm. It is one continuous curve that starts at the
-rail top, dips to a 10 mm-thick floor and rises into the solid column under the
-arm. The rail side stays solid and the column flows into the floor with no sharp
-corner. The scoop is open at the top, so it has no holes, bridges or overhangs.
-Part volume drops from 152.5 cm³ to 141.8 cm³ (−7 %).
+### 2. Spacer blocks (upper stacks)
+The spacer blocks under tiers 4, 5 and 6 are **solid with a flat top**. The
+lightening cut-outs tried earlier were filled back in at your request so the
+blocks look smooth. The rail-side 3 mm root chamfer of each arm sits on that flat
+top. The curved-scoop version can be switched back on with `SPACER_SCOOP = True`
+in `modify_rack.py`. Part volume is 153.1 cm³, about the same as the original
+152.5 cm³ (the chamfers add a little).
 
 ### 3. Edges supported for faster, cleaner printing
 * The three mounting holes are now 45° teardrops, so the hole tops don't sag.
