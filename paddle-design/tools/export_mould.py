@@ -5,10 +5,10 @@
 
 For each paddle it writes to output/mould/:
   <design>_mould_bottom.stl / .step   the tray: pocket of the paddle outline with the bottom teeth
-  <design>_mould_top.stl / .step      the lid: plate with the top teeth
+  <design>_mould_top.stl / .step      the lid: plate with the plug and the top teeth
 Both are in the print orientation, back face on the bed (z = 0), teeth pointing up.  The STEP files
 are for machining instead (aluminium, HDPE).  output/mould/mould_report.json holds the cavity,
-sizes, volumes, hardware, bed fit and the closed-mesh checks.
+sizes, volumes, the charge, hardware, bed fit and the closed-mesh checks.
 """
 import json
 import sys
@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from build123d import export_step  # noqa: E402
+from build123d import export_step, extrude  # noqa: E402
 
 from paddle import cad, mould  # noqa: E402
 from paddle.geometry import CONSTRUCTION as C  # noqa: E402
@@ -29,6 +29,7 @@ from export_rib_support import write  # noqa: E402
 OUT = ROOT / "output" / "mould"
 DENSITY = {"PLA": 1.24, "PETG": 1.27, "PA-CF": 1.18}           # g/cm3 at 100 % infill
 CARBON = 1.50                                                 # g/cm3, moulded chopped carbon/epoxy
+OVERFILL = 1.10                                               # charge = part + 10 % that leaves as flash
 M = mould.MOULD
 
 
@@ -37,9 +38,11 @@ def main() -> None:
     for old in OUT.glob("*"):                      # the REV D skin-press halves must not linger
         old.unlink()
     report = dict(note=f"tray + lid; the cavity between them is the rib support ({C.core_t:g} mm high, wave walls "
-                       f"{C.rib_t:g} mm, frame {C.frame_w:g} mm, solid to y = {C.solid_to:g}); the lid seats on the "
-                       f"tray rim, which sets the height. Fill: chopped carbon fibre + epoxy.",
-                  core_height_mm=C.core_t, tray_mm=M.tray_height, lid_mm=M.lid, designs={})
+                       f"{C.rib_t:g} mm, frame {C.frame_w:g} mm, solid to y = {C.solid_to:g}). The lid's {M.plug:g} mm "
+                       f"plug slides into the tray pocket ({M.clearance:g} mm clearance per side) and its flange seats "
+                       f"on the tray rim, which sets the height. Fill: chopped carbon fibre + epoxy.",
+                  core_height_mm=C.core_t, plug_mm=M.plug, clearance_mm=M.clearance, tray_mm=M.tray_height,
+                  lid_mm=M.lid_height, closed_mm=M.height, designs={})
     for sp in DESIGNS:
         o = build(sp)
         tray, lid = mould.mould_halves(o)
@@ -50,9 +53,12 @@ def main() -> None:
             printed = mould.print_pose(half, top)
             export_step(printed, str(OUT / f"{sp.key}_mould_{name}.step"))
             r[name] = write(printed, OUT / f"{sp.key}_mould_{name}.stl", DENSITY)
+        pocket = extrude(cad.outline_face(o, -M.h), amount=2 * M.h + M.plug)
+        open_cm3 = (pocket - tray).volume / 1000                     # room for the loose charge, lid off
+        charge = part.volume / 1000 * CARBON * OVERFILL
         r.update(part_volume_cm3=round(part.volume / 1000, 1), part_mass_g=round(part.volume / 1000 * CARBON, 1),
-                 bolts_M6=len(lay.bolts), dowel_pins_6x16=len(lay.dowels), pry_notches=len(lay.notches),
-                 vents=len(lay.vents), ejectors=len(lay.ejectors),
+                 open_volume_cm3=round(open_cm3, 1), open_over_part=round(open_cm3 / (part.volume / 1000), 2),
+                 charge_g=round(charge), bolts_M6=len(lay.bolts), pry_notches=len(lay.notches), vents=len(lay.vents),
                  clash_mm3=dict(tray_part=round((tray & part).volume, 3), lid_part=round((lid & part).volume, 3),
                                 tray_lid=round((tray & lid).volume, 3)))
         report["designs"][sp.key] = r
@@ -60,7 +66,8 @@ def main() -> None:
             v = r[name]
             print(f"{sp.name:9s} {name:6s} {v['size_mm']} mm  {v['volume_cm3']} cm3 ({v['mass_g']['PLA']} g PLA solid)  "
                   f"closed={v['watertight']} bodies={v['bodies']}  fits: {', '.join(v['fits_bed']) or 'none listed'}")
-        print(f"{sp.name:9s} part {r['part_volume_cm3']} cm3 = {r['part_mass_g']} g carbon; clashes {r['clash_mm3']}")
+        print(f"{sp.name:9s} part {r['part_volume_cm3']} cm3 = {r['part_mass_g']} g carbon, charge {r['charge_g']} g; "
+              f"open tray {r['open_volume_cm3']} cm3 ({r['open_over_part']}x the part); clashes {r['clash_mm3']}")
     (OUT / "mould_report.json").write_text(json.dumps(report, indent=1))
 
 

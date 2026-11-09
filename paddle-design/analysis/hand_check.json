@@ -1,6 +1,7 @@
 {
  "REV_C": {
   "lay_up": "4 / 8 / 4",
+  "wave_pitch": 18.0,
   "core": "PA-CF print",
   "core_E": 4000.0,
   "core_allow": 45.0,
@@ -71,10 +72,12 @@
    "linear_stress": 4.182,
    "rf": 127.129
   },
-  "dimpling_stress": 16737.1
+  "dimpling_stress": 16737.1,
+  "land_width": 4.25
  },
  "REV_D": {
   "lay_up": "0.3 / 10 / 0.3",
+  "wave_pitch": 18.0,
   "core": "PA-CF print",
   "core_E": 4000.0,
   "core_allow": 45.0,
@@ -145,10 +148,12 @@
    "linear_stress": 739.639,
    "rf": 0.899
   },
-  "dimpling_stress": 94.6
+  "dimpling_stress": 94.6,
+  "land_width": 4.28
  },
  "REV_E": {
   "lay_up": "0.3 / 10 / 0.3",
+  "wave_pitch": 18.0,
   "core": "moulded carbon",
   "core_E": 25000.0,
   "core_allow": 120.0,
@@ -219,7 +224,84 @@
    "linear_stress": 739.639,
    "rf": 0.899
   },
-  "dimpling_stress": 94.6
+  "dimpling_stress": 94.6,
+  "land_width": 4.28
+ },
+ "REV_F": {
+  "lay_up": "0.3 / 10 / 0.3",
+  "wave_pitch": 23.5,
+  "core": "moulded carbon",
+  "core_E": 25000.0,
+  "core_allow": 120.0,
+  "span_between_lands": 18.23,
+  "designs": {
+   "elongated": {
+    "LC1": {
+     "skin_max": 252.86,
+     "skin_at_y": 120.039,
+     "core_max": 99.395,
+     "tip_deflection": 9.545,
+     "skin_blade_max": 100.63,
+     "skin_blade_at_y": 160.108,
+     "skin_expected": 358.586,
+     "rf_core": 1.207,
+     "deflection_expected": 15.809,
+     "rf_skin": 1.394,
+     "rf_dimpling": 0.533
+    },
+    "LC2": {
+     "skin_max": 392.192,
+     "skin_at_y": 120.162,
+     "core_max": 154.164,
+     "tip_deflection": 17.313,
+     "skin_blade_max": 176.851,
+     "skin_blade_at_y": 160.193,
+     "skin_expected": 556.177,
+     "rf_core": 0.778,
+     "deflection_expected": 28.676,
+     "rf_skin": 0.899,
+     "rf_dimpling": 0.303
+    }
+   },
+   "hybrid": {
+    "LC1": {
+     "skin_max": 252.86,
+     "skin_at_y": 120.039,
+     "core_max": 99.395,
+     "tip_deflection": 9.591,
+     "skin_blade_max": 100.63,
+     "skin_blade_at_y": 160.108,
+     "skin_expected": 358.586,
+     "rf_core": 1.207,
+     "deflection_expected": 15.886,
+     "rf_skin": 1.394,
+     "rf_dimpling": 0.533
+    },
+    "LC2": {
+     "skin_max": 392.192,
+     "skin_at_y": 120.162,
+     "core_max": 154.164,
+     "tip_deflection": 17.471,
+     "skin_blade_max": 176.851,
+     "skin_blade_at_y": 160.193,
+     "skin_expected": 556.177,
+     "rf_core": 0.778,
+     "deflection_expected": 28.937,
+     "rf_skin": 0.899,
+     "rf_dimpling": 0.303
+    }
+   }
+  },
+  "skin_between_lands": {
+   "pressure": 0.707,
+   "stress": 710.985,
+   "membrane": 111.299,
+   "deflection": 0.5,
+   "linear_stress": 1305.809,
+   "rf": 0.703
+  },
+  "dimpling_stress": 53.6,
+  "land_width": 5.27
  },
  "calibration_fea_over_beam": {
   "skin": 1.418,

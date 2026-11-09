@@ -18,7 +18,7 @@ from .geometry import GRIP, Outline, PaddleSpec
 from .pictorial import ISOMETRIC, project
 from .svgkit import Doc, View, f, fmt, frame_iso, hatch_pattern, projection_symbol_first_angle
 
-ISSUE = {"rev": "E", "date": "2026-10-25", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
+ISSUE = {"rev": "F", "date": "2026-11-09", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
 SHEETS = 4                                  # sheets per paddle drawing
 USAP_SUM, USAP_LEN = 609.6, 431.8          # 24 in (length + width), 17 in (length)
 GREY = "#555"

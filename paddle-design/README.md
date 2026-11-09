@@ -1,10 +1,11 @@
-# Pickleball paddle designs – Elongated & Hybrid (REV E)
+# Pickleball paddle designs – Elongated & Hybrid (REV F)
 
 Two 39 cm paddles traced from your hand-made templates and sketches. Each is a carbon-fibre /
-wave-rib sandwich: two 0.3 mm carbon skins bonded to a 10 mm rib support. The rib support is
-moulded in carbon fibre, in one piece, in a two-half mould. Each mould half carries the wave as a
-row of teeth, and the two rows interlock. Your rev-8 printed grip goes on the handle and is locked
-by a screw in the butt. The repo holds:
+wave-rib sandwich: two 0.3 mm carbon skins bonded to a 10 mm rib support with 8 waves across the
+blade. The rib support is moulded in carbon fibre, in one piece, in a two-half mould. Each mould half
+carries the wave as a row of teeth, and the two rows interlock. A 2 mm plug on the lid fits into
+the tray, so the halves line up. Your rev-8 printed grip goes on the handle and is locked by a
+screw in the butt. The repo holds:
 
 - the engineering drawings, full-size templates and DXF cut profiles;
 - the rib-support mould (STL + STEP) and a trial-print rib support;
@@ -14,13 +15,13 @@ by a screw in the butt. The repo holds:
 ![3D render](output/render/paddles_3d_hero.png)
 
 > **Before you build: two open issues.**
-> - **Weight.** The moulded carbon rib support weighs 270 g (Elongated), so the paddle comes to
->   379 g with the grip. Most paddles weigh 210–240 g. See [Weight](#weight) for where the mass is
+> - **Weight.** The moulded carbon rib support weighs 250 g (Elongated), so the paddle comes to
+>   358 g with the grip. Most paddles weigh 210–240 g. See [Weight](#weight) for where the mass is
 >   and what reduces it.
-> - **Strength.** The moulded core is about 6 times stiffer than the printed PA-CF one, so the
->   0.3 mm skins now pass a sweet-spot hit. A tip hit at the 500 N design load still fails
->   (lowest reserve factor 0.55, skin buckling between the lands). 0.6 mm skins pass every
->   check. See [Strength](#strength).
+> - **Strength.** The moulded core lets the 0.3 mm skins pass a sweet-spot hit on the handle. In
+>   the blade, though, the 8-wave rib leaves 18.2 mm of unsupported skin between the bond lands, and
+>   a tip hit at the 500 N design load fails there (lowest reserve factor 0.30, skin buckling
+>   between the lands). 0.6 mm skins pass every check, with 8 waves too. See [Strength](#strength).
 >
 > Every file here is parametric, so a different lay-up or wall thickness is a quick rebuild.
 
@@ -38,7 +39,7 @@ by a screw in the butt. The repo holds:
 | Straight sides | y = 202.2 … 342.0 mm from the butt | y = 199.3 … 340.9 mm from the butt |
 | Body profile area | 491 cm² | 459 cm² |
 | Grip | Printed PLA grip (rev 8), DIN 7984 M3 screw lock. **Its 16.0 mm slot must be regenerated for the 10.6 mm handle**, see [Printed grip](#printed-grip) | same |
-| Mass with the grip (3D model) | 379 g, balance point 202 mm from the butt | 362 g, 197 mm |
+| Mass with the grip (3D model) | 358 g, balance point 198 mm from the butt | 344 g, 193 mm |
 | USA Pickleball L + W ≤ 609.6 mm (24 in) | 590 mm ✔ (19.6 mm margin) | 580 mm ✔ (29.6 mm margin) |
 | USA Pickleball L ≤ 431.8 mm (17 in) | 390 mm ✔ | 390 mm ✔ |
 
@@ -60,9 +61,11 @@ towards the USA Pickleball limits, so keep it within the margins above.
 - **Rib support (the core), 10 mm, carbon fibre / epoxy moulded in one piece** in the wave mould
   (sheets 3 and 4 of each drawing):
   - A closed 6 mm perimeter frame covers the whole side, as marked on your sketch.
-  - Inside it is the sinusoidal wave rib from your sketch: pitch 18 mm, wall 1.6 mm, centre-line
-    amplitude 5.2 mm. The flutes run along the paddle. The crests are cut flat where they meet the
-    skins, which gives 4.28 mm wide bond lands on both faces. The wave walls connect the two faces.
+  - Inside it is the sinusoidal wave rib from your sketch, with 8 waves across the blade: pitch
+    23.5 mm, wall 1.6 mm, centre-line amplitude 5.2 mm. The crests sit symmetric about the centre
+    line, 4 on each side. The flutes run along the paddle. The crests are cut flat where they meet
+    the skins, which gives 5.27 mm wide bond lands on both faces. The wave walls connect the two
+    faces.
   - The core is solid from its butt to y = 150 mm (handle and throat). Each flute starts with a
     45° ramp, 10 mm long. The ramp is longest at the flute's open face, so the mould teeth pull
     straight out.
@@ -87,51 +90,57 @@ Each comes as `.stl` (in print orientation) and `.step` (for machining). Sheet 4
 covers the mould.
 
 - **How it works.** The cavity between the two halves is the rib support.
-  - The tray has a 10 mm deep pocket in the shape of the paddle. The bottom flutes stand in it as
-    teeth.
-  - The lid is a flat plate with the top flutes hanging from it as teeth.
-  - When the lid closes, its teeth slide between the tray's teeth. The 1.6 mm gaps between the
-    teeth form the wave walls. The 6 mm band around the pocket edge forms the frame, and the
-    toothless handle end forms the solid zone.
-  - The lid seats on the tray rim. That hard stop sets the 10 mm height.
+  - The tray has a 12 mm deep pocket in the shape of the paddle: 10 mm for the rib support plus
+    2 mm for the lid's plug. The bottom flutes stand in it as 8 teeth.
+  - The lid is a flat plate with a 2 mm plug on its underside, in the same paddle shape. The top
+    flutes hang from the plug as teeth.
+  - When the lid closes, the plug slides into the pocket with 0.2 mm clearance per side. That fit
+    lines the two halves up, so no dowels are needed. The lid's teeth slide between the tray's
+    teeth: the 1.6 mm gaps between them form the wave walls, the 6 mm band around the pocket edge
+    forms the frame, and the toothless handle end forms the solid zone.
+  - The lid flange seats on the tray rim. That hard stop leaves the plug face exactly 10 mm above
+    the pocket floor, so the rib support is 10 mm thick.
+  - The plug also contains the charge: it presses the carbon down into the pocket rather than
+    over the rim. With the lid off, the tray holds about 2.5 times the part's volume.
 - **Release.** Each flute is widest at its open face, so the teeth have natural draft and pull
   straight out. The 45° ramps at the flute starts lean the same way. The CAD check finds zero
-  overlap between tray, lid and part.
+  overlap between tray, lid and part, and the closed cavity matches the rib support exactly.
 - **One piece each half:**
 
   | | Tray | Lid | Moulded part |
   |---|---|---|---|
-  | Elongated | 244 × 429 × 20 mm, 1.39 kg PLA solid | 244 × 429 × 19.4 mm (10 mm plate + teeth), 1.09 kg | 180 cm³, ≈ 271 g |
-  | Hybrid | 234 × 429 × 20 mm, 1.32 kg | 234 × 429 × 19.4 mm, 1.04 kg | 171 cm³, ≈ 257 g |
+  | Elongated | 244 × 429 × 22 mm, 1.46 kg PLA solid | 244 × 429 × 21.4 mm (10 mm plate + 2 mm plug + teeth), 1.23 kg | 167 cm³, ≈ 250 g |
+  | Hybrid | 234 × 429 × 22 mm, 1.39 kg | 234 × 429 × 21.4 mm, 1.15 kg | 160 cm³, ≈ 239 g |
 
   Both need a bed of at least 440 mm (500 × 500 class), or you can machine the STEP from
   aluminium. Print each half back down, teeth up: at least 5 walls and 40 % infill, with
   0.12–0.16 mm layers for the teeth.
 - **Features:**
-  - a 2 mm pinch-off land, then a 2 × 1.5 mm resin overflow groove in the tray rim, with 6 vents;
-  - 18 × M6 bolts (50 mm long);
-  - 4 × Ø6 × 16 steel dowel pins;
-  - 2 pry notches;
-  - 4 × Ø4.2 ejector holes through the tray floor.
+  - a 0.5 mm lead-in chamfer on the pocket's top edge, which guides the plug in;
+  - a 2 mm land, then a 2 × 1.5 mm resin overflow groove in the tray rim, with 6 vents;
+  - 18 × M6 bolts (45 mm long);
+  - 2 pry notches.
+
+  There are no dowel holes and no ejector holes.
 - **Moulding steps** (full list on sheet 4):
-  1. Sand the cavity faces (P400 → P800), seal them with an epoxy coat, then apply wax ×3 + PVA.
-     Press the dowel pins into the tray, and tape over the ejector holes from below.
-  2. Fill with forged carbon. Chop carbon tow to 10–25 mm and wet it with epoxy (≈ 40 % fibre by
-     volume). Pack the wall gaps and the frame first, then the solid handle zone. Overfill by about
-     10 %.
-  3. Close the lid over the dowels and fit the bolts finger-tight. Press between two flat, stiff
-     platens, or in a press, until the lid seats on the rim. Then tighten the bolts. Excess resin
-     leaves through the groove and the vents.
-  4. Cure for 24 h at room temperature. Split the mould at the pry notches, lift the lid straight up,
-     and push the part out with the ejector pins.
-  5. Trim the flash, drill the insert bore and bond the insert.
+  1. Dry fit. The plug must slide into the pocket by hand; sand it if it binds. Then print the
+     trial rib support (below) in PLA and close the mould on it: the flange must seat fully.
+  2. Sand the cavity faces (P400 → P800), seal them with an epoxy coat, then apply wax ×3 + PVA.
+  3. Fill with forged carbon: about 275 g (Elongated) or 263 g (Hybrid), half chopped carbon tow
+     (10–25 mm) and half epoxy by mass, which is about 40 % fibre by volume. That is the part plus
+     10 %. Pack the wall gaps and the frame first, then the solid handle zone, and spread the rest
+     evenly.
+  4. Close the lid and fit the bolts finger-tight. Press between two flat, stiff platens, or in a
+     press, until the flange seats on the rim. Then tighten the bolts. Excess resin rises past the
+     plug into the groove and leaves through the vents.
+  5. Cure for 24 h at room temperature. Split the mould at the pry notches and lift the lid
+     straight up. Ease the part out from the butt end with a plastic wedge.
+  6. Trim the flash, drill the insert bore and bond the insert.
 - **Woven fabric option.** You can also drape woven carbon over the tray teeth and let the lid press
   it into the wave; the frame and handle zone still take chopped fill. The tooth gap is `rib_t`:
   1.6 mm takes about 6–7 plies of 200 g/m² fabric.
 - **Temperature.** PLA softens near 55 °C, so use a room-temperature-cure epoxy. For a warm cure,
   print the mould in PETG, ASA or PA-CF.
-- **Trial first.** Print the trial rib support (below) in PLA and close the empty mould on it. It
-  must seat fully.
 
 ## Trial rib support STL
 
@@ -145,8 +154,8 @@ Uses:
 
 | File | Size (mm) | Mass, PA-CF (PETG / PLA) | Printer bed |
 |---|---|---|---|
-| `elongated_rib_support.stl` | 200 × 385 × 10 | 211 g (227 / 221 g) | ≥ 391 × 206 mm (400 mm class) |
-| `hybrid_rib_support.stl` | 190 × 385 × 10 | 201 g (217 / 212 g) | ≥ 391 × 196 mm (400 mm class) |
+| `elongated_rib_support.stl` | 200 × 385 × 10 | 197 g (212 / 207 g) | ≥ 391 × 206 mm (400 mm class) |
+| `hybrid_rib_support.stl` | 190 × 385 × 10 | 188 g (202 / 197 g) | ≥ 391 × 196 mm (400 mm class) |
 
 Print it at 100 % infill (the 1.6 mm walls are 4 perimeters of a 0.4 mm nozzle), 0.2 mm layers and
 no supports. The checks (closed mesh, bodies, volume, bed fit) are in `rib_support_report.json`.
@@ -155,14 +164,16 @@ no supports. The checks (closed mesh, bodies, volume, bed fit) are in `rib_suppo
 
 | Elongated | Mass |
 |---|---|
-| Rib support, moulded carbon (1.5 g/cm³) | **270 g** |
+| Rib support, moulded carbon (1.5 g/cm³) | **250 g** |
 | – solid handle and throat zone, to y = 150 | 69 g |
 | – 6 mm frame | 63 g |
-| – wave walls and ramps (23 % of the blade volume) | 138 g |
+| – wave walls and ramps (19 % of the blade volume) | 118 g |
 | Skins, 2 × 0.3 mm | 46 g |
 | Grip (CARBON MATRIX, PLA) | 61 g |
 | Screw + insert | 1.4 g |
-| **Paddle** | **379 g** (Hybrid 362 g) |
+| **Paddle** | **358 g** (Hybrid 344 g) |
+
+Going from 11 to 8 waves took 20 g off the walls.
 
 Most paddles weigh 210–240 g. The moulded core is heavy because its walls, frame and handle are
 solid carbon. Here is what each change does (Elongated, same hand check; strength in the next
@@ -170,9 +181,9 @@ section):
 
 | Change | Rib support | Paddle | Strength |
 |---|---|---|---|
-| As built: 0.3 skins, wall 1.6 | 270 g | 379 g | fails a tip hit |
-| 0.6 mm skins, wall 1.6 | 270 g | 424 g | passes |
-| 0.6 mm skins, wall 0.8 (woven fabric) | 204 g | 358 g | passes |
+| As built: 0.3 skins, wall 1.6 | 250 g | 358 g | fails a tip hit |
+| 0.6 mm skins, wall 1.6 | 250 g | 404 g | passes |
+| 0.6 mm skins, wall 0.8 (woven fabric) | 194 g | 348 g | passes |
 
 A 0.8 mm wall is too thin to fill with chopped fibre. It needs woven fabric draped in the mould,
 about 3–4 plies. Getting down to a normal paddle weight takes more than parameter changes, because
@@ -220,42 +231,43 @@ The moulded core is taken as chopped carbon/epoxy with E = 25 GPa and a 120 MPa 
 allowable. That is conservative for a hand-packed part with some voids; pressed SMC-grade parts
 reach 35–40 GPa and about 250 MPa.
 
-| 500 N ball impact | REV C 4 / 8 / 4 (FEA) | REV D 0.3 / 10 / 0.3, printed PA-CF core | **REV E 0.3 / 10 / 0.3, moulded carbon core** | Allowable |
+| 500 N ball impact | REV C 4 / 8 / 4 (FEA) | REV E 0.3 / 10 / 0.3, moulded core, 11 waves (λ18) | **REV F 0.3 / 10 / 0.3, moulded core, 8 waves (λ23.5)** | Allowable |
 |---|---|---|---|---|
-| Skin stress in the handle just above the grip, tip hit | 141 MPa (RF 3.6) | 1,310 MPa (RF 0.38) | **556 MPa (RF 0.90)** | 500 MPa (compression) |
-| Same, sweet-spot hit | – | 846 MPa (RF 0.59) | **359 MPa (RF 1.39)** | 500 MPa |
-| Core bending stress there, tip hit | 17.5 MPa (local peak) | 58 MPa (RF 0.77) | **154 MPa (RF 0.78)** | 45 MPa PA-CF, 120 MPa moulded |
-| Same, sweet-spot hit | – | 38 MPa (RF 1.20) | **99 MPa (RF 1.21)** | as above |
-| Skin between two lands, under the ball | ≈ 4 MPa | 556 MPa (RF 0.90) | **556 MPa (RF 0.90)** | 500 MPa |
-| Skin buckling between lands (blade), tip hit | not critical | 264 MPa vs 95 MPa critical (RF 0.36) | **172 MPa vs 95 MPa (RF 0.55)** | – |
-| Same, sweet-spot hit | – | 150 MPa (RF 0.63) | **98 MPa (RF 0.97)** | – |
-| Tip deflection, tip hit | 3.85 mm | ≈ 57 mm | **≈ 28 mm** | – |
+| Skin stress in the handle just above the grip, tip hit | 141 MPa (RF 3.6) | 556 MPa (RF 0.90) | **556 MPa (RF 0.90)** | 500 MPa (compression) |
+| Same, sweet-spot hit | – | 359 MPa (RF 1.39) | **359 MPa (RF 1.39)** | 500 MPa |
+| Core bending stress there, tip hit | 17.5 MPa (local peak) | 154 MPa (RF 0.78) | **154 MPa (RF 0.78)** | 120 MPa moulded |
+| Same, sweet-spot hit | – | 99 MPa (RF 1.21) | **99 MPa (RF 1.21)** | 120 MPa |
+| Unsupported skin between two lands | 13.8 mm | 13.7 mm | **18.2 mm** | – |
+| Skin between two lands, under the ball | ≈ 4 MPa | 556 MPa (RF 0.90) | **711 MPa (RF 0.70)** | 500 MPa |
+| Skin buckling between lands (blade), tip hit | not critical | 172 MPa vs 95 MPa critical (RF 0.55) | **177 MPa vs 54 MPa (RF 0.30)** | – |
+| Same, sweet-spot hit | – | 98 MPa (RF 0.97) | **101 MPa vs 54 MPa (RF 0.53)** | – |
+| Tip deflection, tip hit | 3.85 mm | ≈ 28 mm | **≈ 29 mm** | – |
+
+REV D (the printed PA-CF core) is in `analysis/hand_check.json` for reference: its handle skin
+reached 1,310 MPa (RF 0.38).
 
 What this means:
 
-1. **Stiffer core.** The moulded core carries much more of the bending than the printed one, so
-   the handle skin stress drops from 1,310 to 556 MPa. A sweet-spot hit now passes on the handle
-   skin and core.
-2. **Tip hit.** It still fails: handle skin RF 0.90, core RF 0.78.
-3. **Skin between the lands.** This doesn't depend on the core material. The lands are 18 mm
-   apart, which leaves 13.7 mm of unsupported 0.3 mm skin. It bends under the ball (RF 0.90) and
-   buckles in compression on a tip hit (RF 0.55).
-4. **At a realistic 340 N peak hit** (500 N includes a 1.5 safety factor):
-   - handle skin RF 1.32, core 1.14 and skin between the lands 1.21;
-   - buckling between the lands still fails, at 0.81.
+1. **Handle and core.** The handle zone is solid, so the wave doesn't change it. A sweet-spot hit
+   passes; a tip hit fails (handle skin RF 0.90, core RF 0.78).
+2. **Fewer waves, wider gaps.** With 8 waves the lands are 23.5 mm apart, leaving 18.2 mm of
+   unsupported 0.3 mm skin (13.7 mm with 11 waves). The skin bends more under the ball (RF 0.70)
+   and buckles at a lower stress (RF 0.30 on a tip hit).
+3. **At a realistic 340 N peak hit** (500 N includes a 1.5 safety factor):
+   - handle skin RF 1.32 and core 1.14;
+   - skin between the lands 0.92 and buckling 0.45, both still failing.
 
-Lay-ups that fix it (Elongated, moulded core, the same method, wave amplitude 5.2 mm):
+Lay-ups that fix it (Elongated, moulded core, 8 waves, the same method):
 
-| Lay-up, wave | Skins + rib support | Handle skin RF (tip / sweet spot) | Core RF (tip) | Buckling RF (tip) | Skin-between-lands RF | Tip deflection | Paddle |
+| Lay-up, wall | Skins + rib support | Handle skin RF (tip / sweet spot) | Core RF (tip) | Buckling RF (tip) | Skin-between-lands RF | Tip deflection | Paddle |
 |---|---|---|---|---|---|---|---|
-| 0.3 / 10 / 0.3, λ18, wall 1.6 (as built) | 46 + 270 g | 0.90 / 1.39 | 0.78 | 0.55 | 0.90 | 28 mm | 379 g |
-| 0.3 / 10 / 0.3, λ12, wall 1.6 | 46 + 306 g | 0.90 / 1.39 | 0.78 | 1.45 | 1.76 | 28 mm | 415 g |
-| **0.6 / 10 / 0.6, λ18, wall 1.6** | 91 + 270 g | 1.15 / 1.78 | 1.05 | 3.45 | 2.84 | 19 mm | 424 g |
-| **0.6 / 10 / 0.6, λ18, wall 0.8** | 91 + 204 g | 1.15 / 1.78 | 1.05 | 2.69 | 2.40 | 20 mm | 358 g |
-| 0.9 / 10 / 0.9, λ18, wall 1.6 | 137 + 270 g | 1.41 / 2.18 | 1.36 | 10.6 | 6.45 | 14 mm | 470 g |
+| 0.3 / 10 / 0.3, wall 1.6 (as built) | 46 + 250 g | 0.90 / 1.39 | 0.78 | 0.30 | 0.70 | 29 mm | 358 g |
+| 0.45 / 10 / 0.45, wall 1.6 | 68 + 250 g | 1.02 / 1.59 | 0.91 | 0.88 | 1.03 | 23 mm | 381 g |
+| **0.6 / 10 / 0.6, wall 1.6** | 91 + 250 g | 1.15 / 1.78 | 1.05 | 1.92 | 1.62 | 20 mm | 404 g |
+| **0.6 / 10 / 0.6, wall 0.8** | 91 + 194 g | 1.15 / 1.78 | 1.05 | 1.54 | 1.42 | 20 mm | 348 g |
+| 0.9 / 10 / 0.9, wall 1.6 | 137 + 250 g | 1.41 / 2.18 | 1.36 | 5.94 | 3.63 | 15 mm | 449 g |
 
-- **0.6 mm skins (2 plies per side) pass every check** on the current wave. A finer wave alone
-  fixes only the blade.
+- **0.6 mm skins (2 plies per side) pass every check**, with 8 waves too.
 - **The 0.8 mm wall** with 0.6 mm skins is the lightest version that passes.
 - **What a change involves.** `face_t`, `core_t`, `rib_pitch` and `rib_t` in `paddle/geometry.py`
   drive everything, including the mould pocket depth and the teeth.
@@ -272,17 +284,17 @@ To run the FEA on thin skins, the model's skins need shell or single-layer wedge
 | `output/<design>/*_sheet1_general_arrangement.(pdf/svg/png)` | **General arrangement**, A3, 1:2, first angle: front view with the grip, side view with the 0.3/10/0.3 lay-up, section A–A through the wave core, section B–B through the grip, isometric view, notes |
 | `output/<design>/*_sheet2_template_1to1.(pdf/svg/png)` | **Full-size body template**, A3 portrait, 1:1: tangent points, arc centres, coordinate table, core-frame and solid-zone reference lines, scale-check bars |
 | `output/<design>/*_sheet3_rib_core.(pdf/svg/png)` | **Rib support**: plan view 1:2 with lands and flute ramps, section C–C across the wave 2:1, section D–D through the ramp 2:1, material and moulding notes |
-| `output/<design>/*_sheet4_compression_mould.(pdf/svg/png)` | **Rib support mould**: tray and lid plans 1:3, section X–X through the closed mould 1:2, wall detail Y 2:1, hardware, moulding steps |
+| `output/<design>/*_sheet4_compression_mould.(pdf/svg/png)` | **Rib support mould**: tray and lid plans 1:3, section X–X through the closed mould 1:2, detail Y 2:1 (the plug in the pocket, the walls), hardware, moulding steps |
 | `output/grip/PB-GR-002_printed_grip_interface.(pdf/svg/png)` | **Printed grip – paddle interface** (both paddles): handle in the grip, sections E–E and G–G across the grip, section F–F through the screw, insert and bores, the fit-test coupon, bill of materials, notes |
 | `output/<design>/*_profile.dxf` | 1:1 cut profile of the skins (mm) for CNC / laser: closed polyline with true arcs |
-| `output/mould/<design>_mould_bottom.stl` / `_mould_top.stl` (+ `.step`) | **Rib support mould**: tray and lid, in print orientation, plus `mould_report.json` |
+| `output/mould/<design>_mould_bottom.stl` / `_mould_top.stl` (+ `.step`) | **Rib support mould**: tray (12 mm pocket) and lid (2 mm plug), in print orientation, plus `mould_report.json` |
 | `output/rib_support/<design>_rib_support.stl` | **Trial rib support**, one piece, plus `rib_support_report.json` |
 | `output/cad/<design>_assembly.step` | 3-D assembly: skins, rib support, screw and insert (named solids) |
 | `output/cad/<design>_assembly.3mf` | The same assembly with the printed grip (a mesh, so it is not in the STEP) |
 | `output/cad/<design>_rib_core.step` / `.stl`, `output/cad/<design>_<part>.stl` | The rib support and every other part, in mm |
 | `output/render/paddles_3d_*.png` | Photoreal renders: hero, cutaway, exploded with the grip and screw (each design), handle close-up, the opened mould with the moulded rib support |
 | `output/render/paddles_2d_render.(png/svg)` | 2-D presentation render (face and 3/4 views) |
-| `analysis/hand_check.json`, `analysis/mass_properties.json` | Strength hand check (REV C calibration, REV D, REV E) and masses |
+| `analysis/hand_check.json`, `analysis/mass_properties.json` | Strength hand check (REV C calibration, REV D, E and F) and masses |
 | `output/fea/paddle_stress_report.pdf`, `output/fea/fea_*.png`, `analysis/fea/*.json` | REV C FEA report, figures and raw results (4 / 8 / 4 lay-up) |
 | `reference/grips/*.stl` | Copies of the CARBON MATRIX and VORTEX GRIP STLs and the fit-test coupon from the grip branch |
 | [`reference/cad_outline_vs_your_templates.jpg`](reference/cad_outline_vs_your_templates.jpg) | The CAD outline overlaid on your template photos |
@@ -334,11 +346,12 @@ The inputs live in `paddle/geometry.py` and `paddle/mould.py`:
 
 - **Outlines** (`ELONGATED`, `HYBRID`): length, width, handle, grip base, thickness, corner and dome
   radii, shoulder radius, taper angle and throat radius.
-- **`Construction`**: skin and core thickness, frame width, wave pitch, wall and amplitude, solid
-  zone, ramp length and the insert bore.
+- **`Construction`**: skin and core thickness, frame width, wave pitch, phase, wall and amplitude,
+  solid zone, ramp length and the insert bore.
 - **`GripInterface`**: the printed grip's length, base, slot, slits, counterbore and screw.
-- **`MouldSpec`**: floor, lid, flange, land, groove, vents, bolts, dowels, notches and ejectors.
-  The pocket depth and the teeth follow the core height and the wave.
+- **`MouldSpec`**: floor, lid plate, plug height, plug clearance, lead-in, flange, land, groove,
+  vents, bolts and notches. The pocket depth (core height + plug) and the teeth follow the core
+  height and the wave.
 
 Every drawing, the 3-D model, the print files, the mould and the renders are recomputed from those
 inputs. `geometry.check()` asserts three things: each outline is closed, it is tangent-continuous
@@ -361,3 +374,8 @@ and exactly the specified size, and the specified thickness matches the lay-up.
   sheet 4 redrawn, render). The flute ramps are reversed so the teeth release, and the M3 insert is
   bonded into a drilled bore. The printed rib support stays as a trial piece. The hand check is
   extended to the moulded core, and a weight breakdown is added (379 / 362 g).
+- **F.** The rib has 8 waves instead of 11 (pitch 18 → 23.5 mm, crests symmetric about the centre
+  line), so the tray has 8 teeth. The mould gets a 2 mm plug on the lid that fits into the tray
+  pocket, and the tray is 2 mm thicker (22 mm), so the rib support stays 10 mm. The dowel holes and
+  the ejector holes are removed: the plug aligns the halves. The hand check covers the new wave
+  (358 / 344 g).

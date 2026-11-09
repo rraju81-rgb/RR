@@ -115,7 +115,7 @@ def materials(key: str, tex: dict) -> dict:
 
 PART_MATERIAL = {"face_sheet_top": "cf_top", "face_sheet_bottom": "cf_bottom", "rib_core": "core", "grip": "grip",
                  "screw_M3x12_DIN7984": "steel", "insert_M3": "brass", "mould_bottom": "mould",
-                 "mould_top": "mould", "dowel_pins": "steel"}
+                 "mould_top": "mould"}
 GRIPS = PADDLE_GRIP                     # any of the ten grips fits both paddles
 GRIP_COLOUR = {"elongated": (0.022, 0.022, 0.025), "hybrid": (0.05, 0.052, 0.058)}
 
@@ -224,7 +224,7 @@ def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samp
     from .grip import load as load_grip
     from build123d import Pos
 
-    from .mould import MOULD, dowel_pins, mould_halves, print_pose
+    from .mould import MOULD, mould_halves, print_pose
     work = out / "_work"
     meshes, cut, moulds, mats = {}, {}, {}, {}
     for o in outlines:
@@ -239,8 +239,7 @@ def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samp
             tray, lid = mould_halves(o)
             lid_open = Pos(0, 0, -MOULD.h - MOULD.floor) * print_pose(lid, True)   # teeth up, on the floor
             moulds[key] = export_meshes([PartDef("mould_bottom", tray, "pla", (0, 0, 0)),
-                                         PartDef("mould_top", lid_open, "pla", (0, 0, 0)),
-                                         PartDef("dowel_pins", dowel_pins(o), "steel", (0, 0, 0))],
+                                         PartDef("mould_top", lid_open, "pla", (0, 0, 0))],
                                         work / "mesh", key + "_mould")
         mats.update(materials(key, write_textures(o, work / "tex")))
     done = []

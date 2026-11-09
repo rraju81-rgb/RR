@@ -1,4 +1,4 @@
-"""Construction drawings (REV D): the printed rib support (core) of each paddle and the shared printed grip.
+"""Construction drawings (REV F): the moulded rib support (core) of each paddle and the shared printed grip.
 
   core_sheet(o)  - PB-xx-001 sheet 3: rib support plan view 1:2, section C-C across the wave 2:1,
                    section D-D along a land through the flute run-out 2:1, print notes.
@@ -64,9 +64,11 @@ def core_notes(o: Outline, mass: dict | None) -> list[str]:
     return [
         "MATERIAL: CARBON FIBRE / EPOXY, MOULDED IN ONE PIECE IN THE SHEET-4 MOULD (CHOPPED FIBRE 10–25 LONG,\n"
         "≈ 40 % BY VOLUME, ρ ≈ 1.5 g/cm³). THE PRINTED STL (NOTE 8) IS A TRIAL PIECE / PRINTED ALTERNATIVE.",
-        f"THICKNESS {fmt(C.core_t)}, SET BY THE LID SEATING ON THE TRAY RIM. BOTH FACES ARE BOND SURFACES.",
-        f"WAVE RIB λ{fmt(C.rib_pitch)}, WALL {fmt(C.rib_t)}, CENTRE-LINE AMPLITUDE {fmt(C.rib_amp)}; CRESTS CUT FLAT = "
-        f"LANDS {wave.land_width():.2f} ON BOTH FACES.",
+        f"THICKNESS {fmt(C.core_t)}, SET BY THE MOULD: THE LID FLANGE SEATS ON THE TRAY RIM WITH THE PLUG FACE "
+        f"{fmt(C.core_t)} ABOVE\nTHE POCKET FLOOR (SHEET 4). BOTH FACES ARE BOND SURFACES.",
+        f"WAVE RIB λ{fmt(C.rib_pitch)} ({len(wave.crests(-sp.width / 2, sp.width / 2))} WAVES ACROSS, CRESTS "
+        f"SYMMETRIC ABOUT THE CENTRE LINE), WALL {fmt(C.rib_t)},\nCENTRE-LINE AMPLITUDE {fmt(C.rib_amp)}; "
+        f"CRESTS CUT FLAT = LANDS {wave.land_width():.2f} ON BOTH FACES.",
         f"FRAME {fmt(C.frame_w)}, CLOSED. SOLID TO y = {fmt(C.solid_to)}; EACH FLUTE ENDS IN A 45° RAMP, "
         f"{fmt(C.runout_len)} LONG, LONGEST AT\nITS OPEN FACE (D–D), SO THE MOULD TEETH PULL STRAIGHT OUT.",
         f"AFTER MOULDING DRILL Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
@@ -136,10 +138,11 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     d.leader_note(P((xr_land, 262)), (P((a, 0))[0] + 10, P((0, 256))[1]),
                   f"LANDS {wave.land_width():.2f} @ {fmt(C.rib_pitch)}", 3.0, dot=True, arrow=False)
     d.leader_note(P((0.0, y0 + 8)), (P((0, 0))[0] + 22, P((0, y0 + 26))[1]), "M3 INSERT BORE", 3.0)
-    # cutting planes: C-C across the blade, D-D along the centre land
+    # cutting planes: C-C across the blade, D-D along the land nearest the centre line
     pv.section_line(280.0, -a - 12, a + 12, "C")
+    x_dd = min(wave.crests(-C.rib_pitch, C.rib_pitch), key=lambda x: (abs(x), -x))
     ya_d, yb_d = 128.0, 196.0
-    pa, pb = P((0, yb_d)), P((0, ya_d))
+    pa, pb = P((x_dd, yb_d)), P((x_dd, ya_d))
     for p, s in ((pa, 1), (pb, -1)):
         d.line(p, (p[0], p[1] + s * 6), "cut")
         d.line((p[0], p[1] + s * 3), (p[0] - 6, p[1] + s * 3), "thin")
@@ -151,7 +154,7 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     S2 = 2.0
     aw = o.half_width_at(280.0)
     span = 42.0
-    while sum(1 for c in range(0, 20) if aw - span + 3 < c * C.rib_pitch < aw - C.frame_w - 3) < 2:
+    while len(wave.crests(aw - span + 3, aw - C.frame_w - 3)) < 2:
         span += 3.0
     xc, zc = 397.0 - aw * S2, 60.0
 
@@ -166,10 +169,8 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H["core"]))
     d.poly([Cc(x, z) for x, z in wave.wall_polygon(xs, xi)], "vis", closed=True, extra=fill(H["core"]))
     break_line(d, Cc(xs, hc + C.face_t + 1), Cc(xs, -hc - C.face_t - 1))
-    k = 2 * math.pi / C.rib_pitch
-    d.poly([Cc(x, C.rib_amp * math.cos(k * x)) for x in [xs + i * (xi - xs) / 200 for i in range(201)]], "ctr")
-    crests = [c * C.rib_pitch for c in range(int(xs // C.rib_pitch) - 1, int(xi // C.rib_pitch) + 2)
-              if xs + 3 < c * C.rib_pitch < xi - 3]
+    d.poly([Cc(x, wave.centre_line(x)) for x in [xs + i * (xi - xs) / 200 for i in range(201)]], "ctr")
+    crests = wave.crests(xs + 3, xi - 3)
     c1, c2 = crests[-2:] if len(crests) > 1 else (crests[0] - C.rib_pitch, crests[0])
     ztop = hc + C.face_t
     d.dim_linear(Cc(c1, ztop), Cc(c2, ztop), "x", zc - ztop * S2 - 6, fmt(C.rib_pitch))
@@ -185,8 +186,8 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     d.leader_note(Cc(c1, hc - wave.under_land_wall() / 2), (xk, zb + 12),
                   f"{wave.under_land_wall():.1f} UNDER EACH LAND", 2.6)
     xa_ = c2 - C.rib_pitch / 2 + 2.0
-    d.leader_note(Cc(xa_, C.rib_amp * math.cos(k * xa_)), (xk, zb + 18),
-                  f"CENTRE LINE z = {fmt(C.rib_amp)}·cos(2πx/{fmt(C.rib_pitch)})", 2.6, arrow=False, dot=True)
+    d.leader_note(Cc(xa_, wave.centre_line(xa_)), (xk, zb + 18),
+                  f"CENTRE LINE z = {wave.centre_line_formula()}", 2.6, arrow=False, dot=True)
     view_label(d, xc + (xs + aw) / 2 * S2, zb + 25, "SECTION C–C (PART)", "SCALE 2:1 · FACE SHEETS SHOWN PHANTOM")
 
     # ---- section D-D (along the centre land x = 0, through the flute run-out), 2:1
@@ -217,7 +218,8 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     d.text(D(170, -1.5), "BOTTOM FLUTE", 2.6, fill=GREY)
     d.text((D(yd0, 0)[0] + 18, D(yd0, 0)[1] + 1), "SOLID CORE", 2.6, fill=GREY)
     view_label(d, (D(yd0, 0)[0] + D(yd1, 0)[0]) / 2, zd + (hc + C.face_t) * S2 + 15, "SECTION D–D (PART)",
-               f"SCALE 2:1 · ON THE CENTRE LAND (x = 0), RAMP FROM y = {fmt(C.solid_to)}; TOP FLUTES MIRROR IT")
+               f"SCALE 2:1 · ON {'THE CENTRE LAND' if abs(x_dd) < 1e-9 else 'A LAND'} (x = {x_dd:g}), RAMP FROM "
+               f"y = {fmt(C.solid_to)}; TOP FLUTES MIRROR IT")
 
     # ---- notes + title block
     notes_block(d, 228.0, 192.0, core_notes(o, mass), size=2.3, lead=3.4)

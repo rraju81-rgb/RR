@@ -3,17 +3,21 @@
 The cavity between the two halves is the rib support: its closed frame, the solid handle and throat
 zone and the wave walls.  Each half carries the wave as a row of teeth, the negative of the flutes
 that open on its side: the bottom half (the tray) has the teeth of the bottom flutes standing in a
-pocket of the paddle outline, the top half (the lid) has the teeth of the top flutes hanging from its
-underside.  Closing the lid slides its teeth between the tray's teeth; the gaps between them are the
+pocket of the paddle outline, the top half (the lid) has the teeth of the top flutes hanging from a
+plug, a raised copy of the paddle outline on its underside.  Closing the lid slides the plug into the
+pocket, which aligns the halves, and its teeth between the tray's teeth; the gaps between them are the
 wave walls.  Chopped carbon fibre and epoxy ("forged carbon") laid in the tray flows into the frame,
-the solid zone and the walls, and the lid seating on the tray rim (hard stop) sets the core height.
+the solid zone and the walls.  The pocket is deeper than the part by the plug height, so the plug
+presses the charge down; the lid flange seating on the tray rim (hard stop) leaves the plug face at
+the core height.
 
 Every flute is longest where it opens and every wall is a function of x alone, so both halves pull
-straight off the part.  Around the pocket: a pinch-off land, a resin overflow groove with vents,
-M6 bolt holes, dowel-pin holes, pry notches; ejector holes through the tray floor.
+straight off the part.  Around the pocket: a lead-in chamfer, a land, a resin overflow groove with
+vents, M6 bolt holes and pry notches.
 
 Paddle coordinates (mm): the rib support fills z = -h .. +h (h = core height / 2); the tray runs from
-z = -h - floor up to its rim at z = +h, the lid from z = +h to +h + lid with its teeth below.
+z = -h - floor up to its rim at z = +h + plug, the lid's plug from z = +h to the rim, its flange from
+the rim to rim + lid, and its teeth below z = +h.
 """
 from __future__ import annotations
 
@@ -30,9 +34,12 @@ from .geometry import Outline
 @dataclass(frozen=True)
 class MouldSpec:
     floor: float = 10.0          # tray material under the pocket floor
-    lid: float = 10.0            # lid plate above the rim
+    lid: float = 10.0            # lid flange (plate) above the rim
+    plug: float = 2.0            # lid plug height = how far the pocket runs above the part
+    clearance: float = 0.2       # sliding gap per side between the plug and the pocket wall
+    lead_in: float = 0.5         # 45 deg chamfer on the pocket's top edge, guides the plug in
     flange: float = 22.0         # plate edge beyond the pocket edge
-    land: float = 2.0            # pinch-off land between the pocket and the overflow groove
+    land: float = 2.0            # flat between the pocket edge and the overflow groove
     groove_w: float = 2.0        # resin overflow groove in the tray rim
     groove_d: float = 1.5
     vent_w: float = 2.0          # vents from the groove to the outside
@@ -40,12 +47,9 @@ class MouldSpec:
     bolt_d: float = 6.6          # M6 clearance
     bolt_off: float = 12.0       # bolt line, measured from the pocket edge
     bolt_pitch: float = 60.0     # target spacing along the bolt line
-    dowel_d: float = 6.2         # Ø6 x 16 steel dowel pins, 8 mm into each half
-    dowel_depth: float = 8.5
     notch_w: float = 14.0        # pry notches either side of the parting face, at the plate edge
     notch_depth: float = 6.0
     notch_h: float = 2.5
-    ejector_d: float = 4.2       # through the tray floor into the solid zone and the tip frame
 
     @property
     def h(self) -> float:
@@ -53,13 +57,23 @@ class MouldSpec:
         return C.core_t / 2
 
     @property
+    def rim(self) -> float:
+        """z of the parting face: the tray rim and the underside of the lid flange."""
+        return self.h + self.plug
+
+    @property
     def tray_height(self) -> float:
-        return self.floor + C.core_t
+        return self.floor + C.core_t + self.plug
+
+    @property
+    def lid_height(self) -> float:
+        """Lid flange + plug (the teeth add up to the core height below that)."""
+        return self.lid + self.plug
 
     @property
     def height(self) -> float:
         """Both halves closed."""
-        return self.floor + C.core_t + self.lid
+        return self.floor + C.core_t + self.plug + self.lid
 
 
 MOULD = MouldSpec()
@@ -69,10 +83,8 @@ MOULD = MouldSpec()
 class Layout:
     """Plan positions (x, y); notches and vents carry their outward normal (nx, ny)."""
     bolts: list[tuple[float, float]] = field(default_factory=list)
-    dowels: list[tuple[float, float]] = field(default_factory=list)
     notches: list[tuple[float, float, float, float]] = field(default_factory=list)
     vents: list[tuple[float, float, float, float]] = field(default_factory=list)
-    ejectors: list[tuple[float, float]] = field(default_factory=list)
 
 
 def ring(o: Outline, off: float):
@@ -82,11 +94,12 @@ def ring(o: Outline, off: float):
 
 
 def layout(o: Outline, m: MouldSpec = MOULD) -> Layout:
-    """Bolt, dowel, notch, vent and ejector positions, mirrored about x = 0.
+    """Bolt, notch and vent positions, mirrored about x = 0.
 
     Bolts are spaced evenly along the bolt line from the tip centre to the handle-end centre on the
-    right and mirrored.  The other flange features sit halfway between two bolts: dowels near the upper
-    corners and the lower blade, notches on the straight sides, vents at the tip, taper and handle."""
+    right and mirrored.  The other flange features sit halfway between two bolts: notches on the
+    straight sides, vents at the tip, taper and handle.  The plug aligns the halves, so there are no
+    dowels, and the part is lifted out by hand, so there are no ejector holes."""
     from shapely.geometry import Point
     body = ring(o, 0.0)
     path = ring(o, m.bolt_off)
@@ -117,18 +130,12 @@ def layout(o: Outline, m: MouldSpec = MOULD) -> Layout:
         used.add(k)
         return mids[k]
     used: set[int] = set()
-    for frac in (0.17, 0.62):
-        x, y, _, _ = pick(frac, used)
-        out.dowels += [(x, y), (-x, y)]
     x, y, nx, ny = pick(0.40, used)
     e = m.flange - m.bolt_off                                       # bolt line -> plate edge
     out.notches += [(x + nx * e, y + ny * e, nx, ny), (-x - nx * e, y + ny * e, -nx, ny)]
     for frac in (0.0, 0.80, 0.97):
         x, y, nx, ny = pick(frac, used)
         out.vents += [(x, y, nx, ny), (-x, y, -nx, ny)]
-    sp = o.spec
-    out.ejectors = [(0.0, y) for y in (sp.cap_length + 25.0, 75.0, C.solid_to - 25.0)] + \
-                   [(0.0, sp.length - C.frame_w / 2)]
     return out
 
 
@@ -143,48 +150,37 @@ def _cyl(x: float, y: float, d: float, z0: float, z1: float):
 
 
 def mould_halves(o: Outline, m: MouldSpec = MOULD):
-    """(tray, lid) in paddle coordinates, closed on the part: tray rim and lid underside at z = +h."""
-    h = m.h
+    """(tray, lid) in paddle coordinates, closed on the part: plug face at z = +h, flange on the rim."""
+    h, rim = m.h, m.rim
     voids = flute_voids(o)
     plate = offset(outline_face(o, 0.0), m.flange, kind=Kind.ARC)
-    tray = extrude(plate.moved(Pos(0, 0, -h - m.floor)), amount=m.floor + 2 * h)
-    tray = tray - extrude(outline_face(o, -h), amount=2 * h + 1.0) + voids[-1]        # pocket + bottom teeth
-    lid = extrude(plate.moved(Pos(0, 0, h)), amount=m.lid) + voids[+1]                  # lid + top teeth
-    groove = extrude(offset(outline_face(o, h - m.groove_d), m.land + m.groove_w, kind=Kind.ARC) -
-                     offset(outline_face(o, h - m.groove_d), m.land, kind=Kind.ARC), amount=m.groove_d + 1.0)
+    tray = extrude(plate.moved(Pos(0, 0, -h - m.floor)), amount=m.floor + 2 * h + m.plug)
+    tray = tray - extrude(outline_face(o, -h), amount=2 * h + m.plug + 1.0) + voids[-1]  # pocket + bottom teeth
+    if m.lead_in > 0:
+        tray = tray - extrude(outline_face(o, rim - m.lead_in), amount=m.lead_in + 1.0, taper=-45)
+    plug = extrude(offset(outline_face(o, h), -m.clearance, kind=Kind.ARC), amount=m.plug + 0.5)
+    lid = extrude(plate.moved(Pos(0, 0, rim)), amount=m.lid) + plug + voids[+1]          # flange + plug + top teeth
+    groove = extrude(offset(outline_face(o, rim - m.groove_d), m.land + m.groove_w, kind=Kind.ARC) -
+                     offset(outline_face(o, rim - m.groove_d), m.land, kind=Kind.ARC), amount=m.groove_d + 1.0)
     tray = tray - groove
     lay = layout(o, m)
-    z_lo, z_hi = -h - m.floor - 1.0, h + m.lid + 1.0
+    z_lo, z_hi = -h - m.floor - 1.0, rim + m.lid + 1.0
     for x, y in lay.bolts:
         tray, lid = tray - _cyl(x, y, m.bolt_d, z_lo, z_hi), lid - _cyl(x, y, m.bolt_d, z_lo, z_hi)
-    for x, y in lay.dowels:
-        tray = tray - _cyl(x, y, m.dowel_d, h - m.dowel_depth, h + 1.0)
-        lid = lid - _cyl(x, y, m.dowel_d, h - 1.0, h + m.dowel_depth)
     for x, y, nx, ny in lay.notches:                 # (x, y) on the plate edge
         c = m.notch_depth / 2 - 0.5
-        tray = tray - _slot(x - nx * c, y - ny * c, nx, ny, m.notch_depth + 1.0, m.notch_w, h - m.notch_h, h + 1.0)
-        lid = lid - _slot(x - nx * c, y - ny * c, nx, ny, m.notch_depth + 1.0, m.notch_w, h - 1.0, h + m.notch_h)
+        tray = tray - _slot(x - nx * c, y - ny * c, nx, ny, m.notch_depth + 1.0, m.notch_w, rim - m.notch_h, rim + 1.0)
+        lid = lid - _slot(x - nx * c, y - ny * c, nx, ny, m.notch_depth + 1.0, m.notch_w, rim - 1.0, rim + m.notch_h)
     for x, y, nx, ny in lay.vents:                   # (x, y) on the bolt line: from the groove to the edge
         r0 = -(m.bolt_off - m.land - m.groove_w / 2)
         r1 = m.flange - m.bolt_off + 1.0
         c = (r0 + r1) / 2
-        tray = tray - _slot(x + nx * c, y + ny * c, nx, ny, r1 - r0, m.vent_w, h - m.vent_d, h + 1.0)
-    for x, y in lay.ejectors:
-        tray = tray - _cyl(x, y, m.ejector_d, z_lo, -h + 0.01)
+        tray = tray - _slot(x + nx * c, y + ny * c, nx, ny, r1 - r0, m.vent_w, rim - m.vent_d, rim + 1.0)
     return tray, lid
 
 
 def print_pose(half, top: bool, m: MouldSpec = MOULD):
     """A half in its print orientation: back face on the bed (z = 0), teeth pointing up."""
     if top:
-        return Pos(0, 0, m.h + m.lid) * Rot(0, 180, 0) * half
+        return Pos(0, 0, m.rim + m.lid) * Rot(0, 180, 0) * half
     return Pos(0, 0, m.h + m.floor) * half
-
-
-def dowel_pins(o: Outline, m: MouldSpec = MOULD, length: float = 16.0):
-    """Ø6 x 16 steel dowel pins standing in the tray rim (for the renders)."""
-    pins = None
-    for x, y in layout(o, m).dowels:
-        p = _cyl(x, y, 6.0, m.h - length / 2, m.h + length / 2)
-        pins = p if pins is None else pins + p
-    return pins

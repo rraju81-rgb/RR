@@ -1,9 +1,10 @@
 """Wave-rib geometry shared by the solid model and the drawings (pure math, mm).
 
-The rib centre line is z = A cos(2 pi x / pitch) (a crest, i.e. a top bond land, on the
-paddle centre line x = 0).  Its two surfaces are offset by half the wall thickness along
-the normal; where a surface passes the face-sheet plane z = +-core_t / 2 it is cut flat,
-which forms the bond lands.
+The rib centre line is z = A cos(2 pi (x / pitch - phase)): the crests (top bond lands) sit at
+x = (k + phase) pitch, so phase 0 puts a crest on the paddle centre line x = 0 and phase 0.5 a
+trough, with the crests symmetric either side.  Its two surfaces are offset by half the wall
+thickness along the normal; where a surface passes the face-sheet plane z = +-core_t / 2 it is
+cut flat, which forms the bond lands.
 """
 from __future__ import annotations
 
@@ -18,10 +19,39 @@ def surface_point(u: float, s: int, amp: float | None = None) -> tuple[float, fl
     """(x, z) of the upper (s = +1) / lower (s = -1) rib surface at centre-line parameter u."""
     A = C.rib_amp if amp is None else amp
     k = 2 * math.pi / C.rib_pitch
-    z = A * math.cos(k * u)
-    d = -A * k * math.sin(k * u)
+    v = k * u - 2 * math.pi * C.rib_phase
+    z = A * math.cos(v)
+    d = -A * k * math.sin(v)
     n = math.sqrt(1 + d * d)
     return u - s * C.rib_t / 2 * d / n, z + s * C.rib_t / 2 / n
+
+
+def centre_line(x: float) -> float:
+    """z of the rib centre line at x."""
+    return C.rib_amp * math.cos(2 * math.pi * (x / C.rib_pitch - C.rib_phase))
+
+
+def crests(x0: float, x1: float) -> list[float]:
+    """x of the crests (top lands) strictly between x0 and x1."""
+    k0 = math.floor(x0 / C.rib_pitch - C.rib_phase)
+    xs = ((k + C.rib_phase) * C.rib_pitch for k in range(k0, k0 + int((x1 - x0) / C.rib_pitch) + 3))
+    return [x for x in xs if x0 < x < x1]
+
+
+def crossings(x0: float, x1: float) -> list[float]:
+    """x where the centre line crosses the mid-plane z = 0, strictly between x0 and x1."""
+    q = C.rib_pitch / 4
+    return sorted({c + d for c in crests(x0 - q, x1 + q) for d in (-q, q) if x0 < c + d < x1})
+
+
+def centre_line_formula() -> str:
+    """The centre line as printed on the drawings."""
+    a, p = f"{C.rib_amp:g}", f"{C.rib_pitch:g}"
+    if abs(C.rib_phase) < 1e-9:
+        return f"{a}·cos(2πx/{p})"
+    if abs(C.rib_phase - 0.5) < 1e-9:
+        return f"−{a}·cos(2πx/{p})"
+    return f"{a}·cos(2π(x/{p} − {C.rib_phase:g}))"
 
 
 def channel_bounds(x_half: float, s: int, amp: float | None = None) -> list[tuple[float, float]]:
@@ -52,9 +82,10 @@ def channel_bounds(x_half: float, s: int, amp: float | None = None) -> list[tupl
 
 def land_width(amp: float | None = None) -> float:
     """Width of one bond land (the flat cut crest) in the face-sheet plane."""
-    # the land centred on x = 0 ends where the flute to its right begins
-    right = min(iv[0] for iv in channel_bounds(1.5 * C.rib_pitch, +1, amp) if iv[0] > 0)
-    return 2 * surface_point(right, +1, amp)[0]
+    # lands and top flutes alternate with the pitch: land = pitch - one whole flute
+    x_half = 2.5 * C.rib_pitch
+    a, b = next(iv for iv in channel_bounds(x_half, +1, amp) if -x_half < iv[0] and iv[1] < x_half)
+    return C.rib_pitch - (surface_point(b, +1, amp)[0] - surface_point(a, +1, amp)[0])
 
 
 def land_intervals(x_half: float, s: int) -> list[tuple[float, float]]:

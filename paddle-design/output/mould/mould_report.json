@@ -1,26 +1,29 @@
 {
- "note": "tray + lid; the cavity between them is the rib support (10 mm high, wave walls 1.6 mm, frame 6 mm, solid to y = 150); the lid seats on the tray rim, which sets the height. Fill: chopped carbon fibre + epoxy.",
+ "note": "tray + lid; the cavity between them is the rib support (10 mm high, wave walls 1.6 mm, frame 6 mm, solid to y = 150). The lid's 2 mm plug slides into the tray pocket (0.2 mm clearance per side) and its flange seats on the tray rim, which sets the height. Fill: chopped carbon fibre + epoxy.",
  "core_height_mm": 10.0,
- "tray_mm": 20.0,
- "lid_mm": 10.0,
+ "plug_mm": 2.0,
+ "clearance_mm": 0.2,
+ "tray_mm": 22.0,
+ "lid_mm": 12.0,
+ "closed_mm": 32.0,
  "designs": {
   "elongated": {
    "bottom": {
     "file": "elongated_mould_bottom.stl",
-    "triangles": 49966,
+    "triangles": 30238,
     "watertight": true,
     "bodies": 1,
-    "volume_cm3": 1124.88,
-    "cad_volume_cm3": 1123.43,
+    "volume_cm3": 1176.58,
+    "cad_volume_cm3": 1176.69,
     "size_mm": [
      244.0,
      429.0,
-     20.0
+     22.0
     ],
     "mass_g": {
-     "PLA": 1394.8,
-     "PETG": 1428.6,
-     "PA-CF": 1327.4
+     "PLA": 1459.0,
+     "PETG": 1494.3,
+     "PA-CF": 1388.4
     },
     "fits_bed": [
      "500 x 500"
@@ -28,32 +31,33 @@
    },
    "top": {
     "file": "elongated_mould_top.stl",
-    "triangles": 41024,
+    "triangles": 28618,
     "watertight": true,
     "bodies": 1,
-    "volume_cm3": 880.78,
-    "cad_volume_cm3": 879.77,
+    "volume_cm3": 989.01,
+    "cad_volume_cm3": 988.89,
     "size_mm": [
      244.0,
      429.0,
-     19.4
+     21.4
     ],
     "mass_g": {
-     "PLA": 1092.2,
-     "PETG": 1118.6,
-     "PA-CF": 1039.3
+     "PLA": 1226.4,
+     "PETG": 1256.0,
+     "PA-CF": 1167.0
     },
     "fits_bed": [
      "500 x 500"
     ]
    },
-   "part_volume_cm3": 180.4,
-   "part_mass_g": 270.6,
+   "part_volume_cm3": 166.7,
+   "part_mass_g": 250.1,
+   "open_volume_cm3": 426.3,
+   "open_over_part": 2.56,
+   "charge_g": 275,
    "bolts_M6": 18,
-   "dowel_pins_6x16": 4,
    "pry_notches": 2,
    "vents": 6,
-   "ejectors": 4,
    "clash_mm3": {
     "tray_part": 0,
     "lid_part": 0,
@@ -63,20 +67,20 @@
   "hybrid": {
    "bottom": {
     "file": "hybrid_mould_bottom.stl",
-    "triangles": 44850,
+    "triangles": 31506,
     "watertight": true,
     "bodies": 1,
-    "volume_cm3": 1061.65,
-    "cad_volume_cm3": 1061.42,
+    "volume_cm3": 1122.98,
+    "cad_volume_cm3": 1122.97,
     "size_mm": [
      234.0,
      429.0,
-     20.0
+     22.0
     ],
     "mass_g": {
-     "PLA": 1316.4,
-     "PETG": 1348.3,
-     "PA-CF": 1252.7
+     "PLA": 1392.5,
+     "PETG": 1426.2,
+     "PA-CF": 1325.1
     },
     "fits_bed": [
      "500 x 500"
@@ -84,32 +88,33 @@
    },
    "top": {
     "file": "hybrid_mould_top.stl",
-    "triangles": 42924,
+    "triangles": 26726,
     "watertight": true,
     "bodies": 1,
-    "volume_cm3": 836.37,
-    "cad_volume_cm3": 835.45,
+    "volume_cm3": 926.94,
+    "cad_volume_cm3": 926.8,
     "size_mm": [
      234.0,
      428.9,
-     19.4
+     21.4
     ],
     "mass_g": {
-     "PLA": 1037.1,
-     "PETG": 1062.2,
-     "PA-CF": 986.9
+     "PLA": 1149.4,
+     "PETG": 1177.2,
+     "PA-CF": 1093.8
     },
     "fits_bed": [
      "500 x 500"
     ]
    },
-   "part_volume_cm3": 171.4,
-   "part_mass_g": 257.1,
+   "part_volume_cm3": 159.5,
+   "part_mass_g": 239.3,
+   "open_volume_cm3": 395.4,
+   "open_over_part": 2.48,
+   "charge_g": 263,
    "bolts_M6": 18,
-   "dowel_pins_6x16": 4,
    "pry_notches": 2,
    "vents": 6,
-   "ejectors": 4,
    "clash_mm3": {
     "tray_part": 0,
     "lid_part": 0,
