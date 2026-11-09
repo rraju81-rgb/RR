@@ -11,7 +11,8 @@ meshed with, so the thin-skin lay-up is checked by hand instead:
                immovable edges, solved with membrane stretching (large deflection) -> local skin stress;
   3. dimpling: compression buckling of the skin between lands, k = 4 (simply supported long plate).
 Cases: REV C (4 / 8 / 4, printed PA-CF core), REV D (0.3 / 10 / 0.3, PA-CF core), REV E (the same
-lay-up with the rib support moulded in carbon fibre) and REV F (REV E with 8 waves: pitch 18 -> 23.5).
+lay-up with the rib support moulded in carbon fibre), REV F (REV E with 8 waves: pitch 18 -> 23.5) and REV G
+(8 waves at pitch 22 inside a 10 mm frame).
 The same method run on the REV C lay-up (4 / 8 / 4) is compared with its FEA to give calibration factors
 for the skin stress (FEA / beam = 1.4: the throat fillet and plate effects) and the deflection (1.7: shear
 and the flexible handle).  The core is quoted as the plain beam bending stress: its REV C FEA peak was a
@@ -37,12 +38,14 @@ A = fea.ALLOW
 # conservatively for a hand-laid part with some voids (pressed SMC-grade parts reach 35-40 GPa, 250 MPa).
 CORES = {"PA-CF print": dict(E=fea.CORE["E"], allow=A["core_vm"]), "moulded carbon": dict(E=25000.0, allow=120.0)}
 CORE = dict(CORES["PA-CF print"])
-WAVE = ("face_t", "core_t", "rib_amp", "runout_len", "rib_pitch", "rib_phase")
-LAYUP = {k: getattr(CONSTRUCTION, k) for k in WAVE}                     # as built (REV F)
-REV_C = dict(face_t=4.0, core_t=8.0, rib_amp=4.0, runout_len=8.0, rib_pitch=18.0, rib_phase=0.0)   # analysed by FEA
-LAYUP_E = dict(LAYUP, rib_pitch=18.0, rib_phase=0.0)                      # REV D and E: 11 waves
+WAVE = ("face_t", "core_t", "rib_amp", "runout_len", "rib_pitch", "rib_phase", "frame_w")
+LAYUP = {k: getattr(CONSTRUCTION, k) for k in WAVE}                     # as built (REV G)
+REV_C = dict(face_t=4.0, core_t=8.0, rib_amp=4.0, runout_len=8.0, rib_pitch=18.0, rib_phase=0.0,
+             frame_w=6.0)                                                 # analysed by FEA
+LAYUP_E = dict(LAYUP, rib_pitch=18.0, rib_phase=0.0, frame_w=6.0)        # REV D and E: 11 waves
+LAYUP_F = dict(LAYUP, rib_pitch=23.5, rib_phase=0.5, frame_w=6.0)        # REV F: 8 waves, 6 mm frame
 CASES = (("REV_C", REV_C, "PA-CF print"), ("REV_D", LAYUP_E, "PA-CF print"), ("REV_E", LAYUP_E, "moulded carbon"),
-         ("REV_F", LAYUP, "moulded carbon"))
+         ("REV_F", LAYUP_F, "moulded carbon"), ("REV_G", LAYUP, "moulded carbon"))
 FEA_C = dict(LC1=dict(deflection=2.25), LC2=dict(deflection=3.85, cf=141.0, core=17.5))   # elongated, REV C report
 
 
@@ -144,7 +147,8 @@ def main() -> None:
         CORE.update(CORES[core])
         C = CONSTRUCTION
         b = C.rib_pitch - wave.land_width()
-        res = dict(lay_up=f"{C.face_t:g} / {C.core_t:g} / {C.face_t:g}", wave_pitch=C.rib_pitch, core=core, core_E=CORE["E"],
+        res = dict(lay_up=f"{C.face_t:g} / {C.core_t:g} / {C.face_t:g}", wave_pitch=C.rib_pitch, frame=C.frame_w,
+                   core=core, core_E=CORE["E"],
                    core_allow=CORE["allow"], span_between_lands=round(b, 2), designs={})
         for key, o in outlines.items():
             res["designs"][key] = {lc.key: beam(o, lc.y) for lc in fea.LOADS}

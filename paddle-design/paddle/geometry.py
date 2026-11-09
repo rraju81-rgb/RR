@@ -137,9 +137,9 @@ class Construction:
     """Sandwich lay-up, wave-rib core and butt fixing shared by both paddles (mm)."""
     face_t: float = 0.3          # carbon-fibre face sheet, top and bottom (identical parts)
     core_t: float = 10.0         # rib core height between the face sheets
-    frame_w: float = 6.0         # closed perimeter frame of the rib core (covers the whole side)
-    rib_pitch: float = 23.5      # wave length (crest to crest) across the width: 8 waves across the
-                                 # Elongated's 188 mm core (REV E had 18 mm, 11 waves)
+    frame_w: float = 10.0        # closed perimeter frame of the rib core (covers the whole side)
+    rib_pitch: float = 22.0      # wave length (crest to crest) across the width: 8 waves inside the
+                                 # 10 mm frame of either paddle (REV E had 18 mm, 11 waves)
     rib_phase: float = 0.5       # crest offset from the centre line, in pitches: 0.5 puts a trough on the
                                  # centre line, so the 8 crests (and the tray's 8 teeth) sit 4 each side
     rib_t: float = 1.6           # wave-rib wall thickness

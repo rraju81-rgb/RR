@@ -1,4 +1,4 @@
-"""Construction drawings (REV F): the moulded rib support (core) of each paddle and the shared printed grip.
+"""Construction drawings (REV G): the moulded rib support (core) of each paddle and the shared printed grip.
 
   core_sheet(o)  - PB-xx-001 sheet 3: rib support plan view 1:2, section C-C across the wave 2:1,
                    section D-D along a land through the flute run-out 2:1, print notes.
@@ -64,11 +64,10 @@ def core_notes(o: Outline, mass: dict | None) -> list[str]:
     return [
         "MATERIAL: CARBON FIBRE / EPOXY, MOULDED IN ONE PIECE IN THE SHEET-4 MOULD (CHOPPED FIBRE 10–25 LONG,\n"
         "≈ 40 % BY VOLUME, ρ ≈ 1.5 g/cm³). THE PRINTED STL (NOTE 8) IS A TRIAL PIECE / PRINTED ALTERNATIVE.",
-        f"THICKNESS {fmt(C.core_t)}, SET BY THE MOULD: THE LID FLANGE SEATS ON THE TRAY RIM WITH THE PLUG FACE "
-        f"{fmt(C.core_t)} ABOVE\nTHE POCKET FLOOR (SHEET 4). BOTH FACES ARE BOND SURFACES.",
-        f"WAVE RIB λ{fmt(C.rib_pitch)} ({len(wave.crests(-sp.width / 2, sp.width / 2))} WAVES ACROSS, CRESTS "
-        f"SYMMETRIC ABOUT THE CENTRE LINE), WALL {fmt(C.rib_t)},\nCENTRE-LINE AMPLITUDE {fmt(C.rib_amp)}; "
-        f"CRESTS CUT FLAT = LANDS {wave.land_width():.2f} ON BOTH FACES.",
+        f"THICKNESS {fmt(C.core_t)}, SET BY THE MOULD (SHEET 4): LID FLANGE ON THE TRAY RIM. BOTH FACES ARE BOND "
+        f"SURFACES.",
+        f"WAVE RIB λ{fmt(C.rib_pitch)}, {len(wave.crests(C.frame_w - sp.width / 2, sp.width / 2 - C.frame_w))} WAVES SYMMETRIC ABOUT THE "
+        f"CENTRE LINE, WALL {fmt(C.rib_t)}, AMPLITUDE {fmt(C.rib_amp)}; LANDS {wave.land_width():.2f} BOTH FACES.",
         f"FRAME {fmt(C.frame_w)}, CLOSED. SOLID TO y = {fmt(C.solid_to)}; EACH FLUTE ENDS IN A 45° RAMP, "
         f"{fmt(C.runout_len)} LONG, LONGEST AT\nITS OPEN FACE (D–D), SO THE MOULD TEETH PULL STRAIGHT OUT.",
         f"AFTER MOULDING DRILL Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
@@ -222,7 +221,7 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
                f"y = {fmt(C.solid_to)}; TOP FLUTES MIRROR IT")
 
     # ---- notes + title block
-    notes_block(d, 228.0, 192.0, core_notes(o, mass), size=2.3, lead=3.4)
+    notes_block(d, 228.0, 188.0, core_notes(o, mass), size=2.3, lead=3.4)
     title_block(d, 225.0, 236.0, sp, f"RIB SUPPORT (CORE)  ·  MOULDED CARBON, ONE PIECE  ·  {fmt(L - sp.cap_length)} × "
                 f"{fmt(sp.width)} × {fmt(C.core_t)} mm", "1:2, 2:1", f"3 / {SHEETS}", "A3",
                 title=f"RIB SUPPORT – {sp.name}", material="CARBON / EPOXY (NOTE 1)")

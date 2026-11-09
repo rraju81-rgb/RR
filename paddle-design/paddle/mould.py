@@ -33,7 +33,7 @@ from .geometry import Outline
 
 @dataclass(frozen=True)
 class MouldSpec:
-    floor: float = 10.0          # tray material under the pocket floor
+    floor: float = 5.0           # tray material under the pocket floor (pressed flat on a platen)
     lid: float = 10.0            # lid flange (plate) above the rim
     plug: float = 2.0            # lid plug height = how far the pocket runs above the part
     clearance: float = 0.2       # sliding gap per side between the plug and the pocket wall

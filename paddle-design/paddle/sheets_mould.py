@@ -1,4 +1,4 @@
-"""Sheet 4 of each paddle drawing (REV F): the two-half wave mould that forms the rib support.
+"""Sheet 4 of each paddle drawing (REV G): the two-half wave mould that forms the rib support.
 
 Plans of the tray (bottom half, teeth up) and of the lid's underside (plug and teeth) 1:3, section
 X-X through the closed mould and the part 1:2, detail Y of the edge 2:1, hardware list and the
