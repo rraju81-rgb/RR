@@ -1,5 +1,7 @@
 # Polo Oettinger-style roof spoiler v6: 3 solid pieces with bow-tie keys
 
+> **Superseded by v7** (`../v7/`): the same spoiler cut into 4 equal pieces of 325 mm, made because these 433 mm pieces warped in printing. Print v7 unless you specifically want the 3-piece split.
+
 Built from `spoiler/input/v5_TOP.stl` + `v5_BOTTOM.stl`, in the same car coordinates and origin:
 X is the width of the car, Y is up, +Z points to the rear. The overall size is unchanged at 1,300 × 147 × 292 mm.
 
@@ -26,7 +28,7 @@ X is the width of the car, Y is up, +Z points to the rear. The overall size is u
 
 `assembled/` holds the same 3 pieces and 4 keys in car coordinates, already in their fitted positions. Load them together in the slicer to check the assembly.
 
-`docs/` holds the renders, the key drawing and the before/after of the step. `car/` holds renders of the spoiler on a Polo-class car, and `brochure/` holds a two-page A4 brochure built from them; each has its own README. The scripts are on the GitHub branch in `spoiler/v6/src/`: running `sh v6/src/run_all.sh` from `spoiler/` rebuilds everything from the v5 STLs in about a minute.
+`docs/` holds the renders, the key drawing and the before/after of the step. `car/` holds renders of the spoiler on a Polo-class car, and `brochure/` holds a two-page A4 brochure built from them; each has its own README. The brochure and its two part views now show the 4-piece v7 split. The scripts are on the GitHub branch in `spoiler/v6/src/`: running `sh v6/src/run_all.sh` from `spoiler/` rebuilds everything from the v5 STLs in about a minute.
 
 ## Checks on the delivered files
 
@@ -39,7 +41,7 @@ X is the width of the car, Y is up, +Z points to the rear. The overall size is u
 
 ## Printing (Kobra 3 Max)
 
-- **Material:** ASA is the best choice, because a roof gets hot in the sun. PETG works. **Don't use PLA**, which softens at around 55–60 °C.
+- **Material:** ASA is the best choice on the car, because a roof gets hot in the sun, but it needs an enclosure. The Kobra 3 Max has an open frame, and ASA printed on it in the open lifts off the bed and can split between layers. PETG prints well in the open. **Don't use PLA**, which softens at around 55–60 °C. See `../v7/README.md` for the full anti-warp settings.
 - **Walls and infill:** the part is thin, so walls make up most of the volume.
 
   | Setting | Use | Material for the set (+30 g of keys) |

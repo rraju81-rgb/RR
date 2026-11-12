@@ -1,5 +1,5 @@
 """Blender Cycles studio scene for the Polo + v6 spoiler. Usage:
-   python3 v6/car/src/blend_scene.py <view> <out.png> <W> <H> <samples> [paint=white|red|grey] [studio=dark|light]"""
+   python3 v6/car/src/blend_scene.py <view> <out.png> <W> <H> <samples> [paint=white|red|grey] [studio=dark|light] [ver=v7|v6]"""
 import os, sys, math, numpy as np
 sys.path.insert(0, 'v6/car/src')
 import bpy, trimesh
@@ -138,39 +138,43 @@ def lights_only(sc):
     sc.cycles.blur_glossy = 1.0; sc.cycles.caustics_reflective = False; sc.cycles.caustics_refractive = False
 
 
-def build_parts(mode='parts', studio='dark'):
-    """spoiler pieces only: 'parts' = 3 pieces apart, keys in front; 'joint' = upside down, keys above the pockets"""
+PART_LAYOUTS = {'v6': dict(ids=['L', 'C', 'R'], spread=150.0),              # 3 pieces, 4 keys
+                'v7': dict(ids=['P1', 'P2', 'P3', 'P4'], spread=100.0)}     # 4 equal pieces, 6 keys
+def build_parts(mode='parts', studio='dark', ver='v7'):
+    """spoiler pieces only: 'parts' = pieces apart, keys lying in the gaps; 'joint' = upside down, keys above the pockets.
+    ver picks the split: 'v7' (4 pieces, 6 keys) or 'v6' (3 pieces, 4 keys)."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
     M = {'spoiler': principled('spoiler_raw_print', (0.030, 0.030, 0.033), rough=0.45, spec=0.5),   # raw printed sections: satin, not painted
-         'key': principled('key', (0.90, 0.13, 0.016), rough=0.40, coat=0.2),     # brand orange, so the keys read clearly
+         'key': principled('key', (0.90, 0.13, 0.016), rough=0.65, spec=0.22),   # brand orange and matte, so no key glares white
          'floor': principled('floor', (0.035, 0.036, 0.04) if studio == 'dark' else (0.55, 0.56, 0.58), rough=0.35 if studio == 'dark' else 0.55)}
     import json as _j
-    meta = _j.load(open('v6/out/_parts_meta.json'))
-    gapx = {'L': -150.0, 'C': 0.0, 'R': 150.0}
-    for k in 'LCR':
-        m = trimesh.load(f'v6/assembled/{k}.stl')
-        if mode == 'joint':
-            m.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [0, 0, 1]))      # flip about the long (z) axis
-            m.apply_translation([-gapx[k] * 0.3 if False else 0, 0, 0])
-        m.apply_translation([gapx[k] * (0.35 if mode == 'joint' else 1.0) * (-1 if mode == 'joint' else 1), 0, 0])
+    meta = _j.load(open(f'{ver}/out/_parts_meta.json'))
+    ids = PART_LAYOUTS[ver]['ids']; joint = mode == 'joint'
+    g = PART_LAYOUTS[ver]['spread'] * (0.35 if joint else 1.0)
+    ex = {k: (i - (len(ids) - 1) / 2) * g for i, k in enumerate(ids)}       # how far each piece is pulled out along x
+    pieces = {k: trimesh.load(f'{ver}/assembled/{k}.stl') for k in ids}
+    xb = {k: (m.bounds[0][0], m.bounds[1][0]) for k, m in pieces.items()}
+    def seam_shift(xs):                                                     # mid-gap offset of the two pieces that meet at seam xs
+        near = [k for k in ids if min(abs(xb[k][0] - xs), abs(xb[k][1] - xs)) < 1.0]
+        return sum(ex[k] for k in near) / len(near)
+    flip = trimesh.transformations.rotation_matrix(np.pi, [0, 0, 1])        # upside down, about the chord (z) axis: x -> -x
+    for k in ids:
+        m = pieces[k]
+        if joint: m.apply_transform(flip)
+        m.apply_translation([-ex[k] if joint else ex[k], 0, 0])
         if NORMALS: new_mesh('spoiler_' + k, m, [M['spoiler']], loop_normals=spoiler_normals(m))
         else: new_mesh('spoiler_' + k, m, [M['spoiler']], auto=30)
-    for i in range(4):
-        km = trimesh.load(f'v6/assembled/KEY_{i + 1}.stl')
-        T = np.array(meta['frames'][i]['T']); A = T[:, 2]; side = np.sign(meta['frames'][i]['seam'])
-        if mode == 'joint':
-            km.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [0, 0, 1]))
-            km.apply_translation([-side * gapx['R'] * 0.35 / 2 * 0, 0, 0])
-            km.apply_translation(np.array([0, 0, 0]))
-            # lift keys out of their pockets (pocket axis also flipped)
-            A2 = np.array([-A[0], -A[1], A[2]])
-            km.apply_translation(-A2 * 55.0 + np.array([-side * 150.0 * 0.35 / 2, 0, 0]))
+    for i, fr in enumerate(meta['frames']):
+        A = np.array(fr['T'])[:, 2]; xs = fr['seam']
+        if joint:
+            km = trimesh.load(f'{ver}/assembled/KEY_{i + 1}.stl'); km.apply_transform(flip)
+            A2 = np.array([-A[0], -A[1], A[2]])                             # pocket axis, flipped with the pieces
+            km.apply_translation(-A2 * 55.0 + np.array([-seam_shift(xs), 0, 0]))   # lifted out of the pocket, over the gap
         else:
-            # keys lying flat in front of the pieces
-            kl = trimesh.load('v6/out/_key_local.stl'); kl.apply_transform(trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0]))
-            sx = [-1, -1, 1, 1][i]; zz = [60.0, 200.0, 60.0, 200.0][i]
-            kl.apply_translation([sx * (433.3 / 2 + 75.0), -88.0, zz]); km = kl
+            # keys lying flat in a row behind the rear lip (towards the camera), one pair under each gap
+            km = trimesh.load(f'{ver}/out/_key_local.stl'); km.apply_transform(trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0]))
+            km.apply_translation([xs + seam_shift(xs) + (-38.0 if i % 2 == 0 else 38.0), -88.0, 335.0])
         new_mesh(f'key_{i}', km, [M['key']], auto=30)
     # drop everything onto the floor
     mins = []
@@ -265,8 +269,10 @@ VIEWS = {
     'top_rear': ((0.0, -3.3, 3.9), (0.0, 0.35, 1.20), 55),
     'fin': ((-1.35, -1.30, 1.98), (-0.48, 0.06, 1.36), 58),
     'rear': ((0.0, -7.6, 1.75), (0.0, 0.0, 1.0), 70),
-    'parts': ((0.50, -1.12, 1.30), (0.0, 0.0, 0.03), 36),
-    'joint': ((0.62, -0.78, 0.70), (0.20, -0.10, 0.03), 40),
+    'parts': ((0.50, -1.12, 1.30), (0.0, 0.0, 0.03), 36),             # v7: 4 pieces, 6 keys
+    'joint': ((0.72, -1.16, 1.02), (0.06, -0.11, 0.03), 40),
+    'parts_v6': ((0.50, -1.12, 1.30), (0.0, 0.0, 0.03), 36),          # v6: 3 pieces, 4 keys
+    'joint_v6': ((0.62, -0.78, 0.70), (0.20, -0.10, 0.03), 40),
     # name: (camera location m, target m, focal mm)
     'rear34': ((-4.35, -5.10, 2.05), (0.0, 0.25, 0.95), 70),
     'rear34_high': ((-3.6, -4.4, 3.3), (0.0, 0.0, 1.05), 60),
@@ -290,8 +296,10 @@ if __name__ == '__main__':
     if kw.get('debug') == '1': DEBUG_ZONES = True
     if kw.get('normals') == '0': NORMALS = False
     if view in ('parts', 'joint'):
-        sc, dz = build_parts(view, studio=kw.get('studio', 'light'))
+        ver = kw.get('ver', 'v7')
+        sc, dz = build_parts(view, studio=kw.get('studio', 'light'), ver=ver)
         lights_only(sc)
+        if ver != 'v7' and 'cam' not in kw: VIEWS[view] = VIEWS[f'{view}_{ver}']
     else:
         sc = build(paint=kw.get('paint', 'white'), studio=kw.get('studio', 'dark'), car_path=kw.get('car', 'v6/car/out/car_body_conf.ply'))
     if 'cam' in kw:        # cam=x,y,z,tx,ty,tz,focal overrides the named view (for framing tests)

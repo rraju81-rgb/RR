@@ -12,8 +12,8 @@ It has no VW badges or logos. The rear plate reads CARBON 6.
 ## How the spoiler sits on the car
 
 - The car and the spoiler share the spoiler's coordinates: x across the car, y up, z to the rear, in mm.
-- The car views show the finished spoiler as one part, with seams filled and painted. That is the solid shape the three pieces are cut from: `v6/out/E2.stl`, built by `v6/src/run_all.sh`.
-- The joint and parts views use the printed pieces and keys from `../assembled/` unchanged.
+- The car views show the finished spoiler as one part, with seams filled and painted. That is the solid shape the pieces are cut from: `v6/out/E2.stl`, built by `v6/src/run_all.sh`.
+- The joint and parts views use the printed pieces and keys unchanged. They show the current split, v7 (4 pieces, 6 keys, from `../../v7/assembled/`). Add `ver=v6` on the command line for the 3-piece split.
 - The roof under the spoiler follows the measured underside of the v6 spoiler (`data/hump_profile.npz`). The spoiler sits on the roof with a **1.5 mm gap for the mounting tape**: that is the median, and 90% of points are between 1.2 and 2.7 mm. Under the fins, the C-pillars are pulled in to the same gap and blended back to their original shape over 70 mm. Along the inner faces of the fins, a few points get closer, down to touching near the fin tips. No point of the car is inside the spoiler.
 - This means the fit in the renders is **by construction**: the roof was shaped to the spoiler. The renders show how the part looks on the car. They don't prove that it fits a real Polo, so dry-fit as described in `../README.md`.
 
@@ -41,8 +41,8 @@ It has no VW badges or logos. The rear plate reads CARBON 6.
 | `top_rear.jpg` | High rear view across the roof. |
 | `detail_fin.jpg` | Close-up of the left fin wrapping the rear pillar. |
 | `rear.jpg` | Straight rear view. |
-| `joints.jpg` | The three printed sections upside down with the four bow-tie keys lifted out of their pockets. The keys are shown in orange for clarity: printed keys are the same material as the spoiler. |
-| `parts.jpg` | The three sections and four keys laid out. |
+| `joints.jpg` | The four printed sections upside down with the six bow-tie keys lifted out of their pockets. The keys are shown in orange for clarity: printed keys are the same material as the spoiler. |
+| `parts.jpg` | The four sections and six keys laid out. |
 
 ## Rebuilding
 
@@ -50,6 +50,7 @@ Run from `spoiler/`:
 
 ```sh
 sh v6/src/run_all.sh                 # v6 spoiler, incl. v6/out/E2.stl (skip if already built)
+sh v7/src/run_all.sh                 # v7 pieces and keys for the joint and parts views
 python3 v6/car/src/car_parts.py      # wheels and brakes  -> v6/car/out/
 python3 v6/car/src/car_build_all.py  # body, fit, normals, details -> v6/car/out/  (about 2 min)
 sh v6/car/src/render_final.sh        # all renders -> v6/car/renders/  (about 35 min on 4 CPU cores)

@@ -1,6 +1,6 @@
 # Brochure: Polo roof spoiler
 
-A two-page A4 brochure for the v6 roof spoiler, branded Carbon 6 Customization and 3D printed by pi.XL 3D Printing.
+A two-page A4 brochure for the roof spoiler, branded Carbon 6 Customization and 3D printed by pi.XL 3D Printing. It describes the current build, v7: four sections and six bow-tie keys.
 
 | File | What it is |
 |---|---|
