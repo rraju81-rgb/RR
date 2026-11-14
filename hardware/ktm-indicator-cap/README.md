@@ -99,7 +99,7 @@ Bend allowance = angle × (R + K·t), inside radius 1.5 mm, K 0.42. If your bend
 | `cad/drawing.py`, `cad/figures.py`, `cad/page.py` | Drawings, figures and the review page |
 | `out/cap_blank.dxf` | Laser profile (layer `CUT`), bend lines, notes |
 | `out/cap_formed.step`, `out/cap_blank.step` | Formed part and flat blank |
-| `out/cap_formed.stl` | Print it as a fit gauge; too thin to use printed |
+| `out/cap_formed.stl` | Formed part as a mesh in mm: 4,420 triangles, closed and manifold. Print it as a fit gauge; 1.5 mm walls are too thin for a working plastic cap. Preview: `out/cap_formed_stl_preview.png` |
 | `out/drawing_formed.pdf`, `out/drawing_blank.pdf` | A3 drawings |
 | `out/template_1to1.pdf` | A4 card template at 1:1 |
 | `out/alu/` | The same set for 2.0 mm aluminium |
