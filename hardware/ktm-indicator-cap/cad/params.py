@@ -16,7 +16,7 @@ IMPORTANT
 The `Lamp` and `Mount` values below were scaled off product photos, NOT measured
 on a motorcycle. They are good enough to prove the design and to make a
 cardboard / printed fit-check, and they are NOT good enough to cut steel.
-Measure the lamp (see README, "Measure first") and overwrite them.
+Measure the lamp (see README, "Measure first", M1..M10) and overwrite them.
 """
 from dataclasses import dataclass, field, asdict
 import math
@@ -24,7 +24,7 @@ import math
 
 @dataclass
 class Lamp:
-    """OEM LED indicator head. Photo-derived estimates -> VERIFY (M1..M8 in README)."""
+    """OEM LED indicator head. Photo-derived estimates -> VERIFY (M1..M6 in README)."""
     L: float = 74.0        # M1  head length, root face to tip
     H: float = 20.0        # M2  head height (top face to underside)
     D_root: float = 26.0   # M3  depth of black housing at the root (lens joint -> back face)
@@ -46,10 +46,11 @@ class Lamp:
 
 @dataclass
 class Mount:
-    """Fixing point on the bike beside the lamp socket. Photo-derived -> VERIFY (M7, M8)."""
-    G_ear: float = 8.0          # M7  root face of head -> seat face of the screw boss (along x)
-    hole_from_back: float = 10.0  # M8  screw axis behind the OUTER face of the cap back wall
-    screw_d: float = 5.0        # nominal screw diameter (M5 / 5 mm thread-forming screw)
+    """Fixing point on the bike beside the lamp socket. Photo-derived -> VERIFY (M7..M10)."""
+    G_ear: float = 8.0              # M7  root face of head -> seat face of the screw boss, along the lamp (x)
+    screw_behind_back: float = 14.0 # M8  screw axis behind the back face of the head, at the root (y)
+    screw_dz: float = 0.0           # M9  screw axis above (+) / below (-) mid-height of the head (z)
+    screw_d: float = 5.0            # M10 screw diameter (M5 or 5 mm thread-forming screw for plastic)
 
 
 @dataclass
@@ -123,5 +124,7 @@ def aluminium_variant() -> Design:
     d.cap.t = 2.0
     d.cap.r = 2.0
     d.cap.k = 0.44
-    d.cap.tab_flat = 5.5
+    d.cap.tab_flat = 4.5        # any longer and the thicker tab would poke past the lens face
+    d.cap.slot_margin = 6.0     # 2 t + r
+    d.cap.ear_slot_len = 7.5    # thicker sheet + bigger radius leave less room before the bend: +/-1 mm adjustment
     return d

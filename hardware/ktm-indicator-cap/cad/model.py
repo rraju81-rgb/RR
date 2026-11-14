@@ -65,8 +65,13 @@ class CapGeometry:
         # tip wall reaches from its bend to the lens joint line
         cy = lamp.D_root + (cap.gap_back - r) * ca - self.s_tip * sa
         self.tip_len = cy - cap.tip_front_y
-        self.q_hole = mount.hole_from_back - r        # hole centre from the ear's bend tangent line
-        assert self.q_hole - cap.ear_slot_len / 2 >= 2 * t, "ear slot too close to the bend"
+        # ear slot centre, measured from the ear's bend tangent line (ear square to the lamp axis)
+        self.q_hole = mount.screw_behind_back - (cap.gap_back + t + r) * ca + self.s_root * sa
+        assert self.q_hole - cap.ear_slot_len / 2 >= 2 * t, (
+            "ear slot too close to the bend: the screw is too near the lamp for a folded ear "
+            f"(need screw_behind_back >= {2 * t + cap.ear_slot_len / 2 + (cap.gap_back + t + r) * ca - self.s_root * sa:.1f})")
+        self.p_hole = self.he / 2 - mount.screw_dz    # ear local p runs downwards
+        assert abs(mount.screw_dz) <= self.he / 2 - cap.ear_slot_w / 2 - 2 * t + 1e-9, "screw_dz puts the slot off the ear"
 
         self.root = self._build()
 
@@ -209,7 +214,7 @@ class CapGeometry:
             "EAR",
             [(0, 0), (he, 0), (he, qh + he / 2), (0, qh + he / 2)],
             [0, 0, he / 2, he / 2],
-            [obround((he / 2, qh), cap.ear_slot_len, cap.ear_slot_w, 90)],
+            [obround((self.p_hole, qh), cap.ear_slot_len, cap.ear_slot_w, 90)],
         )
         back.attach((Lbw, he / 2), (Lbw, -he / 2), self.ear_angle, "down", ear, "bend_EAR")
         return back
@@ -242,7 +247,7 @@ class CapGeometry:
     def ear_hole_centre(self, frames):
         """Screw axis position in lamp coordinates (centre of the ear slot, on the seat face)."""
         O, eP, eQ, eN = frames["EAR"]
-        return O + (self.he / 2) * eP + self.q_hole * eQ
+        return O + self.p_hole * eP + self.q_hole * eQ
 
 
 # ---------------------------------------------------------------------------- lamp (schematic)

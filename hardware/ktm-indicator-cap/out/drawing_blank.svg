@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297"><style>
+      .frame{fill:none;stroke:#111;stroke-width:.5}
+      .part{fill:none;stroke:#111;stroke-width:.4;stroke-linejoin:round;stroke-linecap:round}
+      .ref{fill:none;stroke:#8a8f98;stroke-width:.2;stroke-linejoin:round}
+      .cut{fill:#eef1f4;stroke:#111;stroke-width:.4;stroke-linejoin:round}
+      .hole{fill:#fff;stroke:#111;stroke-width:.4}
+      .bendD{fill:none;stroke:#0a7d3c;stroke-width:.3;stroke-dasharray:4 1.2 .8 1.2}
+      .bendU{fill:none;stroke:#c22727;stroke-width:.3;stroke-dasharray:4 1.2 .8 1.2}
+      .dim{fill:none;stroke:#1f4e9c;stroke-width:.18}
+      .arrow{fill:#1f4e9c;stroke:none}
+      .dimtxt{font:2.6px 'DejaVu Sans',Arial,sans-serif;fill:#1f4e9c}
+      .txt{font:2.8px 'DejaVu Sans',Arial,sans-serif;fill:#111}
+      .small{font:2.2px 'DejaVu Sans',Arial,sans-serif;fill:#333}
+      .label{font:bold 3.2px 'DejaVu Sans',Arial,sans-serif;fill:#111}
+      .title{font:bold 5px 'DejaVu Sans',Arial,sans-serif;fill:#111}
+      .warn{font:bold 2.8px 'DejaVu Sans',Arial,sans-serif;fill:#b3261e}
+      .tb{fill:none;stroke:#111;stroke-width:.3}
+      .datum{fill:none;stroke:#c2410c;stroke-width:.2;stroke-dasharray:3 1}
+      .datumtxt{font:2.3px 'DejaVu Sans',Arial,sans-serif;fill:#c2410c}
+    </style><rect width="420" height="297" fill="#fff"/>
+<rect class="frame" x="8.000" y="8.000" width="404.000" height="281.000"/>
+<rect class="tb" x="262.000" y="255.000" width="150.000" height="34.000"/>
+<line class="tb" x1="262.000" y1="267.000" x2="412.000" y2="267.000"/>
+<line class="tb" x1="262.000" y1="278.000" x2="412.000" y2="278.000"/>
+<line class="tb" x1="358.000" y1="267.000" x2="358.000" y2="289.000"/>
+<text class="title" x="265.000" y="260.200" text-anchor="start">KTM indicator slip-on cap - flat blank</text>
+<text class="small" x="265.000" y="265.000" text-anchor="start">Laser profile and bend lines. The DXF is the master for cutting.</text>
+<text class="small" x="265.000" y="271.500" text-anchor="start">Material: Stainless steel 304, 1.5 mm, 2B</text>
+<text class="small" x="265.000" y="275.500" text-anchor="start">Inside bend radius 1.5   K 0.42   mass 68.6 g</text>
+<text class="small" x="265.000" y="282.500" text-anchor="start">Finish: deburr all edges, bead blast, black textured powder coat</text>
+<text class="small" x="265.000" y="286.500" text-anchor="start">Tolerances: cut ±0.15   formed ±0.5   bends ±1°</text>
+<text class="small" x="361.000" y="271.500" text-anchor="start">Drg IC-390A-01   Rev A</text>
+<text class="small" x="361.000" y="275.500" text-anchor="start">Sheet 2 of 2   Scale 2:1</text>
+<text class="small" x="361.000" y="282.500" text-anchor="start">Date 2026-11-14</text>
+<text class="small" x="361.000" y="286.500" text-anchor="start">Units mm   3rd-angle views</text>
+<text class="warn" x="12.000" y="286.000" text-anchor="start">REV A: lamp and mount dimensions are scaled from photographs, not measured. Confirm M1-M10 on a real lamp before cutting metal.</text>
+<path class="cut" d="M75.845,128.959 L71.845,130.559 L43.000,130.559 A5.000,5.000 0 0 0 38.000,135.559 L38.000,159.559 A5.000,5.000 0 0 0 43.000,164.559 L71.845,164.559 L75.845,166.159 L75.845,172.851 L67.468,172.851 A2.000,2.000 0 0 0 65.494,174.531 L63.065,189.508 A6.000,6.000 0 0 0 68.027,196.391 L82.834,198.792 A2.000,2.000 0 0 1 84.488,201.087 L82.791,211.552 A3.000,3.000 0 0 0 85.272,214.994 L103.040,217.875 A3.000,3.000 0 0 0 106.481,215.394 L108.178,204.928 A2.000,2.000 0 0 1 110.473,203.274 L169.699,212.879 A2.000,2.000 0 0 1 171.353,215.173 L169.656,225.639 A3.000,3.000 0 0 0 172.137,229.080 L189.905,231.961 A3.000,3.000 0 0 0 193.347,229.480 L195.044,219.015 A2.000,2.000 0 0 1 197.338,217.361 L215.106,220.242 A6.000,6.000 0 0 0 221.989,215.280 L228.869,172.851 L228.869,164.559 L257.649,164.559 A17.000,17.000 0 0 0 257.649,130.559 L228.869,130.559 L228.869,122.268 L221.989,79.839 A6.000,6.000 0 0 0 215.106,74.876 L197.338,77.758 A2.000,2.000 0 0 1 195.044,76.104 L193.347,65.638 A3.000,3.000 0 0 0 189.905,63.157 L172.137,66.038 A3.000,3.000 0 0 0 169.656,69.480 L171.353,79.945 A2.000,2.000 0 0 1 169.699,82.240 L110.473,91.844 A2.000,2.000 0 0 1 108.178,90.190 L106.481,79.724 A3.000,3.000 0 0 0 103.040,77.243 L85.272,80.125 A3.000,3.000 0 0 0 82.791,83.566 L84.488,94.032 A2.000,2.000 0 0 1 82.834,96.326 L68.027,98.727 A6.000,6.000 0 0 0 63.065,105.610 L65.494,120.588 A2.000,2.000 0 0 0 67.468,122.268 L75.845,122.268 L75.845,128.959 Z"/>
+<path class="hole" d="M121.456,101.713 A3.000,3.000 0 0 1 127.065,103.843 L124.425,110.798 A3.000,3.000 0 0 1 118.815,108.668 L121.456,101.713 Z"/>
+<path class="hole" d="M157.490,108.968 L162.788,95.011 A3.000,3.000 0 1 1 168.398,97.140 L163.099,111.097 A3.000,3.000 0 0 1 157.490,108.968 Z"/>
+<path class="hole" d="M138.153,108.818 L142.122,98.362 A3.000,3.000 0 1 1 147.732,100.491 L143.762,110.948 A3.000,3.000 0 0 1 138.153,108.818 Z"/>
+<path class="hole" d="M253.649,153.059 A5.500,5.500 0 0 1 253.649,142.059 L261.649,142.059 A5.500,5.500 0 1 1 261.649,153.059 L253.649,153.059 Z"/>
+<path class="hole" d="M127.065,191.276 A3.000,3.000 0 0 1 121.456,193.405 L118.815,186.450 A3.000,3.000 0 1 1 124.425,184.321 L127.065,191.276 Z"/>
+<path class="hole" d="M163.099,184.021 L168.398,197.978 A3.000,3.000 0 0 1 162.788,200.108 L157.490,186.150 A3.000,3.000 0 1 1 163.099,184.021 Z"/>
+<path class="hole" d="M143.762,184.171 L147.732,194.627 A3.000,3.000 0 1 1 142.122,196.756 L138.153,186.300 A3.000,3.000 0 0 1 143.762,184.171 Z"/>
+<line class="bendD" x1="75.845" y1="125.613" x2="228.869" y2="125.613"/>
+<text class="small" x="152.357" y="124.613" text-anchor="middle">B7</text>
+<line class="bendD" x1="83.959" y1="90.773" x2="107.650" y2="86.931"/>
+<text class="small" x="95.805" y="87.852" text-anchor="middle" transform="rotate(-9.21 95.805 87.852)">B1</text>
+<line class="bendD" x1="170.825" y1="76.687" x2="194.515" y2="72.845"/>
+<text class="small" x="182.670" y="73.766" text-anchor="middle" transform="rotate(-9.21 182.670 73.766)">B2</text>
+<line class="bendD" x1="228.869" y1="169.505" x2="75.845" y2="169.505"/>
+<text class="small" x="152.357" y="168.505" text-anchor="middle" transform="rotate(360.00 152.357 168.505)">B8</text>
+<line class="bendD" x1="107.650" y1="208.187" x2="83.959" y2="204.345"/>
+<text class="small" x="95.805" y="205.266" text-anchor="middle" transform="rotate(9.21 95.805 205.266)">B3</text>
+<line class="bendD" x1="194.515" y1="222.273" x2="170.825" y2="218.432"/>
+<text class="small" x="182.670" y="219.352" text-anchor="middle" transform="rotate(9.21 182.670 219.352)">B4</text>
+<line class="bendD" x1="68.841" y1="164.559" x2="68.841" y2="130.559"/>
+<text class="small" x="68.841" y="146.559" text-anchor="middle" transform="rotate(-90.00 68.841 146.559)">B5</text>
+<line class="bendU" x1="237.384" y1="130.559" x2="237.384" y2="164.559"/>
+<text class="small" x="237.384" y="146.559" text-anchor="middle" transform="rotate(90.00 237.384 146.559)">B6</text>
+<text class="label" x="38.000" y="22.000" text-anchor="start">FLAT BLANK   outside (cosmetic) face up</text>
+<line class="dim" x1="38.000" y1="233.200" x2="38.000" y2="242.200"/>
+<line class="dim" x1="274.649" y1="233.200" x2="274.649" y2="242.200"/>
+<line class="dim" x1="38.000" y1="241.000" x2="274.649" y2="241.000"/>
+<polygon class="arrow" points="38.000,241.000 39.691,240.384 39.691,241.616"/>
+<polygon class="arrow" points="274.649,241.000 272.957,241.616 272.957,240.384"/>
+<text class="dimtxt" x="156.324" y="240.100" text-anchor="middle">118.3</text>
+<line class="dim" x1="275.849" y1="232.000" x2="293.849" y2="232.000"/>
+<line class="dim" x1="275.849" y1="63.118" x2="293.849" y2="63.118"/>
+<line class="dim" x1="292.649" y1="232.000" x2="292.649" y2="63.118"/>
+<polygon class="arrow" points="292.649,232.000 292.033,230.309 293.264,230.309"/>
+<polygon class="arrow" points="292.649,63.118 293.264,64.810 292.033,64.810"/>
+<text class="dimtxt" x="291.749" y="147.559" text-anchor="middle" transform="rotate(-90.00 291.749 147.559)">84.4</text>
+<line class="dim" x1="71.845" y1="167.359" x2="71.845" y2="229.359"/>
+<line class="dim" x1="234.381" y1="167.359" x2="234.381" y2="229.359"/>
+<line class="dim" x1="71.845" y1="228.159" x2="234.381" y2="228.159"/>
+<polygon class="arrow" points="71.845,228.159 73.536,227.544 73.536,228.775"/>
+<polygon class="arrow" points="234.381,228.159 232.690,228.775 232.690,227.544"/>
+<text class="dimtxt" x="153.113" y="227.259" text-anchor="middle">81.27 back wall, tangent to tangent</text>
+<line class="dim" x1="150.645" y1="166.159" x2="142.645" y2="166.159"/>
+<line class="dim" x1="150.645" y1="128.959" x2="142.645" y2="128.959"/>
+<line class="dim" x1="143.845" y1="166.159" x2="143.845" y2="128.959"/>
+<polygon class="arrow" points="143.845,166.159 143.229,164.468 144.460,164.468"/>
+<polygon class="arrow" points="143.845,128.959 144.460,130.651 143.229,130.651"/>
+<text class="dimtxt" x="142.945" y="147.559" text-anchor="middle" transform="rotate(-90.00 142.945 147.559)">18.60</text>
+<line class="dim" x1="36.800" y1="164.559" x2="29.800" y2="164.559"/>
+<line class="dim" x1="36.800" y1="130.559" x2="29.800" y2="130.559"/>
+<line class="dim" x1="31.000" y1="164.559" x2="31.000" y2="130.559"/>
+<polygon class="arrow" points="31.000,164.559 30.384,162.868 31.616,162.868"/>
+<polygon class="arrow" points="31.000,130.559 31.616,132.251 30.384,132.251"/>
+<text class="dimtxt" x="30.100" y="147.559" text-anchor="middle" transform="rotate(-90.00 30.100 147.559)">17.00</text>
+<line class="dim" x1="38.000" y1="129.359" x2="38.000" y2="124.359"/>
+<line class="dim" x1="65.838" y1="129.359" x2="65.838" y2="124.359"/>
+<line class="dim" x1="38.000" y1="125.559" x2="65.838" y2="125.559"/>
+<polygon class="arrow" points="38.000,125.559 39.691,124.944 39.691,126.175"/>
+<polygon class="arrow" points="65.838,125.559 64.146,126.175 64.146,124.944"/>
+<text class="dimtxt" x="51.919" y="124.659" text-anchor="middle">13.92</text>
+<line class="dim" x1="65.838" y1="129.359" x2="65.838" y2="118.359"/>
+<line class="dim" x1="71.845" y1="129.359" x2="71.845" y2="118.359"/>
+<line class="dim" x1="65.838" y1="119.559" x2="71.845" y2="119.559"/>
+<polygon class="arrow" points="65.838,119.559 67.529,118.944 67.529,120.175"/>
+<polygon class="arrow" points="71.845,119.559 70.153,120.175 70.153,118.944"/>
+<text class="dimtxt" x="68.841" y="118.659" text-anchor="middle">BA 3.00</text>
+<line class="dim" x1="240.388" y1="148.759" x2="240.388" y2="168.759"/>
+<line class="dim" x1="257.649" y1="148.759" x2="257.649" y2="168.759"/>
+<line class="dim" x1="240.388" y1="167.559" x2="257.649" y2="167.559"/>
+<polygon class="arrow" points="240.388,167.559 242.079,166.944 242.079,168.175"/>
+<polygon class="arrow" points="257.649,167.559 255.957,168.175 255.957,166.944"/>
+<text class="dimtxt" x="249.018" y="166.659" text-anchor="middle">8.63</text>
+<line class="dim" x1="275.849" y1="164.559" x2="282.849" y2="164.559"/>
+<line class="dim" x1="275.849" y1="130.559" x2="282.849" y2="130.559"/>
+<line class="dim" x1="281.649" y1="164.559" x2="281.649" y2="130.559"/>
+<polygon class="arrow" points="281.649,164.559 281.033,162.868 282.264,162.868"/>
+<polygon class="arrow" points="281.649,130.559 282.264,132.251 281.033,132.251"/>
+<text class="dimtxt" x="280.749" y="147.559" text-anchor="middle" transform="rotate(-90.00 280.749 147.559)">17.00</text>
+<line class="dim" x1="230.069" y1="128.959" x2="239.069" y2="128.959"/>
+<line class="dim" x1="230.069" y1="122.268" x2="239.069" y2="122.268"/>
+<line class="dim" x1="237.869" y1="128.959" x2="237.869" y2="122.268"/>
+<polygon class="arrow" points="237.869,128.959 237.254,127.268 238.485,127.268"/>
+<polygon class="arrow" points="237.869,122.268 238.485,123.959 237.254,123.959"/>
+<text class="dimtxt" x="236.969" y="125.613" text-anchor="middle" transform="rotate(-90.00 236.969 125.613)">BA 3.35</text>
+<line class="dim" x1="257.649" y1="147.559" x2="266.649" y2="123.559"/>
+<polygon class="arrow" points="257.649,147.559 257.663,146.059 258.624,146.419"/>
+<text class="dimtxt" x="267.449" y="124.459" text-anchor="start">slot 5.5 x 9.5</text>
+<text class="label" x="292.000" y="22.000" text-anchor="start">BEND TABLE  (in bend order)</text>
+<text class="small" x="292.000" y="28.000" text-anchor="start">ID</text>
+<text class="small" x="304.000" y="28.000" text-anchor="start">Feature</text>
+<text class="small" x="336.000" y="28.000" text-anchor="start">Dir</text>
+<text class="small" x="352.000" y="28.000" text-anchor="start">Angle</text>
+<text class="small" x="370.000" y="28.000" text-anchor="start">Length</text>
+<text class="small" x="389.000" y="28.000" text-anchor="start">Allow.</text>
+<line class="tb" x1="292.000" y1="29.500" x2="406.000" y2="29.500"/>
+<text class="small" x="292.000" y="34.000" text-anchor="start">B1</text>
+<text class="small" x="304.000" y="34.000" text-anchor="start">TOP TAB1</text>
+<text class="small" x="336.000" y="34.000" text-anchor="start">DOWN</text>
+<text class="small" x="352.000" y="34.000" text-anchor="start">35.0°</text>
+<text class="small" x="370.000" y="34.000" text-anchor="start">12.0</text>
+<text class="small" x="389.000" y="34.000" text-anchor="start">1.30</text>
+<text class="small" x="292.000" y="39.000" text-anchor="start">B2</text>
+<text class="small" x="304.000" y="39.000" text-anchor="start">TOP TAB2</text>
+<text class="small" x="336.000" y="39.000" text-anchor="start">DOWN</text>
+<text class="small" x="352.000" y="39.000" text-anchor="start">35.0°</text>
+<text class="small" x="370.000" y="39.000" text-anchor="start">12.0</text>
+<text class="small" x="389.000" y="39.000" text-anchor="start">1.30</text>
+<text class="small" x="292.000" y="44.000" text-anchor="start">B3</text>
+<text class="small" x="304.000" y="44.000" text-anchor="start">BOTTOM TAB1</text>
+<text class="small" x="336.000" y="44.000" text-anchor="start">DOWN</text>
+<text class="small" x="352.000" y="44.000" text-anchor="start">35.0°</text>
+<text class="small" x="370.000" y="44.000" text-anchor="start">12.0</text>
+<text class="small" x="389.000" y="44.000" text-anchor="start">1.30</text>
+<text class="small" x="292.000" y="49.000" text-anchor="start">B4</text>
+<text class="small" x="304.000" y="49.000" text-anchor="start">BOTTOM TAB2</text>
+<text class="small" x="336.000" y="49.000" text-anchor="start">DOWN</text>
+<text class="small" x="352.000" y="49.000" text-anchor="start">35.0°</text>
+<text class="small" x="370.000" y="49.000" text-anchor="start">12.0</text>
+<text class="small" x="389.000" y="49.000" text-anchor="start">1.30</text>
+<text class="small" x="292.000" y="54.000" text-anchor="start">B5</text>
+<text class="small" x="304.000" y="54.000" text-anchor="start">TIP</text>
+<text class="small" x="336.000" y="54.000" text-anchor="start">DOWN</text>
+<text class="small" x="352.000" y="54.000" text-anchor="start">80.8°</text>
+<text class="small" x="370.000" y="54.000" text-anchor="start">17.0</text>
+<text class="small" x="389.000" y="54.000" text-anchor="start">3.00</text>
+<text class="small" x="292.000" y="59.000" text-anchor="start">B6</text>
+<text class="small" x="304.000" y="59.000" text-anchor="start">EAR</text>
+<text class="small" x="336.000" y="59.000" text-anchor="start">UP</text>
+<text class="small" x="352.000" y="59.000" text-anchor="start">80.8°</text>
+<text class="small" x="370.000" y="59.000" text-anchor="start">17.0</text>
+<text class="small" x="389.000" y="59.000" text-anchor="start">3.00</text>
+<text class="small" x="292.000" y="64.000" text-anchor="start">B7</text>
+<text class="small" x="304.000" y="64.000" text-anchor="start">TOP</text>
+<text class="small" x="336.000" y="64.000" text-anchor="start">DOWN</text>
+<text class="small" x="352.000" y="64.000" text-anchor="start">90.0°</text>
+<text class="small" x="370.000" y="64.000" text-anchor="start">76.5</text>
+<text class="small" x="389.000" y="64.000" text-anchor="start">3.35</text>
+<text class="small" x="292.000" y="69.000" text-anchor="start">B8</text>
+<text class="small" x="304.000" y="69.000" text-anchor="start">BOTTOM</text>
+<text class="small" x="336.000" y="69.000" text-anchor="start">DOWN</text>
+<text class="small" x="352.000" y="69.000" text-anchor="start">90.0°</text>
+<text class="small" x="370.000" y="69.000" text-anchor="start">76.5</text>
+<text class="small" x="389.000" y="69.000" text-anchor="start">3.35</text>
+<line class="bendD" x1="292.000" y1="76.000" x2="308.000" y2="76.000"/>
+<text class="small" x="311.000" y="77.000" text-anchor="start">DOWN = flange folds away from viewer</text>
+<line class="bendU" x1="292.000" y1="81.000" x2="308.000" y2="81.000"/>
+<text class="small" x="311.000" y="82.000" text-anchor="start">UP = flange folds towards viewer</text>
+<text class="small" x="292.000" y="91.000" text-anchor="start">Blank 118.3 x 84.4, area 5682 mm², cut length 563 mm, 8 pierces.</text>
+<text class="small" x="292.000" y="95.400" text-anchor="start">Bend lines are bend centre lines.</text>
+<text class="small" x="292.000" y="99.800" text-anchor="start">Bend allowance = angle x (R + K t), R 1.5, K 0.42.</text>
+<text class="small" x="292.000" y="104.200" text-anchor="start">Adjust K to your tooling and re-run build.py;</text>
+<text class="small" x="292.000" y="108.600" text-anchor="start">the inside dimensions are held, the blank changes.</text>
+<text class="small" x="292.000" y="113.000" text-anchor="start">Form tabs B1-B4 first, then B5, B6, then the two</text>
+<text class="small" x="292.000" y="117.400" text-anchor="start">long bends B7, B8 over a 21.6 mm form block or with</text>
+<text class="small" x="292.000" y="121.800" text-anchor="start">a gooseneck punch (channel is deeper than it is wide).</text>
+<text class="small" x="292.000" y="126.200" text-anchor="start">Tabs may be trimmed to the lamp by hand with</text>
+<text class="small" x="292.000" y="130.600" text-anchor="start">pliers after the liner is fitted.</text>
+<text class="small" x="292.000" y="135.000" text-anchor="start">Grain along the long bends if the sheet allows.</text>
+</svg>

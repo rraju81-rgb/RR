@@ -1,0 +1,120 @@
+<svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 624" role="img" aria-label="Dimensions to measure on the lamp and its mount"><title>Dimensions to measure on the lamp and its mount</title><style>
+  .fig text{font-family:Barlow,'DejaVu Sans',Arial,sans-serif}
+  .part{fill:none;stroke:var(--fig-ink,#14181f);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+  .ref{fill:none;stroke:var(--fig-ref,#8a909b);stroke-width:1;stroke-linejoin:round;stroke-linecap:round}
+  .steel{fill:var(--fig-steel,#c5cad2);stroke:var(--fig-ink,#14181f);stroke-width:1.3;stroke-linejoin:round}
+  .foam{fill:var(--fig-foam,#5b6472);stroke:none}
+  .housing{fill:var(--fig-housing,#23262d);stroke:var(--fig-ink,#14181f);stroke-width:1}
+  .lens{fill:var(--fig-lens,#f6a300);fill-opacity:.5;stroke:var(--fig-lens-edge,#b87400);stroke-width:1}
+  .cut{fill:var(--fig-steel,#c5cad2);fill-opacity:.55;stroke:var(--fig-ink,#14181f);stroke-width:1.4;stroke-linejoin:round}
+  .hole{fill:var(--fig-bg,#ffffff);stroke:var(--fig-ink,#14181f);stroke-width:1.4}
+  .bendD{fill:none;stroke:var(--fig-down,#0a7d3c);stroke-width:1.3;stroke-dasharray:14 4 3 4}
+  .bendU{fill:none;stroke:var(--fig-up,#c22727);stroke-width:1.3;stroke-dasharray:14 4 3 4}
+  .dim{fill:none;stroke:var(--fig-dim,#1f4e9c);stroke-width:.9}
+  .arrow{fill:var(--fig-dim,#1f4e9c);stroke:none}
+  .dimtxt{font-size:13px;font-weight:600;fill:var(--fig-dim,#1f4e9c)}
+  .txt{font-size:13px;fill:var(--fig-ink,#14181f)}
+  .small{font-size:11.5px;fill:var(--fig-ink,#14181f)}
+  .inv{font-size:12px;fill:var(--fig-inv,#e9ecf1)}
+  .label{font-size:13px;font-weight:700;letter-spacing:.06em;fill:var(--fig-ink,#14181f)}
+  .ray{fill:none;stroke:var(--fig-lens-edge,#b87400);stroke-width:1.3;stroke-dasharray:3 4}
+  .rayarrow{fill:var(--fig-lens-edge,#b87400);stroke:none}
+  .datum{fill:none;stroke:var(--fig-ref,#8a909b);stroke-width:.9;stroke-dasharray:8 3 2 3}
+  .datumtxt{font-size:11.5px;fill:var(--fig-ref,#8a909b)}
+</style>
+<text class="label" x="330.000" y="24.000" text-anchor="start">PLAN  (looking down on the lamp)</text>
+<polyline class="ref" points="148.400,268.800 190.000,268.800"/>
+<polyline class="ref" points="148.400,196.000 190.000,196.000"/>
+<polyline class="ref" points="86.000,289.600 86.000,175.200"/>
+<polyline class="ref" points="148.400,289.600 148.400,175.200"/>
+<polyline class="ref" points="86.000,289.600 148.400,289.600"/>
+<polyline class="ref" points="86.000,175.200 148.400,175.200"/>
+<polyline class="ref" points="75.600,50.400 148.400,50.400"/>
+<polyline class="ref" points="75.600,50.400 75.600,51.443 75.600,54.520 75.600,59.476 75.600,66.063 75.600,73.950 75.600,82.743 75.600,92.000 75.600,101.257 75.600,110.050 75.600,117.937 75.600,124.524 75.600,129.480 75.600,132.557 75.600,133.600"/>
+<polyline class="ref" points="148.400,50.400 148.400,51.443 148.400,54.520 148.400,59.476 148.400,66.063 148.400,73.950 148.400,82.743 148.400,92.000 148.400,101.257 148.400,110.050 148.400,117.937 148.400,124.524 148.400,129.480 148.400,132.557 148.400,133.600"/>
+<polyline class="ref" points="148.400,133.600 75.600,133.600"/>
+<polyline class="part" points="190.000,300.000 574.800,300.000"/>
+<polyline class="part" points="574.800,300.000 574.800,227.200"/>
+<polyline class="part" points="574.800,227.200 190.000,164.800"/>
+<polyline class="part" points="190.000,164.800 190.000,300.000"/>
+<polyline class="part" points="190.000,300.000 574.800,300.000"/>
+<polyline class="part" points="574.800,331.200 574.800,300.000"/>
+<polyline class="part" points="190.000,331.200 574.800,331.200"/>
+<polyline class="part" points="190.000,300.000 190.000,331.200"/>
+<text class="small" x="382.400" y="320.280" text-anchor="middle">lens</text>
+<text class="small" x="351.616" y="239.160" text-anchor="middle">black housing, top face</text>
+<text class="small" x="117.200" y="237.600" text-anchor="middle">socket</text>
+<text class="small" x="112.000" y="97.200" text-anchor="middle">screw boss</text>
+<line class="datum" x1="65.200" y1="92.000" x2="231.600" y2="92.000"/>
+<text class="datumtxt" x="236.200" y="96.600" text-anchor="start">screw axis</text>
+<line class="dim" x1="190.000" y1="336.720" x2="190.000" y2="378.120"/>
+<line class="dim" x1="574.800" y1="336.720" x2="574.800" y2="378.120"/>
+<line class="dim" x1="190.000" y1="372.600" x2="574.800" y2="372.600"/>
+<polygon class="arrow" points="190.000,372.600 197.781,369.768 197.781,375.432"/>
+<polygon class="arrow" points="574.800,372.600 567.019,375.432 567.019,369.768"/>
+<text class="dimtxt" x="382.400" y="368.460" text-anchor="middle">M1   74</text>
+<line class="dim" x1="580.320" y1="300.000" x2="621.720" y2="300.000"/>
+<line class="dim" x1="580.320" y1="227.200" x2="621.720" y2="227.200"/>
+<line class="dim" x1="616.200" y1="300.000" x2="616.200" y2="227.200"/>
+<polygon class="arrow" points="616.200,300.000 613.368,292.219 619.032,292.219"/>
+<polygon class="arrow" points="616.200,227.200 619.032,234.981 613.368,234.981"/>
+<text class="dimtxt" x="612.060" y="263.600" text-anchor="middle" transform="rotate(-90.00 612.060 263.600)">M4   14</text>
+<line class="dim" x1="198.320" y1="300.000" x2="198.320" y2="164.800"/>
+<polygon class="arrow" points="198.320,300.000 195.488,292.219 201.152,292.219"/>
+<polygon class="arrow" points="198.320,164.800 201.152,172.581 195.488,172.581"/>
+<text class="dimtxt" x="205.320" y="258.400" text-anchor="start">M3   26</text>
+<line class="dim" x1="148.400" y1="295.120" x2="148.400" y2="369.920"/>
+<line class="dim" x1="190.000" y1="305.520" x2="190.000" y2="369.920"/>
+<line class="dim" x1="148.400" y1="364.400" x2="190.000" y2="364.400"/>
+<polygon class="arrow" points="148.400,364.400 156.181,361.568 156.181,367.232"/>
+<polygon class="arrow" points="190.000,364.400 182.219,367.232 182.219,361.568"/>
+<text class="dimtxt" x="169.200" y="360.260" text-anchor="middle">M6   8</text>
+<line class="dim" x1="148.400" y1="44.880" x2="148.400" y2="12.680"/>
+<line class="dim" x1="190.000" y1="159.280" x2="190.000" y2="12.680"/>
+<line class="dim" x1="148.400" y1="18.200" x2="190.000" y2="18.200"/>
+<polygon class="arrow" points="148.400,18.200 156.181,15.368 156.181,21.032"/>
+<polygon class="arrow" points="190.000,18.200 182.219,21.032 182.219,15.368"/>
+<text class="dimtxt" x="169.200" y="14.060" text-anchor="middle">M7   8</text>
+<line class="dim" x1="184.480" y1="164.800" x2="28.680" y2="164.800"/>
+<line class="dim" x1="70.080" y1="92.000" x2="28.680" y2="92.000"/>
+<line class="dim" x1="34.200" y1="164.800" x2="34.200" y2="92.000"/>
+<polygon class="arrow" points="34.200,164.800 31.368,157.019 37.032,157.019"/>
+<polygon class="arrow" points="34.200,92.000 37.032,99.781 31.368,99.781"/>
+<text class="dimtxt" x="30.060" y="128.400" text-anchor="middle" transform="rotate(-90.00 30.060 128.400)">M8   14</text>
+<line class="dim" x1="497.840" y1="300.000" x2="525.440" y2="362.100"/>
+<polygon class="arrow" points="497.840,300.000 502.630,304.967 498.317,306.884"/>
+<text class="dimtxt" x="529.120" y="366.240" text-anchor="start">housing / lens joint line  (y = 0)</text>
+<line class="dim" x1="190.000" y1="232.400" x2="231.400" y2="145.000"/>
+<polygon class="arrow" points="190.000,232.400 190.643,225.530 194.908,227.551"/>
+<text class="dimtxt" x="235.080" y="149.140" text-anchor="start">root face of the head  (x = 0)</text>
+<text class="label" x="20.000" y="398.000" text-anchor="start">END VIEW  (from the tip)</text>
+<polyline class="ref" points="430.800,514.000 429.827,505.057 426.955,496.533 422.317,488.825 416.131,482.294 408.686,477.246 400.329,473.916 391.452,472.461 382.470,472.948 373.802,475.355 365.855,479.568 358.999,485.392 353.555,492.553 349.778,500.717 347.844,509.502 347.844,518.498 349.778,527.283 353.555,535.447 358.999,542.608 365.855,548.432 373.802,552.645 382.470,555.052 391.452,555.539 400.329,554.084 408.686,550.754 416.131,545.706 422.317,539.175 426.955,531.467 429.827,522.943 430.800,514.000"/>
+<polyline class="part" points="181.200,566.000 181.200,462.000"/>
+<polyline class="part" points="254.000,566.000 254.000,462.000"/>
+<polyline class="part" points="181.200,566.000 254.000,566.000"/>
+<polyline class="part" points="181.200,462.000 254.000,462.000"/>
+<polyline class="part" points="316.400,566.000 316.400,462.000"/>
+<polyline class="part" points="254.000,566.000 316.400,566.000"/>
+<polyline class="part" points="254.000,462.000 316.400,462.000"/>
+<polyline class="part" points="181.200,566.000 181.200,462.000"/>
+<polyline class="part" points="150.000,482.800 181.200,462.000"/>
+<polyline class="part" points="150.000,482.800 150.000,545.200"/>
+<polyline class="part" points="181.200,566.000 150.000,545.200"/>
+<line class="dim" x1="144.480" y1="566.000" x2="103.080" y2="566.000"/>
+<line class="dim" x1="144.480" y1="462.000" x2="103.080" y2="462.000"/>
+<line class="dim" x1="108.600" y1="566.000" x2="108.600" y2="462.000"/>
+<polygon class="arrow" points="108.600,566.000 105.768,558.219 111.432,558.219"/>
+<polygon class="arrow" points="108.600,462.000 111.432,469.781 105.768,469.781"/>
+<text class="dimtxt" x="104.460" y="514.000" text-anchor="middle" transform="rotate(-90.00 104.460 514.000)">M2   20</text>
+<line class="dim" x1="169.500" y1="469.800" x2="201.700" y2="433.000"/>
+<polygon class="arrow" points="169.500,469.800 171.994,463.366 175.546,466.474"/>
+<text class="dimtxt" x="205.380" y="437.140" text-anchor="start">M5   lens chamfer: 4.5 across (a), 3.0 down (b)</text>
+<line class="datum" x1="170.800" y1="514.000" x2="451.600" y2="514.000"/>
+<text class="datumtxt" x="456.200" y="518.600" text-anchor="start">mid-height of the head</text>
+<line class="dim" x1="389.200" y1="514.000" x2="412.200" y2="472.600"/>
+<polygon class="arrow" points="389.200,514.000 390.286,507.186 394.412,509.478"/>
+<text class="dimtxt" x="415.880" y="476.740" text-anchor="start">M9   screw above (+) / below (-) mid-height:  0</text>
+<text class="dimtxt" x="470.000" y="556.000" text-anchor="start">M10  thread and length of the screw</text>
+<text class="dimtxt" x="470.000" y="572.000" text-anchor="start">already in this boss (M5 assumed)</text>
+<text class="small" x="20.000" y="604.000" text-anchor="start">Values shown are the photo estimates the model is built on. Measure and replace every one before cutting metal.</text>
+</svg>

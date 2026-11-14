@@ -1,0 +1,275 @@
+{
+  "variant": "AL5052 2.0 mm",
+  "material": "Aluminium 5052-H32, 2.0 mm",
+  "thickness": 2.0,
+  "inside_radius": 2.0,
+  "k_factor": 0.44,
+  "mass_g": 31.0,
+  "volume_mm3": 11557.4,
+  "formed_envelope": {
+    "x": [
+      -8.0,
+      78.0
+    ],
+    "y": [
+      -5.99,
+      48.0
+    ],
+    "z": [
+      -2.8,
+      22.8
+    ],
+    "size": [
+      86.0,
+      53.99,
+      25.6
+    ]
+  },
+  "blank": {
+    "width": 117.39,
+    "height": 85.7,
+    "area": 5741.1,
+    "area_check": 5741.2,
+    "cut_length": 531.5,
+    "pierces": 8
+  },
+  "derived": {
+    "taper_deg": 9.21,
+    "cavity_height": 21.6,
+    "outer_height": 25.6,
+    "back_wall_flat_height": 17.6,
+    "back_wall_length": 79.99,
+    "plate_bend_length": 76.01,
+    "tip_wall": [
+      16.0,
+      13.49
+    ],
+    "ear_height": 16.0,
+    "ear_angle": 80.79,
+    "tip_angle": 80.79,
+    "tab_bend_line_y": -0.005,
+    "plate_edge_y": 1.995,
+    "screw_axis": [
+      -8.0,
+      40.0,
+      10.0
+    ],
+    "ear_slot_centre_from_bend_tangent": 7.78
+  },
+  "bends": [
+    {
+      "id": "B1",
+      "feature": "TOP_TAB1",
+      "direction": "DOWN",
+      "angle": 35.0,
+      "length": 12.0,
+      "allowance": 1.759
+    },
+    {
+      "id": "B2",
+      "feature": "TOP_TAB2",
+      "direction": "DOWN",
+      "angle": 35.0,
+      "length": 12.0,
+      "allowance": 1.759
+    },
+    {
+      "id": "B3",
+      "feature": "BOTTOM_TAB1",
+      "direction": "DOWN",
+      "angle": 35.0,
+      "length": 12.0,
+      "allowance": 1.759
+    },
+    {
+      "id": "B4",
+      "feature": "BOTTOM_TAB2",
+      "direction": "DOWN",
+      "angle": 35.0,
+      "length": 12.0,
+      "allowance": 1.759
+    },
+    {
+      "id": "B5",
+      "feature": "TIP",
+      "direction": "DOWN",
+      "angle": 80.79,
+      "length": 16.0,
+      "allowance": 4.061
+    },
+    {
+      "id": "B6",
+      "feature": "EAR",
+      "direction": "UP",
+      "angle": 80.79,
+      "length": 16.0,
+      "allowance": 4.061
+    },
+    {
+      "id": "B7",
+      "feature": "TOP",
+      "direction": "DOWN",
+      "angle": 90.0,
+      "length": 76.01,
+      "allowance": 4.524
+    },
+    {
+      "id": "B8",
+      "feature": "BOTTOM",
+      "direction": "DOWN",
+      "angle": 90.0,
+      "length": 76.01,
+      "allowance": 4.524
+    }
+  ],
+  "checks": [
+    {
+      "check": "Cap vs lamp head, overlap volume",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Liner gap, top / bottom plate",
+      "value": "0.80 / 0.80 mm",
+      "requirement": "0.80",
+      "ok": true
+    },
+    {
+      "check": "Liner gap, back wall",
+      "value": "1.50 mm",
+      "requirement": "1.50",
+      "ok": true
+    },
+    {
+      "check": "Liner gap, tip wall",
+      "value": "2.00 mm",
+      "requirement": "2.00",
+      "ok": true
+    },
+    {
+      "check": "Keeper tabs to lens chamfer (closest point)",
+      "value": "0.80 / 0.80 / 0.80 / 0.80 mm",
+      "requirement": "0.80",
+      "ok": true
+    },
+    {
+      "check": "Tab hook depth past the head's top edge",
+      "value": "2.14 mm",
+      "requirement": ">= 1.5",
+      "ok": true
+    },
+    {
+      "check": "Slides on from the tip without touching (8 stations)",
+      "value": "min gap 0.75 mm",
+      "requirement": "> 0",
+      "ok": true
+    },
+    {
+      "check": "Top/bottom symmetric (same part for left and right)",
+      "value": "0.000 mm3 difference",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Cap stays behind the lens front face",
+      "value": "0.01 mm behind",
+      "requirement": "> 0",
+      "ok": true
+    },
+    {
+      "check": "Lens light window obstructed",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Shortest flange (keeper tab, from tangent)",
+      "value": "6.26 mm",
+      "requirement": ">= 6.00 (3 t)",
+      "ok": true
+    },
+    {
+      "check": "Slot width vs thickness",
+      "value": "3.00 mm",
+      "requirement": ">= 2.00 (1 t)",
+      "ok": true
+    },
+    {
+      "check": "Slot keep-out from bend / edge",
+      "value": "6.00 mm",
+      "requirement": ">= 6.00 (2 t + r)",
+      "ok": true
+    },
+    {
+      "check": "Ear slot to bend tangent",
+      "value": "4.03 mm",
+      "requirement": ">= 4.00 (2 t)",
+      "ok": true
+    },
+    {
+      "check": "Exposed corner radius",
+      "value": "3.0 mm",
+      "requirement": ">= 2.5",
+      "ok": true
+    }
+  ],
+  "all_checks_pass": true,
+  "params": {
+    "lamp": {
+      "L": 74.0,
+      "H": 20.0,
+      "D_root": 26.0,
+      "D_tip": 14.0,
+      "lens_run": 4.5,
+      "lens_drop": 3.0,
+      "lens_nose": 1.5,
+      "neck_len": 8.0,
+      "neck_y0": 6.0,
+      "neck_dy": 14.0,
+      "neck_dz": 13.0
+    },
+    "mount": {
+      "G_ear": 8.0,
+      "screw_behind_back": 14.0,
+      "screw_dz": 0.0,
+      "screw_d": 5.0
+    },
+    "cap": {
+      "material": "Aluminium 5052-H32, 2.0 mm",
+      "density": 0.00268,
+      "t": 2.0,
+      "r": 2.0,
+      "k": 0.44,
+      "gap_z": 0.8,
+      "gap_back": 1.5,
+      "gap_tip": 2.0,
+      "gap_tab": 0.8,
+      "plate_root_x": -3.0,
+      "plate_bend_start": 2.0,
+      "edge_setback": 2.0,
+      "r_corner": 3.0,
+      "tab_angle": 35.0,
+      "tab_w": 12.0,
+      "tab_flat": 4.5,
+      "tab_x": [
+        16.0,
+        60.0
+      ],
+      "tip_h_relief": 0.8,
+      "tip_front_y": 0.0,
+      "ear_angle": null,
+      "ear_slot_len": 7.5,
+      "ear_slot_w": 5.5,
+      "slot_x": [
+        28.0,
+        38.0,
+        48.0
+      ],
+      "slot_w": 3.0,
+      "slot_angle": 60.0,
+      "slot_margin": 6.0,
+      "relief": 0.8
+    }
+  }
+}
