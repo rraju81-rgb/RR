@@ -58,6 +58,13 @@ def run_checks(d: Design, g: CapGeometry, cap, parts, frames, lamp):
     def dist(a, b):
         return float(a.distance(b))
 
+    ctx = [lamp[k] for k in ("NECK", "SOCKET", "BOSS") if k in lamp]
+    cvol = 0.0
+    for c in ctx:
+        it = cap.intersect(c)
+        cvol += sum(x.Volume() for x in it.Solids()) if it.Solids() else 0.0
+    add("Cap vs stalk, socket and screw boss, overlap volume", f"{cvol:.3f} mm3", "0", cvol < 1e-6)
+
     dz_top = dist(named["TOP"], lamp["HOUSING"])
     dz_bot = dist(named["BOTTOM"], lamp["HOUSING"])
     add("Liner gap, top / bottom plate", f"{dz_top:.2f} / {dz_bot:.2f} mm", f"{capd.gap_z:.2f}",

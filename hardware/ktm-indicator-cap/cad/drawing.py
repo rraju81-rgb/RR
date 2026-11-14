@@ -186,7 +186,7 @@ def draw_formed(res, path: Path):
     hole = res["hole"]
     env = sm["formed_envelope"]
     S = Sheet(420, 297)
-    frame(S, "KTM indicator slip-on cap", "390 Adventure (2025+) LED lamp   one part fits left/right, front/rear", "2:1", sm, "1 of 2")
+    frame(S, "KTM indicator slip-on cap", "390 Adventure (2025+) LED lamp   same part fits left and right", "2:1", sm, "1 of 2")
     k = 2.0
     shapes = {"CAP": cap, "HOUSING": lamp["HOUSING"], "LENS": lamp["LENS"], "NECK": lamp["NECK"]}
     styles = {"HOUSING": "ref", "LENS": "ref", "NECK": "ref", "CAP": "part"}
@@ -233,7 +233,7 @@ def draw_formed(res, path: Path):
     tipv.dim_h(env["y"][0], env["y"][1], env["z"][0], 8, f"{env['y'][1] - env['y'][0]:.1f}")
     zc = H / 2
     tipv.dim_v(zc - g.he / 2, zc + g.he / 2, env["y"][1], 7, f"{g.he:.1f} ear")
-    tipv.leader(float(hole[1]), zc, 4, -30, f"slot {capd.ear_slot_w:.1f} x {capd.ear_slot_len:.1f} for M{d.mount.screw_d:.0f}", "end")
+    tipv.leader(float(hole[1]), float(hole[2]), 4, -30, f"slot {capd.ear_slot_w:.1f} x {capd.ear_slot_len:.1f} for M{d.mount.screw_d:.0f}", "end")
     tipv.leader(g.y_tab - 3.0, H - 0.4, -1.5, -12, f"tab {capd.tab_angle:.0f}°", "end")
     tipv.leader(y_bw_out_tip - capd.t / 2, zc + 4, 6, -34, f"t {capd.t:.1f}, inside R{capd.r:.1f}", "end")
 
@@ -251,7 +251,7 @@ def draw_formed(res, path: Path):
     S.text(252, 20, "ISOMETRIC  (not to scale, lamp and mount shown thin)", "label")
 
     notes = [
-        "1. One part, symmetric top to bottom: turn it over for the other side of the bike.",
+        "1. Symmetric top to bottom: turn it over for the other side. Front and rear share the lamp; only the ear moves if their screws differ.",
         "2. Line inside faces with self-adhesive EPDM foam: plates 1 mm, back wall 2 mm, tip wall 3 mm, tabs 1 mm.",
         "3. Slide on from the lamp tip, seat the ear on the boss, fit screw with Ø12-15 washer. Do not overtighten in plastic.",
         "4. Nothing may sit in front of the lens face. Tabs only lap the chamfer above and below the light window.",

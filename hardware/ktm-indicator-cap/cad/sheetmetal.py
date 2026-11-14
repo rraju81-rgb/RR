@@ -134,6 +134,17 @@ def wire_from_segs(segs):
 
 def segs_area(segs, samples=24):
     """Signed area enclosed by a segment chain (arcs sampled). Used for self-checks."""
+    pts = segs_points(segs, samples)
+    area = 0.0
+    for i in range(len(pts)):
+        x0, y0 = pts[i]
+        x1, y1 = pts[(i + 1) % len(pts)]
+        area += x0 * y1 - x1 * y0
+    return area / 2.0
+
+
+def segs_points(segs, samples=24):
+    """Points round a closed segment chain, arcs sampled with `samples` steps."""
     pts = []
     for s in segs:
         if s[0] == "line":
@@ -157,12 +168,7 @@ def segs_area(segs, samples=24):
             for k in range(samples):
                 a = a0 + sweep * k / samples
                 pts.append(c + rad * np.array([math.cos(a), math.sin(a)]))
-    area = 0.0
-    for i in range(len(pts)):
-        x0, y0 = pts[i]
-        x1, y1 = pts[(i + 1) % len(pts)]
-        area += x0 * y1 - x1 * y0
-    return area / 2.0
+    return pts
 
 
 # ----------------------------------------------------------------------------- tree

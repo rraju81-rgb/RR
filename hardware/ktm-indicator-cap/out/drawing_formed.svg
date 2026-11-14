@@ -24,7 +24,7 @@
 <line class="tb" x1="262.000" y1="278.000" x2="412.000" y2="278.000"/>
 <line class="tb" x1="358.000" y1="267.000" x2="358.000" y2="289.000"/>
 <text class="title" x="265.000" y="260.200" text-anchor="start">KTM indicator slip-on cap</text>
-<text class="small" x="265.000" y="265.000" text-anchor="start">390 Adventure (2025+) LED lamp   one part fits left/right, front/rear</text>
+<text class="small" x="265.000" y="265.000" text-anchor="start">390 Adventure (2025+) LED lamp   same part fits left and right</text>
 <text class="small" x="265.000" y="271.500" text-anchor="start">Material: Stainless steel 304, 1.5 mm, 2B</text>
 <text class="small" x="265.000" y="275.500" text-anchor="start">Inside bend radius 1.5   K 0.42   mass 68.6 g</text>
 <text class="small" x="265.000" y="282.500" text-anchor="start">Finish: deburr all edges, bead blast, black textured powder coat</text>
@@ -790,7 +790,7 @@
 <polyline class="ref" points="323.438,45.896 323.379,44.900 323.202,43.962 322.899,43.097 322.463,42.323 321.663,41.477 321.179,41.159 320.650,40.925"/>
 <polyline class="ref" points="323.437,45.940 323.438,45.896"/>
 <text class="label" x="252.000" y="20.000" text-anchor="start">ISOMETRIC  (not to scale, lamp and mount shown thin)</text>
-<text class="small" x="12.000" y="258.000" text-anchor="start">1. One part, symmetric top to bottom: turn it over for the other side of the bike.</text>
+<text class="small" x="12.000" y="258.000" text-anchor="start">1. Symmetric top to bottom: turn it over for the other side. Front and rear share the lamp; only the ear moves if their screws differ.</text>
 <text class="small" x="12.000" y="262.200" text-anchor="start">2. Line inside faces with self-adhesive EPDM foam: plates 1 mm, back wall 2 mm, tip wall 3 mm, tabs 1 mm.</text>
 <text class="small" x="12.000" y="266.400" text-anchor="start">3. Slide on from the lamp tip, seat the ear on the boss, fit screw with Ø12-15 washer. Do not overtighten in plastic.</text>
 <text class="small" x="12.000" y="270.600" text-anchor="start">4. Nothing may sit in front of the lens face. Tabs only lap the chamfer above and below the light window.</text>

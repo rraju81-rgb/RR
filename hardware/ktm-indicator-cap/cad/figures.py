@@ -29,28 +29,27 @@ DOCS = OUT.parent / "docs"
 
 FIG_CSS = """
   .fig text{font-family:Barlow,'DejaVu Sans',Arial,sans-serif}
-  .part{fill:none;stroke:var(--fig-ink,#14181f);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
-  .ref{fill:none;stroke:var(--fig-ref,#8a909b);stroke-width:1;stroke-linejoin:round;stroke-linecap:round}
-  .steel{fill:var(--fig-steel,#c5cad2);stroke:var(--fig-ink,#14181f);stroke-width:1.3;stroke-linejoin:round}
-  .foam{fill:var(--fig-foam,#5b6472);stroke:none}
-  .housing{fill:var(--fig-housing,#23262d);stroke:var(--fig-ink,#14181f);stroke-width:1}
-  .lens{fill:var(--fig-lens,#f6a300);fill-opacity:.5;stroke:var(--fig-lens-edge,#b87400);stroke-width:1}
-  .cut{fill:var(--fig-steel,#c5cad2);fill-opacity:.55;stroke:var(--fig-ink,#14181f);stroke-width:1.4;stroke-linejoin:round}
-  .hole{fill:var(--fig-bg,#ffffff);stroke:var(--fig-ink,#14181f);stroke-width:1.4}
-  .bendD{fill:none;stroke:var(--fig-down,#0a7d3c);stroke-width:1.3;stroke-dasharray:14 4 3 4}
-  .bendU{fill:none;stroke:var(--fig-up,#c22727);stroke-width:1.3;stroke-dasharray:14 4 3 4}
-  .dim{fill:none;stroke:var(--fig-dim,#1f4e9c);stroke-width:.9}
-  .arrow{fill:var(--fig-dim,#1f4e9c);stroke:none}
-  .dimtxt{font-size:13px;font-weight:600;fill:var(--fig-dim,#1f4e9c)}
-  .txt{font-size:13px;fill:var(--fig-ink,#14181f)}
-  .small{font-size:11.5px;fill:var(--fig-ink,#14181f)}
-  .inv{font-size:12px;fill:var(--fig-inv,#e9ecf1)}
-  .label{font-size:13px;font-weight:700;letter-spacing:.06em;fill:var(--fig-ink,#14181f)}
-  .ray{fill:none;stroke:var(--fig-lens-edge,#b87400);stroke-width:1.3;stroke-dasharray:3 4}
-  .rayarrow{fill:var(--fig-lens-edge,#b87400);stroke:none}
-  .datum{fill:none;stroke:var(--fig-ref,#8a909b);stroke-width:.9;stroke-dasharray:8 3 2 3}
-  .datumtxt{font-size:11.5px;fill:var(--fig-ref,#8a909b)}
-"""
+  .fig .part{fill:none;stroke:var(--fig-ink,#14181f);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+  .fig .ref{fill:none;stroke:var(--fig-ref,#8a909b);stroke-width:1;stroke-linejoin:round;stroke-linecap:round}
+  .fig .steel{fill:var(--fig-steel,#c5cad2);stroke:var(--fig-ink,#14181f);stroke-width:1.3;stroke-linejoin:round}
+  .fig .foam{fill:var(--fig-foam,#5b6472);stroke:none}
+  .fig .housing{fill:var(--fig-housing,#23262d);stroke:var(--fig-ink,#14181f);stroke-width:1}
+  .fig .lens{fill:var(--fig-lens,#f6a300);fill-opacity:.5;stroke:var(--fig-lens-edge,#b87400);stroke-width:1}
+  .fig .cut{fill:var(--fig-steel,#c5cad2);fill-opacity:.55;stroke:var(--fig-ink,#14181f);stroke-width:1.4;stroke-linejoin:round}
+  .fig .hole{fill:var(--fig-bg,#ffffff);stroke:var(--fig-ink,#14181f);stroke-width:1.4}
+  .fig .bendD{fill:none;stroke:var(--fig-down,#0a7d3c);stroke-width:1.3;stroke-dasharray:14 4 3 4}
+  .fig .bendU{fill:none;stroke:var(--fig-up,#c22727);stroke-width:1.3;stroke-dasharray:14 4 3 4}
+  .fig .dim{fill:none;stroke:var(--fig-dim,#1f4e9c);stroke-width:.9}
+  .fig .arrow{fill:var(--fig-dim,#1f4e9c);stroke:none}
+  .fig .dimtxt{font-size:13px;font-weight:600;fill:var(--fig-dim,#1f4e9c)}
+  .fig .txt{font-size:13px;fill:var(--fig-ink,#14181f)}
+  .fig .small{font-size:11.5px;fill:var(--fig-ink,#14181f)}
+  .fig .inv{font-size:12px;fill:var(--fig-inv,#e9ecf1)}
+  .fig .label{font-size:13px;font-weight:700;letter-spacing:.06em;fill:var(--fig-ink,#14181f)}
+  .fig .ray{fill:none;stroke:var(--fig-lens-edge,#b87400);stroke-width:1.3;stroke-dasharray:3 4}
+  .fig .rayarrow{fill:var(--fig-lens-edge,#b87400);stroke:none}
+  .fig .datum{fill:none;stroke:var(--fig-ref,#8a909b);stroke-width:.9;stroke-dasharray:8 3 2 3}
+  .fig .datumtxt{font-size:11.5px;fill:var(--fig-ref,#8a909b)}"""
 
 
 class Fig(Sheet):
@@ -60,7 +59,8 @@ class Fig(Sheet):
         body = "\n".join(self.items)
         return (
             f'<svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {self.w} {self.h}" role="img" '
-            f'aria-label="{title}"><title>{title}</title><style>{FIG_CSS}</style>\n{body}\n</svg>'
+            f'aria-label="{title}"><title>{title}</title><style>{FIG_CSS}</style>'
+            f'<rect width="{self.w}" height="{self.h}" fill="var(--fig-bg,#ffffff)"/>\n{body}\n</svg>'
         )
 
     def write(self, path: Path, title: str):

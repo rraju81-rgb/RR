@@ -130,6 +130,12 @@
       "ok": true
     },
     {
+      "check": "Cap vs stalk, socket and screw boss, overlap volume",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
       "check": "Liner gap, top / bottom plate",
       "value": "0.80 / 0.80 mm",
       "requirement": "0.80",

@@ -71,7 +71,6 @@ class CapGeometry:
             "ear slot too close to the bend: the screw is too near the lamp for a folded ear "
             f"(need screw_behind_back >= {2 * t + cap.ear_slot_len / 2 + (cap.gap_back + t + r) * ca - self.s_root * sa:.1f})")
         self.p_hole = self.he / 2 - mount.screw_dz    # ear local p runs downwards
-        assert abs(mount.screw_dz) <= self.he / 2 - cap.ear_slot_w / 2 - 2 * t + 1e-9, "screw_dz puts the slot off the ear"
 
         self.root = self._build()
 
@@ -193,6 +192,36 @@ class CapGeometry:
             panel.attach(a, b, cap.tab_angle, "up", tab, f"bend_{name}_TAB{i + 1}")
         return panel
 
+    def _ear_outline(self):
+        """Ear flange. Straight out of its bend, round-ended; widens into a flag when the screw is off mid-height."""
+        from shapely.geometry import Polygon
+        from sheetmetal import filleted_outline, segs_points
+        cap = self.d.cap
+        t, r, he = cap.t, cap.r, self.he
+        qh, ph, R = self.q_hole, self.p_hole, self.he / 2
+        qn = t + r                                  # run straight out of the bend before widening (no bend relief needed)
+        pA, pB = max(he, ph + R), min(0.0, ph - R)
+        pts, radii = [(0.0, 0.0), (he, 0.0)], [0.0, 0.0]
+        if pA > he + 1e-9:
+            pts += [(he, qn), (pA, qn + (pA - he))]    # 45 degree shoulder
+            radii += [2.0, 2.0]
+        pts += [(pA, qh + R), (pB, qh + R)]
+        radii += [R, R]
+        if pB < -1e-9:
+            pts += [(pB, qn - pB), (0.0, qn)]
+            radii += [2.0, 2.0]
+        hint = (f"ear cannot reach a screw {self.d.mount.screw_dz:+.1f} mm off mid-height at "
+                f"{self.d.mount.screw_behind_back:.1f} mm behind the lamp: the screw needs to be further out "
+                "(mount.screw_behind_back) or the ear needs a dog-leg")
+        try:
+            outline = Polygon(segs_points(filleted_outline(pts, radii), 16))
+        except ValueError as e:
+            raise ValueError(hint) from e
+        slot = Polygon(segs_points(obround((ph, qh), cap.ear_slot_len, cap.ear_slot_w, 90), 16))
+        if not (outline.is_valid and outline.buffer(-2 * t + 1e-6).contains(slot)):
+            raise ValueError(hint)
+        return pts, radii
+
     def _build(self):
         cap = self.d.cap
         hb, ht, he, Lbw = self.hb, self.ht, self.he, self.Lbw
@@ -209,13 +238,7 @@ class CapGeometry:
         tip = Panel("TIP", [(0, 0), (ht, 0), (ht, self.tip_len), (0, self.tip_len)], [0, 0, 2.5, 2.5])
         back.attach((0, -ht / 2), (0, ht / 2), self.tip_angle, "up", tip, "bend_TIP")
 
-        qh = self.q_hole
-        ear = Panel(
-            "EAR",
-            [(0, 0), (he, 0), (he, qh + he / 2), (0, qh + he / 2)],
-            [0, 0, he / 2, he / 2],
-            [obround((self.p_hole, qh), cap.ear_slot_len, cap.ear_slot_w, 90)],
-        )
+        ear = Panel("EAR", *self._ear_outline(), [obround((self.p_hole, self.q_hole), cap.ear_slot_len, cap.ear_slot_w, 90)])
         back.attach((Lbw, he / 2), (Lbw, -he / 2), self.ear_angle, "down", ear, "bend_EAR")
         return back
 
