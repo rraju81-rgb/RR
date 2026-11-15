@@ -3,6 +3,8 @@
 * obj_37 (missing from the upload) is rebuilt as the mirror image of its twin obj_25, fitted
   onto obj_38's joint face (cross-section match + skin continuity).
 * Small webs tie the four elements of each half together (stations +/-150 and +/-440 mm).
+* Joints are fused (merge.merge_fused): faces that touch across a joint are pushed slightly into
+  each other before the union, so no hairline double walls are left inside the solid.
 * The merged wing is split on its mirror plane into left (-n side) and right (+n side).
 
 Writes wing_left_posed.pkl / wing_right_posed.pkl (trimesh meshes) in the working directory.
@@ -15,7 +17,7 @@ from joints import load_parts
 from faces import frame_for, register2d_multi, mirror_poly, transform_from_match
 from stubs import poly_of
 from endmatch import skin_continuity
-from merge import slit_fillers_patch, to_manifold, from_manifold, drop_cavities, heal_slits, keep_main
+from merge import merge_fused, fuse_microgaps, to_manifold, from_manifold, drop_cavities, heal_slits, keep_main
 from bridges import bridge
 from orient import stable_orient
 from package_build_volume import manifold_to_stl
@@ -65,16 +67,14 @@ for s in STATIONS:
             webs.append(h)
             print(f'web at {s:+d} mm {a}-{b}: slot gap {gap:.1f} mm')
 
-# ---- union (with tab-clearance fillers), heal, split on the mirror plane
+# ---- fused union (joint faces pushed into each other, no hairline gaps), webs, heal, split on the mirror plane
 pairs = [(r['A'], r['B']) for r in A['joints']] + [(25, 37), (37, 38)]
-fill = []
-for a, b in pairs:
-    if a in ids and b in ids:
-        fill += slit_fillers_patch(W[a], W[b]); fill += slit_fillers_patch(W[b], W[a])
-Ms = [to_manifold(W[p]) for p in ids] + [to_manifold(f) for f in fill] + [to_manifold(w) for w in webs]
+parts = merge_fused({p: W[p] for p in ids}, pairs, 'WING PARTS')
+Ms = [to_manifold(parts)] + [to_manifold(w) for w in webs]
 wing = from_manifold(mf.Manifold.batch_boolean(Ms, mf.OpType.Add))
 wing, _, _, _ = drop_cavities(wing)
 wing = heal_slits(wing, verbose=False)
+wing = fuse_microgaps(wing)
 wing, _ = keep_main(wing)
 print(f'full wing: {len(wing.split(only_watertight=False))} solid(s), {wing.volume / 1000:.1f} cm3')
 

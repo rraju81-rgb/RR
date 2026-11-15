@@ -273,3 +273,78 @@ def merge_group4(P, pose, ids, joints, label=''):
     print(f"{label}: {len(ids)} parts + {len(fill)} slit fillers -> {len(out.split(only_watertight=False))} solid(s); "
           f"genus {to_manifold(out).genus()}; volume {out.volume/1000:.2f} cm3 (parts {vol_parts/1000:.2f})")
     return out
+
+
+def contact_displacements(B, A, dmax=0.9, overshoot=0.05, opp=-0.9):
+    """Displacements that push B's faces lying against A (facing it across a gap of 0 - dmax mm)
+    `overshoot` mm into A, so a union really fuses the two parts instead of leaving a hairline
+    double wall (slicers print each side of such a wall separately and the print splits there)."""
+    cB = B.triangles_center
+    cp, dist, tri = trimesh.proximity.closest_point(A, cB)
+    facing = np.einsum('ij,ij->i', B.face_normals, A.face_normals[tri]) < opp
+    contact = np.where(facing & (dist < dmax))[0]
+    vid = np.unique(B.faces[contact].ravel())
+    D = np.zeros_like(B.vertices)
+    if len(vid):
+        cpv, _, triv = trimesh.proximity.closest_point(A, B.vertices[vid])
+        D[vid] = cpv - A.face_normals[triv] * overshoot - B.vertices[vid]
+        too_far = np.linalg.norm(D[vid], axis=1) > dmax + overshoot + 0.05
+        D[vid[too_far]] = 0
+    return D, len(contact)
+
+
+def merge_fused(W, pairs, label='', dmax=0.9, overshoot=0.05):
+    """Union posed parts W {id: mesh} so that every joint in `pairs` is truly fused (no hairline
+    gaps): contact faces of both parts are pushed slightly into each other first."""
+    disp = {p: np.zeros_like(W[p].vertices) for p in W}
+    nc = 0
+    for a, b in pairs:
+        if a in W and b in W:
+            d, k = contact_displacements(W[b], W[a], dmax, overshoot); disp[b] += d; nc += k
+            d, k = contact_displacements(W[a], W[b], dmax, overshoot); disp[a] += d; nc += k
+    Wd = {}
+    for p, m in W.items():
+        q = m.copy(); q.vertices = m.vertices + disp[p]; Wd[p] = q
+    M = mf.Manifold.batch_boolean([to_manifold(Wd[p]) for p in Wd], mf.OpType.Add)
+    solids = [q for q in M.decompose() if q.volume() > 0]              # fill sealed pockets
+    M = mf.Manifold.compose(solids) if len(solids) > 1 else solids[0]
+    out = from_manifold(M)
+    if label:
+        print(f'{label}: {len(W)} parts, {nc} contact faces fused -> {len(M.decompose())} solid(s), genus {M.genus()}, '
+              f'volume {M.volume() / 1000:.2f} cm3 (parts {sum(m.volume for m in W.values()) / 1000:.2f})')
+    return out
+
+
+def fuse_microgaps(m, gmax=0.03, overlap=0.03, iters=1, verbose=True):
+    """Clean-up after merge_fused: any face that still has an opposing face within gmax mm (a hairline
+    double wall) gets a thin prism reaching `overlap` mm into the material on both sides; pockets
+    of the gap that this seals off are filled."""
+    for it in range(iters):
+        tm = trimesh.Trimesh(np.asarray(m.vertices), np.asarray(m.faces), process=False)
+        n = tm.face_normals; T = tm.triangles; c = T.mean(1)
+        gap = np.full(len(c), np.inf)
+        for a in range(0, len(c), 50000):
+            b = min(a + 50000, len(c))
+            loc, ri, ti = tm.ray.intersects_location(c[a:b] + n[a:b] * 1e-6, n[a:b], multiple_hits=False)
+            d = np.linalg.norm(loc - (c[a:b][ri] + n[a:b][ri] * 1e-6), axis=1)
+            ok = (np.einsum('ij,ij->i', n[a:b][ri], n[ti]) < -0.9) & (d < gmax)
+            gap[a + ri[ok]] = d[ok]
+        sel = np.where(np.isfinite(gap))[0]
+        if len(sel) == 0:
+            break
+        prisms = []
+        for f in sel:
+            v = T[f]; nf = n[f]
+            try:
+                h = trimesh.convex.convex_hull(np.vstack([v - nf * overlap, v + nf * (gap[f] + overlap)]))
+                if h.volume > 1e-9:
+                    prisms.append(to_manifold(h))
+            except Exception:
+                pass
+        M = mf.Manifold.batch_boolean([to_manifold(tm)] + prisms, mf.OpType.Add)
+        solids = [p for p in M.decompose() if p.volume() > 0]
+        M = mf.Manifold.compose(solids) if len(solids) > 1 else solids[0]
+        m = from_manifold(M)
+        if verbose:
+            print(f'   fuse pass {it + 1}: {len(prisms)} faces on hairline gaps -> genus {M.genus()}')
+    return m

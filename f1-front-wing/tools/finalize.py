@@ -1,7 +1,7 @@
 import os, sys, pickle, numpy as np, trimesh
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from joints import load_parts
-from merge import merge_group4, heal_slits, to_manifold, keep_main
+from merge import merge_group4, merge_fused, fuse_microgaps, heal_slits, to_manifold, keep_main
 
 def slit_scan(m, n=200000, seed=0, lo=0.05, hi=0.9):
     np.random.seed(seed)
@@ -19,8 +19,10 @@ def build(ids, label):
     P = load_parts(); pose = pickle.load(open('final_poses.pkl', 'rb'))
     A = pickle.load(open('assembly.pkl', 'rb')); S = pickle.load(open('stub_joints.pkl', 'rb'))
     pairs = [(r['A'], r['B']) for r in A['joints']] + [(s['A'], s['B']) for s in S]
-    m = merge_group4(P, pose, ids, pairs, label)
+    W = {p: P[p].copy().apply_transform(pose[p]) for p in ids}
+    m = merge_fused(W, pairs, label)          # joints truly fused: no hairline double walls inside
     m = heal_slits(m)
+    m = fuse_microgaps(m)                     # clean up the few hairline spots left
     m, dropped = keep_main(m)
     if dropped: print(f'   dropped {dropped} tiny loose fragments')
     print(f"   {label}: visible slits (>0.05mm) remaining: {slit_scan(m)} samples; watertight {m.is_watertight}; solids {len(m.split(only_watertight=False))}; volume {m.volume/1000:.2f} cm3")

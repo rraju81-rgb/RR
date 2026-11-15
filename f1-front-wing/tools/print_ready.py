@@ -151,13 +151,125 @@ def place_nose(body, wing, x_tip, s):
     return nose, T3 @ T
 
 
-def trim_rim(nose, trim):
-    """Trim the nose's uneven rear rim flat; return manifold and the print 'up' direction."""
+def _section_rings(mesh, x, close=0.06):
+    """Outer contour and largest cavity contour (as (n,2) arrays in (y, z)) of the section x = const,
+    with hairline gaps closed (morphological closing)."""
+    sec = mesh.section(plane_origin=[x, 0, 0], plane_normal=[1, 0, 0])
+    if sec is None:
+        return None, None
+    res = Polygon()
+    polys = [Polygon(np.asarray(e)[:, [1, 2]]).buffer(0) for e in sec.discrete if len(e) >= 3]
+    for q in sorted(polys, key=lambda q: -q.area):           # even-odd: cavity inside the outline
+        res = res.symmetric_difference(q)
+    res = res.buffer(close).buffer(-close)
+    if res.is_empty:
+        return None, None
+    big = max(getattr(res, 'geoms', [res]), key=lambda g: g.area)
+    outer = np.asarray(big.exterior.coords)[:-1]
+    holes = sorted(big.interiors, key=lambda r: -Polygon(r).area)
+    inner = np.asarray(holes[0].coords)[:-1] if holes and Polygon(holes[0]).area > 4.0 else None
+    return outer, inner
+
+
+def _polar(ring, c, ang):
+    """Distance from centre c to the (star-shaped) closed ring along each direction in ang."""
+    P = ring - c; Q = np.roll(P, -1, axis=0); E = Q - P
+    d = np.c_[np.cos(ang), np.sin(ang)]
+    # solve t*d = P + u*E for every (ray, edge)
+    den = d[:, None, 0] * E[None, :, 1] - d[:, None, 1] * E[None, :, 0]
+    with np.errstate(divide='ignore', invalid='ignore'):
+        t = (P[None, :, 0] * E[None, :, 1] - P[None, :, 1] * E[None, :, 0]) / den
+        u = (P[None, :, 0] * d[:, None, 1] - P[None, :, 1] * d[:, None, 0]) / den
+    ok = (np.abs(den) > 1e-12) & (u >= -1e-9) & (u <= 1 + 1e-9) & (t > 0)
+    return np.where(ok, t, -np.inf).max(1)
+
+
+def _loft_solid(xs, cs, rs, ang, front=None, back_cap=True):
+    """Closed mesh through rings at stations xs (centres cs (k,2), radii rs (k,n)); the last ring
+    is closed by a fan to `front` (3-vector) or by a flat cap; the first ring by a flat cap."""
+    k, n = rs.shape
+    ring = np.stack([np.c_[np.full(n, xs[i]), cs[i, 0] + rs[i] * np.cos(ang), cs[i, 1] + rs[i] * np.sin(ang)] for i in range(k)])
+    V = list(ring.reshape(-1, 3)); F = []
+    idx = lambda i, j: i * n + (j % n)
+    for i in range(k - 1):
+        for j in range(n):
+            a, b, c, d = idx(i, j), idx(i, j + 1), idx(i + 1, j + 1), idx(i + 1, j)
+            F += [(a, b, c), (a, c, d)]
+    rear = len(V); V.append([xs[0], cs[0, 0], cs[0, 1]])
+    F += [(rear, idx(0, j + 1), idx(0, j)) for j in range(n)]
+    tip = len(V); V.append(front if front is not None else [xs[-1], cs[-1, 0], cs[-1, 1]])
+    F += [(tip, idx(k - 1, j), idx(k - 1, j + 1)) for j in range(n)]
+    tm = trimesh.Trimesh(np.array(V), np.array(F), process=False)
+    if tm.volume < 0:
+        tm.invert()
+    return tm
+
+
+def rot_a_to_b(a, b):
+    """3x3 rotation taking unit vector a onto unit vector b."""
+    a = np.asarray(a, float) / np.linalg.norm(a); b = np.asarray(b, float) / np.linalg.norm(b)
+    v = np.cross(a, b); c = np.dot(a, b)
+    if np.linalg.norm(v) < 1e-12:
+        return np.eye(3) if c > 0 else -np.eye(3)
+    K = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    return np.eye(3) + K + K @ K * (1 - c) / np.dot(v, v)
+
+
+def seamless_nose(nose, trim, n_ang=256, step=1.0, fine=0.25, fine_len=14.0, smooth=0.0):
+    """Rebuild the nose as ONE continuous shell: its outer skin and its cavity are lofted through
+    cross-sections taken every `step` mm (`fine` mm near the tip), square to the rear rim, so none
+    of the original parts' joint faces, tabs or hairline gaps survive. The uneven rear rim ends up
+    `trim` mm shorter and flat. Returns (manifold, print 'up' direction, info)."""
     V = nose.vertices
     rim = V[V[:, 0] < V[:, 0].min() + 8]
-    c = rim.mean(0); _, _, vt = np.linalg.svd(rim - c); pn = vt[2] if vt[2][0] > 0 else -vt[2]
-    h0 = (V @ pn).min()
-    return M(nose).trim_by_plane(tuple(pn), float(h0 + trim)), pn
+    _, _, vt = np.linalg.svd(rim - rim.mean(0)); pn = vt[2] if vt[2][0] > 0 else -vt[2]
+    R = rot_a_to_b(pn, [1.0, 0, 0])                          # local frame: rim normal along +x
+    loc = trimesh.Trimesh(V @ R.T, nose.faces, process=False)
+    L = loc.vertices
+    x0, x1 = L[:, 0].min(), L[:, 0].max()
+    apex = L[np.argmax(L[:, 0])]
+    xs = np.r_[np.arange(x0 + trim, x1 - fine_len, step), np.arange(x1 - fine_len, x1 - 0.1, fine)]
+    ang = np.linspace(0, 2 * np.pi, n_ang, endpoint=False) + np.pi / 2
+    outs, ins = [], []
+    for x in xs:
+        o, i = _section_rings(loc, x)
+        outs.append(o); ins.append(i)
+    first = next(j for j, i in enumerate(ins) if i is not None)       # first complete ring at the rear
+    keep = [j for j in range(first, len(xs)) if outs[j] is not None and len(outs[j]) >= 8]
+    xs = xs[keep]; outs = [outs[j] for j in keep]; ins = [ins[j] for j in keep]
+    co = np.array([Polygon(o).centroid.coords[0] for o in outs])
+    kc = 0
+    while kc < len(ins) and ins[kc] is not None:
+        kc += 1
+    ci = np.array([Polygon(i).centroid.coords[0] for i in ins[:kc]])
+    def sm(x, a):
+        """Gaussian smoothing along the nose in millimetres (sigma `smooth`), fading out over the
+        last 3 mm before the tip so the tip keeps its shape; same weights at every station, so
+        the change of section spacing leaves no line."""
+        if not smooth:
+            return a
+        sig = smooth * np.clip((x1 - x) / 10.0, 0.02, 1.0)
+        dx = np.gradient(x)                                  # weight by spacing: uneven spacing adds no bias
+        W = np.exp(-0.5 * ((x[:, None] - x[None, :]) / sig[:, None]) ** 2) * dx[None, :]
+        W /= W.sum(1, keepdims=True)
+        return W @ a
+    co = sm(xs, co); ci = sm(xs[:kc], ci)
+    ro = sm(xs, np.array([_polar(o, c, ang) for o, c in zip(outs, co)]))
+    ri = sm(xs[:kc], np.array([_polar(i, c, ang) for i, c in zip(ins[:kc], ci)]))
+    if xs[0] > x0 + trim + 0.01:                            # rim was ragged here: carry the first full
+        xs = np.r_[x0 + trim, xs]                            # ring back to the trim plane
+        co = np.r_[co[:1], co]; ro = np.r_[ro[:1], ro]; ci = np.r_[ci[:1], ci]; ri = np.r_[ri[:1], ri]; kc += 1
+    outer = _loft_solid(xs, co, ro, ang, front=apex)
+    xi = np.r_[xs[0] - 2.0, xs[:kc]]; ci = np.r_[ci[:1], ci]; ri = np.r_[ri[:1], ri]   # open the rear
+    cavity = _loft_solid(xi, ci, ri, ang)
+    shell = M(outer) - M(cavity)
+    shell = sorted(shell.decompose(), key=lambda q: -q.volume())[0]
+    nfull = shell.num_tri()
+    shell = shell.simplify(0.005)                            # merge triangles where the surface is flat
+    T = np.eye(4)[:3]; T[:, :3] = R.T                       # back to the wing frame
+    shell = shell.transform(T)
+    return shell, pn, dict(stations=len(xs), cavity_stations=kc, length=float(x1 - xs[0]),
+                           triangles=f'{nfull} -> {shell.num_tri()}')
 
 
 # ----------------------------------------------------------------------------- saddle
@@ -256,10 +368,10 @@ def resplit_tip(wing_half, ep, side, inset=4.5):
     """Move the wing / end plate joint to ONE flat cut, `inset` mm inboard of where the end plate's
     element stubs used to start (they ended at different spans, too short for 10 mm holes).
     Returns (wing half, end plate, |y| of the new joint plane)."""
-    from merge import slit_fillers_patch
+    from merge import merge_fused, fuse_microgaps
     y_s = float((ep.vertices[:, 1] * side).min()) - inset
-    fill = slit_fillers_patch(wing_half, ep) + slit_fillers_patch(ep, wing_half)
-    U = mf.Manifold.batch_boolean([M(wing_half), M(ep)] + [M(f) for f in fill], mf.OpType.Add)
+    # fuse the old joint (it ends up inside the end plate): no hairline double walls may remain
+    U = M(fuse_microgaps(merge_fused({'w': wing_half, 'e': ep}, [('w', 'e')]), verbose=False))
     E = U.trim_by_plane((0, float(side), 0), y_s)
     Wn = U.trim_by_plane((0, -float(side), 0), -y_s)
     return Wn, E, y_s
@@ -531,6 +643,12 @@ def main():
     cen = wing.vertices[np.abs(wing.vertices[:, 1]) < 1.0]
     x_tip = cen[:, 0].max()
     nose, _ = place_nose(body, wing, x_tip, s)
+    NOSE, up_nose, info = seamless_nose(nose, args.trim * s)  # one continuous shell, no joint faces
+    nose = from_manifold(NOSE)
+    print(f"nose rebuilt as one seamless shell: {info['stations']} sections, {info['triangles']} triangles, "
+          f"length {info['length']:.1f} mm, genus {NOSE.genus()}")
+    full = os.path.join(args.out, 'full_size'); os.makedirs(full, exist_ok=True)        # plain 100 % reference
+    manifold_to_stl(place_on_bed(NOSE, rot_to_z(up_nose)).scale((1 / s, 1 / s, 1 / s)), os.path.join(full, '1_body.stl'))
     W = args.saddle * s
     sad, _ = build_saddle(wing, nose, W, xlo=-40, xhi=x_tip + 1)
     print(f'saddle: {sad.volume() / 1000:.1f} cm3, {2 * W:.1f} mm wide')
@@ -541,7 +659,6 @@ def main():
         h = cyl(p['p0'], p['p1'], HOLE_R)
         WL, WR = WL - h, WR - h
         print(f"pin left<->right at x={p['p0'][0]:.1f} z={p['p0'][2]:.1f}: hole {HOLE_DEPTH:.1f} mm each side, wall {p['wall']:.1f} mm")
-    NOSE, up_nose = trim_rim(nose, args.trim * s)
     for p in nz:
         NOSE = NOSE + nose_boss(p, up_nose)
     for p in nz:

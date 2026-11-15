@@ -7,7 +7,7 @@ turned the way they should be printed.
 
 | # | File (`stl/`) | On the bed | How it prints |
 |---|---|---|---|
-| 1 | `1_body.stl` | 129 × 118 × **432** mm | standing on its rear opening, tip up |
+| 1 | `1_body.stl` | 129 × 117 × **432** mm, one seamless shell | standing on its rear opening, tip up |
 | 2 | `2_left_wing.stl` | 234 × 46 × 271 mm | **standing up** on the centre-line face |
 | 3 | `3_right_wing.stl` | 234 × 46 × 270 mm | **standing up** on the centre-line face |
 | 4 | `4_end_plates.stl` | 225 × 36 × 138 mm (both plates) | **standing up** on their rear edges |
@@ -21,9 +21,27 @@ right = obj_16 + 41.
 \* obj_37 was never uploaded. It was rebuilt as the mirror image of its twin, obj_25.
 
 Left and right are as the driver sees them. Every file was re-loaded the way a slicer loads
-it: watertight, no non-manifold edges.
+it: watertight, no non-manifold edges, and no hidden walls inside.
 
 ![assembled](preview/assembled.png)
+
+## No more splitting at the old joints
+
+The first version of the body broke apart during printing where the original parts had been
+joined. The cause was in the merged files. Where two original parts only touched, the merge
+left a hairline gap (0.0001–0.005 mm) right through the wall. A slicer prints each side of
+such a gap as a separate piece, so the layers there barely bond. The wings and end plates had
+the same hidden seams.
+
+* **Body:** rebuilt from scratch as **one continuous shell**. The outer skin and the inside
+  were lofted through 472 cross-sections of the nose, so no joint, tab or seam of the
+  original parts is left anywhere. The new surface follows the original to within 0.05 mm
+  over 95 % of it, tip included. Only the ragged rear rim, now flat, differs by more.
+  Wall thickness is 3.25 mm, the same as before.
+* **Wings and end plates:** re-merged from the original parts. The faces that touch at each
+  joint are pushed 0.05 mm into each other before merging, so the parts really fuse. The
+  remaining hairline area dropped from 400–2,500 mm² per file to under 2 mm²: a few specks,
+  no longer a seam across the part.
 
 ## How the pieces fit together
 
@@ -35,7 +53,7 @@ wooden dowels cut to 20 mm work too.
 | Joint | Pins | Hole depth in each piece |
 |---|---|---|
 | left wing ↔ right wing (centre line) | 2 | 10.3 mm + 10.3 mm |
-| body ↔ wing (one pin in each wing half) | 2 | 9.6–9.7 mm in the wing (1 mm floor left under it) + 10.8–10.9 mm in the body |
+| body ↔ wing (one pin in each wing half) | 2 | 9.7–9.8 mm in the wing (1 mm floor left under it) + 10.7–10.8 mm in the body |
 | left wing ↔ left end plate | 2 | 10.3 mm + 10.3 mm |
 | right wing ↔ right end plate | 2 | 10.3 mm + 10.3 mm |
 
@@ -85,9 +103,9 @@ Use **no supports** in the slicer. Everything needed is built in.
   underneath, so the plate stands flat on the bed. Use a brim. The thin trailing edges of the
   element stubs lean out a little more steeply than 45°. That prints fine for an edge this thin,
   at worst slightly rough.
-* **Body (file 1):** it stands on its rear opening, tip up. The uneven rear rim is trimmed
-  flat (1.7 mm). Use a brim. The inside of the very tip is a small dome that the printer has
-  to bridge.
+* **Body (file 1):** it stands on its rear opening, tip up. It is one continuous shell with
+  no seams, and the rear rim is flat. Use a brim. The inside of the very tip is a small dome
+  that the printer has to bridge.
 * **Pins (file 5):** they print standing. Printed pins are fine for a display model. For a
   stronger joint, use steel or wooden 5 mm dowels.
 * Wall thickness at 52 %: body ≈ 3.2 mm, wing elements ≈ 3–4.8 mm, end plates ≈ 2.4–4.7 mm.
@@ -96,8 +114,10 @@ Use **no supports** in the slicer. Everything needed is built in.
 
 ## What changed compared with the original parts
 
-* **Joints filled:** the tabbed joints had 0.1–0.4 mm fit clearance. Those gaps were filled, so
-  each piece prints as one solid with no seam gaps.
+* **Joints fused:** the tabbed joints had 0.1–0.4 mm fit clearance, plus hairline gaps where
+  parts only touched. All of them are closed, so each piece prints as one solid.
+* **Body rebuilt as one seamless shell**, lofted through cross-sections of the original nose.
+  The tabs and joint lines of its five original parts are gone.
 * **Wing split in two** on the car's centre line, through centre pieces obj_4, 5 and 20.
 * **Webs:** the four wing elements never touched each other. Each wing half has 6 small webs
   (15 cm and 44 cm from the centre at full size) that tie its elements into one rigid piece.
@@ -117,7 +137,8 @@ python3 tools/make_previews.py --stl <folder> --out <folder>
 
 The pins and holes stay 5 mm at any scale. Below about 45 % the end plate bosses get large
 compared with the wing, so check the preview. `stl/full_size/` holds the plain pieces at 100 %
-(your original size) without any joints, for reference.
+(your original size) without any pin joints, for reference. The body there is the same
+seamless shell.
 
 ## How it was made (`tools/`)
 
@@ -132,10 +153,12 @@ first put back together:
 3. **Exact alignment:** each joint is refined by ICP on the boundary both sides share
    (`refine_joints.py`). A global least-squares fit then closes the loops through the end
    plates (`solve_poses.py`; worst joint off by 0.03 mm).
-4. **Merging:** boolean union with manifold3d, clearance slits filled and healed (`merge.py`,
-   `finalize.py`, `export_all.py`). The wing halves, webs and obj_37 come from
-   `build_left_right.py`.
-5. **Print set:** `print_ready.py` places the nose, builds the seat block, cuts every pin hole
+4. **Merging:** boolean union with manifold3d (`merge.py`, `finalize.py`, `export_all.py`).
+   `merge_fused` first pushes the faces that touch at each joint 0.05 mm into each other, so
+   the parts really fuse. `fuse_microgaps` then seals any hairline double wall that is left.
+   The wing halves, webs and obj_37 come from `build_left_right.py`.
+5. **Print set:** `print_ready.py` places the nose, rebuilds it as one lofted shell
+   (`seamless_nose`), builds the seat block, cuts every pin hole
    in the assembled position, adds the bosses, moves the end plate joint, turns each piece to
    its print orientation, adds the break-away towers and the end plate base strip, checks
    that the pieces don't overlap and that every pin clears, and exports. `make_previews.py`
