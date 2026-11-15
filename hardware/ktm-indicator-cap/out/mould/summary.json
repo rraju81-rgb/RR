@@ -1,10 +1,10 @@
 {
-  "part": "First model (out/cap_formed.step), 1.5 mm wall. Cavity identical except the 8 keeper-tab tip corners, which are moulded square and rounded R1.5 with a file afterwards",
-  "part_volume_mm3": 8585.3,
-  "forged_carbon_part_g": 12.9,
+  "part": "Carbon variant of the first model: 1.5 mm wall, same inside; the bent ear is replaced by a solid 5 mm lug on the same screw. Keeper-tab tip corners are moulded square and filed to R1.5.",
+  "part_volume_mm3": 9445.5,
+  "forged_carbon_part_g": 14.2,
   "charge_g": {
-    "fibre": 9.3,
-    "resin": 5.9,
+    "fibre": 10.2,
+    "resin": 6.5,
     "note": "50 % fibre by volume, 20 % extra for flash"
   },
   "block_mm": [
@@ -20,7 +20,7 @@
         103.9,
         24.3
       ],
-      "volume_cm3": 242.7
+      "volume_cm3": 241.1
     },
     "bottom": {
       "size": [
@@ -28,59 +28,134 @@
         103.9,
         24.3
       ],
-      "volume_cm3": 241.9
+      "volume_cm3": 240.3
     },
     "core": {
       "size": [
         121.5,
-        42.5,
+        59.2,
         29.6
       ],
-      "volume_cm3": 94.0
-    },
-    "pin": {
-      "size": [
-        29.5,
-        14.0,
-        11.5
-      ],
-      "volume_cm3": 2.5
+      "volume_cm3": 101.3
     }
   },
   "hardware": "4 x M6 bolts with washers and nuts, 2 x 6 mm dowel pins",
   "demould_order": [
-    "pin out along -x",
-    "core out along -x",
+    "core out along -x (brings the slot pin with it)",
     "top half up",
     "lift the part out of the bottom half"
   ],
   "checks": [
     {
-      "check": "Exact first model rebuilt (volume)",
-      "value": "8579.6 mm3",
-      "requirement": "8579.6 (out/summary.json)",
+      "check": "Fit: Cap vs lamp head, overlap volume",
+      "value": "0.000 mm3",
+      "requirement": "0",
       "ok": true
     },
     {
-      "check": "Cavity contains all of the first model",
+      "check": "Fit: Cap vs stalk, socket and screw boss, overlap volume",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Liner gap, top / bottom plate",
+      "value": "0.80 / 0.80 mm",
+      "requirement": "0.80",
+      "ok": true
+    },
+    {
+      "check": "Fit: Liner gap, back wall",
+      "value": "1.50 mm",
+      "requirement": "1.50",
+      "ok": true
+    },
+    {
+      "check": "Fit: Liner gap, tip wall",
+      "value": "2.00 mm",
+      "requirement": "2.00",
+      "ok": true
+    },
+    {
+      "check": "Fit: Keeper tabs to lens chamfer (closest point)",
+      "value": "0.80 / 0.80 / 0.80 / 0.80 mm",
+      "requirement": "0.80",
+      "ok": true
+    },
+    {
+      "check": "Fit: Tab hook depth past the head's top edge",
+      "value": "2.05 mm",
+      "requirement": ">= 1.5",
+      "ok": true
+    },
+    {
+      "check": "Fit: Slides on from the tip without touching (8 stations)",
+      "value": "min gap 0.80 mm",
+      "requirement": "> 0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Top/bottom symmetric (same part for left and right)",
+      "value": "0.000 mm3 difference",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Cap stays behind the lens front face",
+      "value": "0.59 mm behind",
+      "requirement": "> 0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Lens light window obstructed",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Wall thickness for forged carbon",
+      "value": "1.5 mm",
+      "requirement": ">= 1.5",
+      "ok": true
+    },
+    {
+      "check": "Fit: Inside bend radius (carbon needs a radius)",
+      "value": "1.5 mm",
+      "requirement": ">= 1.0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Lug wall around the slot (end / sides / to back wall)",
+      "value": "3.75 / 5.75 / 4.91 mm",
+      "requirement": ">= 3.0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Lug thickness under the screw head",
+      "value": "5.0 mm",
+      "requirement": ">= 4.0",
+      "ok": true
+    },
+    {
+      "check": "Fit: Exposed corner radius",
+      "value": "3.0 mm",
+      "requirement": ">= 2.5",
+      "ok": true
+    },
+    {
+      "check": "Cavity contains all of the finished carbon part",
       "value": "0.0000 mm3 missing",
       "requirement": "< 0.001",
       "ok": true
     },
     {
-      "check": "Only difference: square tab tip corners",
+      "check": "Only extra material: square tab tip corners",
       "value": "5.79 mm3 in 8 corners",
       "requirement": "8 corners, at the tab tips",
       "ok": true
     },
     {
       "check": "core is one valid solid",
-      "value": "1 solid, valid True",
-      "requirement": "1, True",
-      "ok": true
-    },
-    {
-      "check": "pin is one valid solid",
       "value": "1 solid, valid True",
       "requirement": "1, True",
       "ok": true
@@ -98,7 +173,7 @@
       "ok": true
     },
     {
-      "check": "No two pieces overlap (part, core, pin, top, bottom)",
+      "check": "No two pieces overlap (part, core, top, bottom)",
       "value": "largest overlap 0.0000 mm3",
       "requirement": "< 0.001",
       "ok": true
@@ -110,25 +185,31 @@
       "ok": true
     },
     {
-      "check": "1. Pin pulls out (-x)",
+      "check": "Loading: core drops straight into the bottom half",
       "value": "clash 0.0000 mm3",
       "requirement": "< 0.001",
       "ok": true
     },
     {
-      "check": "2. Core pulls out (-x), halves still closed",
+      "check": "Loading: top half closes straight down over the core",
       "value": "clash 0.0000 mm3",
       "requirement": "< 0.001",
       "ok": true
     },
     {
-      "check": "3. Top half lifts off (+z)",
+      "check": "Demould 1: core (with the slot pin) pulls out (-x), halves still closed",
       "value": "clash 0.0000 mm3",
       "requirement": "< 0.001",
       "ok": true
     },
     {
-      "check": "4. Part lifts out of the bottom half (+z)",
+      "check": "Demould 2: top half lifts off (+z)",
+      "value": "clash 0.0000 mm3",
+      "requirement": "< 0.001",
+      "ok": true
+    },
+    {
+      "check": "Demould 3: part lifts out of the bottom half (+z)",
       "value": "clash 0.0000 mm3",
       "requirement": "< 0.001",
       "ok": true

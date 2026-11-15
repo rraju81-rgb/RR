@@ -114,6 +114,18 @@ def run_checks(d: Design, g: CapGeometry, cap, parts, frames, lamp):
     add("Lens light window obstructed", f"{wv:.3f} mm3", "0", wv < 1e-6)
 
     t = capd.t
+    if capd.fold == "moulded":
+        add("Wall thickness for forged carbon", f"{t:.1f} mm", ">= 1.5", t >= 1.5)
+        add("Inside bend radius (carbon needs a radius)", f"{capd.r:.1f} mm", ">= 1.0", capd.r >= 1.0)
+        if g.lug:
+            x0, ya, yc, zc, R = g.lug_geometry()
+            y_out = g.y_back_inner(x0) + t / math.cos(g.al)          # back wall outer face at the seat plane
+            walls = (R - capd.ear_slot_len / 2, R - capd.ear_slot_w / 2, (yc - capd.ear_slot_len / 2) - y_out)
+            add("Lug wall around the slot (end / sides / to back wall)", " / ".join(f"{w:.2f}" for w in walls) + " mm",
+                f">= {capd.edge_min:.1f}", min(walls) >= capd.edge_min)
+            add("Lug thickness under the screw head", f"{capd.lug_len:.1f} mm", ">= 4.0", capd.lug_len >= 4.0)
+        add("Exposed corner radius", f"{capd.r_corner:.1f} mm", ">= 2.5", capd.r_corner >= 2.5)
+        return rows, all(r["ok"] for r in rows)
     if capd.fold == "vgroove":
         # rules for a part printed flat and folded on V-grooves
         layers = capd.web / capd.layer

@@ -89,6 +89,9 @@ class Cap:
     ear_angle: float | None = None  # None -> square to the lamp axis (90 deg - taper)
     ear_slot_len: float = 9.5   # slot long axis, gives +/-2 mm adjustment
     ear_slot_w: float = 5.5
+    mount_style: str = "ear"    # "ear": flange bent out of the back wall (sheet metal, printed)
+                                # "lug": solid block behind the back wall, same screw and place (moulded carbon)
+    lug_len: float = 5.0        # lug thickness along the screw
 
     # lightening / drain slots in the plates ("three slashes")
     slot_x: tuple = (28.0, 38.0, 48.0)
@@ -101,6 +104,7 @@ class Cap:
     # how the flat part becomes the formed part
     fold: str = "brake"         # "brake": bent on a press brake (radius r, K-factor k)
                                 # "vgroove": 3D printed flat with a V-groove on each bend line, folded after printing
+                                # "moulded": made in a closed mould (carbon fibre)
     web: float = 0.6            # vgroove: plastic left under each groove; it is the hinge
     layer: float = 0.2          # vgroove: print layer height (the web should be whole layers)
     nozzle: float = 0.4         # vgroove: nozzle width, for the narrowest groove
@@ -125,7 +129,11 @@ class Cap:
     @property
     def edge_min(self) -> float:
         """Least material between a hole and a bend or an edge."""
-        return 1.5 if self.fold == "vgroove" else 2 * self.t
+        if self.fold == "vgroove":
+            return 1.5
+        if self.fold == "moulded":
+            return 3.0          # wall of the moulded lug around its slot
+        return 2 * self.t
 
 
 @dataclass
@@ -164,4 +172,16 @@ def printed_variant() -> Design:
     c.k = 0.0                   # not used for V-grooves
     c.web = 0.6
     c.slot_margin = 4.0
+    return d
+
+
+# Carbon-fibre version for the split mould: the first model with the bent ear replaced by a solid lug
+# (same screw, same place), which a two-part mould can form. Same inside, same 1.5 mm wall.
+def carbon_variant() -> Design:
+    d = Design()
+    c = d.cap
+    c.material = "Forged carbon (chopped carbon fibre in epoxy), compression moulded"
+    c.density = 1.5e-3
+    c.fold = "moulded"
+    c.mount_style = "lug"
     return d

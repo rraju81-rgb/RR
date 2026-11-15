@@ -24,7 +24,7 @@ import numpy as np
 import cadquery as cq
 
 from params import Design
-from sheetmetal import Panel, fold, unfold, fuse_all, obround, rot90, unit
+from sheetmetal import Panel, fold, unfold, fuse_all, obround, rot90, unit, wire_from_segs
 
 
 class CapGeometry:
@@ -47,7 +47,11 @@ class CapGeometry:
 
         # stations along the back wall, measured along u from the head's back-root corner
         self.s_tip = (lamp.L + cap.gap_tip - r - (cap.gap_back - r) * sa) / ca
-        self.s_root = (-mount.G_ear + (t + r) * (1 - sa) - cap.gap_back * sa) / ca
+        self.lug = cap.mount_style == "lug"
+        if self.lug:   # the back wall runs 1 mm past the boss face; folded() trims it there and adds the lug
+            self.s_root = (-mount.G_ear - 1.0 - cap.gap_back * sa) / ca
+        else:
+            self.s_root = (-mount.G_ear + (t + r) * (1 - sa) - cap.gap_back * sa) / ca
         self.Lbw = self.s_tip - self.s_root
         self.s_b = (cap.plate_root_x - (cap.gap_back - r) * sa) / ca
         self.pT_a = cap.plate_bend_start
@@ -67,10 +71,11 @@ class CapGeometry:
         self.tip_len = cy - cap.tip_front_y
         # ear slot centre, measured from the ear's bend tangent line (ear square to the lamp axis)
         self.q_hole = mount.screw_behind_back - (cap.gap_back + t + r) * ca + self.s_root * sa
-        assert self.q_hole - cap.ear_slot_len / 2 >= cap.edge_min, (
-            "ear slot too close to the bend: the screw is too near the lamp for a folded ear "
-            f"(need screw_behind_back >= {cap.edge_min + cap.ear_slot_len / 2 + (cap.gap_back + t + r) * ca - self.s_root * sa:.1f})")
         self.p_hole = self.he / 2 - mount.screw_dz    # ear local p runs downwards
+        if not self.lug:
+            assert self.q_hole - cap.ear_slot_len / 2 >= cap.edge_min, (
+                "ear slot too close to the bend: the screw is too near the lamp for a folded ear "
+                f"(need screw_behind_back >= {cap.edge_min + cap.ear_slot_len / 2 + (cap.gap_back + t + r) * ca - self.s_root * sa:.1f})")
 
         self.root = self._build()
 
@@ -238,8 +243,9 @@ class CapGeometry:
         tip = Panel("TIP", [(0, 0), (ht, 0), (ht, self.tip_len), (0, self.tip_len)], [0, 0, 2.5, 2.5])
         back.attach((0, -ht / 2), (0, ht / 2), self.tip_angle, "up", tip, "bend_TIP")
 
-        ear = Panel("EAR", *self._ear_outline(), [obround((self.p_hole, self.q_hole), cap.ear_slot_len, cap.ear_slot_w, 90)])
-        back.attach((Lbw, he / 2), (Lbw, -he / 2), self.ear_angle, "down", ear, "bend_EAR")
+        if not self.lug:
+            ear = Panel("EAR", *self._ear_outline(), [obround((self.p_hole, self.q_hole), cap.ear_slot_len, cap.ear_slot_w, 90)])
+            back.attach((Lbw, he / 2), (Lbw, -he / 2), self.ear_angle, "down", ear, "bend_EAR")
         return back
 
     # ------------------------------------------------------------------ evaluation
@@ -254,7 +260,48 @@ class CapGeometry:
     def folded(self):
         cap = self.d.cap
         parts, frames = fold(self.root, self.back_frame(), cap.t, cap.r)
-        return fuse_all([s for _, s in parts]), parts, frames
+        solid = fuse_all([s for _, s in parts])
+        if self.lug:
+            x0 = -self.d.mount.G_ear
+            solid = solid.cut(cq.Solid.makeBox(200, 600, 600, cq.Vector(x0 - 200, -300, -300))).fuse(self.lug_solid())
+            try:
+                cleaned = solid.clean()
+                solid = cleaned if cleaned.isValid() else solid
+            except Exception:
+                pass
+            assert len(solid.Solids()) == 1, "lug did not join the cap"
+        return solid, parts, frames
+
+    # ------------------------------------------------------------------ moulded lug (mount_style "lug")
+    def y_back_inner(self, x):
+        """Plan-view y of the back wall's inside face at station x."""
+        lamp, cap = self.d.lamp, self.d.cap
+        return lamp.D_root + cap.gap_back / math.cos(self.al) - x * math.tan(self.al)
+
+    def lug_geometry(self):
+        """(x of the seat face, y where the lug starts, screw y, screw z, half height)."""
+        lamp, mount = self.d.lamp, self.d.mount
+        assert abs(mount.screw_dz) < 1e-9, "the moulded lug is built for a screw at mid-height (M9 = 0)"
+        x0 = -mount.G_ear
+        return x0, self.y_back_inner(x0), lamp.D_root + mount.screw_behind_back, lamp.H / 2, self.he / 2
+
+    def lug_solid(self):
+        """Solid block behind the back wall: same outline as the ear (straight sides, round end on the screw),
+        lug_len thick along the screw, slot through it. Starts at the back wall's inside face at the seat plane,
+        so it never reaches into the cavity."""
+        cap = self.d.cap
+        x0, ya, yc, zc, R = self.lug_geometry()
+        outline = [("line", (ya, zc - R), (yc, zc - R)), ("arc", (yc, zc - R), (yc + R, zc), (yc, zc + R)),
+                   ("line", (yc, zc + R), (ya, zc + R)), ("line", (ya, zc + R), (ya, zc - R))]
+        slot = obround((yc, zc), cap.ear_slot_len, cap.ear_slot_w, 0)        # long axis away from the lamp
+        plane = cq.Plane(origin=(x0, 0, 0), xDir=(0, 1, 0), normal=(1, 0, 0))
+        face = cq.Face.makeFromWires(wire_from_segs(outline), [wire_from_segs(slot)]).located(cq.Location(plane))
+        return cq.Solid.extrudeLinear(face, cq.Vector(cap.lug_len, 0, 0))
+
+    @property
+    def fix_thickness(self):
+        """Material under the screw head: the ear's sheet or the lug."""
+        return self.d.cap.lug_len if self.lug else self.d.cap.t
 
     def flat(self):
         """Laser blank. Returns (blank_face, blank_solid, faces, bend_lines, placed)."""
@@ -269,6 +316,9 @@ class CapGeometry:
 
     def ear_hole_centre(self, frames):
         """Screw axis position in lamp coordinates (centre of the ear slot, on the seat face)."""
+        if self.lug:
+            x0, _ya, yc, zc, _R = self.lug_geometry()
+            return np.array([x0, yc, zc])
         O, eP, eQ, eN = frames["EAR"]
         return O + self.p_hole * eP + self.q_hole * eQ
 
@@ -328,16 +378,17 @@ def make_lamp(d: Design, hole_centre=None):
     return out
 
 
-def make_hardware(d: Design, hole_centre):
-    """Screw + washer through the ear, for pictures."""
+def make_hardware(d: Design, hole_centre, thickness=None):
+    """Screw + washer through the ear (or lug), for pictures."""
     cap, mount = d.cap, d.mount
     hx, hy, hz = hole_centre
-    pl = cq.Plane(origin=(hx + cap.t, hy, hz), xDir=(0, 1, 0), normal=(1, 0, 0))
+    th = cap.t if thickness is None else thickness
+    pl = cq.Plane(origin=(hx + th, hy, hz), xDir=(0, 1, 0), normal=(1, 0, 0))
     washer = cq.Workplane(pl).circle(7.0).circle(mount.screw_d / 2 + 0.15).extrude(1.2)
     head = cq.Workplane(pl).workplane(offset=1.2).circle(4.75).extrude(3.2).faces(">X").edges().fillet(1.2)
     shank = cq.Workplane(cq.Plane(origin=(hx - 12.0, hy, hz), xDir=(0, 1, 0), normal=(1, 0, 0))).circle(
         mount.screw_d / 2
-    ).extrude(12.0 + cap.t + 1.2)
+    ).extrude(12.0 + th + 1.2)
     return {"WASHER": washer.val(), "SCREW": head.union(shank).val()}
 
 

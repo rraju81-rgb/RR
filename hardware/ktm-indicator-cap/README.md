@@ -11,8 +11,8 @@ Drawing **IC-390A-01 rev A**. Status: **fit-check stage**.
 
 | | |
 |---|---|
-| Material | 1.5 mm stainless 304 (option: 2.0 mm aluminium 5052-H32) |
-| Mass | 68.6 g stainless, 31 g aluminium |
+| Material | 1.5 mm stainless 304 (options: 2.0 mm aluminium 5052-H32, 3D-printed, forged carbon) |
+| Mass | 68.6 g stainless, 31 g aluminium, 14 g forged carbon |
 | Formed size | 85.5 × 53.9 × 24.6 mm |
 | Flat blank | 118.3 × 84.4 mm, 8 bends, 563 mm of cut |
 | Fixing | 1 × M5 into the existing boss beside the socket, slotted ±2 mm |
@@ -135,43 +135,62 @@ All grooves are 1.8 mm deep, leaving a 0.6 mm web. They are cut 2° wider than t
 
 ## Carbon-fibre version: split mould
 
-![Closed mould, opened mould and the moulded part](out/mould/preview.png)
+![Closed mould, opened mould and the finished carbon part](out/mould/preview.png)
 
-A four-piece mould for making the cap in carbon fibre. **The cavity is the first model** (`out/cap_formed.step`, 1.5 mm wall). The only difference is the tip corners of the four keeper tabs, which are moulded square: their R1.5 rounding faces sideways and down, which no piece of a rigid split mould can release. Round the eight corners with a file after moulding (5.8 mm³ of material in total).
+A three-piece mould for making the cap in forged carbon. The carbon part is the first model (1.5 mm wall, same inside, same fit) with one change: **the bent-out fixing ear is replaced by a solid lug**. The bent ear is a thin flange folded out of the back wall. A rigid mould can't form that fold without extra loose pieces, and in carbon it would be the weakest spot. The lug is a plain block in the same place, on the same screw:
 
-| Piece | Forms | Comes out | Print orientation (already set in the STL) |
+- 5 mm thick, with a round end (R8.5) around the screw;
+- the same 5.5 × 9.5 mm slot, so you keep the ±2 mm adjustment;
+- at least 3.75 mm of wall around the slot.
+
+It needs an M5 button-head screw 6 mm longer than the original, with a washer. The finished part weighs about 14 g, against 68.6 g for the stainless cap.
+
+The keeper tabs' tip corners are moulded square: their R1.5 rounding faces sideways and down, and no rigid split mould can release it. File the eight corners round after moulding (5.8 mm³ in total).
+
+The steel, aluminium and printed versions keep the bent ear, which suits sheet metal and folding.
+
+| Piece | Forms | Order | Print orientation (already set in the STL) |
 |---|---|---|---|
-| Pin | the slot in the ear | 1st: pull it along the lamp axis | lying on its flat side |
-| Core | every inside surface, including under the tabs | 2nd: slide it out along the lamp axis, through the cap's open root end | front face down |
-| Top half | the outside above the parting plane | 3rd: lift it off | parting face up |
-| Bottom half | the outside below it, plus an overflow groove | 4th: lift the part out of it | parting face up |
+| Core | every inside surface, including under the tabs, plus the slot in the lug (a pin on an arm that runs behind the back wall) | goes in 1st, comes out 1st: pull it along the lamp axis, out through the cap's open root end, and the pin comes with it | front face down |
+| Top half | the outside above the parting plane | goes on last, comes off 2nd: lift it off | parting face up |
+| Bottom half | the outside below it, plus an overflow groove | holds everything; lift the part out of it last | parting face up |
 
-Block 113.5 × 103.9 × 48.6 mm (each half 24.3 mm thick); core 121.5 × 42.5 × 29.6 mm. Hardware: 4 × M6 bolts with washers and nuts, 2 × 6 mm dowel pins.
+Block 113.5 × 103.9 × 48.6 mm (each half 24.3 mm thick); core 121.5 × 59.2 × 29.6 mm. Hardware: 4 × M6 bolts with washers and nuts, 2 × 6 mm dowel pins.
 
-![Cross-sections through the closed mould](docs/fig_mould_section.svg)
+![Cross-sections and a plan of the mould](docs/fig_mould_section.svg)
 
 ### Making the mould
 
 - **3D print:** resin (SLA) gives the best surface. On FDM, use PETG or ASA at 0.12 mm layers, then sand (400 to 1200 grit) and seal with a thin epoxy coat. Use room-temperature-cure epoxy in printed moulds; they soften around 60 °C.
+- **The slot pin:** with the core printed front face down, the pin sticks out sideways 6 mm. Give it a small support, or print the core in resin. Support marks land on the face that moulds the inside of the back wall next to the lug, which faces the lamp once fitted.
 - **CNC:** machine it from aluminium using the STEP files (assembly position, same coordinates as the part). Hot-cure resin or prepreg needs an aluminium mould.
 - **Release:** 3 to 5 coats of mould wax, then PVA. The cap has square walls, so nothing has draft and the release agent matters. The cap is open on one side and flexes enough to come free.
 - **Handle with care:** the core has two thin ledges (1.5 × 2.3 mm) at the tip end that fill the gaps between the tip wall and the plates.
 
 ### Moulding forged carbon
 
-1. Mix the charge: about 9.3 g of chopped carbon tow (10 to 25 mm long) and 5.9 g of laminating epoxy. The part weighs about 12.9 g.
-2. Wax and PVA every piece. Lay the pin in its channel in the bottom half and pack wetted fibre into the bottom half's cavity. Place the core, pack fibre over it into the top regions, then close the top half on the dowels and tighten the four bolts evenly. Excess resin runs into the groove and out of the ends.
-3. Cure as the epoxy says, typically 24 h at room temperature. Then demould: pull the pin, pull the core out by its handle, unbolt, prise the top half off at the notches and lift the part out.
-4. Finish: trim the flash, round the eight tab tip corners to R1.5, sand and clear coat with a UV-resistant lacquer.
+1. Mix the charge: about 10 g of chopped carbon tow (10 to 25 mm long) and 6.5 g of laminating epoxy. That includes a fifth extra for flash.
+2. Wax and PVA every piece. Pack wetted fibre into the bottom half: the bottom plate, the lower keeper tabs and the lower half of the lug.
+3. Lower the core straight down into the bottom half, with its handle outside the block. The slot pin drops into the lug. Press it down onto the fibre.
+4. Pack fibre over and around the core: the top plate, the upper tabs and the rest of the lug around the pin. Push fibre down into the back wall and tip wall gaps (1.5 mm). Overfill rather than underfill.
+5. Close the top half on the dowels and tighten the four bolts evenly. Excess resin runs into the groove and out of the ends.
+6. Cure as the epoxy says, typically 24 h at room temperature. Then demould:
+   - pull the core out along the lamp axis by its handle (the slot pin comes with it);
+   - unbolt;
+   - prise the top half off at the notches;
+   - lift the part out.
+7. Finish: trim the flash, round the eight tab tip corners to R1.5, sand and clear coat with a UV-resistant lacquer.
 
 For a woven look, lay one ply of 2×2 twill in each half before the forged fill.
 
-`python3 mould.py` rebuilds the mould from `params.py`, so it follows any change to the lamp measurements, and re-runs the checks (13 of 13 pass):
+`python3 mould.py` rebuilds the mould from `params.py`, so it follows any change to the lamp measurements. It re-runs the checks (28 of 28 pass):
 
-- the cavity contains all of the first model, and the square tab corners are the only extra material;
+- the finished carbon part passes the same fit checks as the steel cap, plus rules for carbon: wall at least 1.5 mm, inside radius at least 1 mm, at least 3 mm of lug around the slot, lug at least 4 mm thick;
+- the cavity contains all of the finished part, and the square tab corners are the only extra material;
 - each piece is one valid solid;
 - no two pieces overlap, and pieces plus part fill the block with no voids;
-- each demoulding step clears: pin out, core out, top half off, part out.
+- loading works: the core drops straight into the bottom half, and the top half closes straight down over it;
+- each demoulding step clears: core out, top half off, part out.
 
 ## Files
 
@@ -189,7 +208,7 @@ For a woven look, lay one ply of 2×2 twill in each half before the forged fill.
 | `out/alu/` | The same set for 2.0 mm aluminium |
 | `out/print/` | 3D-printed version: flat STL with fold grooves, folded STL, checks |
 | `cad/printed.py` | Builds the printed version |
-| `out/mould/` | Split mould for carbon fibre: 4 piece STLs ready to print, STEPs for CNC, assembly, part as moulded, checks |
+| `out/mould/` | Split mould for carbon fibre: 3 piece STLs ready to print, STEPs for CNC, assembly, the finished carbon part (STL, STEP), checks |
 | `cad/mould.py` | Builds the mould |
 | `out/summary.json` | Every derived number and check result |
 
