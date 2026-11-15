@@ -262,6 +262,7 @@
         16.0,
         60.0
       ],
+      "tab_corner_r": 1.5,
       "tip_h_relief": 0.8,
       "tip_front_y": 0.0,
       "ear_angle": null,

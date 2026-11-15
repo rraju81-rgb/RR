@@ -79,6 +79,7 @@ class Cap:
     tab_w: float = 12.0
     tab_flat: float = 4.5       # flat length beyond the bend
     tab_x: tuple = (16.0, 60.0) # centres along the lamp
+    tab_corner_r: float = 1.5   # rounding of the tabs' tip corners
 
     # tip wall
     tip_h_relief: float = 0.8   # tip wall is this much shorter than the back wall, each side

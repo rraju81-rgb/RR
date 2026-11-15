@@ -133,6 +133,46 @@ A plastic version you can print flat and fold into the cap. Every bend line has 
 
 All grooves are 1.8 mm deep, leaving a 0.6 mm web. They are cut 2° wider than the fold so slight over-extrusion can't stop a fold short. `python3 printed.py` rebuilds this version and runs the fit checks on the folded result (all pass), plus print checks: web thickness, narrowest groove against the nozzle width, bed size, and a closed-mesh check on both STLs.
 
+## Carbon-fibre version: split mould
+
+![Closed mould, opened mould and the moulded part](out/mould/preview.png)
+
+A four-piece mould for making the cap in carbon fibre. **The cavity is the first model** (`out/cap_formed.step`, 1.5 mm wall). The only difference is the tip corners of the four keeper tabs, which are moulded square: their R1.5 rounding faces sideways and down, which no piece of a rigid split mould can release. Round the eight corners with a file after moulding (5.8 mm³ of material in total).
+
+| Piece | Forms | Comes out | Print orientation (already set in the STL) |
+|---|---|---|---|
+| Pin | the slot in the ear | 1st: pull it along the lamp axis | lying on its flat side |
+| Core | every inside surface, including under the tabs | 2nd: slide it out along the lamp axis, through the cap's open root end | front face down |
+| Top half | the outside above the parting plane | 3rd: lift it off | parting face up |
+| Bottom half | the outside below it, plus an overflow groove | 4th: lift the part out of it | parting face up |
+
+Block 113.5 × 103.9 × 48.6 mm (each half 24.3 mm thick); core 121.5 × 42.5 × 29.6 mm. Hardware: 4 × M6 bolts with washers and nuts, 2 × 6 mm dowel pins.
+
+![Cross-sections through the closed mould](docs/fig_mould_section.svg)
+
+### Making the mould
+
+- **3D print:** resin (SLA) gives the best surface. On FDM, use PETG or ASA at 0.12 mm layers, then sand (400 to 1200 grit) and seal with a thin epoxy coat. Use room-temperature-cure epoxy in printed moulds; they soften around 60 °C.
+- **CNC:** machine it from aluminium using the STEP files (assembly position, same coordinates as the part). Hot-cure resin or prepreg needs an aluminium mould.
+- **Release:** 3 to 5 coats of mould wax, then PVA. The cap has square walls, so nothing has draft and the release agent matters. The cap is open on one side and flexes enough to come free.
+- **Handle with care:** the core has two thin ledges (1.5 × 2.3 mm) at the tip end that fill the gaps between the tip wall and the plates.
+
+### Moulding forged carbon
+
+1. Mix the charge: about 9.3 g of chopped carbon tow (10 to 25 mm long) and 5.9 g of laminating epoxy. The part weighs about 12.9 g.
+2. Wax and PVA every piece. Lay the pin in its channel in the bottom half and pack wetted fibre into the bottom half's cavity. Place the core, pack fibre over it into the top regions, then close the top half on the dowels and tighten the four bolts evenly. Excess resin runs into the groove and out of the ends.
+3. Cure as the epoxy says, typically 24 h at room temperature. Then demould: pull the pin, pull the core out by its handle, unbolt, prise the top half off at the notches and lift the part out.
+4. Finish: trim the flash, round the eight tab tip corners to R1.5, sand and clear coat with a UV-resistant lacquer.
+
+For a woven look, lay one ply of 2×2 twill in each half before the forged fill.
+
+`python3 mould.py` rebuilds the mould from `params.py`, so it follows any change to the lamp measurements, and re-runs the checks (13 of 13 pass):
+
+- the cavity contains all of the first model, and the square tab corners are the only extra material;
+- each piece is one valid solid;
+- no two pieces overlap, and pieces plus part fill the block with no voids;
+- each demoulding step clears: pin out, core out, top half off, part out.
+
 ## Files
 
 | Path | What |
@@ -149,6 +189,8 @@ All grooves are 1.8 mm deep, leaving a 0.6 mm web. They are cut 2° wider than t
 | `out/alu/` | The same set for 2.0 mm aluminium |
 | `out/print/` | 3D-printed version: flat STL with fold grooves, folded STL, checks |
 | `cad/printed.py` | Builds the printed version |
+| `out/mould/` | Split mould for carbon fibre: 4 piece STLs ready to print, STEPs for CNC, assembly, part as moulded, checks |
+| `cad/mould.py` | Builds the mould |
 | `out/summary.json` | Every derived number and check result |
 
 ### Rebuild
@@ -162,7 +204,7 @@ cd hardware/ktm-indicator-cap/cad
 ```
 
 ```bash
-python3 build.py && python3 build.py --alu && python3 printed.py && python3 drawing.py && python3 figures.py && python3 page.py
+python3 build.py && python3 build.py --alu && python3 printed.py && python3 mould.py && python3 drawing.py && python3 figures.py && python3 page.py
 ```
 
 PDFs come from the SVGs with `node svg2pdf.js ../out/drawing_formed.svg ../out/drawing_blank.svg ../out/template_1to1.svg` (needs Playwright).

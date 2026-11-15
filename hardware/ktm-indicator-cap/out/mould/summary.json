@@ -1,0 +1,138 @@
+{
+  "part": "First model (out/cap_formed.step), 1.5 mm wall. Cavity identical except the 8 keeper-tab tip corners, which are moulded square and rounded R1.5 with a file afterwards",
+  "part_volume_mm3": 8585.3,
+  "forged_carbon_part_g": 12.9,
+  "charge_g": {
+    "fibre": 9.3,
+    "resin": 5.9,
+    "note": "50 % fibre by volume, 20 % extra for flash"
+  },
+  "block_mm": [
+    113.5,
+    103.9,
+    48.6
+  ],
+  "parting_plane_z": 10.0,
+  "pieces": {
+    "top": {
+      "size": [
+        113.5,
+        103.9,
+        24.3
+      ],
+      "volume_cm3": 242.7
+    },
+    "bottom": {
+      "size": [
+        113.5,
+        103.9,
+        24.3
+      ],
+      "volume_cm3": 241.9
+    },
+    "core": {
+      "size": [
+        121.5,
+        42.5,
+        29.6
+      ],
+      "volume_cm3": 94.0
+    },
+    "pin": {
+      "size": [
+        29.5,
+        14.0,
+        11.5
+      ],
+      "volume_cm3": 2.5
+    }
+  },
+  "hardware": "4 x M6 bolts with washers and nuts, 2 x 6 mm dowel pins",
+  "demould_order": [
+    "pin out along -x",
+    "core out along -x",
+    "top half up",
+    "lift the part out of the bottom half"
+  ],
+  "checks": [
+    {
+      "check": "Exact first model rebuilt (volume)",
+      "value": "8579.6 mm3",
+      "requirement": "8579.6 (out/summary.json)",
+      "ok": true
+    },
+    {
+      "check": "Cavity contains all of the first model",
+      "value": "0.0000 mm3 missing",
+      "requirement": "< 0.001",
+      "ok": true
+    },
+    {
+      "check": "Only difference: square tab tip corners",
+      "value": "5.79 mm3 in 8 corners",
+      "requirement": "8 corners, at the tab tips",
+      "ok": true
+    },
+    {
+      "check": "core is one valid solid",
+      "value": "1 solid, valid True",
+      "requirement": "1, True",
+      "ok": true
+    },
+    {
+      "check": "pin is one valid solid",
+      "value": "1 solid, valid True",
+      "requirement": "1, True",
+      "ok": true
+    },
+    {
+      "check": "top is one valid solid",
+      "value": "1 solid, valid True",
+      "requirement": "1, True",
+      "ok": true
+    },
+    {
+      "check": "bottom is one valid solid",
+      "value": "1 solid, valid True",
+      "requirement": "1, True",
+      "ok": true
+    },
+    {
+      "check": "No two pieces overlap (part, core, pin, top, bottom)",
+      "value": "largest overlap 0.0000 mm3",
+      "requirement": "< 0.001",
+      "ok": true
+    },
+    {
+      "check": "Pieces and part fill the block exactly (no voids)",
+      "value": "left over 0.0000 mm3",
+      "requirement": "< 0.001",
+      "ok": true
+    },
+    {
+      "check": "1. Pin pulls out (-x)",
+      "value": "clash 0.0000 mm3",
+      "requirement": "< 0.001",
+      "ok": true
+    },
+    {
+      "check": "2. Core pulls out (-x), halves still closed",
+      "value": "clash 0.0000 mm3",
+      "requirement": "< 0.001",
+      "ok": true
+    },
+    {
+      "check": "3. Top half lifts off (+z)",
+      "value": "clash 0.0000 mm3",
+      "requirement": "< 0.001",
+      "ok": true
+    },
+    {
+      "check": "4. Part lifts out of the bottom half (+z)",
+      "value": "clash 0.0000 mm3",
+      "requirement": "< 0.001",
+      "ok": true
+    }
+  ],
+  "all_checks_pass": true
+}

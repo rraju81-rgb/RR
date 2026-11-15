@@ -49,7 +49,13 @@ FIG_CSS = """
   .fig .ray{fill:none;stroke:var(--fig-lens-edge,#b87400);stroke-width:1.3;stroke-dasharray:3 4}
   .fig .rayarrow{fill:var(--fig-lens-edge,#b87400);stroke:none}
   .fig .datum{fill:none;stroke:var(--fig-ref,#8a909b);stroke-width:.9;stroke-dasharray:8 3 2 3}
-  .fig .datumtxt{font-size:11.5px;fill:var(--fig-ref,#8a909b)}"""
+  .fig .datumtxt{font-size:11.5px;fill:var(--fig-ref,#8a909b)}
+  .fig .m-top{fill:var(--fig-mtop,#a9bdd6);stroke:var(--fig-ink,#14181f);stroke-width:.7}
+  .fig .m-bot{fill:var(--fig-mbot,#c3cad3);stroke:var(--fig-ink,#14181f);stroke-width:.7}
+  .fig .m-core{fill:var(--fig-mcore,#f0b25e);stroke:var(--fig-ink,#14181f);stroke-width:.7}
+  .fig .m-pin{fill:var(--fig-mpin,#e4e6ea);stroke:var(--fig-ink,#14181f);stroke-width:.7}
+  .fig .m-part{fill:var(--fig-carbon,#1e2024);stroke:var(--fig-carbon,#1e2024);stroke-width:.4}
+  .fig .parting{fill:none;stroke:var(--fig-up,#c22727);stroke-width:1.1;stroke-dasharray:7 4}"""
 
 
 class Fig(Sheet):

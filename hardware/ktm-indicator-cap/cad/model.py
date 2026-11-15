@@ -188,7 +188,7 @@ class CapGeometry:
         panel = Panel(name, [tuple(p) for p in pts], radii, [obround(c, ln, cap.slot_w, ang) for c, ln, ang in cuts])
         for i, (a, b) in enumerate(tab_edges):
             tab = Panel(f"{name}_TAB{i + 1}", [(0, 0), (cap.tab_w, 0), (cap.tab_w, cap.tab_flat), (0, cap.tab_flat)],
-                        [0, 0, 1.5, 1.5])
+                        [0, 0, cap.tab_corner_r, cap.tab_corner_r])
             panel.attach(a, b, cap.tab_angle, "up", tab, f"bend_{name}_TAB{i + 1}")
         return panel
 
