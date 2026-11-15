@@ -89,6 +89,50 @@ Bend allowance = angle × (R + K·t), inside radius 1.5 mm, K 0.42. If your bend
 4. Fit the screw and washer through the ear slot. Snug it, about 2 N·m for a screw into plastic. No threadlocker in plastic; it can crack the boss.
 5. Push the lamp tip in every direction: it should not move. Check from in front of and behind the bike that the whole lens lights.
 
+## 3D-printed version: print flat, then fold
+
+![Flat part, its underside, and the folded cap](out/print/preview.png)
+
+A plastic version you can print flat and fold into the cap. Every bend line has a V-groove cut almost through the plate. The thin web left under each groove is the hinge, and the groove's angle matches the bend, so **each fold stops at the right angle when its groove closes**. The inside of the folded part matches the steel version, so it fits the lamp and liner the same way.
+
+![How a V-groove folds](docs/fig_groove.svg)
+
+| | |
+|---|---|
+| Print this | [`out/print/cap_print_flat.stl`](out/print/cap_print_flat.stl), already lying outside face down |
+| Reference | [`out/print/cap_print_folded.stl`](out/print/cap_print_folded.stl), what it becomes after folding (don't print it) |
+| Flat size | 123.5 × 91.5 × 2.4 mm, 18.7 g |
+| Folded size | 86.4 × 55.5 × 26.4 mm (walls 2.4 mm instead of 1.5, so 1.8 mm bigger outside; same inside) |
+
+### Print settings
+
+- **Material:** PETG or ASA. Avoid PLA: it cracks at the folds and softens in the sun.
+- **Layers:** 0.2 mm, so each 0.6 mm web is exactly 3 layers.
+- **Walls:** solid; 100 % infill, 4 or more perimeters.
+- **Supports and orientation:** no supports. Print it as exported, outside face down. The ear's groove is on the underside; its sides slope about 40°, which prints fine.
+- **Optional:** set the bottom-layer line direction across the two long grooves (B7, B8); lines that cross a hinge are stronger.
+
+### Fold it
+
+1. Warm one groove at a time with a heat gun, or dip it in hot water (about 85 °C for PETG), until it bends easily.
+2. Fold until the groove closes, then hold it while it cools. Grooves on the top face fold up towards you; the ear groove (B6) is underneath and folds down.
+3. Fold in this order: tabs B1–B4, tip wall B5, ear B6, then the two long plates B7 and B8.
+4. Run thin CA glue or epoxy into each closed groove from the inside. The web alone is a hinge; the glue makes the corners rigid.
+5. Fit the foam liner and the screw as for the steel cap. Use a screw 4 mm longer than the original (2.4 mm ear plus washer).
+
+| Groove | Feature | Fold | V angle | Opening (mm) | On | Fold direction |
+|---|---|---|---|---|---|---|
+| B1 | Top Tab1 | 35.0° | 37.0° | 1.20 | top | up, towards you |
+| B2 | Top Tab2 | 35.0° | 37.0° | 1.20 | top | up, towards you |
+| B3 | Bottom Tab1 | 35.0° | 37.0° | 1.20 | top | up, towards you |
+| B4 | Bottom Tab2 | 35.0° | 37.0° | 1.20 | top | up, towards you |
+| B5 | Tip | 80.8° | 82.8° | 3.17 | top | up, towards you |
+| B6 | Ear | 80.8° | 82.8° | 3.17 | underside | down, away from you |
+| B7 | Top | 90.0° | 92.0° | 3.73 | top | up, towards you |
+| B8 | Bottom | 90.0° | 92.0° | 3.73 | top | up, towards you |
+
+All grooves are 1.8 mm deep, leaving a 0.6 mm web. They are cut 2° wider than the fold so slight over-extrusion can't stop a fold short. `python3 printed.py` rebuilds this version and runs the fit checks on the folded result (all pass), plus print checks: web thickness, narrowest groove against the nozzle width, bed size, and a closed-mesh check on both STLs.
+
 ## Files
 
 | Path | What |
@@ -103,6 +147,8 @@ Bend allowance = angle × (R + K·t), inside radius 1.5 mm, K 0.42. If your bend
 | `out/drawing_formed.pdf`, `out/drawing_blank.pdf` | A3 drawings |
 | `out/template_1to1.pdf` | A4 card template at 1:1 |
 | `out/alu/` | The same set for 2.0 mm aluminium |
+| `out/print/` | 3D-printed version: flat STL with fold grooves, folded STL, checks |
+| `cad/printed.py` | Builds the printed version |
 | `out/summary.json` | Every derived number and check result |
 
 ### Rebuild
@@ -116,7 +162,7 @@ cd hardware/ktm-indicator-cap/cad
 ```
 
 ```bash
-python3 build.py && python3 build.py --alu && python3 drawing.py && python3 figures.py && python3 page.py
+python3 build.py && python3 build.py --alu && python3 printed.py && python3 drawing.py && python3 figures.py && python3 page.py
 ```
 
 PDFs come from the SVGs with `node svg2pdf.js ../out/drawing_formed.svg ../out/drawing_blank.svg ../out/template_1to1.svg` (needs Playwright).

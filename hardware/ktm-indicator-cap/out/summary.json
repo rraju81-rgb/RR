@@ -275,7 +275,12 @@
       "slot_w": 3.0,
       "slot_angle": 60.0,
       "slot_margin": 5.0,
-      "relief": 0.8
+      "relief": 0.8,
+      "fold": "brake",
+      "web": 0.6,
+      "layer": 0.2,
+      "nozzle": 0.4,
+      "groove_extra_deg": 2.0
     }
   }
 }

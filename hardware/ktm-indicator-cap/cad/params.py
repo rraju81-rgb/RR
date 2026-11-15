@@ -97,13 +97,34 @@ class Cap:
 
     relief: float = 0.8         # bend relief notch depth
 
+    # how the flat part becomes the formed part
+    fold: str = "brake"         # "brake": bent on a press brake (radius r, K-factor k)
+                                # "vgroove": 3D printed flat with a V-groove on each bend line, folded after printing
+    web: float = 0.6            # vgroove: plastic left under each groove; it is the hinge
+    layer: float = 0.2          # vgroove: print layer height (the web should be whole layers)
+    nozzle: float = 0.4         # vgroove: nozzle width, for the narrowest groove
+    groove_extra_deg: float = 2.0   # vgroove: grooves cut this much wider than the bend angle, so slight
+                                    # over-extrusion can't stop the fold short
+
     @property
     def ba90(self) -> float:
-        return math.pi / 2 * (self.r + self.k * self.t)
+        return self.ba(90.0)
 
     def ba(self, angle_deg: float) -> float:
-        """Bend allowance (neutral-axis arc length) for a bend of `angle_deg`."""
+        """Width of the bend zone in the flat part for a bend of `angle_deg`.
+
+        brake:   neutral-axis arc length, angle x (r + k t)
+        vgroove: the panels pivot on the groove's apex, so the groove's opening on the inside face
+                 must close exactly at the bend angle: 2 (t - web) tan(angle / 2)
+        """
+        if self.fold == "vgroove":
+            return 2 * (self.t - self.web) * math.tan(math.radians(angle_deg) / 2)
         return math.radians(angle_deg) * (self.r + self.k * self.t)
+
+    @property
+    def edge_min(self) -> float:
+        """Least material between a hole and a bend or an edge."""
+        return 1.5 if self.fold == "vgroove" else 2 * self.t
 
 
 @dataclass
@@ -127,4 +148,19 @@ def aluminium_variant() -> Design:
     d.cap.tab_flat = 4.5        # any longer and the thicker tab would poke past the lens face
     d.cap.slot_margin = 6.0     # 2 t + r
     d.cap.ear_slot_len = 7.5    # thicker sheet + bigger radius leave less room before the bend: +/-1 mm adjustment
+    return d
+
+
+# 3D-printed version: printed flat with V-grooves, folded after printing. Same inner cavity.
+def printed_variant() -> Design:
+    d = Design()
+    c = d.cap
+    c.material = "PETG or ASA, 3D printed flat, folded after printing"
+    c.density = 1.27e-3
+    c.fold = "vgroove"
+    c.t = 2.4                   # 12 layers at 0.2 mm; stiff enough in plastic
+    c.r = 0.0                   # a V-groove fold has a sharp inside corner
+    c.k = 0.0                   # not used for V-grooves
+    c.web = 0.6
+    c.slot_margin = 4.0
     return d

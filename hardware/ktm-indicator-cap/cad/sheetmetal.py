@@ -248,7 +248,10 @@ def fold(panel: Panel, frame, t: float, r: float, out=None, frames=None):
         else:
             axis, C = e3, A3 + (t + r) * eN
 
-        if th > 1e-9:
+        def rot(v, axis=axis, th=th):
+            return rodrigues(v, axis, th)
+
+        if th > 1e-9 and r > 1e-9:
             rect = cq.Wire.makePolygon(
                 [cq.Vector(*A3), cq.Vector(*B3), cq.Vector(*(B3 + t * eN)), cq.Vector(*(A3 + t * eN))], close=True
             )
@@ -256,13 +259,30 @@ def fold(panel: Panel, frame, t: float, r: float, out=None, frames=None):
                 cq.Face.makeFromWires(rect).wrapped, gp_Ax1(gp_Pnt(*C), gp_Dir(*axis)), th
             ).Shape()
             out.append((b.label, cq.Shape.cast(rev)))
-
-        def rot(v, axis=axis, th=th):
-            return rodrigues(v, axis, th)
+        elif th > 1e-9:
+            out.append((b.label, sharp_corner(A3, B3, C, d3, eN, rot, t, b.direction)))
 
         child_frame = (C + rot(A3 - C), e3, rot(d3), rot(eN))
         fold(b.child, child_frame, t, r, out, frames)
     return out, frames
+
+
+def sharp_corner(A3, B3, C, d3, eN, rot, t, direction):
+    """Corner block of a fold with no inside radius (a V-groove fold): the quadrilateral between the
+    inside corner, the two panels' end faces and the point where their outer faces meet, swept along
+    the bend line."""
+    if direction == "up":
+        P, QA = A3, A3 + t * eN                    # inside corner on the reference face; parent's far face
+        QB = A3 + t * rot(eN)                      # child's far face at the corner
+    else:
+        P, QA = A3 + t * eN, A3                    # the inside of this bend is on the far face
+        QB = C + rot(A3 - C)                       # child's reference face at the corner
+    dA, dB = np.asarray(d3, float), rot(d3)
+    s, _u = np.linalg.lstsq(np.column_stack([dA, -dB]), QB - QA, rcond=None)[0]
+    X = QA + s * dA                                # outer corner
+    e3 = np.asarray(B3, float) - np.asarray(A3, float)
+    poly = cq.Wire.makePolygon([cq.Vector(*P), cq.Vector(*QA), cq.Vector(*X), cq.Vector(*QB)], close=True)
+    return cq.Solid.extrudeLinear(cq.Face.makeFromWires(poly), cq.Vector(*e3))
 
 
 # ----------------------------------------------------------------------------- unfold (2D)

@@ -113,8 +113,22 @@ def run_checks(d: Design, g: CapGeometry, cap, parts, frames, lamp):
     wv = sum(s.Volume() for s in it.Solids()) if it.Solids() else 0.0
     add("Lens light window obstructed", f"{wv:.3f} mm3", "0", wv < 1e-6)
 
-    # sheet-metal rules of thumb
     t = capd.t
+    if capd.fold == "vgroove":
+        # rules for a part printed flat and folded on V-grooves
+        layers = capd.web / capd.layer
+        add("Hinge web under each groove", f"{capd.web:.2f} mm = {layers:.0f} layers of {capd.layer:.2f}",
+            "2 to 4 whole layers", 2 - 1e-6 <= layers <= 4 + 1e-6 and abs(layers - round(layers)) < 1e-6)
+        narrow = 2 * (t - capd.web) * math.tan(math.radians(capd.tab_angle + capd.groove_extra_deg) / 2)
+        add("Narrowest groove opening (keeper tabs)", f"{narrow:.2f} mm", f">= {2 * capd.nozzle:.2f} (2 nozzle widths)",
+            narrow >= 2 * capd.nozzle)
+        add("Wall thickness for a printed cap", f"{t:.1f} mm", ">= 2.0", t >= 2.0)
+        ear_edge = g.q_hole - capd.ear_slot_len / 2
+        add("Ear slot to groove", f"{ear_edge:.2f} mm", f">= {capd.edge_min:.1f}", ear_edge >= capd.edge_min)
+        add("Exposed corner radius", f"{capd.r_corner:.1f} mm", ">= 2.5", capd.r_corner >= 2.5)
+        return rows, all(r["ok"] for r in rows)
+
+    # sheet-metal rules of thumb
     tab_flange = capd.ba(capd.tab_angle) + capd.tab_flat
     add("Shortest flange (keeper tab, from tangent)", f"{tab_flange:.2f} mm", f">= {3 * t:.2f} (3 t)", tab_flange >= 3 * t)
     add("Slot width vs thickness", f"{capd.slot_w:.2f} mm", f">= {t:.2f} (1 t)", capd.slot_w >= t)

@@ -67,9 +67,9 @@ class CapGeometry:
         self.tip_len = cy - cap.tip_front_y
         # ear slot centre, measured from the ear's bend tangent line (ear square to the lamp axis)
         self.q_hole = mount.screw_behind_back - (cap.gap_back + t + r) * ca + self.s_root * sa
-        assert self.q_hole - cap.ear_slot_len / 2 >= 2 * t, (
+        assert self.q_hole - cap.ear_slot_len / 2 >= cap.edge_min, (
             "ear slot too close to the bend: the screw is too near the lamp for a folded ear "
-            f"(need screw_behind_back >= {2 * t + cap.ear_slot_len / 2 + (cap.gap_back + t + r) * ca - self.s_root * sa:.1f})")
+            f"(need screw_behind_back >= {cap.edge_min + cap.ear_slot_len / 2 + (cap.gap_back + t + r) * ca - self.s_root * sa:.1f})")
         self.p_hole = self.he / 2 - mount.screw_dz    # ear local p runs downwards
 
         self.root = self._build()
@@ -218,7 +218,7 @@ class CapGeometry:
         except ValueError as e:
             raise ValueError(hint) from e
         slot = Polygon(segs_points(obround((ph, qh), cap.ear_slot_len, cap.ear_slot_w, 90), 16))
-        if not (outline.is_valid and outline.buffer(-2 * t + 1e-6).contains(slot)):
+        if not (outline.is_valid and outline.buffer(-cap.edge_min + 1e-6).contains(slot)):
             raise ValueError(hint)
         return pts, radii
 

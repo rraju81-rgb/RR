@@ -1,0 +1,258 @@
+{
+  "variant": "Printed flat, folded on V-grooves",
+  "material": "PETG or ASA, 3D printed flat, folded after printing",
+  "wall": 2.4,
+  "web": 0.6,
+  "layer": 0.2,
+  "groove_extra_deg": 2.0,
+  "flat": {
+    "size": [
+      123.5,
+      91.5,
+      2.4
+    ],
+    "volume_mm3": 14736.2,
+    "grooves_removed_mm3": 689.9
+  },
+  "folded_size": [
+    86.4,
+    55.5,
+    26.4
+  ],
+  "mass_g": 18.7,
+  "grooves": [
+    {
+      "id": "B1",
+      "feature": "Top Tab1",
+      "fold_angle": 35.0,
+      "groove_angle": 37.0,
+      "opening": 1.2,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "top",
+      "fold": "up, towards you",
+      "length": 12.0
+    },
+    {
+      "id": "B2",
+      "feature": "Top Tab2",
+      "fold_angle": 35.0,
+      "groove_angle": 37.0,
+      "opening": 1.2,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "top",
+      "fold": "up, towards you",
+      "length": 12.0
+    },
+    {
+      "id": "B3",
+      "feature": "Bottom Tab1",
+      "fold_angle": 35.0,
+      "groove_angle": 37.0,
+      "opening": 1.2,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "top",
+      "fold": "up, towards you",
+      "length": 12.0
+    },
+    {
+      "id": "B4",
+      "feature": "Bottom Tab2",
+      "fold_angle": 35.0,
+      "groove_angle": 37.0,
+      "opening": 1.2,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "top",
+      "fold": "up, towards you",
+      "length": 12.0
+    },
+    {
+      "id": "B5",
+      "feature": "Tip",
+      "fold_angle": 80.79,
+      "groove_angle": 82.79,
+      "opening": 3.17,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "top",
+      "fold": "up, towards you",
+      "length": 20.0
+    },
+    {
+      "id": "B6",
+      "feature": "Ear",
+      "fold_angle": 80.79,
+      "groove_angle": 82.79,
+      "opening": 3.17,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "underside",
+      "fold": "down, away from you",
+      "length": 20.0
+    },
+    {
+      "id": "B7",
+      "feature": "Top",
+      "fold_angle": 90.0,
+      "groove_angle": 92.0,
+      "opening": 3.73,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "top",
+      "fold": "up, towards you",
+      "length": 78.0
+    },
+    {
+      "id": "B8",
+      "feature": "Bottom",
+      "fold_angle": 90.0,
+      "groove_angle": 92.0,
+      "opening": 3.73,
+      "depth": 1.8,
+      "web": 0.6,
+      "face": "top",
+      "fold": "up, towards you",
+      "length": 78.0
+    }
+  ],
+  "checks": [
+    {
+      "check": "Cap vs lamp head, overlap volume",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Cap vs stalk, socket and screw boss, overlap volume",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Liner gap, top / bottom plate",
+      "value": "0.80 / 0.80 mm",
+      "requirement": "0.80",
+      "ok": true
+    },
+    {
+      "check": "Liner gap, back wall",
+      "value": "1.50 mm",
+      "requirement": "1.50",
+      "ok": true
+    },
+    {
+      "check": "Liner gap, tip wall",
+      "value": "2.00 mm",
+      "requirement": "2.00",
+      "ok": true
+    },
+    {
+      "check": "Keeper tabs to lens chamfer (closest point)",
+      "value": "0.80 / 0.80 / 0.80 / 0.80 mm",
+      "requirement": "0.80",
+      "ok": true
+    },
+    {
+      "check": "Tab hook depth past the head's top edge",
+      "value": "1.78 mm",
+      "requirement": ">= 1.5",
+      "ok": true
+    },
+    {
+      "check": "Slides on from the tip without touching (8 stations)",
+      "value": "min gap 0.80 mm",
+      "requirement": "> 0",
+      "ok": true
+    },
+    {
+      "check": "Top/bottom symmetric (same part for left and right)",
+      "value": "0.000 mm3 difference",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Cap stays behind the lens front face",
+      "value": "0.51 mm behind",
+      "requirement": "> 0",
+      "ok": true
+    },
+    {
+      "check": "Lens light window obstructed",
+      "value": "0.000 mm3",
+      "requirement": "0",
+      "ok": true
+    },
+    {
+      "check": "Hinge web under each groove",
+      "value": "0.60 mm = 3 layers of 0.20",
+      "requirement": "2 to 4 whole layers",
+      "ok": true
+    },
+    {
+      "check": "Narrowest groove opening (keeper tabs)",
+      "value": "1.20 mm",
+      "requirement": ">= 0.80 (2 nozzle widths)",
+      "ok": true
+    },
+    {
+      "check": "Wall thickness for a printed cap",
+      "value": "2.4 mm",
+      "requirement": ">= 2.0",
+      "ok": true
+    },
+    {
+      "check": "Ear slot to groove",
+      "value": "4.39 mm",
+      "requirement": ">= 1.5",
+      "ok": true
+    },
+    {
+      "check": "Exposed corner radius",
+      "value": "3.0 mm",
+      "requirement": ">= 2.5",
+      "ok": true
+    },
+    {
+      "check": "Flat part fits a small printer bed",
+      "value": "123.5 x 91.5 mm",
+      "requirement": "<= 180 x 180",
+      "ok": true
+    },
+    {
+      "check": "Flat part lies flat on the bed",
+      "value": "height 2.40 mm",
+      "requirement": "= 2.40 (wall thickness)",
+      "ok": true
+    }
+  ],
+  "all_checks_pass": true,
+  "mesh": {
+    "flat": {
+      "triangles": 7152,
+      "closed_manifold": true,
+      "consistent_winding": true,
+      "volume_mm3": 14736.0,
+      "size": [
+        123.51,
+        91.46,
+        2.4
+      ],
+      "kb": 349
+    },
+    "folded": {
+      "triangles": 7096,
+      "closed_manifold": true,
+      "consistent_winding": true,
+      "volume_mm3": 14834.9,
+      "size": [
+        86.4,
+        55.49,
+        26.4
+      ],
+      "kb": 347
+    }
+  }
+}
