@@ -19,7 +19,7 @@ printed, and **none of them needs supports**.
 | `3_left_blade_4_top_flap.stl` | 106 × 44 × 217 | standing on its outer end |
 | `4_right_blade_…` (same 4) | same as left | same as left |
 | `5_end_plates.stl` | 219 × 41 × 138 (both) | standing on their rear edges |
-| `6_pins.stl` | 6 pins, Ø 5 × 20 | standing |
+| `6_pins.stl` | 6 pins, Ø 5 × 20 (4 needed, 2 spare) | standing |
 
 Original parts in each piece: body = obj_3 (tip), 2, 39, 40, 1. Main plane = obj_10, 36, 35,
 20, 27, 28, 13; 2nd element = obj_9, 32, 31, 4, 29, 30, 14; 3rd element = obj_7, 23, 24, 5, 33,
