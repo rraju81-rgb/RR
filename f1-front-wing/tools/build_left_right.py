@@ -1,13 +1,15 @@
-"""Build the LEFT and RIGHT wing halves (assembled pose) from the reassembled parts.
+"""Build the 8 separate wing BLADES (assembled pose) from the reassembled parts.
 
 * obj_37 (missing from the upload) is rebuilt as the mirror image of its twin obj_25, fitted
   onto obj_38's joint face (cross-section match + skin continuity).
-* Small webs tie the four elements of each half together (stations +/-150 and +/-440 mm).
-* Joints are fused (merge.merge_fused): faces that touch across a joint are pushed slightly into
-  each other before the union, so no hairline double walls are left inside the solid.
-* The merged wing is split on its mirror plane into left (-n side) and right (+n side).
+* Each element is merged on its own (no webs between elements). Joints are fused
+  (merge.merge_fused): faces that touch across a joint are pushed slightly into each other before
+  the union, so no hairline double walls are left inside the solid.
+* The three full-width elements are split on the mirror plane into a left (-n side, end plate A)
+  and a right half; the top flap already comes in a left and a right piece.
 
-Writes wing_left_posed.pkl / wing_right_posed.pkl (trimesh meshes) in the working directory.
+Writes blades_posed.pkl ({name: trimesh}, names main_L, e2_L, e3_L, flap_L and the same with _R)
+in the working directory, and plain full-size blades to <F1_OUT_DIR>/full_size/.
 Needs final_poses.pkl, symmetry.pkl, assembly.pkl from the earlier steps.
 """
 import os, sys, pickle
@@ -17,15 +19,13 @@ from joints import load_parts
 from faces import frame_for, register2d_multi, mirror_poly, transform_from_match
 from stubs import poly_of
 from endmatch import skin_continuity
-from merge import merge_fused, fuse_microgaps, to_manifold, from_manifold, drop_cavities, heal_slits, keep_main
-from bridges import bridge
+from merge import merge_fused, fuse_microgaps, to_manifold, from_manifold, keep_main
 from orient import stable_orient
 from package_build_volume import manifold_to_stl
 
-ELEM = {'main': [10, 36, 35, 20, 27, 28, 13], 'f2': [9, 32, 31, 4, 29, 30, 14],
-        'f3': [7, 23, 24, 5, 33, 34, 43], 'top': [6, 26, 25, 38, 42]}          # front -> rear
-PAIRS = [('main', 'f2'), ('f2', 'f3'), ('f3', 'top')]
-STATIONS = [-440, -150, 150, 440]
+# element parts, from end plate A (left) to end plate B (right)
+ELEM = {'main': [10, 36, 35, 20, 27, 28, 13], 'e2': [9, 32, 31, 4, 29, 30, 14],
+        'e3': [7, 23, 24, 5, 33, 34, 43], 'flap_L': [6, 26, 25], 'flap_R': [38, 42]}
 
 P = load_parts(); pose = pickle.load(open('final_poses.pkl', 'rb')); S = pickle.load(open('symmetry.pkl', 'rb'))
 A = pickle.load(open('assembly.pkl', 'rb'))
@@ -53,42 +53,29 @@ else:
     sk, _ = skin_continuity(W[38], f38['faces'], m37, f37['faces'], np.eye(4))   # m37 is already placed
     print(f'obj_37 rebuilt from mirrored obj_25: joint overlap {iou:.3f}, skin kink {sk:.2f} deg')
     W[37] = m37
-    ELEM['top'] = [6, 26, 25, 37, 38, 42]
+    ELEM['flap_R'] = [37, 38, 42]
 
-ids = sorted({p for v in ELEM.values() for p in v})
-grp = {k: trimesh.util.concatenate([W[p] for p in v]) for k, v in ELEM.items()}
+pairs = [(r['A'], r['B']) for r in A['joints']] + [(37, 38)]
+blades = {}
+for name, ids in ELEM.items():
+    m = merge_fused({p: W[p] for p in ids}, pairs, name.upper())
+    m = fuse_microgaps(m)
+    m, _ = keep_main(m)
+    if name.startswith('flap'):
+        blades[name] = m
+        continue
+    pos, neg = to_manifold(m).split_by_plane(tuple(float(x) for x in n), float(d))
+    for side, half in (('L', neg), ('R', pos)):         # left = -n side (end plate A side)
+        h, _ = keep_main(from_manifold(half))
+        blades[f'{name}_{side}'] = h
 
-# ---- webs between neighbouring elements
-webs = []
-for s in STATIONS:
-    for a, b in PAIRS:
-        h, gap = bridge(grp[a], grp[b], n, n * (d + s))
-        if h is not None:
-            webs.append(h)
-            print(f'web at {s:+d} mm {a}-{b}: slot gap {gap:.1f} mm')
-
-# ---- fused union (joint faces pushed into each other, no hairline gaps), webs, heal, split on the mirror plane
-pairs = [(r['A'], r['B']) for r in A['joints']] + [(25, 37), (37, 38)]
-parts = merge_fused({p: W[p] for p in ids}, pairs, 'WING PARTS')
-Ms = [to_manifold(parts)] + [to_manifold(w) for w in webs]
-wing = from_manifold(mf.Manifold.batch_boolean(Ms, mf.OpType.Add))
-wing, _, _, _ = drop_cavities(wing)
-wing = heal_slits(wing, verbose=False)
-wing = fuse_microgaps(wing)
-wing, _ = keep_main(wing)
-print(f'full wing: {len(wing.split(only_watertight=False))} solid(s), {wing.volume / 1000:.1f} cm3')
-
-M = to_manifold(wing)
-pos, neg = M.split_by_plane(tuple(float(x) for x in n), float(d))
-for name, half in [('left', neg), ('right', pos)]:          # left = -n side (end plate A side)
-    h = from_manifold(half)
-    h, _, _, _ = drop_cavities(h)
-    h, dropped = keep_main(h)
-    print(f'{name} wing: {len(h.split(only_watertight=False))} solid(s), {h.volume / 1000:.1f} cm3, watertight {h.is_watertight}')
-    pickle.dump(h, open(f'wing_{name}_posed.pkl', 'wb'))
-    # full-size master, lying on its most stable face
-    out = os.path.join(os.environ.get('F1_OUT_DIR', 'stl'), 'full_size'); os.makedirs(out, exist_ok=True)
+pickle.dump(blades, open('blades_posed.pkl', 'wb'))
+out = os.path.join(os.environ.get('F1_OUT_DIR', 'stl'), 'full_size'); os.makedirs(out, exist_ok=True)
+NAMES = {'main': '1_main_plane', 'e2': '2_second_element', 'e3': '3_third_element', 'flap': '4_top_flap'}
+for k, h in sorted(blades.items()):
+    base, side = k.rsplit('_', 1)
     T, _ = stable_orient(h, top=1)[0]
-    fname = '2_left_wing.stl' if name == 'left' else '3_right_wing.stl'
+    fname = f"blade_{'left' if side == 'L' else 'right'}_{NAMES[base]}.stl"
     chk, bad = manifold_to_stl(to_manifold(h).transform(T[:3, :4]), os.path.join(out, fname))
-    print(f'   full-size {fname}: watertight {chk.is_watertight}, non-manifold edges {bad}')
+    print(f'{k}: {h.volume / 1000:.1f} cm3, genus {to_manifold(h).genus()} -> full-size {fname}: watertight {chk.is_watertight}, '
+          f'non-manifold edges {bad}')

@@ -1,144 +1,128 @@
-# F1 front wing: pinned print set for a 420 × 420 × 450 mm printer
+# F1 front wing: print set for a 420 × 420 × 450 mm printer
 
 Your split model (`f1+wing+with+rings+removed+FINAL_stls`: 43 printable parts plus 6 rings)
-was reassembled digitally and merged into four pieces, plus a set of pins. **Everything is
-at 52 %**, so every file fits a **420 × 420 × 450 mm** build volume. The files are already
-turned the way they should be printed.
+was reassembled digitally and rebuilt as a set of clean, single-solid pieces that fit
+together with pins, sockets and keys. **Everything is at 52 %**, so every file fits a
+**420 × 420 × 450 mm** build volume. The files are already turned the way they should be
+printed, and **none of them needs supports**.
 
-| # | File (`stl/`) | On the bed | How it prints |
-|---|---|---|---|
-| 1 | `1_body.stl` | 129 × 117 × **432** mm, one seamless shell | standing on its rear opening, tip up |
-| 2 | `2_left_wing.stl` | 234 × 46 × 271 mm | **standing up** on the centre-line face |
-| 3 | `3_right_wing.stl` | 234 × 46 × 270 mm | **standing up** on the centre-line face |
-| 4 | `4_end_plates.stl` | 225 × 36 × 138 mm (both plates) | **standing up** on their rear edges |
-| 5 | `5_pins.stl` | 10 pins, Ø 5 × 20 mm | standing |
+![assembled](preview/assembled.png)
 
-Original parts in each piece: body = obj_3 (tip), 2, 39, 40, 1. Left wing = obj_10, 36, 35, 9,
-32, 31, 7, 23, 24, 6, 26, 25 + left halves of obj_20, 4, 5. Right wing = obj_27, 28, 13, 29, 30, 14,
-33, 34, 43, 37\*, 38, 42 + right halves of obj_20, 4, 5. End plates: left = obj_11 + 12,
-right = obj_16 + 41.
+| File (`stl/`) | On the bed (mm) | How it prints |
+|---|---|---|
+| `1a_body_rear.stl` | 108 × 118 × 182 | standing on its rear opening |
+| `1b_body_front.stl` | 94 × 101 × 250 | standing on the cut face, tip up |
+| `2_centre_block.stl` | 112 × 15 × 32 | standing on one socket face |
+| `3_left_blade_1_main_plane.stl` | 132 × 21 × 265 | standing on its inner end |
+| `3_left_blade_2_second_element.stl` | 132 × 23 × 265 | standing on its inner end |
+| `3_left_blade_3_third_element.stl` | 124 × 30 × 265 | standing on its inner end |
+| `3_left_blade_4_top_flap.stl` | 106 × 44 × 217 | standing on its outer end |
+| `4_right_blade_…` (same 4) | same as left | same as left |
+| `5_end_plates.stl` | 219 × 41 × 138 (both) | standing on their rear edges |
+| `6_pins.stl` | 6 pins, Ø 5 × 20 | standing |
+
+Original parts in each piece: body = obj_3 (tip), 2, 39, 40, 1. Main plane = obj_10, 36, 35,
+20, 27, 28, 13; 2nd element = obj_9, 32, 31, 4, 29, 30, 14; 3rd element = obj_7, 23, 24, 5, 33,
+34, 43 (each split on the centre line into a left and a right blade). Top flap left = obj_6,
+26, 25; right = obj_37\*, 38, 42. End plates: left = obj_11 + 12, right = obj_16 + 41. The
+centre block is new.
 
 \* obj_37 was never uploaded. It was rebuilt as the mirror image of its twin, obj_25.
 
 Left and right are as the driver sees them. Every file was re-loaded the way a slicer loads
-it: watertight, no non-manifold edges, and no hidden walls inside.
+it: watertight, no non-manifold edges, no hidden walls inside.
 
-![assembled](preview/assembled.png)
-
-## No more splitting at the old joints
-
-The first version of the body broke apart during printing where the original parts had been
-joined. The cause was in the merged files. Where two original parts only touched, the merge
-left a hairline gap (0.0001–0.005 mm) right through the wall. A slicer prints each side of
-such a gap as a separate piece, so the layers there barely bond. The wings and end plates had
-the same hidden seams.
-
-* **Body:** rebuilt from scratch as **one continuous shell**. The outer skin and the inside
-  were lofted through 472 cross-sections of the nose, so no joint, tab or seam of the
-  original parts is left anywhere. The new surface follows the original to within 0.05 mm
-  over 95 % of it, tip included. Only the ragged rear rim, now flat, differs by more.
-  Wall thickness is 3.25 mm, the same as before.
-* **Wings and end plates:** re-merged from the original parts. The faces that touch at each
-  joint are pushed 0.05 mm into each other before merging, so the parts really fuse. The
-  remaining hairline area dropped from 400–2,500 mm² per file to under 2 mm²: a few specks,
-  no longer a seam across the part.
+![exploded](preview/exploded.png)
 
 ## How the pieces fit together
 
-All joints use **5 mm pins, 20 mm long**, in **5.2 mm holes about 10 mm deep in each piece**.
-The holes were cut with the pieces in their assembled positions, so the two halves of every
-hole are exactly in line. 8 pins are needed. `5_pins.stl` has 10 (2 spare). 5 mm steel or
-wooden dowels cut to 20 mm work too.
-
-| Joint | Pins | Hole depth in each piece |
+| Joint | How | Fit |
 |---|---|---|
-| left wing ↔ right wing (centre line) | 2 | 10.3 mm + 10.3 mm |
-| body ↔ wing (one pin in each wing half) | 2 | 9.7–9.8 mm in the wing (1 mm floor left under it) + 10.7–10.8 mm in the body |
-| left wing ↔ left end plate | 2 | 10.3 mm + 10.3 mm |
-| right wing ↔ right end plate | 2 | 10.3 mm + 10.3 mm |
+| body rear ↔ body front | 2 pins in bosses inside the side walls | 5.2 mm holes, 10 mm deep each side |
+| body ↔ centre block | 2 pins on the centre line, 76 mm apart | 10.2–10.3 mm deep each side |
+| 3 inner blades per side ↔ centre block | the blade end slides 10 mm into a socket | 0.15 mm clearance |
+| 4 blade tips per side ↔ end plate | a 5 mm key on the end plate slides into a slot in the blade tip | 0.15 mm clearance |
 
 ![joints](preview/joints.png)
 
-* **Body on the wings:** the original parts have no joint between the nose and the wing, so
-  nothing held the nose in place. The nose now has a fixed place: its tip is flush with the
-  leading edge of the main plane, centred on the car's centre line, with its flat underside
-  resting on the wing. Under the nose, a **seat block** fills the slots between the wing
-  elements (27 mm wide, split down the centre with the wing). Its top is the exact shape of
-  the nose's underside, so the nose sits in it without rocking. The two body pins go into this
-  block, one in each wing half. They are 49 mm apart along the car, so the nose cannot twist.
-  Inside the nose, each pin hole sits in a round boss with a 45° underside, so the nose still
-  prints without supports.
-* **Left and right wings:** two pins through the seat block, across the centre line.
-* **End plates:** at 52 % the wing elements are only about 4 mm thick where they meet the end
-  plate, too thin for a 5 mm pin. Each pin therefore sits in a small **teardrop-shaped boss**
-  that bridges the slot between two elements (main plane / 2nd element, and 3rd element / top
-  flap). The joint was also moved about 4.5 mm inboard to one flat cut through all four
-  elements. Before, the elements ended at different points, and only one pin could have had a
-  full-depth hole.
+* **Body:** one seamless shell, cut in two square to its length 182 mm above the rear face
+  (where you marked it). The halves are joined by two 5 mm pins. They sit in round bosses
+  inside the side walls, because the 3.25 mm wall is too thin to drill into.
+* **Centre block:** it sits under the body. Its top is the exact shape of the body's
+  underside, and two pins locate the body on it. The inner ends of the main plane, 2nd and 3rd
+  element (left and right) slide into its six sockets, so all six blades line up exactly.
+* **End plates:** the blades are only about 4 mm thick at their tips at 52 %, too thin for
+  5 mm pins. Each end plate stub therefore has a thin key (tongue) that slides into a slot
+  inside its blade tip. The blades sweep back towards the tip, so the four keys of an end plate
+  all point the same way, following the sweep. **Slide each end plate on at that angle,
+  about 18° back and slightly down from straight along the span.** The key holds the top
+  flap; it is not attached anywhere else (as in the original design).
+* The holes are 5.2 mm, so a 5 mm pin goes in snugly. If a pin is too tight, run a 5.2 mm drill
+  through by hand. Steel or wooden 5 mm dowels cut to 20 mm work instead of the printed pins.
 
-The holes are 5.2 mm so a 5 mm pin goes in snugly on most printers. If a pin is too tight,
-run a 5.2 mm drill through the hole by hand. If it is loose, add a drop of glue.
+**Assembly order:**
 
-**Assembly order:** pins into the right wing's centre holes → push the left wing on → pins into
-both end plate joints → end plates on → pins into the two seat-block holes → put the body on top.
+1. Put 2 pins into the rear body half and push the front half on.
+2. Push the inner ends of the six full-width blades into the centre block.
+3. Fit the top flap's tip onto its key on the end plate. Then slide the end plate onto the
+   other three blade tips at the sweep angle. Do the same on the other side.
+4. Put 2 pins into the top of the centre block and set the body on it.
+
 Glue each joint if you want it permanent.
 
 ## Printing
 
 ![print files](preview/print_files.png)
 
-Use **no supports** in the slicer. Everything needed is built in.
+Turn **supports off**. Nothing needs them:
 
-* **Wings (files 2 and 3):** they stand up, with the span vertical. The aerofoils then print as
-  plain stacked layers. The surface that needs support drops by about 97 % compared with lying
-  flat. The seat block and the centre of the elements form the flat base (about 11 cm × 1.2 cm).
-  Use a **10 mm brim**. The wing is 270 mm tall and leans back, so its weight sits about 7 mm
-  behind its footprint, and the brim covers that. The only part that starts in mid-air is the
-  inner end of the top flap. Each wing file includes 3 small **break-away towers** under it
-  (grey in the picture). They stop 0.3 mm short of the wing, so you can snap them off after
-  printing.
-* **End plates (file 4):** they stand on their rear edge. The plate and its element stubs then
-  grow straight up, with less than a tenth of the overhang of lying flat. The rear edge is
-  slightly bent, so each plate is tilted about 4°. A strip of up to 2.6 mm fills the gap
-  underneath, so the plate stands flat on the bed. Use a brim. The thin trailing edges of the
-  element stubs lean out a little more steeply than 45°. That prints fine for an edge this thin,
-  at worst slightly rough.
-* **Body (file 1):** it stands on its rear opening, tip up. It is one continuous shell with
-  no seams, and the rear rim is flat. Use a brim. The inside of the very tip is a small dome
-  that the printer has to bridge.
-* **Pins (file 5):** they print standing. Printed pins are fine for a display model. For a
-  stronger joint, use steel or wooden 5 mm dowels.
-* Wall thickness at 52 %: body ≈ 3.2 mm, wing elements ≈ 3–4.8 mm, end plates ≈ 2.4–4.7 mm.
+* **Body halves:** they print tip up. The hollow inside the tip has a 45° pointed roof (it used
+  to be flat, and a slicer would have run a support column up through the whole nose to
+  reach it). Only the ends of the pin holes are short bridges. Use a brim.
+* **Blades:** each stands on one end, so the aerofoil prints as plain stacked layers. They are
+  tall (up to 265 mm) and thin. They also lean with the wing's sweep, so their weight sits
+  25–30 mm beyond the footprint. Use a **10 mm brim** and a slow speed for the upper half. The
+  top flap stands on its outer end, so its inner end (with the small tab) is at the top.
+* **Centre block:** it stands on one socket face. The ends of the sockets and pin holes are
+  short bridges (5 mm).
+* **End plates:** they stand on their rear edge. The edge is slightly bent, so each plate is
+  tilted about 4°. A strip of up to 2.6 mm fills the gap underneath, so the plate stands
+  flat. The keys are cut back at 45° underneath. Use a brim.
+* Wall thickness at 52 %: body 3.25 mm, blades about 3–5 mm, end plates 2.4–4.7 mm.
 * The small extras that are not part of these files (obj_8, 19, 15, 17, 18, 21, 22 and the 6
   `Ring_F1-006`) are unchanged. Print them from your original files **at 52 %** so they match.
 
 ## What changed compared with the original parts
 
-* **Joints fused:** the tabbed joints had 0.1–0.4 mm fit clearance, plus hairline gaps where
-  parts only touched. All of them are closed, so each piece prints as one solid.
-* **Body rebuilt as one seamless shell**, lofted through cross-sections of the original nose.
-  The tabs and joint lines of its five original parts are gone.
-* **Wing split in two** on the car's centre line, through centre pieces obj_4, 5 and 20.
-* **Webs:** the four wing elements never touched each other. Each wing half has 6 small webs
-  (15 cm and 44 cm from the centre at full size) that tie its elements into one rigid piece.
+* **No seams inside any piece:** where two original parts only touched, the merge had left
+  hairline gaps (0.0001–0.005 mm) right through the walls. That is why the first body print
+  broke apart at the joints. The parts are now pushed 0.05 mm into each other before merging,
+  so they truly fuse.
+* **Body rebuilt as one seamless shell**, lofted through 472 cross-sections of the original
+  nose. The new surface follows the original to within 0.05 mm over 95 % of it, and the tabs
+  and joint lines of its five original parts are gone. It is cut in two for printing, with a
+  pinned joint, and the inside of the tip has a self-supporting roof.
+* **Blades are separate pieces again**, as in the original design, with no webs between them.
+  The three full-width elements are split on the centre line, and the new centre block holds
+  their inner ends.
+* **End plate joint moved** about 4.5 mm inboard to one flat cut through all four blades, with
+  a key per blade.
 * **obj_37 rebuilt** as the mirror image of obj_25. It fits obj_38 with 99.2 % cross-section
   overlap and a 0.4° surface kink.
-* **Seat block, pin bosses, end plate joint moved, end plate base strip, break-away towers:**
-  as described above.
 
 ## Other printers / scales
 
-To make the same pinned set for another printer, run (from the pipeline's working folder):
+To make the set for another printer, run (from the pipeline's working folder):
 
 ```
 python3 tools/print_ready.py --scale 0.40 --bed 256 256 256 --out <folder>
 python3 tools/make_previews.py --stl <folder> --out <folder>
 ```
 
-The pins and holes stay 5 mm at any scale. Below about 45 % the end plate bosses get large
-compared with the wing, so check the preview. `stl/full_size/` holds the plain pieces at 100 %
-(your original size) without any pin joints, for reference. The body there is the same
-seamless shell.
+Pins, holes, sockets and keys keep their size at any scale. Check the keys in the preview
+below about 45 %, where the blade tips get very thin. `--cut` sets where the body is split
+(mm above its rear face). `stl/full_size/` holds the plain pieces at 100 % (your original
+size), without any joints, for reference.
 
 ## How it was made (`tools/`)
 
@@ -154,15 +138,17 @@ first put back together:
    (`refine_joints.py`). A global least-squares fit then closes the loops through the end
    plates (`solve_poses.py`; worst joint off by 0.03 mm).
 4. **Merging:** boolean union with manifold3d (`merge.py`, `finalize.py`, `export_all.py`).
-   `merge_fused` first pushes the faces that touch at each joint 0.05 mm into each other, so
-   the parts really fuse. `fuse_microgaps` then seals any hairline double wall that is left.
-   The wing halves, webs and obj_37 come from `build_left_right.py`.
-5. **Print set:** `print_ready.py` places the nose, rebuilds it as one lofted shell
-   (`seamless_nose`), builds the seat block, cuts every pin hole
-   in the assembled position, adds the bosses, moves the end plate joint, turns each piece to
-   its print orientation, adds the break-away towers and the end plate base strip, checks
-   that the pieces don't overlap and that every pin clears, and exports. `make_previews.py`
-   draws the pictures.
+   `merge_fused` first pushes the faces that touch at each joint 0.05 mm into each other.
+   `fuse_microgaps` then seals any hairline double wall that is left. `build_left_right.py`
+   builds the 8 blades and obj_37.
+5. **Print set:** `print_ready.py` does the rest:
+   * places the body and rebuilds it as one lofted shell (`seamless_nose`);
+   * builds the centre block (`build_center_block`), the end plate keys (`end_plate_keys`) and
+     the body joint (`split_nose`), and cuts every pin hole in the assembled position;
+   * turns each piece to its print orientation;
+   * checks that the pieces don't overlap and that every pin clears, then exports.
+
+   `make_previews.py` draws the pictures.
 
 Run order, from an empty working folder, with `F1_PARTS_DIR` pointing at the original STLs:
 `match_all.py`, `run_endmatch.py`, `assemble.py`, `refine_joints.py`, `stub_links2.py`,
