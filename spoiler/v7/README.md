@@ -1,5 +1,7 @@
 # Polo Oettinger-style roof spoiler v7: 4 equal pieces with bow-tie keys
 
+> **Superseded by v8** (`../v8/`): the same four pieces, with each end piece split lengthwise into a front and a rear half that print lying on a flat cut face, 134–155 mm tall, with no supports. Print v8 unless you want the end pieces in one part.
+
 v7 is the same solid spoiler as v6, cut into **four equal pieces of 325 mm** instead of three pieces of 433 mm, because the v6 pieces warped in printing. The shape, the underside and the car coordinates are unchanged: X is the width of the car, Y is up, +Z points to the rear. The overall size is still 1,300 × 147 × 292 mm.
 
 ## What changed from v6

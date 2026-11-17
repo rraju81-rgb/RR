@@ -13,3 +13,5 @@ v6/car/renders/*.png
 v6/car/renders/*.log
 v7/out/
 v7/src/__pycache__/
+v8/out/
+v8/src/__pycache__/

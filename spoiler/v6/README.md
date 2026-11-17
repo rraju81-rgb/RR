@@ -1,6 +1,6 @@
 # Polo Oettinger-style roof spoiler v6: 3 solid pieces with bow-tie keys
 
-> **Superseded by v7** (`../v7/`): the same spoiler cut into 4 equal pieces of 325 mm, made because these 433 mm pieces warped in printing. Print v7 unless you specifically want the 3-piece split.
+> **Superseded by v8** (`../v8/`): the same spoiler in 6 pieces that print without supports (v7, `../v7/`, is the 4-piece step in between). These 433 mm pieces warped in printing. Print v8 unless you specifically want the 3-piece split.
 
 Built from `spoiler/input/v5_TOP.stl` + `v5_BOTTOM.stl`, in the same car coordinates and origin:
 X is the width of the car, Y is up, +Z points to the rear. The overall size is unchanged at 1,300 × 147 × 292 mm.
