@@ -139,7 +139,8 @@ def lights_only(sc):
 
 
 PART_LAYOUTS = {'v6': dict(ids=['L', 'C', 'R'], spread=150.0),              # 3 pieces, 4 keys
-                'v7': dict(ids=['P1', 'P2', 'P3', 'P4'], spread=100.0)}     # 4 equal pieces, 6 keys
+                'v7': dict(ids=['P1', 'P2', 'P3', 'P4'], spread=100.0),     # 4 equal pieces, 6 keys
+                'v8': dict(ids=['P1F', 'P1R', 'P2', 'P3', 'P4R', 'P4F'], spread=100.0, zspread=70.0)}   # 6 pieces, 10 keys
 def build_parts(mode='parts', studio='dark', ver='v7'):
     """spoiler pieces only: 'parts' = pieces apart, keys lying in the gaps; 'joint' = upside down, keys above the pockets.
     ver picks the split: 'v7' (4 pieces, 6 keys) or 'v6' (3 pieces, 4 keys)."""
@@ -153,6 +154,12 @@ def build_parts(mode='parts', studio='dark', ver='v7'):
     ids = PART_LAYOUTS[ver]['ids']; joint = mode == 'joint'
     g = PART_LAYOUTS[ver]['spread'] * (0.35 if joint else 1.0)
     ex = {k: (i - (len(ids) - 1) / 2) * g for i, k in enumerate(ids)}       # how far each piece is pulled out along x
+    ez = {k: 0.0 for k in ids}
+    if ver == 'v8':                                                         # span slot as v7, halves also pulled apart along z
+        slot = {'P1F': -1.5, 'P1R': -1.5, 'P2': -0.5, 'P3': 0.5, 'P4R': 1.5, 'P4F': 1.5}
+        ex = {k: slot[k] * g for k in ids}
+        zs = PART_LAYOUTS[ver]['zspread'] * (0.45 if joint else 1.0)
+        ez = {k: (-zs if k.endswith('F') else zs if k.endswith('R') else 0.0) for k in ids}
     pieces = {k: trimesh.load(f'{ver}/assembled/{k}.stl') for k in ids}
     xb = {k: (m.bounds[0][0], m.bounds[1][0]) for k, m in pieces.items()}
     def seam_shift(xs):                                                     # mid-gap offset of the two pieces that meet at seam xs
@@ -162,11 +169,24 @@ def build_parts(mode='parts', studio='dark', ver='v7'):
     for k in ids:
         m = pieces[k]
         if joint: m.apply_transform(flip)
-        m.apply_translation([-ex[k] if joint else ex[k], 0, 0])
+        m.apply_translation([-ex[k] if joint else ex[k], 0, ez[k]])
         if NORMALS: new_mesh('spoiler_' + k, m, [M['spoiler']], loop_normals=spoiler_normals(m))
         else: new_mesh('spoiler_' + k, m, [M['spoiler']], auto=30)
     for i, fr in enumerate(meta['frames']):
-        A = np.array(fr['T'])[:, 2]; xs = fr['seam']
+        A = np.array(fr['T'])[:, 2]; xs = fr.get('seam')
+        if ver == 'v8':
+            a_, b_ = fr['pieces']; sx = 0.5 * (ex[a_] + ex[b_]); sz = 0.5 * (ez[a_] + ez[b_])
+            thin = fr.get('thin', False)
+            if joint:
+                km = trimesh.load(f'{ver}/assembled/KEY_{i + 1}.stl'); km.apply_transform(flip)
+                A2 = np.array([-A[0], -A[1], A[2]])
+                km.apply_translation(-A2 * 55.0 + np.array([-sx, 0, sz]))
+            else:                                                           # all keys flat in a row behind the rear lip
+                km = trimesh.load(f'{ver}/out/_key_local{"_thin" if thin else ""}.stl')
+                km.apply_transform(trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0]))
+                km.apply_translation([(i - 4.5) * 118.0, -88.0, 395.0])
+            new_mesh(f'key_{i}', km, [M['key']], auto=30)
+            continue
         if joint:
             km = trimesh.load(f'{ver}/assembled/KEY_{i + 1}.stl'); km.apply_transform(flip)
             A2 = np.array([-A[0], -A[1], A[2]])                             # pocket axis, flipped with the pieces
@@ -273,6 +293,8 @@ VIEWS = {
     'joint': ((0.72, -1.16, 1.02), (0.06, -0.11, 0.03), 40),
     'parts_v6': ((0.50, -1.12, 1.30), (0.0, 0.0, 0.03), 36),          # v6: 3 pieces, 4 keys
     'joint_v6': ((0.62, -0.78, 0.70), (0.20, -0.10, 0.03), 40),
+    'parts_v8': ((0.55, -1.30, 1.45), (0.0, 0.02, 0.03), 36),         # v8: 6 pieces, 10 keys
+    'joint_v8': ((0.80, -1.22, 1.10), (0.06, -0.10, 0.03), 40),
     # name: (camera location m, target m, focal mm)
     'rear34': ((-4.35, -5.10, 2.05), (0.0, 0.25, 0.95), 70),
     'rear34_high': ((-3.6, -4.4, 3.3), (0.0, 0.0, 1.05), 60),

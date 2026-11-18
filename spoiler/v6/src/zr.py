@@ -66,7 +66,8 @@ def render(items, eye, target, up=(0, 1, 0), fov=30.0, W=1400, H=1000, bg=(30, 3
     allV = []; allF = []; allN = []; allC = []; off = 0; voff = 0
     for it in items:
         m, rgb = it[0], it[1]
-        s = prep(m, crease)
+        per_face = np.ndim(rgb) == 2                  # (n_faces, 3) colours: keep the mesh's own face order
+        s = m if per_face else prep(m, crease)
         V = np.asarray(s.vertices, float); Fc = np.asarray(s.faces, np.int64)
         N = np.asarray(s.vertex_normals, float)
         d = V - eye; x = d @ r; y = d @ u; z = d @ f
@@ -78,7 +79,7 @@ def render(items, eye, target, up=(0, 1, 0), fov=30.0, W=1400, H=1000, bg=(30, 3
             px = Wr / 2 + fpx * x / z; py = Hr / 2 - fpx * y / z; pz = z
         _raster(px, py, pz, Fc, Wr, Hr, zbuf, tid, b0, b1, off)
         allV.append(V); allF.append(Fc + voff); allN.append(N)
-        allC.append(np.tile(np.asarray(rgb, float), (len(Fc), 1)))
+        allC.append(np.asarray(rgb, float) if per_face else np.tile(np.asarray(rgb, float), (len(Fc), 1)))
         off += len(Fc); voff += len(V)
     V = np.concatenate(allV); F = np.concatenate(allF); N = np.concatenate(allN); C = np.concatenate(allC)
     img = np.empty((Hr, Wr, 3)); img[:] = np.asarray(bg, float)

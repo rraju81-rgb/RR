@@ -1,13 +1,15 @@
 # Brochure: Polo roof spoiler
 
-A two-page A4 brochure for the roof spoiler, branded Carbon 6 Customization and 3D printed by pi.XL 3D Printing. It describes the current build, v7: four sections and six bow-tie keys.
+A two-page A4 brochure for the roof spoiler, branded Carbon 6 Customization and 3D printed by pi.XL 3D Printing. It describes the current build, v8: six sections and ten bow-tie keys.
+
+The car pictures are outdoor renders styled after the customer's reference photo of a blue Polo GTI: blue metallic paint, gloss-black spoiler, mirror caps and 18" multi-spoke wheels, smoked tail lamps, a black diffuser with twin exhaust, under an overcast sky by a lake. The car is still our own Polo-class 3D model (`../car/`), not Volkswagen's CAD data, and it carries no VW badges. The sky and asphalt are Poly Haven CC0 assets (`../car/env/`).
 
 | File | What it is |
 |---|---|
 | `Polo_Roof_Spoiler_Brochure.pdf` | The brochure: 2 × A4, with embedded fonts and vector text. |
 | `brochure_page1.png`, `brochure_page2.png` | The pages as images (about 2060 × 2920 px), for WhatsApp or Instagram. |
 | `brochure.html` | Source of both pages: all text and layout. |
-| `img/` | The renders as placed on the pages (made by `prep_images.py` from `../car/renders/`). |
+| `img/` | The renders as placed on the pages (made by `prep_images.py` from `../car/renders/`: `hero_blue`, `side_blue`, `top_rear_blue`, `detail_fin_blue` from `blend_photo.py`, `joints_v8` from `blend_scene.py`). |
 | `assets/` | Carbon 6 logo (white and dark versions), pi.XL logo, QR codes, and fonts with their licence files. |
 | `make_qr.py` | Makes the two QR codes. |
 | `export.js` | Writes the PDF and the page images from `brochure.html`. |
@@ -15,7 +17,7 @@ A two-page A4 brochure for the roof spoiler, branded Carbon 6 Customization and 
 ## Changing the brochure
 
 1. Edit the text in `brochure.html`. If the phone number or Instagram handle changes, also change `make_qr.py` and run it: `python3 make_qr.py`.
-2. If the renders changed, run `python3 prep_images.py`.
+2. If the renders changed (`sh ../car/src/render_photo.sh` from `spoiler/`), run `python3 prep_images.py`.
 3. Export with `NODE_PATH=$(npm root -g) node export.js`. This needs Node.js with Playwright and its Chromium.
 
 Run steps 1 and 3 from this folder. `prep_images.py` works from any folder.

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Spoiler Spec Sheet</title>
+<style>
+  @font-face { font-family: 'Michroma'; src: url('../v6/brochure/assets/fonts/michroma.ttf'); }
+  @font-face { font-family: 'Space Grotesk'; src: url('../v6/brochure/assets/fonts/spacegrotesk-regular.ttf'); font-weight: 400; }
+  @font-face { font-family: 'Space Grotesk'; src: url('../v6/brochure/assets/fonts/spacegrotesk-medium.ttf'); font-weight: 500; }
+  @font-face { font-family: 'JB Mono'; src: url('../v6/brochure/assets/fonts/jetbrainsmono-medium.ttf'); }
+  :root { --bg: #0a0b0e; --bg2: #111319; --line: #262a35; --text: #f4f5f7; --muted: #9aa3b2; --dim: #6b7280; --orange: #ff5c1e; }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #2a2d33; }
+  body { font-family: 'Space Grotesk', sans-serif; color: var(--text); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; position: relative; overflow: hidden; background: var(--bg); margin: 0 auto; }
+  .kicker { font-family: 'JB Mono', monospace; font-size: 7.4pt; letter-spacing: .22em; color: var(--orange); text-transform: uppercase; }
+  h1, h3 { font-family: 'Michroma', sans-serif; font-weight: 400; letter-spacing: .02em; }
+  .top { position: absolute; left: 12mm; right: 12mm; top: 9mm; display: flex; align-items: center; justify-content: space-between; }
+  .top img.c6 { height: 13mm; }
+  .top .maker { display: flex; align-items: center; gap: 3mm; text-align: right; font-family: 'JB Mono', monospace; font-size: 6.2pt; letter-spacing: .14em; color: var(--muted); line-height: 1.45; }
+  .top .maker b { color: var(--text); font-weight: 400; }
+  .top .maker img { height: 11mm; width: 11mm; border-radius: 50%; }
+  .title { position: absolute; left: 12mm; right: 12mm; top: 27mm; }
+  .title h1 { font-size: 24pt; line-height: 1.08; margin-top: 2.4mm; }
+  .title h1 .o { color: var(--orange); }
+  .title p { margin-top: 2.2mm; font-size: 8.8pt; color: #c9ced7; }
+  .hero { position: absolute; left: 0; right: 0; top: 49mm; height: 84mm; }
+  .hero img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; display: block; }
+  .hero::before, .hero::after { content: ''; position: absolute; left: 0; right: 0; height: 14mm; }
+  .hero::before { top: 0; background: linear-gradient(var(--bg), rgba(10,11,14,0)); }
+  .hero::after { bottom: 0; background: linear-gradient(rgba(10,11,14,0), var(--bg)); }
+  .draw { position: absolute; left: 8mm; right: 8mm; top: 132mm; height: 59mm; }
+  .draw img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .cols { position: absolute; left: 12mm; right: 12mm; top: 192mm; display: grid; grid-template-columns: 1fr 1fr 1.08fr; gap: 6mm; }
+  .cols h3 { font-size: 8pt; margin-bottom: 1.6mm; }
+  .spec { width: 100%; border-collapse: collapse; font-size: 7.2pt; font-weight: 500; }
+  .spec td { padding: .8mm 0; border-bottom: .3mm solid var(--line); vertical-align: top; line-height: 1.32; }
+  .spec td:first-child { font-family: 'JB Mono', monospace; font-size: 5.9pt; letter-spacing: .1em; color: var(--muted); width: 19mm; padding-top: 1.15mm; }
+  .aero { width: 100%; border-collapse: collapse; font-size: 7.2pt; font-weight: 500; }
+  .aero th { font-family: 'JB Mono', monospace; font-weight: 400; font-size: 5.8pt; letter-spacing: .08em; color: var(--muted); text-align: right; padding: 0 0 1mm; border-bottom: .3mm solid var(--line); }
+  .aero th:first-child { text-align: left; }
+  .aero td { padding: .8mm 0; border-bottom: .3mm solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+  .aero td:first-child { text-align: left; font-family: 'JB Mono', monospace; font-size: 5.9pt; letter-spacing: .06em; color: var(--muted); }
+  .aero td.d { color: var(--orange); }
+  .note { margin-top: 1.6mm; font-size: 5.8pt; line-height: 1.4; color: var(--dim); font-weight: 500; }
+  .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 20mm; background: var(--bg2); border-top: .35mm solid var(--line); padding: 3.4mm 12mm 0; display: flex; justify-content: space-between; }
+  .foot .who { font-size: 7pt; line-height: 1.5; color: #c9ced7; font-weight: 500; }
+  .foot .who b { font-family: 'Michroma', sans-serif; font-weight: 400; color: var(--text); }
+  .foot .who .ph { color: var(--orange); font-family: 'Michroma', sans-serif; }
+  .foot .fine { width: 92mm; font-size: 5.4pt; color: var(--dim); line-height: 1.4; text-align: right; font-weight: 500; }
+</style>
+</head>
+<body>
+<section class="page">
+  <div class="top">
+    <img class="c6" src="../v6/brochure/assets/c6_logo_white.svg" alt="Carbon 6 Customization">
+    <div class="maker"><span>SPEC SHEET &nbsp;·&nbsp; NOV 2026<br>3D PRINTED BY <b>PI.XL 3D PRINTING</b></span><img src="../v6/brochure/assets/pixl_logo.png" alt=""></div>
+  </div>
+  <div class="title">
+    <div class="kicker">Technical specification &nbsp;·&nbsp; finished part</div>
+    <h1>DUCKTAIL <span class="o">ROOF</span> SPOILER</h1>
+    <p>Full-width roof spoiler for the VW Polo 6R / 6C hatchback, with end fins that wrap both rear pillars.</p>
+  </div>
+  <div class="hero"><img src="img/hero.jpg" alt="Spoiler fitted to a blue Polo-class hatchback (3D render)"></div>
+  <div class="draw"><img src="img/drawing.png" alt="Plan view, side view and centre-line section with dimensions"></div>
+  <div class="cols">
+    <div>
+      <h3>THE PART</h3>
+      <table class="spec">
+        <tr><td>FITS</td><td>VW Polo hatchback, 6R / 6C</td></tr>
+        <tr><td>W × D × H</td><td>1300 × 292 × 147 mm</td></tr>
+        <tr><td>CHORD</td><td>267 mm at the centre line</td></tr>
+        <tr><td>THICKNESS</td><td>18.5 mm max; 3–10 mm at the edges</td></tr>
+        <tr><td>LIP</td><td>Kicks up 12° at the trailing edge</td></tr>
+        <tr><td>PLAN AREA</td><td>0.30 m²</td></tr>
+        <tr><td>WEIGHT</td><td>About 2–2.5 kg painted</td></tr>
+        <tr><td>MATERIAL</td><td>ASA or PETG, solid</td></tr>
+        <tr><td>FINISH</td><td>Gloss black, body colour or primer</td></tr>
+        <tr><td>BUILD</td><td>6 bonded sections, 10 hidden bow-tie keys, seams filled: one clean surface</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>FITTING &amp; CARE</h3>
+      <table class="spec">
+        <tr><td>MOUNTING</td><td>3M VHB automotive tape (1.1 mm) with 3M Primer 94</td></tr>
+        <tr><td>CONTACT</td><td>Underside follows the roof, 1.5 mm tape gap built in</td></tr>
+        <tr><td>DRILLING</td><td>None</td></tr>
+        <tr><td>FIT AT</td><td>15–25 °C, on clean, dry paint</td></tr>
+        <tr><td>CURE</td><td>72 h before washing or highway use</td></tr>
+        <tr><td>HEAT</td><td>ASA softens near 100 °C, PETG near 80 °C</td></tr>
+        <tr><td>FRONTAL AREA</td><td>No change: sits inside the roof's outline</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>AERODYNAMICS (CFD)</h3>
+      <table class="aero">
+        <tr><th>100 KM/H</th><th>WITHOUT</th><th>WITH</th><th>CHANGE</th></tr>
+        <tr><td>DRAG COEFF. Cd</td><td>0.275</td><td>0.312</td><td class="d">+0.037</td></tr>
+        <tr><td>DRAG</td><td>269 N</td><td>305 N</td><td class="d">+36 N</td></tr>
+        <tr><td>LIFT, REAR AXLE</td><td>32 N</td><td>−83 N</td><td class="d">−116 N</td></tr>
+        <tr><td>LIFT, FRONT AXLE</td><td>−99 N</td><td>−101 N</td><td class="d">−2 N</td></tr>
+      </table>
+      <div class="note">At 130 km/h: rear-axle lift −195 N, drag +61 N. Lift: positive = up, negative = downforce. OpenFOAM steady RANS (k-ω SST), half car, moving ground, rotating wheels, 0.87 M cells. Modelled Polo-class body with a smooth underbody: use the changes, not the absolute values.</div>
+    </div>
+  </div>
+  <div class="foot">
+    <div class="who"><b>CARBON 6 CUSTOMIZATION</b> &nbsp;<span class="ph">+91 99006 11996</span><br>carbon6customization@gmail.com &nbsp;·&nbsp; Instagram @c6_customization &nbsp;·&nbsp; Bangalore</div>
+    <div class="fine">Image is a 3D render. Aerodynamic figures are from a computer simulation of a modelled car, not a wind-tunnel or road test. VW and Polo are trademarks of Volkswagen AG; 3M and VHB are trademarks of 3M. Aftermarket accessory, not made, endorsed or approved by Volkswagen.</div>
+  </div>
+</section>
+</body>
+</html>

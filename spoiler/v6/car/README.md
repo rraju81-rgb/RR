@@ -44,6 +44,26 @@ It has no VW badges or logos. The rear plate reads CARBON 6.
 | `joints.jpg` | The four printed sections upside down with the six bow-tie keys lifted out of their pockets. The keys are shown in orange for clarity: printed keys are the same material as the spoiler. |
 | `parts.jpg` | The four sections and six keys laid out. |
 
+## Photo-style renders (current brochure)
+
+`src/blend_photo.py` renders the same car and spoiler outdoors, styled after the customer's reference photo of a blue Polo GTI:
+- blue metallic paint;
+- gloss-black spoiler, mirror caps and 18" multi-spoke wheels with red calipers;
+- smoked tail lamps with a silver rim and an LED strip;
+- black diffuser with fins, twin exhaust and red reflectors;
+- black side-skirt lips;
+- the body lowered 28 mm on its wheels.
+
+The setting is an overcast lake-and-hills sky over asphalt. Both are Poly Haven CC0 assets, in `env/`.
+
+| File | View |
+|---|---|
+| `hero_blue.jpg` | Rear three-quarter, low, like the reference photo (brochure page 1 and the spec sheet) |
+| `side_blue.jpg`, `top_rear_blue.jpg`, `detail_fin_blue.jpg` | Side profile, high rear view, fin close-up (brochure page 2) |
+| `joints_v8.jpg` | The six v8 sections upside down, with the ten keys lifted out of their pockets (`blend_scene.py joint ... ver=v8`) |
+
+`sh v6/car/src/render_photo.sh` renders them all (about 40 min on 4 cores). It is still our own Polo-class model, not Volkswagen's CAD data, and has no VW badges. The older studio renders listed below are kept for reference.
+
 ## Rebuilding
 
 Run from `spoiler/`:
