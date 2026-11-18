@@ -1,11 +1,12 @@
-"""Page-1 hero from the owner's photo of their car: crop to the hero box (210 x 124 mm) and, if the photo is small,
-upscale it to 2200 px wide (Lanczos, light sharpening and fine grain so the softness reads as photographic).
-Run from this folder:  python3 prep_photo.py [photo]      (default: photo/owner_car_original.png)
+"""Page-1 hero from the owner's photo of their car with our spoiler composited in (photo/owner_car_with_spoiler.png, made
+by ../car/src/photo_composite.py): crop to the hero box (210 x 124 mm) and, if the photo is small, upscale it to 2200 px
+wide (Lanczos, light sharpening and fine grain so the softness reads as photographic).
+Run from this folder:  python3 prep_photo.py [photo]      (default: photo/owner_car_with_spoiler.png)
 With a full-size original from the phone no upscaling is needed and the page is sharp in print too."""
 import sys
 import numpy as np
 from PIL import Image, ImageFilter
-src = sys.argv[1] if len(sys.argv) > 1 else 'photo/owner_car_original.png'
+src = sys.argv[1] if len(sys.argv) > 1 else 'photo/owner_car_with_spoiler.png'
 CY = 0.44                       # vertical centre of the crop, as a fraction of the photo height (car, spoiler and wheels in frame)
 ASPECT = 210 / 124
 im = Image.open(src).convert('RGB'); W, H = im.size

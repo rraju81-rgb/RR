@@ -31,6 +31,9 @@ It has no VW badges or logos. The rear plate reads CARBON 6.
 | `src/blend_scene.py` | Blender scene: studio lights, materials, cameras and the views listed below. |
 | `src/render_final.sh` | Renders every view in `renders/`. |
 | `data/hump_profile.npz` | Roof centre-line height under the spoiler: the spoiler underside minus the 1.5 mm tape gap. |
+| `src/photo_cam.py`, `src/photo_match.py` | Camera model and camera solve for the owner's photo -> `data/photo_camera.json`. |
+| `src/blend_photo_comp.py`, `src/render_photo_comp.sh` | Render passes for the photo composite -> `out/photo_comp/` (not in git). |
+| `src/photo_composite.py` | The composite: old wing out, our spoiler in -> `../brochure/photo/owner_car_with_spoiler.png`. |
 
 ## Renders
 
@@ -58,11 +61,38 @@ The setting is an overcast lake-and-hills sky over asphalt. Both are Poly Haven 
 
 | File | View |
 |---|---|
-| `hero_blue.jpg` | Rear three-quarter, low, like the reference photo (brochure page 1 and the spec sheet) |
+| `hero_blue.jpg` | Rear three-quarter, low, like the reference photo (the spec sheet) |
 | `side_blue.jpg`, `top_rear_blue.jpg`, `detail_fin_blue.jpg` | Side profile, high rear view, fin close-up (brochure page 2) |
 | `joints_v8.jpg` | The six v8 sections upside down, with the ten keys lifted out of their pockets (`blend_scene.py joint ... ver=v8`) |
 
 `sh v6/car/src/render_photo.sh` renders them all (about 40 min on 4 cores). It is still our own Polo-class model, not Volkswagen's CAD data, and has no VW badges. The older studio renders listed below are kept for reference.
+
+## Owner's photo with the spoiler (brochure page 1)
+
+Page 1 of the brochure is the owner's own photo of their blue Polo GTI (`../brochure/photo/owner_car_original.png`, 510 × 392 px). The car in it wore a different, larger wing. That wing was removed and our spoiler rendered into the photo:
+
+1. **Camera** (`src/photo_match.py` -> `data/photo_camera.json`). A pinhole camera in Blender's terms (lens on a 36 mm wide sensor, lens shift) is solved against the 3D car. It uses:
+   - the right-hand wheel rims;
+   - the car's outline against the sky and background, weighted up round the rear pillars and roof, with the old wing left out;
+   - lines across the car's rear that must point at the lateral vanishing point (the tailgate crease, the bottom of the rear window, the lamp corners, the plate).
+   Free parameters besides the camera: the body's ride height on its wheels and the rim size. Result: camera 0.41 m high, turned 15° to the car, 78 mm-equivalent lens; the photo is an off-centre crop (lens shift −0.23 of the width). The body sits 22 mm lower than the model and the wheels are about 20 in. Wheel points fit to 2.8 px rms and the lines across the rear to 0.5 px.
+2. **Render passes** (`src/render_photo_comp.sh`, which runs `src/blend_photo_comp.py`; about 1 min). From that camera:
+   - the spoiler alone (gloss black; the car and the ground are holdouts);
+   - the car with and without the spoiler, whose ratio is the spoiler's shade on the car;
+   - the bare environment, for the exposure.
+3. **Composite** (`src/photo_composite.py` -> `../brochure/photo/owner_car_with_spoiler.png`):
+   - The old wing is removed. Above our spoiler, the sky is filled from the clear sky around it. Below the new lip, the top of the rear window becomes its black band in shade, blended into the glass.
+   - The spoiler is placed with its shade.
+   - It is graded to the photo's look: the photo's black level and its blue-tinted blacks, read off the diffuser and the old wing; sky glints rolled off to grey.
+   - Its edges are softened and sharpened to match the photo.
+   Only the wing's area changes (x 136–325, y 71–123 px).
+
+`src/photo_cam.py` holds the shared camera model, the old wing's traced outline and a fast rasterizer for overlays.
+
+**Limits.**
+- The generic model's roof and rear window sit about 30–40 mm (5 px) lower than the real car's, measured on the roof edge beside the old wing, the bottom of the rear window and the left pillar. So the rendered spoiler and its shade are moved 2 px left and 5.5 px up in the composite (`SHIFT_PX`).
+- The old wing's outline is traced by hand in 510 × 392 px. A larger original needs it traced again.
+- The result shows how our spoiler would look on this car. It is not a photo of a printed part.
 
 ## Rebuilding
 
