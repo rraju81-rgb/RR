@@ -2,14 +2,17 @@
 
 A two-page A4 brochure for the roof spoiler, branded Carbon 6 Customization and 3D printed by pi.XL 3D Printing. It describes the current build, v8: six sections and ten bow-tie keys.
 
-The car pictures are outdoor renders styled after the customer's reference photo of a blue Polo GTI: blue metallic paint, gloss-black spoiler, mirror caps and 18" multi-spoke wheels, smoked tail lamps, a black diffuser with twin exhaust, under an overcast sky by a lake. The car is still our own Polo-class 3D model (`../car/`), not Volkswagen's CAD data, and it carries no VW badges. The sky and asphalt are Poly Haven CC0 assets (`../car/env/`).
+**Page 1 shows the owner's own car**, a blue Polo GTI with the spoiler (`photo/owner_car_original.png`, as received). `prep_photo.py` crops it for the hero box. The file received is only 510 × 392 px, so it is upscaled 4× and looks soft in print. Put the full-size original from the phone in `photo/` and run `python3 prep_photo.py <file>`; then export again. The fine print says that the page-1 photo is the owner's car and the other images are renders.
+
+The page 2 car pictures are outdoor renders styled after that photo: blue metallic paint, gloss-black spoiler, mirror caps and 18" multi-spoke wheels, smoked tail lamps, a black diffuser with twin exhaust, under an overcast sky by a lake. The car is still our own Polo-class 3D model (`../car/`), not Volkswagen's CAD data, and it carries no VW badges. The sky and asphalt are Poly Haven CC0 assets (`../car/env/`).
 
 | File | What it is |
 |---|---|
 | `Polo_Roof_Spoiler_Brochure.pdf` | The brochure: 2 × A4, with embedded fonts and vector text. |
 | `brochure_page1.png`, `brochure_page2.png` | The pages as images (about 2060 × 2920 px), for WhatsApp or Instagram. |
 | `brochure.html` | Source of both pages: all text and layout. |
-| `img/` | The renders as placed on the pages (made by `prep_images.py` from `../car/renders/`: `hero_blue`, `side_blue`, `top_rear_blue`, `detail_fin_blue` from `blend_photo.py`, `joints_v8` from `blend_scene.py`). |
+| `img/` | The images as placed on the pages: `hero_owner_car.jpg` from the owner's photo (`prep_photo.py`), and the renders `side_blue`, `top_rear_blue`, `detail_fin_blue` (`blend_photo.py`) and `joints_v8` (`blend_scene.py`), made by `prep_images.py` from `../car/renders/`. |
+| `photo/` | The owner's photo of their car, as received. |
 | `assets/` | Carbon 6 logo (white and dark versions), pi.XL logo, QR codes, and fonts with their licence files. |
 | `make_qr.py` | Makes the two QR codes. |
 | `export.js` | Writes the PDF and the page images from `brochure.html`. |
