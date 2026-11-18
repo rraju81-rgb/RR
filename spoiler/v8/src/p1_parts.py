@@ -1,11 +1,12 @@
 """v8 step 1: cut the solid spoiler into 4 pieces across the span (as v7), split the two end pieces lengthwise at
-z = CUT_Z, cut ten bow-tie key pockets on the hidden underside and make the keys.
+z = CUT_Z, cut ten bow-tie key pockets on the hidden underside and make the keys (8 standard, 2 thin).
 Run from spoiler/:  python3 v8/src/p1_parts.py"""
 import sys, json, os; sys.path.insert(0, 'v8/src'); sys.path.insert(0, 'v6/src')
 import numpy as np, trimesh
 from trimesh.ray.ray_pyembree import RayMeshIntersector
 from bowtie import L, W, N, DP, CL, CF, tomf, totm, pocket_local, key_local
-from layout import E_PATH, OUT, ASM, HALF, SEAMS, CUT_Z, KEY_Z, LKEY_X, PIECES, key_list
+from layout import E_PATH, OUT, ASM, HALF, SEAMS, CUT_Z, KEY_Z, LKEY_X, PIECES, DP_STD, DP_THIN, key_list
+assert DP_STD == DP, 'layout.DP_STD must equal the key depth in v6/src/bowtie.py'
 
 E = trimesh.load(E_PATH)
 R = RayMeshIntersector(E)
@@ -57,8 +58,9 @@ keys = key_list(); frames = []
 for k in keys:
     T, res, npts = under_frame(k['x'], k['z'], k['across'])
     frames.append(dict(kind=k['kind'], x=k['x'], z=k['z'], pieces=list(k['pieces']), T=T.tolist(), plane_fit_max_dev=res,
-                       seam=k['x'] if k['kind'] == 'cross' else None))
-    print(f"{k['kind']:10s} key x={k['x']:+7.1f} z={k['z']:5.1f} ({k['pieces'][0]}/{k['pieces'][1]}): plane fit max dev {res:.3f} mm ({npts} pts), axis {np.round(T[:, 2], 3)}")
+                       seam=k['x'] if k['kind'] == 'cross' else None, thin=k['thin'], dp=k['dp']))
+    print(f"{k['kind']:10s} key x={k['x']:+7.1f} z={k['z']:5.1f} ({k['pieces'][0]}/{k['pieces'][1]}){' THIN' if k['thin'] else ''}: "
+          f"plane fit max dev {res:.3f} mm ({npts} pts), axis {np.round(T[:, 2], 3)}")
 
 ME = tomf(E)
 parts = {}
@@ -69,16 +71,18 @@ for pid, x0, x1, zs, stem, label in PIECES:
     if zs == 'F': M = M.trim_by_plane([0, 0, -1.0], -CUT_Z)               # keep z <= CUT_Z
     if zs == 'R': M = M.trim_by_plane([0, 0, 1.0], CUT_Z)                 # keep z >= CUT_Z
     for f in frames:                                                      # the pockets of the keys this piece takes
-        if pid in f['pieces']: M = M - pocket_local().transform(np.array(f['T']))
+        if pid in f['pieces']: M = M - pocket_local(f['dp']).transform(np.array(f['T']))
     parts[pid], nrem = weld(totm(M))
     print(f'{pid}: welded sub-micron slivers, {nrem} faces removed')
 
 os.makedirs(ASM, exist_ok=True); os.makedirs(OUT, exist_ok=True)
 for pid, m in parts.items(): m.export(f'{ASM}/{pid}.stl')
-for i, f in enumerate(frames): totm(key_local().transform(np.array(f['T']))).export(f'{ASM}/KEY_{i + 1}.stl')
+for i, f in enumerate(frames): totm(key_local(f['dp']).transform(np.array(f['T']))).export(f'{ASM}/KEY_{i + 1}.stl')
 key_local_tm = totm(key_local()); key_local_tm.export(f'{OUT}/_key_local.stl')
+key_thin_tm = totm(key_local(DP_THIN)); key_thin_tm.export(f'{OUT}/_key_local_thin.stl')
 json.dump(dict(SEAMS=SEAMS, CUT_Z=CUT_Z, KEY_Z={str(k): v for k, v in KEY_Z.items()}, LKEY_X=LKEY_X,
-               L=L, W=W, N=N, DP=DP, CL=CL, CF=CF, frames=frames), open(f'{OUT}/_parts_meta.json', 'w'), indent=1)
+               L=L, W=W, N=N, DP=DP, DP_THIN=DP_THIN, CL=CL, CF=CF, frames=frames), open(f'{OUT}/_parts_meta.json', 'w'), indent=1)
 for pid, m in parts.items():
     print(pid, 'faces', len(m.faces), 'watertight', m.is_watertight, 'vol cm3 %.1f' % (m.volume / 1000), 'bounds', m.bounds.round(1).tolist())
 print('key vol cm3 %.2f bounds' % (key_local_tm.volume / 1000), key_local_tm.bounds.round(2).tolist())
+print('thin key vol cm3 %.2f bounds' % (key_thin_tm.volume / 1000), key_thin_tm.bounds.round(2).tolist())

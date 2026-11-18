@@ -2,7 +2,9 @@
 import sys, json, os; sys.path.insert(0, 'v8/src'); sys.path.insert(0, 'v6/src')
 import numpy as np, trimesh
 from zr import render, grid, label, fit_view
-from layout import OUT, ASM, PRN, DOC, IDS, STEM, N_KEYS, COL, KEY_COL, CUT_Z, E_PATH
+from layout import OUT, ASM, PRN, DOC, IDS, STEM, N_KEYS, N_THIN, COL, KEY_COL, CUT_Z, E_PATH, DP_THIN
+from zr import look_at
+THIN_COL = (40, 190, 120)            # thin keys
 
 os.makedirs(DOC, exist_ok=True)
 meta = json.load(open(f'{OUT}/_parts_meta.json')); rep = json.load(open(f'{OUT}/_print_report.json'))
@@ -51,11 +53,11 @@ for k in IDS:
 for i, km in enumerate(K):
     f = FR[i]; A = np.array(f['T'])[:, 2]; a, b = f['pieces']
     sh = np.array([(dx[a] + dx[b]) / 2, 0, (dz[a] + dz[b]) / 2])
-    m = km.copy(); m.apply_translation(-A * 45 + sh); items.append((m, KEY_COL))
+    m = km.copy(); m.apply_translation(-A * 45 + sh); items.append((m, THIN_COL if f['thin'] else KEY_COL))
 eye, tgt, fov = fit_view([m for m, _ in items], (-0.45, -0.62, 0.64), W=1600, H=1000, dist=2600)
 im = render(items, eye=eye, target=tgt, fov=fov, W=1600, H=1000, bg=BG, spec=0.3, ambient=0.3)
-lab(im, f'Exploded, seen from underneath: {N_KEYS} identical bow-tie keys (blue). Two across each cross seam,\n'
-        'and two across each end piece\'s lengthwise cut', s=24).save(f'{DOC}/v8_exploded_underside.png')
+lab(im, f'Exploded, seen from underneath: {N_KEYS} bow-tie keys, {N_KEYS - N_THIN} standard (blue) and {N_THIN} thin (green). Two across each cross\n'
+        'seam (at the outer seams one into each half of the end piece) and two across each end piece\'s lengthwise cut', s=22).save(f'{DOC}/v8_exploded_underside.png')
 
 # 4 the new lengthwise joint from below: left end halves slightly apart, its two keys lifted out
 items = [(P['P1R'], COL['P1R'])]
@@ -77,8 +79,9 @@ for k in IDS:
     imgs.append(lab(im, f'{STEM[k]}\n{e[0]:.0f} x {e[1]:.0f} x {e[2]:.0f} mm\non its {rep[k]["on_bed"].split(" (")[0]}', s=18))
 kp = trimesh.load(f'{PRN}/{rep["KEY"]["plate"]}')
 kp2 = kp.copy(); kp2.apply_translation([210 - kp.bounds.mean(0)[0], 210 - kp.bounds.mean(0)[1], 0])
-im = render([(bed, (205, 205, 210)), (kp2, KEY_COL)], eye=(210 + 260, 210 - 300, 260), target=(210, 210, 0), up=(0, 0, 1), fov=42, W=620, H=820, bg=BG, spec=0.3, ambient=0.3)
-imgs.append(lab(im, f'bow-tie keys: {N_KEYS} needed (+2 spares)\nflat on the car-side face,\nno supports', s=18))
+keys_on_plate = [(c, THIN_COL if c.extents[2] < 5.0 else KEY_COL) for c in kp2.split(only_watertight=False)]
+im = render([(bed, (205, 205, 210))] + keys_on_plate, eye=(210 + 260, 210 - 300, 260), target=(210, 210, 0), up=(0, 0, 1), fov=42, W=620, H=820, bg=BG, spec=0.3, ambient=0.3)
+imgs.append(lab(im, f'bow-tie keys: {N_KEYS - N_THIN} standard (blue)\n+ {N_THIN} thin (green), with spares,\nflat on the car-side face, no supports', s=18))
 grid(imgs, 7, bg=BG).save(f'{DOC}/v8_bed_layouts.png')
 
 # 6 v7 end piece vs the two v8 halves, as printed
@@ -92,4 +95,42 @@ try:
             f'v8: front half {f_.extents[2]:.0f} mm and rear half {r_.extents[2]:.0f} mm, lying on the flat cut face, no fin supports', s=20).save(f'{DOC}/v8_vs_v7_end_piece.png')
 except Exception as e:
     print('comparison skipped:', e)
+
+# 7 the left end piece's inner face (where it meets the middle piece), seen as in the user's slicer screenshot: lying
+# as on the car, from the middle piece's side. One key into each half: the rear half's at z = 161 (as before) and the
+# new thin key in the front half at z = 80 (the first v8 had both, z = 123 and 161, in the rear half).
+from PIL import ImageDraw, ImageFont
+FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 19)
+FONTB = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 19)
+def project(pts, eye, tgt, up, fov, W, H):
+    e, r, u, f = look_at(eye, tgt, up); d = np.atleast_2d(pts) - e
+    F = 0.5 * H / np.tan(np.radians(fov) / 2); z = d @ f
+    return np.column_stack([W / 2 + F * (d @ r) / z, H / 2 - F * (d @ u) / z])
+def callout(im, xy, text, to, bold=False, col=(20, 20, 20)):
+    dr = ImageDraw.Draw(im); dr.line([tuple(to), tuple(xy)], fill=col, width=2)
+    dr.ellipse([to[0] - 4, to[1] - 4, to[0] + 4, to[1] + 4], fill=col)
+    dr.multiline_text((xy[0] + 6, xy[1] - 12), text, fill=col, font=FONTB if bold else FONT, spacing=4)
+import trimesh.ray.ray_pyembree as _rp
+RE = _rp.RayMeshIntersector(trimesh.load(E_PATH))
+def under(x, z):
+    loc, ir, it = RE.intersects_location(np.array([[x, -300.0, z]]), [[0, 1.0, 0]], multiple_hits=False); return loc[0]
+fs = {f['z']: (i, f) for i, f in enumerate(FR) if f['kind'] == 'cross' and f['x'] < -300}
+W7, H7 = 1500, 640
+c7 = np.array([-480.0, -5.0, 112.0]); up7 = (0, 1, 0)
+eye7 = c7 + 450 * np.array([np.cos(np.radians(24)), np.sin(np.radians(24)), 0.0]); fov7 = 36
+ims = []
+for with_keys in (False, True):
+    items = [(P['P1F'], COL['P1F']), (P['P1R'], COL['P1R'])]
+    if with_keys:
+        for zk, (i, f) in fs.items(): items.append((K[i], THIN_COL if f['thin'] else KEY_COL))
+    im = render(items, eye=eye7, target=c7, up=up7, fov=fov7, W=W7, H=H7, bg=BG, spec=0.3, ambient=0.32)
+    q = {zk: project(under(-325.0, zk) + [0, -1, 0], eye7, c7, up7, fov7, W7, H7)[0] for zk in (161.0, 80.0, CUT_Z)}
+    (i_t, f_t) = fs[80.0]
+    callout(im, q[161.0] + [-330, 95], 'rear half: standard key, unchanged\n(z = 161 mm)', q[161.0])
+    callout(im, q[80.0] + [70, 85], f'front half: NEW thin key (z = 80 mm)\n{DP_THIN - 0.25:.2f} mm thick, same bow-tie outline', q[80.0], bold=True)
+    callout(im, q[CUT_Z] + [-60, 150], 'joint between the front and rear halves (z = 100 mm)', q[CUT_Z])
+    ims.append(lab(im, ('Left end piece, both halves, lying as on the car, seen from the end that joins the middle piece (your screenshot view).\n'
+                        + ('With the keys in: standard key (blue) in the rear half, thin key (green) in the front half.\nThe half of each key that sticks out goes into the middle piece.' if with_keys else
+                           'The two pockets at this end: one in each half. Before, both were in the rear half (z = 123 and 161 mm).')), s=20))
+grid(ims, 1, bg=BG).save(f'{DOC}/v8_end_piece_keys.png')
 print('figures done')

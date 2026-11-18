@@ -2,12 +2,12 @@
 - The four end halves lie on their flat lengthwise cut face (z = CUT_Z). That makes them 134-155 mm tall and needs no
   support under the fin.
 - The two middle pieces stand on the centre-seam face (x = 0), as in v7.
-- Keys lie flat on their outer face.
+- Keys (8 standard, 2 thin) lie flat on their outer face.
 Run from spoiler/:  python3 v8/src/p3_place.py"""
 import sys, json, os; sys.path.insert(0, 'v8/src'); sys.path.insert(0, 'v6/src')
 import numpy as np, trimesh
 from scipy.spatial import ConvexHull
-from layout import OUT, ASM, PRN, PIECES, N_KEYS, CUT_Z
+from layout import OUT, ASM, PRN, PIECES, N_KEYS, N_THIN, CUT_Z
 from check import report
 
 BED = (420.0, 420.0, 500.0); MARGIN = 12.0
@@ -66,21 +66,35 @@ for pid, x0, x1, zs, stem, label in PIECES:
     rep[pid]['print_file_selfx_faces'] = r['selfx_faces']
     print(pid, rep[pid])
 
-# key: lies on its outer face (w = 0, the larger flat face) -> no overhangs
-km = trimesh.load(f'{OUT}/_key_local.stl')
-kp = trimesh.Trimesh(km.vertices.copy(), km.faces, process=False)
-kp.apply_translation([-kp.bounds[0][0] + 5, -kp.bounds[0][1] + 5, -kp.bounds[0][2]])
-kp.export(f'{PRN}/v8_BOWTIE_KEY_x{N_KEYS}.stl')
-n = kp.face_normals; zc = kp.triangles_center[:, 2]
-print('key extent', kp.extents.round(2), 'overhang>45 area', float(kp.area_faces[(n[:, 2] < -0.71) & (zc > 0.3)].sum()))
-NPL = N_KEYS + 2                         # a plate of 12 keys: 10 + 2 spares
+# keys: each lies on its outer face (w = 0, the larger flat face) -> no overhangs. 8 standard keys and 2 thin keys
+# (same bow-tie outline, 3.75 mm instead of 6.25 mm thick) for the end pieces' front halves.
+N_STD = N_KEYS - N_THIN
+def flat_key(path):
+    km = trimesh.load(path)
+    kp = trimesh.Trimesh(km.vertices.copy(), km.faces, process=False)
+    kp.apply_translation([-kp.bounds[0][0] + 5, -kp.bounds[0][1] + 5, -kp.bounds[0][2]])
+    n = kp.face_normals; zc = kp.triangles_center[:, 2]
+    assert float(kp.area_faces[(n[:, 2] < -0.71) & (zc > 0.3)].sum()) == 0.0
+    return kp
+ks, kt = flat_key(f'{OUT}/_key_local.stl'), flat_key(f'{OUT}/_key_local_thin.stl')
+for f in os.listdir(PRN):                                  # drop key files from earlier layouts
+    if f.startswith('v8_BOWTIE_KEY'): os.remove(f'{PRN}/{f}')
+F_STD, F_THIN = f'v8_BOWTIE_KEY_x{N_STD}.stl', f'v8_BOWTIE_KEY_THIN_x{N_THIN}.stl'
+ks.export(f'{PRN}/{F_STD}'); kt.export(f'{PRN}/{F_THIN}')
+print('key extent', ks.extents.round(2), 'thin key extent', kt.extents.round(2))
+# one plate: 10 standard (8 + 2 spares) in rows 1-3, 4 thin (2 + 2 spares) in row 4
 plate = []
-for i in range(NPL):
-    c = kp.copy(); c.apply_translation([(i % 4) * 62.0, (i // 4) * 30.0, 0]); plate.append(c)
-pl = trimesh.util.concatenate(plate); pl.export(f'{PRN}/v8_BOWTIE_KEYS_plate_of_{NPL}.stl')
-rep['KEY'] = dict(file=f'v8_BOWTIE_KEY_x{N_KEYS}.stl', plate=f'v8_BOWTIE_KEYS_plate_of_{NPL}.stl', plate_extent_mm=[round(float(v), 1) for v in pl.extents],
-                  print_extent_mm=[round(float(v), 2) for v in kp.extents], volume_cm3=round(float(kp.volume) / 1000, 2),
-                  orientation='flat, outer (car-side) face on the bed; no supports')
+for i in range(N_STD + 2):
+    c = ks.copy(); c.apply_translation([(i % 4) * 62.0, (i // 4) * 30.0, 0]); plate.append(c)
+for i in range(N_THIN + 2):
+    c = kt.copy(); c.apply_translation([i * 62.0, 3 * 30.0, 0]); plate.append(c)
+pl = trimesh.util.concatenate(plate)
+F_PLATE = f'v8_BOWTIE_KEYS_plate_{N_STD + 2}_standard_{N_THIN + 2}_thin.stl'
+pl.export(f'{PRN}/{F_PLATE}')
+rep['KEY'] = dict(file=F_STD, file_thin=F_THIN, plate=F_PLATE, plate_extent_mm=[round(float(v), 1) for v in pl.extents],
+                  print_extent_mm=[round(float(v), 2) for v in ks.extents], print_extent_thin_mm=[round(float(v), 2) for v in kt.extents],
+                  volume_cm3=round(float(ks.volume) / 1000, 2), volume_thin_cm3=round(float(kt.volume) / 1000, 2),
+                  n_standard=N_STD, n_thin=N_THIN, orientation='flat, outer (car-side) face on the bed; no supports')
 json.dump(rep, open(f'{OUT}/_print_report.json', 'w'), indent=1)
 print('KEY', rep['KEY'])
 bad = [k for k, v in rep.items() if k != 'KEY' and not (v['print_file_ok'] and v['fits_420x420x500'])]

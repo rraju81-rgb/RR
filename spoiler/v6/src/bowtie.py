@@ -25,15 +25,16 @@ def bowtie_outline():
 def cs(poly):
     return mf.CrossSection([np.asarray(poly.exterior.coords)[:-1].astype(np.float64)], mf.FillRule.EvenOdd)
 s2 = 1 / np.sqrt(2)
-def pocket_local():
+def pocket_local(dp=DP):
+    """dp: pocket depth. v6/v7 use DP; v8 also has a thin key (same outline, shallower pocket) for thin spots."""
     P = bowtie_outline()
-    M = cs(P).extrude(DP + 15.0).translate([0, 0, -15.0])               # w from -15 (outside) to DP
+    M = cs(P).extrude(dp + 15.0).translate([0, 0, -15.0])               # w from -15 (outside) to dp
     M = M.trim_by_plane([-s2, 0, -s2], -(L / 2) * s2)                    # u + w <= L/2  (45 deg end bevel)
     M = M.trim_by_plane([s2, 0, -s2], -(L / 2) * s2)                     # -u + w <= L/2
     return M
-def key_local():
+def key_local(dp=DP):
     K = bowtie_outline().buffer(-CL, join_style=1)
-    M = cs(K).extrude(DP - CF)                                           # w from 0 (outer face) to DP-CF
+    M = cs(K).extrude(dp - CF)                                           # w from 0 (outer face) to dp-CF
     M = M.trim_by_plane([-s2, 0, -s2], -(L / 2) * s2 + CL)               # bevels moved inward by CL
     M = M.trim_by_plane([s2, 0, -s2], -(L / 2) * s2 + CL)
     return M
