@@ -5,11 +5,11 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = os.path.join(HERE, '..', 'car', 'renders'); O = os.path.join(HERE, 'img')
-NAMES = ['side_blue', 'top_rear_blue', 'detail_fin_blue', 'joints_v8']   # page 2 renders (blend_photo.py) and the v8 joint view; the page-1 hero is the owner's photo (prep_photo.py)
+NAMES = ['side_blue', 'top_rear_blue', 'detail_fin_blue', 'joints_v9']   # page 2 renders (blend_photo.py) and the v9 joint view; the page-1 hero is the owner's photo (prep_photo.py)
 # x0, y0, x1, y1 as fractions of the render. The side view goes in a 210 x 66 mm strip (3.18:1); in the render the car
 # spans x 0.17-0.83 and y 0.29-0.68, so this window keeps all of it, roof and spoiler lip included.
 CROPS = {'side_blue': (0.031, 0.25, 0.965, 0.72),
-         'joints_v8': (0.06, 0.02, 1.0, 0.92)}       # same aspect as the render, trims the empty floor so the keys read larger
+         }
 os.makedirs(O, exist_ok=True)
 for k in NAMES:
     src = os.path.join(R, k + '.png')

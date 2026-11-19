@@ -140,7 +140,43 @@ def lights_only(sc):
 
 PART_LAYOUTS = {'v6': dict(ids=['L', 'C', 'R'], spread=150.0),              # 3 pieces, 4 keys
                 'v7': dict(ids=['P1', 'P2', 'P3', 'P4'], spread=100.0),     # 4 equal pieces, 6 keys
-                'v8': dict(ids=['P1F', 'P1R', 'P2', 'P3', 'P4R', 'P4F'], spread=100.0, zspread=70.0)}   # 6 pieces, 10 keys
+                'v8': dict(ids=['P1F', 'P1R', 'P2', 'P3', 'P4R', 'P4F'], spread=100.0, zspread=70.0),   # 6 pieces, 10 keys
+                'v9': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=70.0)}   # 6 equal cored pieces, pins + spline
+
+def build_parts_v9(studio='light'):
+    """v9: the six equal pieces upright, pulled apart along the span so the seam faces show (tongue faces, groove faces).
+    The 3 mm pins and the centre spline (orange) stay in the right-hand piece of each seam, half out of their holes,
+    as when assembling (pins into one face, then slide the next piece on)"""
+    import json as _j, sys as _s
+    _s.path.insert(0, 'v9/src'); from layout import STEM, SEAMS
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    sc = bpy.context.scene
+    M = {'spoiler': principled('spoiler_raw_print', (0.030, 0.030, 0.033), rough=0.45, spec=0.5),
+         'key': principled('key', (0.90, 0.13, 0.016), rough=0.65, spec=0.22)}
+    ids = PART_LAYOUTS['v9']['ids']; g = PART_LAYOUTS['v9']['spread']
+    ex = {k: (i - 2.5) * g for i, k in enumerate(ids)}
+    for k in ids:
+        m = trimesh.load(f'v9/assembled/{STEM[k]}.stl'); m.apply_translation([ex[k], 0, 0])
+        new_mesh('spoiler_' + k, m, [M['spoiler']], auto=30)
+    J = _j.load(open('v9/out/joints.json'))
+    i = 0
+    for kseam, c in enumerate(SEAMS):
+        mid = ex[ids[kseam + 1]]                                           # pins travel with the right-hand piece
+        for zy in J['seams'][str(round(c, 1) if abs(c) > 1e-6 else 0.0)]['pins_zy']:
+            pm = trimesh.load(f'v9/assembled/v9_PIN_{i + 1:02d}.stl'); i += 1
+            pm.apply_translation([mid, 0, 0]); new_mesh(f'pin_{i}', pm, [M['key']], auto=30)
+        if abs(c) < 1e-6:
+            sp = trimesh.load('v9/assembled/v9_CENTRE_SPLINE.stl'); sp.apply_translation([mid, 0, 0])
+            new_mesh('spline', sp, [M['key']], auto=30)
+    V3 = __import__('mathutils').Vector
+    mins = [min((o.matrix_world @ V3(cc)).z for cc in o.bound_box) for o in bpy.data.objects if o.type == 'MESH']
+    for o in bpy.data.objects:
+        if o.type == 'MESH': o.location.z -= min(mins) - 0.002
+    bpy.ops.mesh.primitive_plane_add(size=30, location=(0, 0, 0)); fl = bpy.context.active_object
+    fl.data.materials.append(principled('floor', (0.035, 0.036, 0.04) if studio == 'dark' else (0.55, 0.56, 0.58), rough=0.35 if studio == 'dark' else 0.55))
+    w = bpy.data.worlds.new('world'); sc.world = w; w.use_nodes = True
+    w.node_tree.nodes['Background'].inputs['Color'].default_value = (0.004, 0.0045, 0.005, 1) if studio == 'dark' else (0.55, 0.56, 0.58, 1)
+    return sc, 0.0
 def build_parts(mode='parts', studio='dark', ver='v7'):
     """spoiler pieces only: 'parts' = pieces apart, keys lying in the gaps; 'joint' = upside down, keys above the pockets.
     ver picks the split: 'v7' (4 pieces, 6 keys) or 'v6' (3 pieces, 4 keys)."""
@@ -295,6 +331,7 @@ VIEWS = {
     'joint_v6': ((0.62, -0.78, 0.70), (0.20, -0.10, 0.03), 40),
     'parts_v8': ((0.55, -1.30, 1.45), (0.0, 0.02, 0.03), 36),         # v8: 6 pieces, 10 keys
     'joint_v8': ((0.80, -1.22, 1.10), (0.06, -0.10, 0.03), 40),
+    'joint_v9': ((-0.47, -0.24, 0.27), (-0.250, -0.128, 0.122), 48),  # v9: one seam opened, tongue face with its two pins
     # name: (camera location m, target m, focal mm)
     'rear34': ((-4.35, -5.10, 2.05), (0.0, 0.25, 0.95), 70),
     'rear34_high': ((-3.6, -4.4, 3.3), (0.0, 0.0, 1.05), 60),
@@ -317,7 +354,10 @@ if __name__ == '__main__':
     kw = dict(a.split('=') for a in sys.argv[6:])
     if kw.get('debug') == '1': DEBUG_ZONES = True
     if kw.get('normals') == '0': NORMALS = False
-    if view in ('parts', 'joint'):
+    if view == 'joint' and kw.get('ver') == 'v9':
+        ver = 'v9'; sc, dz = build_parts_v9(studio=kw.get('studio', 'light')); lights_only(sc)
+        if 'cam' not in kw: VIEWS[view] = VIEWS['joint_v9']
+    elif view in ('parts', 'joint'):
         ver = kw.get('ver', 'v7')
         sc, dz = build_parts(view, studio=kw.get('studio', 'light'), ver=ver)
         lights_only(sc)

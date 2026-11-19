@@ -1,0 +1,112 @@
+{
+ "P1": {
+  "label": "left end (with the fin)",
+  "x": [
+   -650.0,
+   -433.33333333333337
+  ],
+  "solid_cm3": 380.6,
+  "cored_cm3": 292.7,
+  "removed_pct": 23.1,
+  "voxels": 64376004,
+  "inside_cm3": 414.6,
+  "pocket_cm3": 126.3,
+  "sealed_voxels": 10,
+  "bridged_voxels": 3317,
+  "rim_cm3": 7.5,
+  "watertight": true,
+  "faces": 309908,
+  "seconds": 67.4
+ },
+ "P2": {
+  "label": "left outer",
+  "x": [
+   -433.33333333333337,
+   -216.66666666666669
+  ],
+  "solid_cm3": 574.7,
+  "cored_cm3": 410.5,
+  "removed_pct": 28.6,
+  "voxels": 33106652,
+  "inside_cm3": 637.9,
+  "pocket_cm3": 228.0,
+  "sealed_voxels": 0,
+  "rim_cm3": 11.7,
+  "watertight": true,
+  "faces": 340200,
+  "seconds": 34.4
+ },
+ "P3": {
+  "label": "left of centre",
+  "x": [
+   -216.66666666666669,
+   0.0
+  ],
+  "solid_cm3": 526.3,
+  "cored_cm3": 389.5,
+  "removed_pct": 26.0,
+  "voxels": 26558200,
+  "inside_cm3": 586.0,
+  "pocket_cm3": 192.4,
+  "sealed_voxels": 0,
+  "rim_cm3": 9.5,
+  "watertight": true,
+  "faces": 277862,
+  "seconds": 26.9
+ },
+ "P4": {
+  "label": "right of centre",
+  "x": [
+   0.0,
+   216.66666666666663
+  ],
+  "solid_cm3": 526.3,
+  "cored_cm3": 389.5,
+  "removed_pct": 26.0,
+  "voxels": 26558200,
+  "inside_cm3": 586.0,
+  "pocket_cm3": 192.4,
+  "sealed_voxels": 0,
+  "rim_cm3": 9.5,
+  "watertight": true,
+  "faces": 277870,
+  "seconds": 27.0
+ },
+ "P5": {
+  "label": "right outer",
+  "x": [
+   216.66666666666663,
+   433.33333333333326
+  ],
+  "solid_cm3": 574.7,
+  "cored_cm3": 410.6,
+  "removed_pct": 28.6,
+  "voxels": 33106652,
+  "inside_cm3": 638.0,
+  "pocket_cm3": 228.1,
+  "sealed_voxels": 0,
+  "rim_cm3": 11.6,
+  "watertight": true,
+  "faces": 341390,
+  "seconds": 32.3
+ },
+ "P6": {
+  "label": "right end (with the fin)",
+  "x": [
+   433.33333333333326,
+   650.0
+  ],
+  "solid_cm3": 380.6,
+  "cored_cm3": 291.4,
+  "removed_pct": 23.4,
+  "voxels": 64376004,
+  "inside_cm3": 413.7,
+  "pocket_cm3": 127.5,
+  "sealed_voxels": 0,
+  "bridged_voxels": 0,
+  "rim_cm3": 7.5,
+  "watertight": true,
+  "faces": 302344,
+  "seconds": 49.9
+ }
+}

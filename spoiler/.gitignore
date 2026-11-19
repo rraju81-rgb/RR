@@ -18,3 +18,6 @@ v8/src/__pycache__/
 aero/out/
 aero/src/__pycache__/
 spec/src/__pycache__/
+v9/out/*.stl
+v9/out/*.npy
+v9/src/__pycache__/

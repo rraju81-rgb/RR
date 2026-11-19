@@ -1,0 +1,180 @@
+{
+ "P1": {
+  "file": "v9_1_LEFT_END.stl",
+  "label": "left end (with the fin)",
+  "on_bed": "groove face (x = -433.3)",
+  "print_extent_mm": [
+   123.0,
+   262.0,
+   216.6
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 12.1,
+  "footprint_mm": [
+   27.2,
+   247.5
+  ],
+  "overhang_gt45_cm2": 83.5,
+  "overhang_gt45_z": [
+   2.8,
+   216.5
+  ],
+  "overhang_gt55_cm2": 15.6,
+  "overhang_gt60_cm2": 6.8,
+  "volume_cm3": 291.4,
+  "simplified_microns": 0,
+  "print_file_ok": true
+ },
+ "P2": {
+  "file": "v9_2_LEFT_OUTER.stl",
+  "label": "left outer",
+  "on_bed": "groove face (x = -216.7)",
+  "print_extent_mm": [
+   48.0,
+   275.1,
+   219.2
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 12.9,
+  "footprint_mm": [
+   25.6,
+   268.2
+  ],
+  "overhang_gt45_cm2": 1.7,
+  "overhang_gt45_z": [
+   2.8,
+   198.8
+  ],
+  "overhang_gt55_cm2": 1.7,
+  "overhang_gt60_cm2": 1.7,
+  "volume_cm3": 410.2,
+  "simplified_microns": 0,
+  "print_file_ok": true
+ },
+ "P3": {
+  "file": "v9_3_LEFT_CENTRE.stl",
+  "label": "left of centre",
+  "on_bed": "groove face (x = 0.0)",
+  "print_extent_mm": [
+   30.7,
+   269.2,
+   219.2
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 12.7,
+  "footprint_mm": [
+   25.9,
+   267.1
+  ],
+  "overhang_gt45_cm2": 1.6,
+  "overhang_gt45_z": [
+   2.8,
+   206.7
+  ],
+  "overhang_gt55_cm2": 1.6,
+  "overhang_gt60_cm2": 1.6,
+  "volume_cm3": 389.1,
+  "simplified_microns": 0,
+  "print_file_ok": true
+ },
+ "P4": {
+  "file": "v9_4_RIGHT_CENTRE.stl",
+  "label": "right of centre",
+  "on_bed": "groove face (x = 0.0)",
+  "print_extent_mm": [
+   30.7,
+   269.2,
+   219.2
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 12.7,
+  "footprint_mm": [
+   25.9,
+   267.1
+  ],
+  "overhang_gt45_cm2": 1.6,
+  "overhang_gt45_z": [
+   2.8,
+   206.8
+  ],
+  "overhang_gt55_cm2": 1.6,
+  "overhang_gt60_cm2": 1.6,
+  "volume_cm3": 389.1,
+  "simplified_microns": 0,
+  "print_file_ok": true
+ },
+ "P5": {
+  "file": "v9_5_RIGHT_OUTER.stl",
+  "label": "right outer",
+  "on_bed": "groove face (x = 216.7)",
+  "print_extent_mm": [
+   48.0,
+   275.1,
+   219.2
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 12.9,
+  "footprint_mm": [
+   25.6,
+   268.2
+  ],
+  "overhang_gt45_cm2": 1.7,
+  "overhang_gt45_z": [
+   2.8,
+   196.5
+  ],
+  "overhang_gt55_cm2": 1.7,
+  "overhang_gt60_cm2": 1.7,
+  "volume_cm3": 410.2,
+  "simplified_microns": 5,
+  "print_file_ok": true
+ },
+ "P6": {
+  "file": "v9_6_RIGHT_END.stl",
+  "label": "right end (with the fin)",
+  "on_bed": "groove face (x = 433.3)",
+  "print_extent_mm": [
+   123.0,
+   262.0,
+   216.6
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 12.0,
+  "footprint_mm": [
+   27.2,
+   247.5
+  ],
+  "overhang_gt45_cm2": 82.0,
+  "overhang_gt45_z": [
+   2.8,
+   216.5
+  ],
+  "overhang_gt55_cm2": 14.4,
+  "overhang_gt60_cm2": 7.4,
+  "volume_cm3": 290.1,
+  "simplified_microns": 0,
+  "print_file_ok": true
+ },
+ "SPLINE": {
+  "file": "v9_CENTRE_SPLINE.stl",
+  "print_extent_mm": [
+   6.5,
+   99.8,
+   5.0
+  ],
+  "overhang_gt45_cm2": 0.0,
+  "volume_cm3": 1.49,
+  "orientation": "on a narrow edge; sides lean 30 degrees, no support"
+ },
+ "PIN": {
+  "file": "v9_PIN_3x18.stl",
+  "plate": "v9_PINS_3x18_plate_x14.stl",
+  "size_mm": [
+   3.0,
+   18.0
+  ],
+  "n_needed": 10,
+  "plate_count": 14,
+  "orientation": "standing on end"
+ }
+}

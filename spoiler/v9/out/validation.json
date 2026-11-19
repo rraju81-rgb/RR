@@ -1,0 +1,343 @@
+{
+ "meshes": {
+  "P1": {
+   "name": "P1",
+   "faces": 87074,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 291.39,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 4.108729385425453e-06,
+   "bounds": [
+    [
+     -649.96,
+     -92.73,
+     -34.25
+    ],
+    [
+     -433.33,
+     30.61,
+     228.58
+    ]
+   ]
+  },
+  "P2": {
+   "name": "P2",
+   "faces": 43596,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 410.18,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 5.206602509133518e-07,
+   "bounds": [
+    [
+     -435.83,
+     -2.08,
+     -18.82
+    ],
+    [
+     -216.67,
+     49.25,
+     256.56
+    ]
+   ]
+  },
+  "P3": {
+   "name": "P3",
+   "faces": 26458,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 389.06,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 2.5432382244616747e-07,
+   "bounds": [
+    [
+     -219.17,
+     20.51,
+     -11.58
+    ],
+    [
+     0.0,
+     54.34,
+     257.71
+    ]
+   ]
+  },
+  "P4": {
+   "name": "P4",
+   "faces": 26212,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 389.05,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 5.539186531677842e-08,
+   "bounds": [
+    [
+     0.0,
+     20.51,
+     -11.58
+    ],
+    [
+     219.17,
+     54.34,
+     257.71
+    ]
+   ]
+  },
+  "P5": {
+   "name": "P5",
+   "faces": 43572,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 410.24,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 6.741829565726221e-07,
+   "bounds": [
+    [
+     216.67,
+     -2.1,
+     -18.82
+    ],
+    [
+     435.83,
+     49.25,
+     256.56
+    ]
+   ]
+  },
+  "P6": {
+   "name": "P6",
+   "faces": 78998,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 290.09,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 6.1758656339931815e-06,
+   "bounds": [
+    [
+     433.33,
+     -92.73,
+     -34.25
+    ],
+    [
+     649.96,
+     30.61,
+     228.58
+    ]
+   ]
+  },
+  "SPLINE": {
+   "name": "SPLINE",
+   "faces": 1916,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 1.49,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 0.485142115605413,
+   "bounds": [
+    [
+     -2.5,
+     27.44,
+     101.03
+    ],
+    [
+     2.5,
+     34.74,
+     200.79
+    ]
+   ]
+  },
+  "PIN": {
+   "name": "PIN",
+   "faces": 512,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 0.13,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 0.030513510847379605,
+   "bounds": [
+    [
+     -442.33,
+     15.69,
+     51.16
+    ],
+    [
+     -424.33,
+     18.69,
+     54.16
+    ]
+   ]
+  }
+ },
+ "extents": {
+  "P1": {
+   "x": [
+    -649.96,
+    -433.33
+   ],
+   "slot": [
+    -650.0,
+    -433.33
+   ]
+  },
+  "P2": {
+   "x": [
+    -435.83,
+    -216.67
+   ],
+   "slot": [
+    -433.33,
+    -216.67
+   ]
+  },
+  "P3": {
+   "x": [
+    -219.17,
+    0.0
+   ],
+   "slot": [
+    -216.67,
+    0.0
+   ]
+  },
+  "P4": {
+   "x": [
+    0.0,
+    219.17
+   ],
+   "slot": [
+    0.0,
+    216.67
+   ]
+  },
+  "P5": {
+   "x": [
+    216.67,
+    435.83
+   ],
+   "slot": [
+    216.67,
+    433.33
+   ]
+  },
+  "P6": {
+   "x": [
+    433.33,
+    649.96
+   ],
+   "slot": [
+    433.33,
+    650.0
+   ]
+  }
+ },
+ "thickness": {
+  "P1": {
+   "max_mm": 9.69,
+   "at": [
+    -485.0,
+    1.9,
+    175.5
+   ]
+  },
+  "P2": {
+   "max_mm": 9.27,
+   "at": [
+    -235.6,
+    25.3,
+    203.0
+   ]
+  },
+  "P3": {
+   "max_mm": 9.21,
+   "at": [
+    -195.8,
+    27.1,
+    202.6
+   ]
+  },
+  "P4": {
+   "max_mm": 9.27,
+   "at": [
+    179.0,
+    27.9,
+    204.2
+   ]
+  },
+  "P5": {
+   "max_mm": 9.22,
+   "at": [
+    301.3,
+    20.9,
+    197.0
+   ]
+  },
+  "P6": {
+   "max_mm": 9.7,
+   "at": [
+    486.3,
+    1.5,
+    175.5
+   ]
+  }
+ },
+ "seams": {
+  "-433.3": {
+   "overlap_mm3": -0.0,
+   "pin_overlap_mm3": 0.0,
+   "tongue_clearance_min_mm": 0.168,
+   "hole_wall_min_mm": 1.5,
+   "profile_mismatch_area_mm2": 6.58,
+   "profile_area_mm2": 1846.7
+  },
+  "-216.7": {
+   "overlap_mm3": 0.0,
+   "pin_overlap_mm3": 0.0,
+   "tongue_clearance_min_mm": 0.157,
+   "hole_wall_min_mm": 2.1,
+   "profile_mismatch_area_mm2": 2.98,
+   "profile_area_mm2": 1828.0
+  },
+  "0.0": {
+   "overlap_mm3": 0.0,
+   "spline_overlap_mm3": 0.0,
+   "pin_overlap_mm3": 0.0,
+   "hole_wall_min_mm": 2.5,
+   "profile_mismatch_area_mm2": 0.53,
+   "profile_area_mm2": 1789.4
+  },
+  "216.7": {
+   "overlap_mm3": 0.0,
+   "pin_overlap_mm3": 0.0,
+   "tongue_clearance_min_mm": 0.148,
+   "hole_wall_min_mm": 2.1,
+   "profile_mismatch_area_mm2": 3.12,
+   "profile_area_mm2": 1828.6
+  },
+  "433.3": {
+   "overlap_mm3": -0.0,
+   "pin_overlap_mm3": 0.0,
+   "tongue_clearance_min_mm": 0.17,
+   "hole_wall_min_mm": 1.5,
+   "profile_mismatch_area_mm2": 6.49,
+   "profile_area_mm2": 1847.3
+  }
+ },
+ "ok": true
+}
