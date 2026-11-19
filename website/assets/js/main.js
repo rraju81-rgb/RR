@@ -1,4 +1,4 @@
-/* RR · Carbon Fibre & 3D Printing — site scripts. No dependencies. */
+/* Carbon6 Studio — site scripts. No dependencies. */
 (function () {
   'use strict';
 
@@ -19,6 +19,7 @@
      ------------------------------------------------------------------ */
   var STRIPS = { carbon: 7, print: 12 };
   var EXIT_MS = { carbon: 1080, print: 1100 };
+  var WIPE_LOGO = { carbon: 'assets/img/carbon6-mark.svg', print: 'assets/img/pixl-mark.svg' };
   var leaving = false;
   var safetyTimer = 0;
 
@@ -39,10 +40,9 @@
     var label = doc.createElement('div');
     label.className = 'wipe__label';
     var mark = doc.createElement('img');
-    mark.src = 'assets/img/logo-mark.svg';
+    mark.className = 'wipe__logo';
+    mark.src = WIPE_LOGO[kind];
     mark.alt = '';
-    mark.width = 56;
-    mark.height = 56;
     var name = doc.createElement('span');
     name.className = 'wipe__title';
     name.textContent = title;
@@ -173,10 +173,113 @@
   if (plate) initSheen(plate, { tilt: true, area: plate.closest('.hero') || plate });
 
   /* ------------------------------------------------------------------
-     Print build: a vase printed one layer at a time, nozzle and all.
+     3D printer. Each model is described by its cross-section at every
+     height. The printer lays it down one layer at a time, the nozzle
+     tracing each layer's outline, and starts the next model when done.
      ------------------------------------------------------------------ */
   var SVG_NS = 'http://www.w3.org/2000/svg';
-  var buildCount = 0;
+  var TAU = Math.PI * 2;
+
+  function ringPts(n, radius) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var a = i / n * TAU;
+      var r = typeof radius === 'function' ? radius(a) : radius;
+      pts.push([Math.cos(a) * r, Math.sin(a) * r]);
+    }
+    return pts;
+  }
+  function scalePts(pts, k) { return pts.map(function (p) { return [p[0] * k, p[1] * k]; }); }
+  function rectPts(x0, x1, y0, y1) { return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]; }
+  function sectorPts(r0, r1, a0, a1, n) {
+    var pts = [], i, a;
+    for (i = 0; i <= n; i++) { a = a0 + (a1 - a0) * i / n; pts.push([Math.cos(a) * r1, Math.sin(a) * r1]); }
+    for (i = n; i >= 0; i--) { a = a0 + (a1 - a0) * i / n; pts.push([Math.cos(a) * r0, Math.sin(a) * r0]); }
+    return pts;
+  }
+  function gearPts(n, ro, rr, rot) {
+    var pts = [], pitch = TAU / n;
+    for (var i = 0; i < n; i++) {
+      [[0, rr], [0.16, ro], [0.5, ro], [0.66, rr]].forEach(function (q) {
+        var a = rot + (i + q[0]) * pitch;
+        pts.push([Math.cos(a) * q[1], Math.sin(a) * q[1]]);
+      });
+    }
+    return pts;
+  }
+  // Hollow models keep a solid floor, then print as a thin wall.
+  function wall(outer, k) { return k < 2 ? [outer] : [outer, scalePts(outer, 0.86)]; }
+
+  var PRINT_MODELS = [
+    {
+      name: 'Spiral vase', color: '#ff6b2c', layers: 44, height: 236, evenodd: true,
+      slice: function (t, k) {
+        var r = 46 + 40 * Math.sin(Math.PI * Math.min(t / 0.74, 1)) + 20 * Math.pow(Math.max(0, (t - 0.8) / 0.2), 2);
+        return wall(ringPts(56, function (a) { return r + 2.6 * Math.sin(a * 8 + t * 9); }), k);
+      }
+    },
+    {
+      name: 'Helical gear', color: '#17a398', layers: 26, height: 116, evenodd: true,
+      slice: function (t) {
+        var bore = ringPts(28, 20);
+        if (t > 0.72) return [ringPts(40, 42), bore];
+        return [gearPts(14, 102, 86, t * 0.3), bore];
+      }
+    },
+    {
+      name: 'pi.XL sign', color: '#f2b632', layers: 34, height: 190,
+      slice: function (t) {
+        var d = 18;
+        if (t >= 0.72) return [rectPts(-98, 98, -d, d)];
+        var k = 1 - t / 0.72;
+        var curl = 26 * k * k;
+        return [rectPts(-66, -38, -d, d), rectPts(30 + curl, 58 + curl, -d, d)];
+      }
+    },
+    {
+      name: 'Twisted vase', color: '#7c5cff', layers: 44, height: 230, evenodd: true,
+      slice: function (t, k) {
+        var r = 50 + 24 * Math.sin(Math.PI * t) + 10 * t;
+        var twist = t * Math.PI / 2.4;
+        return wall(ringPts(72, function (a) { return r * (1 + 0.16 * Math.cos(6 * (a - twist))); }), k);
+      }
+    },
+    {
+      name: 'Chess rook', color: '#eef0f3', layers: 42, height: 226, evenodd: true,
+      slice: function (t) {
+        var r;
+        if (t < 0.08) r = 70;
+        else if (t < 0.14) r = 60;
+        else if (t < 0.66) r = 52 - 10 * (t - 0.14) / 0.52;
+        else r = 58;
+        if (t < 0.74) return [ringPts(48, r)];
+        if (t < 0.86) return [ringPts(48, 58), ringPts(40, 40)];
+        var merlons = [];
+        for (var i = 0; i < 4; i++) merlons.push(sectorPts(40, 58, i * TAU / 4 + 0.24, (i + 1) * TAU / 4 - 0.24, 10));
+        return merlons;
+      }
+    },
+    {
+      name: 'PITLANE podium', color: '#9aa3ad', layers: 40, height: 220,
+      slice: function (t) {
+        var lean = -t * 66;
+        if (t > 0.94) return [rectPts(-76, 76, lean - 10, lean + 10)];
+        var parts = [rectPts(-76, -60, lean - 10, lean + 10), rectPts(60, 76, lean - 10, lean + 10)];
+        [0.14, 0.36, 0.58, 0.8].forEach(function (s) {
+          if (t > s && t < s + 0.065) parts.push(rectPts(-76, 76, lean - 8, lean + 24));
+        });
+        return parts;
+      }
+    }
+  ];
+
+  function shade(hex, k) {
+    var n = parseInt(hex.slice(1), 16);
+    var c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(function (v) {
+      return Math.round(k <= 1 ? v * k : v + (255 - v) * (k - 1));
+    });
+    return '#' + c.map(function (v) { return ('0' + Math.min(255, Math.max(0, v)).toString(16)).slice(-2); }).join('');
+  }
 
   function svgEl(name, attrs, parent) {
     var node = doc.createElementNS(SVG_NS, name);
@@ -185,74 +288,46 @@
     return node;
   }
 
+  var buildCount = 0;
+
   function initPrintBuild(svg) {
     var id = 'pb' + (++buildCount);
-    var LAYERS = parseInt(svg.getAttribute('data-layers'), 10) || 60;
-    var LAYER_MS = parseInt(svg.getAttribute('data-layer-ms'), 10) || 85;
-    var LAYER_MM = 0.2;
-    var CX = 200, BED_Y = 412, HEIGHT = 286, RY = 0.26;
-    var step = HEIGHT / LAYERS;
-    var hudLayer = svg.parentNode.querySelector('[data-hud-layer]');
-    var hudZ = svg.parentNode.querySelector('[data-hud-z]');
-    var hudTotal = svg.parentNode.querySelector('[data-hud-total]');
-    if (hudTotal) hudTotal.textContent = String(LAYERS).padStart(3, '0');
+    var LAYER_MS = parseInt(svg.getAttribute('data-layer-ms'), 10) || 180;
+    var CX = 200, BED_Y = 404, RY = 0.3;
+    var scope = svg.closest('[data-printer]') || svg.parentNode;
+    var hudLayer = $('[data-hud-layer]', scope);
+    var hudTotal = $('[data-hud-total]', scope);
+    var hudModel = $('[data-hud-model]', scope);
+    var modelIndex = (parseInt(svg.getAttribute('data-start'), 10) || 0) % PRINT_MODELS.length;
 
-    function profile(t) {
-      var belly = 48 + 44 * Math.sin(Math.PI * Math.min(t / 0.74, 1));
-      var flare = 22 * Math.pow(Math.max(0, (t - 0.8) / 0.2), 2);
-      return belly + flare + 2.2 * Math.sin(t * Math.PI * 2 * 9);
-    }
-
-    svg.setAttribute('viewBox', '0 -40 400 520');
-    svg.setAttribute('role', 'img');
+    var withCaption = svg.hasAttribute('data-caption');
+    svg.setAttribute('viewBox', withCaption ? '0 -40 400 560' : '0 -40 400 520');
     svg.innerHTML = '';
 
     var defs = svgEl('defs', {}, svg);
-    var wall = svgEl('linearGradient', { id: id + 'w', x1: 0, x2: 1, y1: 0, y2: 0 }, defs);
-    [['0', '#9c3a16'], ['.16', '#e05a24'], ['.36', '#ffa06b'], ['.52', '#ff7a3d'], ['.84', '#cf4e1c'], ['1', '#86300f']]
-      .forEach(function (s) { svgEl('stop', { offset: s[0], 'stop-color': s[1] }, wall); });
     var glow = svgEl('radialGradient', { id: id + 'g' }, defs);
     svgEl('stop', { offset: '0', 'stop-color': '#ffd0a8', 'stop-opacity': '.95' }, glow);
     svgEl('stop', { offset: '1', 'stop-color': '#ff6b2c', 'stop-opacity': '0' }, glow);
     var feed = svgEl('linearGradient', { id: id + 'f', gradientUnits: 'userSpaceOnUse', x1: 0, y1: -150, x2: 0, y2: -330 }, defs);
-    svgEl('stop', { offset: '0', 'stop-color': '#ff6b2c' }, feed);
-    svgEl('stop', { offset: '1', 'stop-color': '#ff6b2c', 'stop-opacity': '0' }, feed);
+    var feedStart = svgEl('stop', { offset: '0', 'stop-color': '#ff6b2c' }, feed);
+    var feedEnd = svgEl('stop', { offset: '1', 'stop-color': '#ff6b2c', 'stop-opacity': '0' }, feed);
     var dots = svgEl('pattern', { id: id + 'd', width: 9, height: 9, patternUnits: 'userSpaceOnUse' }, defs);
     svgEl('circle', { cx: 4.5, cy: 4.5, r: 0.9, fill: '#3d444d' }, dots);
+    var wallGrad = svgEl('linearGradient', { id: id + 'w', x1: 0, x2: 1, y1: 0, y2: 0 }, defs);
 
     // Build plate: textured black sheet on a steel bed.
     var bedRx = 176, bedRy = bedRx * RY;
-    svgEl('ellipse', { cx: CX, cy: BED_Y + 14, rx: bedRx, ry: bedRy, fill: '#16191c' }, svg);
-    svgEl('ellipse', { cx: CX, cy: BED_Y + 4, rx: bedRx, ry: bedRy, fill: '#2b3036' }, svg);
-    svgEl('ellipse', { cx: CX, cy: BED_Y + 4, rx: bedRx, ry: bedRy, fill: 'url(#' + id + 'd)', opacity: '.8' }, svg);
-    svgEl('ellipse', { cx: CX, cy: BED_Y + 4, rx: bedRx - 1, ry: bedRy - 1, fill: 'none', stroke: '#4a525b', 'stroke-width': 1.5 }, svg);
+    svgEl('ellipse', { cx: CX, cy: BED_Y + 12, rx: bedRx, ry: bedRy, fill: '#16191c' }, svg);
+    svgEl('ellipse', { cx: CX, cy: BED_Y + 2, rx: bedRx, ry: bedRy, fill: '#2b3036' }, svg);
+    svgEl('ellipse', { cx: CX, cy: BED_Y + 2, rx: bedRx, ry: bedRy, fill: 'url(#' + id + 'd)', opacity: '.8' }, svg);
+    svgEl('ellipse', { cx: CX, cy: BED_Y + 2, rx: bedRx - 1, ry: bedRy - 1, fill: 'none', stroke: '#4a525b', 'stroke-width': 1.5 }, svg);
 
     var object = svgEl('g', {}, svg);
-    var arcs = [];
-    for (var i = 0; i < LAYERS; i++) {
-      var w = profile(i / (LAYERS - 1));
-      var ly = BED_Y - i * step;
-      var p = svgEl('path', {
-        d: 'M' + (CX - w).toFixed(2) + ' ' + ly.toFixed(2) + 'A' + w.toFixed(2) + ' ' + (w * RY).toFixed(2) +
-          ' 0 0 0 ' + (CX + w).toFixed(2) + ' ' + ly.toFixed(2),
-        fill: 'none',
-        stroke: 'url(#' + id + 'w)',
-        'stroke-width': (step * 0.86).toFixed(2),
-        'stroke-linecap': 'round'
-      }, object);
-      arcs.push({ el: p, w: w, y: ly, len: 0 });
-    }
-    arcs.forEach(function (a) {
-      a.len = a.el.getTotalLength();
-      a.el.style.strokeDasharray = a.len + ' ' + a.len;
-      a.el.style.strokeDashoffset = a.len;
-    });
+    var hot = svgEl('path', {
+      fill: 'none', stroke: '#ffd18a', 'stroke-width': 2.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+    }, svg);
 
-    var rim = svgEl('path', {
-      fill: 'none', stroke: '#6b260c', 'stroke-width': (step * 0.86).toFixed(2), 'stroke-linecap': 'round'
-    }, object);
-
-    // X gantry + print head. Origin of the head group is the nozzle tip.
+    // X gantry + print head. The head group's origin is the nozzle tip.
     var gantry = svgEl('g', {}, svg);
     svgEl('rect', { x: 0, y: -122, width: 400, height: 12, rx: 2, fill: '#2b3036' }, gantry);
     svgEl('rect', { x: 0, y: -122, width: 400, height: 3, fill: '#4a525b' }, gantry);
@@ -267,16 +342,13 @@
     svgEl('rect', { x: -10, y: -22, width: 20, height: 8, fill: '#b88a2e' }, head);
     svgEl('path', { d: 'M-7 -14L7 -14L2.6 -1.5L-2.6 -1.5Z', fill: '#d4a640', stroke: '#8a6a22', 'stroke-width': 1 }, head);
 
-    var phase = 'build';
-    var progress = 0;
-    var drawn = 0;
-    var rimLayer = -1;
-    var phaseStart = 0;
-    var last = 0;
-    var running = false;
-    var visible = true;
-    var hx = CX - arcs[0].w, hy = BED_Y;
-    var parkFrom = null;
+    if (withCaption && !hudModel) {
+      var caption = svgEl('text', { x: CX, y: 502, 'text-anchor': 'middle', class: 'pb-caption' }, svg);
+      caption.appendChild(doc.createTextNode('Now printing · '));
+      hudModel = svgEl('tspan', { class: 'pb-model' }, caption);
+    }
+
+    var model, layers = [], hx = CX, hy = BED_Y;
 
     function setHead(x, y) {
       hx = x; hy = y;
@@ -284,55 +356,82 @@
       gantry.setAttribute('transform', 'translate(0 ' + y.toFixed(2) + ')');
     }
 
-    function setRim(k, frac) {
-      if (k < 0) { rim.style.display = 'none'; return; }
-      var a = arcs[k];
-      if (rimLayer !== k) {
-        rim.setAttribute('d', 'M' + (CX + a.w).toFixed(2) + ' ' + a.y.toFixed(2) + 'A' + a.w.toFixed(2) + ' ' +
-          (a.w * RY).toFixed(2) + ' 0 0 0 ' + (CX - a.w).toFixed(2) + ' ' + a.y.toFixed(2));
-        rim.__len = rim.getTotalLength();
-        rim.style.strokeDasharray = rim.__len + ' ' + rim.__len;
-        rimLayer = k;
-      }
-      rim.style.display = '';
-      rim.style.strokeDashoffset = rim.__len * (1 - frac);
+    function project(contours, yTop) {
+      return contours.map(function (pts) {
+        return 'M' + pts.map(function (p) {
+          return (CX + p[0]).toFixed(1) + ' ' + (yTop + p[1] * RY).toFixed(1);
+        }).join('L') + 'Z';
+      }).join('');
     }
 
-    function setHud(layer) {
-      if (hudLayer) hudLayer.textContent = String(layer).padStart(3, '0');
-      if (hudZ) hudZ.textContent = (layer * LAYER_MM).toFixed(2);
-    }
-
-    function render(p) {
-      var k = Math.min(Math.floor(p), LAYERS - 1);
-      var frac = p >= LAYERS ? 1 : p - Math.floor(p);
-      while (drawn < k) { arcs[drawn].el.style.strokeDashoffset = 0; drawn++; }
-      var a = arcs[k];
-      var ry = a.w * RY;
-      if (frac < 0.5) {
-        var u = frac * 2;
-        a.el.style.strokeDashoffset = a.len * (1 - u);
-        setRim(k - 1, 1);
-        var phi = u * Math.PI;
-        setHead(CX - a.w * Math.cos(phi), a.y + ry * Math.sin(phi));
-      } else {
-        var v = (frac - 0.5) * 2;
-        a.el.style.strokeDashoffset = 0;
-        setRim(k, v);
-        var psi = v * Math.PI;
-        setHead(CX + a.w * Math.cos(psi), a.y - ry * Math.sin(psi));
-      }
-      setHud(Math.min(k + 1, LAYERS));
-    }
-
-    function reset() {
-      arcs.forEach(function (a) { a.el.style.strokeDashoffset = a.len; });
+    function loadModel(m) {
+      model = m;
+      object.innerHTML = '';
       object.style.opacity = 1;
-      drawn = 0;
-      rimLayer = -1;
-      setRim(-1);
-      progress = 0;
+      layers = [];
+      while (wallGrad.firstChild) wallGrad.removeChild(wallGrad.firstChild);
+      [[0, 0.5], [0.18, 0.85], [0.38, 1.22], [0.56, 1], [0.86, 0.72], [1, 0.48]].forEach(function (s) {
+        svgEl('stop', { offset: s[0], 'stop-color': shade(m.color, s[1]) }, wallGrad);
+      });
+      feedStart.setAttribute('stop-color', m.color);
+      feedEnd.setAttribute('stop-color', m.color);
+      var step = m.height / m.layers;
+      var rule = m.evenodd ? 'evenodd' : 'nonzero';
+      var line = shade(m.color, 0.55);
+      var top = shade(m.color, 1.14);
+      for (var k = 0; k < m.layers; k++) {
+        var contours = m.slice((k + 0.5) / m.layers, k);
+        var yTop = BED_Y - (k + 1) * step;
+        // The wall is the layer's outline one step lower; the next layer
+        // covers all of it except the band that faces the viewer.
+        var wallEl = svgEl('path', {
+          d: project(contours, yTop + step), fill: 'url(#' + id + 'w)', 'fill-rule': rule,
+          stroke: line, 'stroke-width': 0.9, 'stroke-opacity': 0.6
+        }, object);
+        var capD = project(contours, yTop);
+        var capEl = svgEl('path', { d: capD, fill: top, 'fill-rule': rule, stroke: line, 'stroke-width': 0.6, 'stroke-opacity': 0.5 }, object);
+        wallEl.style.display = capEl.style.display = 'none';
+        layers.push({ wall: wallEl, cap: capEl, d: capD, top: yTop });
+      }
+      if (hudModel) hudModel.textContent = m.name;
+      if (hudTotal) hudTotal.textContent = String(m.layers).padStart(3, '0');
       setHud(0);
+    }
+
+    function setHud(n) { if (hudLayer) hudLayer.textContent = String(n).padStart(3, '0'); }
+
+    var phase = 'build', progress = 0, shown = 0, current = -1, hotLen = 0;
+    var phaseStart = 0, last = 0, running = false, visible = true, from = null, parkTo = null;
+
+    function showUpTo(n) {
+      while (shown < n) {
+        layers[shown].wall.style.display = '';
+        layers[shown].cap.style.display = '';
+        shown++;
+      }
+    }
+
+    function startPoint() {
+      hot.setAttribute('d', layers[0].d);
+      var p = hot.getPointAtLength(0);
+      hot.setAttribute('d', '');
+      return [p.x, p.y];
+    }
+
+    function renderBuild(p) {
+      var k = Math.min(Math.floor(p), model.layers - 1);
+      showUpTo(k);
+      if (k !== current) {
+        current = k;
+        hot.setAttribute('d', layers[k].d);
+        hotLen = hot.getTotalLength();
+        hot.style.strokeDasharray = hotLen + ' ' + hotLen;
+      }
+      var frac = Math.min(p - k, 1);
+      hot.style.strokeDashoffset = hotLen * (1 - frac);
+      var pt = hot.getPointAtLength(hotLen * frac);
+      setHead(pt.x, pt.y);
+      setHud(k + 1);
     }
 
     function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
@@ -344,27 +443,41 @@
 
       if (phase === 'build') {
         progress += dt / LAYER_MS;
-        if (progress >= LAYERS) {
-          progress = LAYERS;
-          render(LAYERS - 0.0001);
+        if (progress >= model.layers) {
+          showUpTo(model.layers);
+          hot.setAttribute('d', '');
+          current = -1;
+          setHud(model.layers);
           phase = 'park';
           phaseStart = now;
-          parkFrom = [hx, hy];
+          from = [hx, hy];
+          parkTo = [CX + 140, Math.max(96, layers[model.layers - 1].top - 48)];
         } else {
-          render(progress);
+          renderBuild(progress);
         }
       } else if (phase === 'park') {
-        var t = Math.min((now - phaseStart) / 900, 1);
-        var e = ease(t);
-        setHead(parkFrom[0] + (CX + 130 - parkFrom[0]) * e, parkFrom[1] + (96 - parkFrom[1]) * e);
+        var e = ease(Math.min((now - phaseStart) / 1100, 1));
+        setHead(from[0] + (parkTo[0] - from[0]) * e, from[1] + (parkTo[1] - from[1]) * e);
         glowDot.style.opacity = 1 - e;
-        if (now - phaseStart > 2600) { phase = 'clear'; phaseStart = now; parkFrom = [hx, hy]; }
+        if (now - phaseStart > 3200) { phase = 'clear'; phaseStart = now; }
       } else if (phase === 'clear') {
-        var c = Math.min((now - phaseStart) / 900, 1);
-        var ec = ease(c);
-        object.style.opacity = 1 - Math.min(c * 1.6, 1);
-        setHead(parkFrom[0] + (CX - arcs[0].w - parkFrom[0]) * ec, parkFrom[1] + (BED_Y - parkFrom[1]) * ec);
-        if (c >= 1) { reset(); glowDot.style.opacity = 1; phase = 'build'; }
+        var c = Math.min((now - phaseStart) / 1000, 1);
+        object.style.opacity = 1 - c;
+        if (c >= 1) {
+          modelIndex = (modelIndex + 1) % PRINT_MODELS.length;
+          loadModel(PRINT_MODELS[modelIndex]);
+          shown = 0;
+          progress = 0;
+          phase = 'travel';
+          phaseStart = now;
+          from = [hx, hy];
+          parkTo = startPoint();
+        }
+      } else if (phase === 'travel') {
+        var tr = ease(Math.min((now - phaseStart) / 900, 1));
+        setHead(from[0] + (parkTo[0] - from[0]) * tr, from[1] + (parkTo[1] - from[1]) * tr);
+        glowDot.style.opacity = tr;
+        if (tr >= 1) phase = 'build';
       }
       window.requestAnimationFrame(frame);
     }
@@ -377,18 +490,19 @@
     }
     function pause() { running = false; }
 
+    loadModel(PRINT_MODELS[modelIndex]);
+
     if (reduceMotion.matches) {
-      // Show the finished print, nozzle parked.
-      arcs.forEach(function (a) { a.el.style.strokeDashoffset = 0; });
-      setRim(LAYERS - 1, 1);
-      setHead(CX + 130, 96);
+      // Show a finished print with the nozzle parked.
+      showUpTo(model.layers);
+      setHud(model.layers);
+      setHead(CX + 140, Math.max(96, layers[model.layers - 1].top - 48));
       glowDot.style.opacity = 0;
-      setHud(LAYERS);
       return;
     }
 
-    reset();
-    setHead(CX - arcs[0].w, BED_Y);
+    var sp = startPoint();
+    setHead(sp[0], sp[1]);
 
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
@@ -499,9 +613,9 @@
         marquees.forEach(fillMarquee);
       }, 200);
     });
-    reduceMotion.addEventListener && reduceMotion.addEventListener('change', function () {
-      marquees.forEach(fillMarquee);
-    });
+    if (reduceMotion.addEventListener) {
+      reduceMotion.addEventListener('change', function () { marquees.forEach(fillMarquee); });
+    }
 
     if (work && 'IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
@@ -537,6 +651,9 @@
       var caps = $$('.work-card__cap span', card);
       boxImg.src = img.currentSrc || img.src;
       boxImg.alt = img.alt;
+      boxImg.width = img.width;
+      boxImg.height = img.height;
+      box.style.setProperty('--lb-ar', img.getAttribute('width') + ' / ' + img.getAttribute('height'));
       boxTitle.textContent = caps[0] ? caps[0].textContent : '';
       boxTag.textContent = caps[1] ? caps[1].textContent : '';
       boxCount.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
@@ -561,36 +678,38 @@
   }
 
   /* ------------------------------------------------------------------
-     Enquiry form. There is no server: the form writes your message into
-     a WhatsApp chat or an email, ready for you to press send.
+     Enquiry form. There is no server: the form writes the visitor's
+     message into WhatsApp, addressed to the business they picked.
+     Each option carries its own WhatsApp number and business name.
      ------------------------------------------------------------------ */
   $$('[data-enquiry-form]').forEach(function (form) {
-    var number = (form.getAttribute('data-whatsapp') || '').replace(/\D/g, '');
-    var email = form.getAttribute('data-email') || '';
-    var brand = form.getAttribute('data-brand') || '';
-    var division = form.getAttribute('data-division') || '';
     var waLink = $('[data-send="whatsapp"]', form);
-    var mailLink = $('[data-send="email"]', form);
     var status = $('[data-enquiry-status]', form);
-    var fields = ['name', 'contact', 'type', 'message'].map(function (n) { return form.elements[n]; });
+    var fields = ['name', 'contact', 'message'].map(function (n) { return form.elements[n]; });
 
     function value(n) { return (form.elements[n] && form.elements[n].value || '').trim(); }
 
+    function selected() {
+      var sel = form.elements.type;
+      var opt = sel && sel.options[sel.selectedIndex];
+      return {
+        label: opt ? opt.value : '',
+        number: (opt && opt.getAttribute('data-whatsapp') || '').replace(/\D/g, ''),
+        brand: opt && opt.getAttribute('data-brand') || ''
+      };
+    }
+
     function compose() {
+      var to = selected();
       var name = value('name');
       var lines = [
-        'Hi ' + brand + (name ? ', this is ' + name + '.' : '.'),
-        'Enquiry: ' + value('type') + ' (' + division + ')',
+        'Hi ' + to.brand + (name ? ', this is ' + name + '.' : '.'),
+        "I'm looking for: " + to.label,
         '',
         value('message') || '(details to follow)'
       ];
       if (value('contact')) lines.push('', 'You can reach me at: ' + value('contact'));
-      var text = lines.join('\n');
-      if (waLink) waLink.href = 'https://wa.me/' + number + '?text=' + encodeURIComponent(text);
-      if (mailLink) {
-        mailLink.href = 'mailto:' + email + '?subject=' +
-          encodeURIComponent(division + ' enquiry: ' + value('type')) + '&body=' + encodeURIComponent(text);
-      }
+      if (waLink) waLink.href = 'https://wa.me/' + to.number + '?text=' + encodeURIComponent(lines.join('\n'));
     }
 
     function setError(field, message) {
@@ -618,9 +737,8 @@
     form.addEventListener('submit', function (e) { e.preventDefault(); });
     compose();
 
-    [waLink, mailLink].forEach(function (link) {
-      if (!link) return;
-      link.addEventListener('click', function (e) {
+    if (waLink) {
+      waLink.addEventListener('click', function (e) {
         var bad = validate();
         if (bad) {
           e.preventDefault();
@@ -629,22 +747,21 @@
           return;
         }
         compose();
-        if (status) {
-          status.textContent = link === waLink
-            ? 'WhatsApp opens with your message filled in. Press send there to reach us.'
-            : 'Your email app opens with your message filled in. Press send there to reach us.';
-        }
+        if (status) status.textContent = 'WhatsApp opens with your message filled in. Press send there to reach us.';
       });
-    });
+    }
   });
 
-  // Buttons elsewhere that start an enquiry of a given type.
-  $$('[data-enquiry]').forEach(function (btn) {
+  // Links that start an enquiry: pick the business and start the message.
+  $$('[data-prefill]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var form = $('[data-enquiry-form]');
-      if (!form || !form.elements.type) return;
-      form.elements.type.value = btn.getAttribute('data-enquiry');
-      form.elements.type.dispatchEvent(new Event('change', { bubbles: true }));
+      if (!form) return;
+      var type = btn.getAttribute('data-type');
+      if (type && form.elements.type) form.elements.type.value = type;
+      var msg = form.elements.message;
+      if (msg && !msg.value.trim()) msg.value = btn.getAttribute('data-prefill') + ' ';
+      form.dispatchEvent(new Event('change', { bubbles: true }));
       window.setTimeout(function () {
         if (form.elements.name) form.elements.name.focus({ preventScroll: true });
       }, reduceMotion.matches ? 0 : 650);
