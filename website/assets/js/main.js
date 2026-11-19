@@ -19,7 +19,7 @@
      ------------------------------------------------------------------ */
   var STRIPS = { carbon: 7, print: 12 };
   var EXIT_MS = { carbon: 1080, print: 1100 };
-  var WIPE_LOGO = { carbon: 'assets/img/carbon6-mark.svg', print: 'assets/img/pixl-mark.svg' };
+  var WIPE_LOGO = { carbon: 'assets/img/carbon6-mark.svg', print: 'assets/img/pixl-logo-160.webp' };
   var leaving = false;
   var safetyTimer = 0;
 
@@ -642,6 +642,7 @@
     var boxTitle = $('[data-lightbox-title]', box);
     var boxTag = $('[data-lightbox-tag]', box);
     var boxCount = $('[data-lightbox-count]', box);
+    var boxCta = $('[data-lightbox-cta]', box);
     var current = 0;
 
     var show = function (index) {
@@ -657,6 +658,13 @@
       boxTitle.textContent = caps[0] ? caps[0].textContent : '';
       boxTag.textContent = caps[1] ? caps[1].textContent : '';
       boxCount.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
+      if (boxCta) {
+        var product = card.getAttribute('data-item-product');
+        boxCta.hidden = !product;
+        boxCta.setAttribute('data-product', product || '');
+        boxCta.setAttribute('data-type', card.getAttribute('data-item-type') || '');
+        boxCta.textContent = card.getAttribute('data-item-cta') || 'Ask about this';
+      }
     };
 
     doc.addEventListener('click', function (e) {
@@ -695,8 +703,27 @@
       return {
         label: opt ? opt.value : '',
         number: (opt && opt.getAttribute('data-whatsapp') || '').replace(/\D/g, ''),
-        brand: opt && opt.getAttribute('data-brand') || ''
+        brand: opt && opt.getAttribute('data-brand') || '',
+        picker: opt && opt.getAttribute('data-picker') || ''
       };
+    }
+
+    // Show the product choices of the business picked above, and only those.
+    function syncPicker() {
+      var set = selected().picker;
+      $$('[data-picker-set]', form).forEach(function (group) {
+        var on = group.getAttribute('data-picker-set') === set;
+        group.hidden = !on;
+        $$('input', group).forEach(function (input) {
+          input.disabled = !on;
+          if (!on) input.checked = false;
+        });
+      });
+    }
+
+    function product() {
+      var chosen = $('input[name="product"]:checked:not(:disabled)', form);
+      return chosen ? chosen.value : '';
     }
 
     function compose() {
@@ -704,10 +731,10 @@
       var name = value('name');
       var lines = [
         'Hi ' + to.brand + (name ? ', this is ' + name + '.' : '.'),
-        "I'm looking for: " + to.label,
-        '',
-        value('message') || '(details to follow)'
+        "I'm looking for: " + to.label
       ];
+      if (product()) lines.push("I'm interested in: " + product());
+      lines.push('', value('message') || '(details to follow)');
       if (value('contact')) lines.push('', 'You can reach me at: ' + value('contact'));
       if (waLink) waLink.href = 'https://wa.me/' + to.number + '?text=' + encodeURIComponent(lines.join('\n'));
     }
@@ -733,8 +760,20 @@
       if (e.target.getAttribute('aria-invalid') === 'true' && e.target.value.trim()) setError(e.target, '');
       compose();
     });
-    form.addEventListener('change', compose);
+    form.addEventListener('change', function (e) {
+      if (e.target === form.elements.type) syncPicker();
+      compose();
+    });
     form.addEventListener('submit', function (e) { e.preventDefault(); });
+    form.pickProduct = function (type, value) {
+      if (type && form.elements.type) form.elements.type.value = type;
+      syncPicker();
+      $$('input[name="product"]', form).forEach(function (input) {
+        if (!input.disabled && input.value === value) input.checked = true;
+      });
+      compose();
+    };
+    syncPicker();
     compose();
 
     if (waLink) {
@@ -752,20 +791,19 @@
     }
   });
 
-  // Links that start an enquiry: pick the business and start the message.
-  $$('[data-prefill]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var form = $('[data-enquiry-form]');
-      if (!form) return;
-      var type = btn.getAttribute('data-type');
-      if (type && form.elements.type) form.elements.type.value = type;
-      var msg = form.elements.message;
-      if (msg && !msg.value.trim()) msg.value = btn.getAttribute('data-prefill') + ' ';
-      form.dispatchEvent(new Event('change', { bubbles: true }));
-      window.setTimeout(function () {
-        if (form.elements.name) form.elements.name.focus({ preventScroll: true });
-      }, reduceMotion.matches ? 0 : 650);
-    });
+  // Buttons that start an enquiry about one product: pick the business and
+  // the product in the contact form, then move there.
+  doc.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('[data-product]');
+    if (!btn || !btn.getAttribute('data-product')) return;
+    var form = $('[data-enquiry-form]');
+    if (!form || !form.pickProduct) return;
+    var dialog = btn.closest('dialog');
+    if (dialog && dialog.open) dialog.close();
+    form.pickProduct(btn.getAttribute('data-type'), btn.getAttribute('data-product'));
+    window.setTimeout(function () {
+      if (form.elements.name) form.elements.name.focus({ preventScroll: true });
+    }, reduceMotion.matches ? 0 : 650);
   });
 
   $$('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });

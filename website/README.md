@@ -6,42 +6,52 @@ The website for **Carbon6 Studio** and its two businesses, **Carbon6 Customizati
 
 | File | What it is |
 | --- | --- |
-| `index.html` | **Start page.** Split diagonally into Carbon6 Customization and pi.XL 3D Printing. Choosing one plays a transition into that business: carbon strips weave across the screen, or the screen is printed layer by layer. The 3D printer on this page prints a different model each time it finishes. |
-| `carbon-fibre.html` | **Carbon6 Customization.** Landing section, Our work (rolling gallery), Products (catalogue), Custom parts, and one Contact page with the contact details and a message form. |
-| `3d-printing.html` | **pi.XL 3D Printing.** The same order, with the PITLANE range as the products. |
+| `index.html` | **Start page.** Split diagonally into Carbon6 Customization and pi.XL 3D Printing. Choosing one plays a transition into that business: carbon strips weave across the screen, or the screen is printed layer by layer. The badge on the seam keeps turning between the Carbon6 and pi.XL logos, and the 3D printer prints a different model each time it finishes. |
+| `carbon-fibre.html` | **Carbon6 Customization.** Landing section, Our work (a rolling gallery of work and products), Custom parts, and one Talk to us page with the contact details and a message form. |
+| `3d-printing.html` | **pi.XL 3D Printing.** The same order, with the PITLANE range and prices in the gallery. |
 | `assets/css/styles.css` | All styling. Colours and fonts are defined at the top. |
 | `assets/js/main.js` | Transitions, the 3D printer animation, gallery, lightbox and the message form. |
-| `assets/img/` | Logos, favicons, product pictures (`products/`) and gallery pictures (`work/`). |
+| `assets/img/` | Logos, favicons, Carbon6 product pictures (`products/`) and gallery pictures (`work/`). |
+
+## How the products work
+
+There is no separate products page. The products live in two places:
+
+1. **Our work.** Product pictures sit in the gallery alongside past work. Selecting any picture opens it larger with a button such as **Ask about automotive parts** or **Order GARAGE · ₹799**.
+2. **Talk to us.** Under "I'm interested in" the form lists the range of the business chosen above it as buttons. The gallery button jumps here with that product already picked, and the WhatsApp message names it.
 
 ## Where the content came from
 
 - **Carbon 6 logo:** converted from `Carbon 6 logo.ai` in Google Drive into `carbon6-logo.svg` and `carbon6-mark.svg` (white, for dark backgrounds) and the `-ink` versions (dark, for light backgrounds). The car on its own (`carbon6-mark`) is used in the headers, the badge and the favicon.
-- **Carbon 6 contact details and tagline:** from the Carbon 6 business card artwork in Google Drive: +91 81055 63309, Instagram @c6_customization, #CarbonizeItAll.
-- **pi.XL products, prices, photos and contact details:** from `PITLANE_Catalogue_2026_v4.pdf` in Google Drive: WhatsApp +91 99006 11996, Instagram @pi.xl3dprinting.
-- **pi.XL mark:** there was no pi.XL logo in Drive, so `pixl-mark.svg` and `favicon-pixl.svg` are a simple stand-in π. Replace them with the real logo if there is one.
+- **pi.XL logo:** the round pi.XL 3D Printing logo you supplied, cropped to its circle: `pixl-logo.webp` (start page), `pixl-logo-160.webp` (header, badge and transition) and `favicon-pixl.png`.
+- **Contact details:** both businesses use **+91 99006 11996** for WhatsApp and calls. Instagram: @c6_customization (from the Carbon 6 business card) and @pi.xl3dprinting.
+- **pi.XL products, prices and photos:** from `PITLANE_Catalogue_2026_v4.pdf` in Google Drive.
 
 ## What is still a placeholder
 
-- **Carbon6 Customization pictures.** The Our work gallery and the product pictures on the carbon fibre page are sample illustrations marked "SAMPLE IMAGE". Replace them with photos of your parts (see below).
+- **Carbon6 Customization pictures.** The gallery pictures on the carbon fibre page are sample illustrations marked "SAMPLE IMAGE". Replace them with photos of your parts (see below).
 - **Carbon6 product range.** The six product groups (Automotive, Motorcycle, Cycling, Drones & RC, Sheets/tubes/profiles, Accessories) are general categories. Edit them to match what you actually sell.
 
 ## Editing
 
 ### Contact details
 
-Each business has its own WhatsApp number. To change one, use find-and-replace across the HTML files:
+To change the number, use find-and-replace across the HTML files:
 
 | Find | What it is |
 | --- | --- |
-| `918105563309` | Carbon6 Customization WhatsApp and phone (digits only, with country code) |
-| `+91 81055 63309` | Carbon6 Customization number as shown on the page |
-| `919900611996` | pi.XL 3D Printing WhatsApp (digits only, with country code) |
-| `+91 99006 11996` | pi.XL number as shown on the page |
+| `919900611996` | WhatsApp and phone links, and the number each form option sends to (digits only, with country code) |
+| `+91&nbsp;99006&nbsp;11996` | The number as shown on the page |
 | `c6_customization` / `pi.xl3dprinting` | Instagram handles |
+
+To give the two businesses different numbers again, change the number on the page you want and in that business's `<option>` (`data-whatsapp`) in the form on both pages.
 
 ### Products
 
-Each product is one `<li class="product">` block in the Products section. Change the picture, name, description and price there. On the pi.XL page, the **Order** button opens WhatsApp with a message naming the product and price; if you change a price, change it in that button's link too (the text after `?text=` is the message, URL-encoded).
+- **In the gallery:** each picture is one `<li class="work-card">` line. Three settings on that line drive its button: `data-item-type` (`Carbon fibre` or `3D printing`), `data-item-product` (the product it is about) and `data-item-cta` (the button text).
+- **In the form:** each product is one `<label class="chip">` inside `<fieldset class="picker">`. There is one set per business (`data-picker-set="carbon"` and `"print"`), and both pages carry both sets.
+- A gallery button picks the chip whose `value` matches its `data-item-product` exactly, so keep the two the same.
+- **pi.XL prices** appear in three places: the gallery caption, the chip (its label and `value`) and the gallery button text. Change all three when a price changes.
 
 ### Gallery photos
 
@@ -51,7 +61,7 @@ Each product is one `<li class="product">` block in the Products section. Change
 
 ### The message form
 
-There is no server. The form writes the visitor's message into WhatsApp and sends it to the business they choose under "I'm looking for": **Carbon fibre** goes to Carbon6 Customization, **3D printing** goes to pi.XL. Each option carries its number in `data-whatsapp`. The visitor presses send in WhatsApp and can attach photos there.
+There is no server. The form writes the visitor's message into WhatsApp: who they are, what they are looking for (**Carbon fibre** or **3D printing**), the product they picked and their details. The visitor presses send in WhatsApp and can attach photos there.
 
 ### The 3D printer models
 
@@ -80,4 +90,4 @@ Any static web host works:
 - **Colours:** aramid gold (`--aramid`) is the carbon fibre accent and hot-nozzle orange (`--nozzle`) is the 3D printing accent, set at the top of `styles.css`.
 - **Fonts:** headings use Archivo at its widest setting, labels use IBM Plex Mono. Both load from Google Fonts.
 - **Accessibility:** works with a keyboard and screen readers, and passes an automated axe-core check on every page at desktop and phone sizes.
-- **Reduced motion:** visitors who turn on "reduce motion" get no transitions or auto-scrolling, the printer shows a finished model, and the gallery becomes a row they can swipe.
+- **Reduced motion:** visitors who turn on "reduce motion" get no transitions or auto-scrolling, the printer shows a finished model, the badge fades between the two logos instead of turning, and the gallery becomes a row they can swipe.

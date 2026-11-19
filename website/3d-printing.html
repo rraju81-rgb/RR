@@ -10,7 +10,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="pi.XL 3D Printing · PITLANE Display Racks">
   <meta property="og:description" content="Display racks for carded 1:64 die-cast cars, and custom 3D prints.">
-  <link rel="icon" href="assets/img/favicon-pixl.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon-pixl.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
@@ -23,12 +23,13 @@
   <!-- Opens on the last frame of the home page transition, then reveals the page. -->
   <div class="wipe wipe--print wipe--enter" aria-hidden="true">
     <div class="wipe__strips"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div>
-    <div class="wipe__label"><img class="wipe__logo" src="assets/img/pixl-mark.svg" alt="" width="56" height="56"><span class="wipe__title">pi.XL 3D Printing</span><span class="wipe__bar"></span></div>
+    <div class="wipe__label"><img class="wipe__logo" src="assets/img/pixl-logo-160.webp" alt="" width="80" height="80"><span class="wipe__title">pi.XL 3D Printing</span><span class="wipe__bar"></span></div>
   </div>
 
   <svg class="sprite" aria-hidden="true" focusable="false">
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4l-4.4 1.1 1.2-4.1A8.5 8.5 0 1 1 20.5 12z"/><path d="M8.8 9.2c.2 3.2 2.8 5.8 6 6"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.6 4.2-2 1.3a10.5 10.5 0 0 0 6.2 6.2l1.3-2 4.2 1.6v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
@@ -41,7 +42,7 @@
   <header class="site-header" data-header>
     <div class="site-header__inner">
       <a class="brand" href="index.html">
-        <img class="brand__mark" src="assets/img/pixl-mark.svg" alt="" width="36" height="36">
+        <img class="brand__mark brand__mark--round" src="assets/img/pixl-logo-160.webp" alt="" width="40" height="40">
         <span class="brand__text">
           <span class="brand__name">pi.XL</span>
           <span class="brand__div">3D Printing</span>
@@ -56,13 +57,12 @@
         </button>
         <ul class="site-nav__list" id="site-menu">
           <li><a href="#work">Our work</a></li>
-          <li><a href="#products">Products</a></li>
           <li><a href="#custom">Custom prints</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a class="switch" href="carbon-fibre.html" data-transition="carbon" data-title="Carbon6 Customization"><span class="switch__swatch switch__swatch--carbon" aria-hidden="true"></span>Carbon6<span class="visually-hidden"> Customization</span></a></li>
         </ul>
       </nav>
-      <a class="btn btn--primary btn--sm site-header__cta" href="#products">Order now</a>
+      <a class="btn btn--primary btn--sm site-header__cta" href="#contact">Order now</a>
     </div>
   </header>
 
@@ -74,10 +74,6 @@
           <p class="eyebrow">pi.XL 3D Printing</p>
           <h1 class="hero__title" id="hero-title">Your idea, <em>printed.</em></h1>
           <p class="hero__lede">We 3D-print PITLANE display racks for carded 1:64 die-cast cars, plus custom parts, models and gifts to order. Send us a file, a sketch or just an idea.</p>
-          <div class="hero__actions">
-            <a class="btn btn--primary btn--lg" href="#products">See products <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            <a class="btn btn--ghost btn--lg" href="#custom">Request a custom print</a>
-          </div>
           <ul class="hero__specs">
             <li>Printed in PLA Pro+</li>
             <li>Made in India</li>
@@ -95,17 +91,16 @@
           </figure>
         </div>
       </div>
-      <a class="scroll-cue" href="#work">Scroll</a>
     </section>
 
-    <!-- Our work -->
+    <!-- Our work, with the PITLANE range and prices woven in -->
     <section class="work" id="work" aria-labelledby="work-title">
       <div class="work__head">
         <div>
-          <p class="eyebrow">Our work</p>
+          <p class="eyebrow">Our work &amp; products</p>
           <h2 class="section-title" id="work-title">Printed by us</h2>
         </div>
-        <p class="work__lede">PITLANE racks for walls and desks, every card on show. Pause the rows any time, or select a picture to see it larger.</p>
+        <p class="work__lede">The PITLANE range on walls and desks, with prices. Select any picture to see it larger and order it.</p>
         <button class="marquee-toggle" type="button" aria-pressed="false" data-marquee-toggle>
           <svg class="icon icon--pause" aria-hidden="true"><use href="#i-pause"/></svg>
           <svg class="icon icon--play" aria-hidden="true"><use href="#i-play"/></svg>
@@ -115,99 +110,30 @@
 
       <div class="marquee" data-marquee data-direction="left" data-speed="38">
         <ul class="marquee__track">
-          <li class="work-card" style="--ar: 704 / 1100"><button class="work-card__btn" type="button" aria-label="View larger: GARAGE wall rack"><img src="assets/img/work/pixl-garage.jpg" alt="PITLANE GARAGE wall rack holding six carded 1:64 cars on a brick wall" width="704" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GARAGE wall rack</span><span>Wall · swing-out</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 1027"><button class="work-card__btn" type="button" aria-label="View larger: GARAGE combo"><img src="assets/img/work/pixl-garage-combo.jpg" alt="Two PITLANE GARAGE racks side by side holding twelve cars" width="1100" height="1027" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GARAGE combo, 12 cars</span><span>Wall · swing-out</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 825"><button class="work-card__btn" type="button" aria-label="View larger: Swing-out doors"><img src="assets/img/work/pixl-garage-doors.jpg" alt="PITLANE GARAGE with one card door swung out" width="1100" height="825" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Swing-out doors</span><span>How it works</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 917"><button class="work-card__btn" type="button" aria-label="View larger: Swap one card"><img src="assets/img/work/pixl-garage-swap.jpg" alt="Swapping one card on a PITLANE GARAGE combo while the others stay in place" width="1100" height="917" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Swap one card</span><span>In action</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 703"><button class="work-card__btn" type="button" aria-label="View larger: PODIUM 3 and 5"><img src="assets/img/work/pixl-podium-pair.jpg" alt="PITLANE PODIUM 3 and PODIUM 5 folding stands on a wooden desk" width="1100" height="703" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>PODIUM 3 and 5</span><span>Tabletop</span></p></li>
-          <li class="work-card" style="--ar: 879 / 1100"><button class="work-card__btn" type="button" aria-label="View larger: Folds flat"><img src="assets/img/work/pixl-podium-folded.jpg" alt="PITLANE PODIUM folded flat on a desk" width="879" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Folds flat</span><span>Tabletop</span></p></li>
+          <li class="work-card" style="--ar: 704 / 1100" data-item-type="3D printing" data-item-product="PITLANE GARAGE (₹799)" data-item-cta="Order GARAGE · ₹799"><button class="work-card__btn" type="button" aria-label="View larger: GARAGE wall rack"><img src="assets/img/work/pixl-garage.jpg" alt="PITLANE GARAGE wall rack holding six carded 1:64 cars on a brick wall" width="704" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GARAGE wall rack</span><span>₹799 · Wall · swing-out</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 1027" data-item-type="3D printing" data-item-product="PITLANE GARAGE combo (₹1,499)" data-item-cta="Order GARAGE combo · ₹1,499"><button class="work-card__btn" type="button" aria-label="View larger: GARAGE combo"><img src="assets/img/work/pixl-garage-combo.jpg" alt="Two PITLANE GARAGE racks side by side holding twelve cars" width="1100" height="1027" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GARAGE combo, 12 cars</span><span>₹1,499 · base free</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 825" data-item-type="3D printing" data-item-product="PITLANE GARAGE (₹799)" data-item-cta="Order GARAGE · ₹799"><button class="work-card__btn" type="button" aria-label="View larger: Swing-out doors"><img src="assets/img/work/pixl-garage-doors.jpg" alt="PITLANE GARAGE with one card door swung out" width="1100" height="825" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Swing-out doors</span><span>GARAGE · how it works</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 917" data-item-type="3D printing" data-item-product="PITLANE GARAGE combo (₹1,499)" data-item-cta="Order GARAGE combo · ₹1,499"><button class="work-card__btn" type="button" aria-label="View larger: Swap one card"><img src="assets/img/work/pixl-garage-swap.jpg" alt="Swapping one card on a PITLANE GARAGE combo while the others stay in place" width="1100" height="917" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Swap one card</span><span>GARAGE combo · in action</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 703" data-item-type="3D printing" data-item-product="PITLANE PODIUM 3 (₹499)" data-item-cta="Order PODIUM 3 · ₹499"><button class="work-card__btn" type="button" aria-label="View larger: PODIUM 3 and 5"><img src="assets/img/work/pixl-podium-pair.jpg" alt="PITLANE PODIUM 3 and PODIUM 5 folding stands on a wooden desk" width="1100" height="703" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>PODIUM 3 and 5</span><span>From ₹499 · tabletop</span></p></li>
+          <li class="work-card" style="--ar: 879 / 1100" data-item-type="3D printing" data-item-product="PITLANE PODIUM 3 (₹499)" data-item-cta="Order PODIUM 3 · ₹499"><button class="work-card__btn" type="button" aria-label="View larger: Folds flat"><img src="assets/img/work/pixl-podium-folded.jpg" alt="PITLANE PODIUM folded flat on a desk" width="879" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Folds flat</span><span>PODIUM · tabletop</span></p></li>
         </ul>
       </div>
       <div class="marquee" data-marquee data-direction="right" data-speed="32">
         <ul class="marquee__track">
-          <li class="work-card" style="--ar: 704 / 1100"><button class="work-card__btn" type="button" aria-label="View larger: GRID wall rack"><img src="assets/img/work/pixl-grid.jpg" alt="PITLANE GRID wall rack holding six carded cars on a wooden wall" width="704" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GRID wall rack</span><span>Wall · slide-in</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 1027"><button class="work-card__btn" type="button" aria-label="View larger: GRID combo"><img src="assets/img/work/pixl-grid-combo.jpg" alt="Two PITLANE GRID racks side by side holding twelve cars" width="1100" height="1027" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GRID combo, 12 cars</span><span>Wall · slide-in</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 825"><button class="work-card__btn" type="button" aria-label="View larger: A lane for every card"><img src="assets/img/work/pixl-grid-lanes.jpg" alt="PITLANE GRID showing the slide-in lanes" width="1100" height="825" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>A lane for every card</span><span>How it works</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 917"><button class="work-card__btn" type="button" aria-label="View larger: Slide in, slide out"><img src="assets/img/work/pixl-grid-slide.jpg" alt="A card sliding into a PITLANE GRID rack" width="1100" height="917" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Slide in, slide out</span><span>In action</span></p></li>
-          <li class="work-card" style="--ar: 879 / 1100"><button class="work-card__btn" type="button" aria-label="View larger: PODIUM loaded"><img src="assets/img/work/pixl-podium-loaded.jpg" alt="PITLANE PODIUM stand loaded with five carded cars" width="879" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>PODIUM loaded</span><span>Tabletop</span></p></li>
-          <li class="work-card" style="--ar: 1100 / 825"><button class="work-card__btn" type="button" aria-label="View larger: Stands up in one flip"><img src="assets/img/work/pixl-podium-open.jpg" alt="PITLANE PODIUM with its folding leg flipped out" width="1100" height="825" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Stands up in one flip</span><span>How it works</span></p></li>
+          <li class="work-card" style="--ar: 704 / 1100" data-item-type="3D printing" data-item-product="PITLANE GRID (₹499)" data-item-cta="Order GRID · ₹499"><button class="work-card__btn" type="button" aria-label="View larger: GRID wall rack"><img src="assets/img/work/pixl-grid.jpg" alt="PITLANE GRID wall rack holding six carded cars on a wooden wall" width="704" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GRID wall rack</span><span>₹499 · Wall · slide-in</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 1027" data-item-type="3D printing" data-item-product="PITLANE GRID combo (₹899)" data-item-cta="Order GRID combo · ₹899"><button class="work-card__btn" type="button" aria-label="View larger: GRID combo"><img src="assets/img/work/pixl-grid-combo.jpg" alt="Two PITLANE GRID racks side by side holding twelve cars" width="1100" height="1027" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>GRID combo, 12 cars</span><span>₹899 · base free</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 825" data-item-type="3D printing" data-item-product="PITLANE GRID (₹499)" data-item-cta="Order GRID · ₹499"><button class="work-card__btn" type="button" aria-label="View larger: A lane for every card"><img src="assets/img/work/pixl-grid-lanes.jpg" alt="PITLANE GRID showing the slide-in lanes" width="1100" height="825" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>A lane for every card</span><span>GRID · how it works</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 917" data-item-type="3D printing" data-item-product="PITLANE GRID combo (₹899)" data-item-cta="Order GRID combo · ₹899"><button class="work-card__btn" type="button" aria-label="View larger: Slide in, slide out"><img src="assets/img/work/pixl-grid-slide.jpg" alt="A card sliding into a PITLANE GRID combo" width="1100" height="917" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Slide in, slide out</span><span>GRID combo · in action</span></p></li>
+          <li class="work-card" style="--ar: 879 / 1100" data-item-type="3D printing" data-item-product="PITLANE PODIUM 5 (₹999)" data-item-cta="Order PODIUM 5 · ₹999"><button class="work-card__btn" type="button" aria-label="View larger: PODIUM 5 loaded"><img src="assets/img/work/pixl-podium-loaded.jpg" alt="PITLANE PODIUM 5 stand loaded with five carded cars" width="879" height="1100" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>PODIUM 5 loaded</span><span>₹999 · tabletop</span></p></li>
+          <li class="work-card" style="--ar: 1100 / 825" data-item-type="3D printing" data-item-product="PITLANE PODIUM 3 (₹499)" data-item-cta="Order PODIUM 3 · ₹499"><button class="work-card__btn" type="button" aria-label="View larger: Stands up in one flip"><img src="assets/img/work/pixl-podium-open.jpg" alt="PITLANE PODIUM with its folding leg flipped out" width="1100" height="825" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Stands up in one flip</span><span>PODIUM · how it works</span></p></li>
         </ul>
       </div>
-    </section>
-
-    <!-- Products -->
-    <section class="section catalog" id="products" aria-labelledby="products-title">
-      <div class="section__inner">
-        <div class="section__head">
-          <div>
-            <p class="eyebrow">PITLANE by pi.XL</p>
-            <h2 class="section-title" id="products-title">Products</h2>
-          </div>
-          <p class="section__lede">Display racks for carded 1:64 die-cast cars. Every card on show, any card out in seconds. Every rack is 3D-printed in India, with nothing to glue and nothing to lose.</p>
-        </div>
-        <ul class="catalog__grid">
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/pitlane-garage.jpg" alt="PITLANE GARAGE swing-out wall rack with six carded cars" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <p class="product__kind">Wall · swing-out</p>
-              <h3 class="product__name">GARAGE</h3>
-              <p class="product__desc">Each card swings out on its own door. Holds 6 cars.</p>
-              <div class="product__foot"><p class="product__price">₹799</p><a class="product__cta" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20PITLANE%20GARAGE%20%28%E2%82%B9799%29." target="_blank" rel="noopener">Order<span class="visually-hidden"> GARAGE on WhatsApp</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/pitlane-garage-combo.jpg" alt="PITLANE GARAGE combo: left and right racks holding twelve cars" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <p class="product__kind">Wall · swing-out</p>
-              <h3 class="product__name">GARAGE combo</h3>
-              <p class="product__desc">A right and a left rack, spines together. 12 cars.</p>
-              <div class="product__foot"><p class="product__price">₹1,499<small>+ base free</small></p><a class="product__cta" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20PITLANE%20GARAGE%20combo%20%2812%20cars%29%20%28%E2%82%B91%2C499%29." target="_blank" rel="noopener">Order<span class="visually-hidden"> GARAGE combo on WhatsApp</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/pitlane-grid.jpg" alt="PITLANE GRID slide-in wall rack with six carded cars" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <p class="product__kind">Wall · slide-in</p>
-              <h3 class="product__name">GRID</h3>
-              <p class="product__desc">One solid piece with a lane for every card. Holds 6 cars.</p>
-              <div class="product__foot"><p class="product__price">₹499</p><a class="product__cta" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20PITLANE%20GRID%20%28%E2%82%B9499%29." target="_blank" rel="noopener">Order<span class="visually-hidden"> GRID on WhatsApp</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/pitlane-grid-combo.jpg" alt="PITLANE GRID combo: left and right racks holding twelve cars" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <p class="product__kind">Wall · slide-in</p>
-              <h3 class="product__name">GRID combo</h3>
-              <p class="product__desc">One rack loads from the right, one from the left. 12 cars.</p>
-              <div class="product__foot"><p class="product__price">₹899<small>+ base free</small></p><a class="product__cta" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20PITLANE%20GRID%20combo%20%2812%20cars%29%20%28%E2%82%B9899%29." target="_blank" rel="noopener">Order<span class="visually-hidden"> GRID combo on WhatsApp</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/pitlane-podium-3.jpg" alt="PITLANE PODIUM 3 folding desk stand with three carded cars" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <p class="product__kind">Tabletop · folding</p>
-              <h3 class="product__name">PODIUM 3</h3>
-              <p class="product__desc">Folding desk stand that folds flat. 3 cars. The perfect gift.</p>
-              <div class="product__foot"><p class="product__price">₹499</p><a class="product__cta" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20PITLANE%20PODIUM%203%20%28%E2%82%B9499%29." target="_blank" rel="noopener">Order<span class="visually-hidden"> PODIUM 3 on WhatsApp</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/pitlane-podium-5.jpg" alt="PITLANE PODIUM 5 folding desk stand with five carded cars" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <p class="product__kind">Tabletop · folding</p>
-              <h3 class="product__name">PODIUM 5</h3>
-              <p class="product__desc">The same folding stand, sized for 5 cars.</p>
-              <div class="product__foot"><p class="product__price">₹999</p><a class="product__cta" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20PITLANE%20PODIUM%205%20%28%E2%82%B9999%29." target="_blank" rel="noopener">Order<span class="visually-hidden"> PODIUM 5 on WhatsApp</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-        </ul>
-        <ul class="catalog__facts">
-          <li><b>Printed in PLA Pro+</b>, every model in full</li>
-          <li><b>Fits standard 1:64 cards</b>, about 105–108 × 165 mm, blister up to 42 mm deep</li>
-          <li><b>Wall racks</b> come with 3 screws and wall plugs</li>
-          <li><b>GRID</b> needs about 11 cm of free wall on its open side</li>
-        </ul>
-      </div>
+      <ul class="facts">
+        <li><b>Printed in PLA Pro+</b>, every model in full</li>
+        <li><b>Fits standard 1:64 cards</b>, about 105–108 × 165 mm, blister up to 42 mm deep</li>
+        <li><b>Wall racks</b> come with 3 screws and wall plugs</li>
+        <li><b>GRID</b> needs about 11 cm of free wall on its open side</li>
+      </ul>
     </section>
 
     <!-- Custom prints -->
@@ -217,7 +143,7 @@
           <p class="eyebrow">Custom prints</p>
           <h2 class="section-title" id="custom-title">Have a file? Or just an idea?</h2>
           <p>Send us what you have. We check it, suggest a material and quote before anything is printed.</p>
-          <a class="btn btn--primary btn--lg" href="#contact" data-type="3D printing" data-prefill="Custom print request:">Start a custom print <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn--primary btn--lg" href="#contact" data-type="3D printing" data-product="A custom print">Start a custom print <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
         <ol class="steps">
           <li><span class="steps__n">1</span><div><strong>Send your file or sketch</strong><span>STL, STEP, OBJ or 3MF. No file? Photos and measurements work too.</span></div></li>
@@ -228,15 +154,16 @@
       </div>
     </section>
 
-    <!-- Contact -->
+    <!-- Contact, with the PITLANE range to pick from -->
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="contact__inner">
         <div class="contact__info">
           <p class="eyebrow">Contact us</p>
           <h2 class="section-title" id="contact-title">Talk to us</h2>
-          <p class="contact__lede">Order a PITLANE rack or ask about a custom print. Message us on WhatsApp or send an Instagram DM.</p>
+          <p class="contact__lede">Order a PITLANE rack or ask about a custom print. Pick what you want in the form, or message us on WhatsApp or Instagram.</p>
           <ul class="channels">
-            <li><a class="channel" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20a%20PITLANE%20rack." target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>WhatsApp</b><span class="channel__value">+91 99006 11996</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a class="channel" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20a%20PITLANE%20rack." target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>WhatsApp</b><span class="channel__value">+91&nbsp;99006&nbsp;11996</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a class="channel" href="tel:+919900611996"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span><span><b>Call</b><span class="channel__value">+91&nbsp;99006&nbsp;11996</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
             <li><a class="channel" href="https://www.instagram.com/pi.xl3dprinting/" target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg></span><span><b>Instagram DM</b><span class="channel__value">@pi.xl3dprinting</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           </ul>
           <p class="contact__aside">Looking for carbon fibre? <a href="carbon-fibre.html#contact" data-transition="carbon" data-title="Carbon6 Customization">Contact Carbon6 Customization</a>.</p>
@@ -259,13 +186,34 @@
             <div class="field">
               <label for="pr-type">I'm looking for</label>
               <select id="pr-type" name="type">
-                <option value="Carbon fibre" data-whatsapp="918105563309" data-brand="Carbon6 Customization">Carbon fibre</option>
-                <option value="3D printing" data-whatsapp="919900611996" data-brand="pi.XL 3D Printing" selected>3D printing</option>
+                <option value="Carbon fibre" data-whatsapp="919900611996" data-brand="Carbon6 Customization" data-picker="carbon">Carbon fibre</option>
+                <option value="3D printing" data-whatsapp="919900611996" data-brand="pi.XL 3D Printing" data-picker="print" selected>3D printing</option>
               </select>
             </div>
+            <fieldset class="picker">
+              <legend>I'm interested in</legend>
+              <div class="picker__set" data-picker-set="carbon" hidden>
+                <label class="chip"><input type="radio" name="product" value="Automotive parts" disabled><span>Automotive</span></label>
+                <label class="chip"><input type="radio" name="product" value="Motorcycle parts" disabled><span>Motorcycle</span></label>
+                <label class="chip"><input type="radio" name="product" value="Cycling parts" disabled><span>Cycling</span></label>
+                <label class="chip"><input type="radio" name="product" value="Drone &amp; RC parts" disabled><span>Drones &amp; RC</span></label>
+                <label class="chip"><input type="radio" name="product" value="Sheets, tubes &amp; profiles" disabled><span>Sheets &amp; tubes</span></label>
+                <label class="chip"><input type="radio" name="product" value="Accessories" disabled><span>Accessories</span></label>
+                <label class="chip"><input type="radio" name="product" value="A custom part" disabled><span>Custom part</span></label>
+              </div>
+              <div class="picker__set" data-picker-set="print">
+                <label class="chip"><input type="radio" name="product" value="PITLANE GARAGE (₹799)"><span>GARAGE <b>₹799</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE GARAGE combo (₹1,499)"><span>GARAGE combo <b>₹1,499</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE GRID (₹499)"><span>GRID <b>₹499</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE GRID combo (₹899)"><span>GRID combo <b>₹899</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE PODIUM 3 (₹499)"><span>PODIUM 3 <b>₹499</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE PODIUM 5 (₹999)"><span>PODIUM 5 <b>₹999</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="A custom print"><span>Custom print</span></label>
+              </div>
+            </fieldset>
             <div class="field">
               <label for="pr-message">Details</label>
-              <textarea id="pr-message" name="message" rows="4" required aria-describedby="pr-message-error" data-error="Please tell us a little about what you need." placeholder="Which rack, or what should we print? Size, colour, quantity"></textarea>
+              <textarea id="pr-message" name="message" rows="4" required aria-describedby="pr-message-error" data-error="Please tell us a little about what you need." placeholder="Quantity, colour, delivery city, or what we should print"></textarea>
               <p class="field__error" id="pr-message-error"></p>
             </div>
             <a class="btn btn--primary btn--lg" data-send="whatsapp" href="https://wa.me/919900611996" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>Send on WhatsApp</a>
@@ -301,7 +249,10 @@
     </div>
     <figure class="lightbox__figure">
       <img class="lightbox__img" src="assets/img/work/pixl-garage.jpg" alt="" width="704" height="1100">
-      <figcaption class="lightbox__cap"><span data-lightbox-title></span><span data-lightbox-tag></span></figcaption>
+      <figcaption class="lightbox__foot">
+        <span class="lightbox__cap"><span data-lightbox-title></span><span data-lightbox-tag></span></span>
+        <a class="btn btn--primary lightbox__cta" href="#contact" data-lightbox-cta data-type="" data-product="">Order this</a>
+      </figcaption>
     </figure>
   </dialog>
 </body>

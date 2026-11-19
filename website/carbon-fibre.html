@@ -57,7 +57,6 @@
         </button>
         <ul class="site-nav__list" id="site-menu">
           <li><a href="#work">Our work</a></li>
-          <li><a href="#products">Products</a></li>
           <li><a href="#custom">Custom parts</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a class="switch" href="3d-printing.html" data-transition="print" data-title="pi.XL 3D Printing"><span class="switch__swatch switch__swatch--print" aria-hidden="true"></span>pi.XL<span class="visually-hidden"> 3D Printing</span></a></li>
@@ -75,10 +74,6 @@
           <p class="eyebrow">Carbon6 Customization</p>
           <h1 class="hero__title" id="hero-title">Lighter parts. <em>Stronger</em> builds.</h1>
           <p class="hero__lede">Carbon fibre parts and products for cars, bikes, drones and everyday gear. Pick from our range, or have a part made to your exact size and finish.</p>
-          <div class="hero__actions">
-            <a class="btn btn--primary btn--lg" href="#products">Browse products <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            <a class="btn btn--ghost btn--lg" href="#custom">Request a custom part</a>
-          </div>
           <ul class="hero__specs">
             <li>#CarbonizeItAll</li>
             <li>Gloss or matte finishes</li>
@@ -98,17 +93,16 @@
           </div>
         </div>
       </div>
-      <a class="scroll-cue" href="#work">Scroll</a>
     </section>
 
-    <!-- Our work -->
+    <!-- Our work, with the product range woven in -->
     <section class="work" id="work" aria-labelledby="work-title">
       <div class="work__head">
         <div>
-          <p class="eyebrow">Our work</p>
+          <p class="eyebrow">Our work &amp; products</p>
           <h2 class="section-title" id="work-title">Designed and made by us</h2>
         </div>
-        <p class="work__lede">A rolling selection of parts we have designed, moulded and finished. Pause the rows any time, or select a piece to see it larger.</p>
+        <p class="work__lede">Parts we have designed and made, and products you can order. Select any piece to see it larger and ask us about it.</p>
         <button class="marquee-toggle" type="button" aria-pressed="false" data-marquee-toggle>
           <svg class="icon icon--pause" aria-hidden="true"><use href="#i-pause"/></svg>
           <svg class="icon icon--play" aria-hidden="true"><use href="#i-play"/></svg>
@@ -118,83 +112,26 @@
 
       <div class="marquee" data-marquee data-direction="left" data-speed="38">
         <ul class="marquee__track">
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Drone frame"><img src="assets/img/work/carbon-01.svg" alt="Sample image: carbon fibre drone frame" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Drone frame</span><span>Drones &amp; RC</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Wing mirror covers"><img src="assets/img/work/carbon-02.svg" alt="Sample image: carbon fibre wing mirror covers" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Wing mirror covers</span><span>Automotive</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Rear wing"><img src="assets/img/work/carbon-03.svg" alt="Sample image: carbon fibre rear wing" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Rear wing</span><span>Motorsport</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Bicycle frame"><img src="assets/img/work/carbon-04.svg" alt="Sample image: carbon fibre bicycle frame" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Bicycle frame</span><span>Cycling</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Steering wheel"><img src="assets/img/work/carbon-05.svg" alt="Sample image: carbon fibre steering wheel" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Steering wheel</span><span>Motorsport</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Drone &amp; RC parts" data-item-cta="Ask about drone and RC parts"><button class="work-card__btn" type="button" aria-label="View larger: Drone frame"><img src="assets/img/work/carbon-01.svg" alt="Sample image: carbon fibre drone frame" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Drone frame</span><span>Drones &amp; RC</span></p></li>
+          <li class="work-card" style="--ar: 600 / 800" data-item-type="Carbon fibre" data-item-product="Automotive parts" data-item-cta="Ask about automotive parts"><button class="work-card__btn" type="button" aria-label="View larger: Rear diffuser"><img src="assets/img/products/carbon-automotive.svg" alt="Sample image: carbon fibre rear diffuser" width="600" height="800" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Rear diffuser</span><span>Automotive</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Automotive parts" data-item-cta="Ask about automotive parts"><button class="work-card__btn" type="button" aria-label="View larger: Wing mirror covers"><img src="assets/img/work/carbon-02.svg" alt="Sample image: carbon fibre wing mirror covers" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Wing mirror covers</span><span>Automotive</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Automotive parts" data-item-cta="Ask about automotive parts"><button class="work-card__btn" type="button" aria-label="View larger: Rear wing"><img src="assets/img/work/carbon-03.svg" alt="Sample image: carbon fibre rear wing" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Rear wing</span><span>Motorsport</span></p></li>
+          <li class="work-card" style="--ar: 600 / 800" data-item-type="Carbon fibre" data-item-product="Motorcycle parts" data-item-cta="Ask about motorcycle parts"><button class="work-card__btn" type="button" aria-label="View larger: Hugger"><img src="assets/img/products/carbon-motorcycle.svg" alt="Sample image: carbon fibre motorcycle hugger" width="600" height="800" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Hugger</span><span>Motorcycle</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Cycling parts" data-item-cta="Ask about cycling parts"><button class="work-card__btn" type="button" aria-label="View larger: Bicycle frame"><img src="assets/img/work/carbon-04.svg" alt="Sample image: carbon fibre bicycle frame" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Bicycle frame</span><span>Cycling</span></p></li>
+          <li class="work-card" style="--ar: 600 / 800" data-item-type="Carbon fibre" data-item-product="Cycling parts" data-item-cta="Ask about cycling parts"><button class="work-card__btn" type="button" aria-label="View larger: Bottle cage"><img src="assets/img/products/carbon-cycling.svg" alt="Sample image: carbon fibre bottle cage" width="600" height="800" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Bottle cage</span><span>Cycling</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Automotive parts" data-item-cta="Ask about automotive parts"><button class="work-card__btn" type="button" aria-label="View larger: Steering wheel"><img src="assets/img/work/carbon-05.svg" alt="Sample image: carbon fibre steering wheel" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Steering wheel</span><span>Motorsport</span></p></li>
         </ul>
       </div>
       <div class="marquee" data-marquee data-direction="right" data-speed="32">
         <ul class="marquee__track">
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: CNC-cut plates"><img src="assets/img/work/carbon-06.svg" alt="Sample image: CNC-cut carbon fibre plates" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>CNC-cut plates</span><span>Sheets</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Tubes and rods"><img src="assets/img/work/carbon-07.svg" alt="Sample image: carbon fibre tubes and rods" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Tubes and rods</span><span>Profiles</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Phone case"><img src="assets/img/work/carbon-08.svg" alt="Sample image: carbon fibre phone case" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Phone case</span><span>Accessories</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Card holder"><img src="assets/img/work/carbon-09.svg" alt="Sample image: carbon fibre card holder" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Card holder</span><span>Accessories</span></p></li>
-          <li class="work-card"><button class="work-card__btn" type="button" aria-label="View larger: Bonnet vent"><img src="assets/img/work/carbon-10.svg" alt="Sample image: carbon fibre bonnet vent" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Bonnet vent</span><span>Automotive</span></p></li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Products -->
-    <section class="section catalog" id="products" aria-labelledby="products-title">
-      <div class="section__inner">
-        <div class="section__head">
-          <div>
-            <p class="eyebrow">Catalogue</p>
-            <h2 class="section-title" id="products-title">Products</h2>
-          </div>
-          <p class="section__lede">Ready-made carbon fibre parts and accessories, plus small runs made to order. Ask about anything here and we'll send sizes, finishes and prices.</p>
-        </div>
-        <ul class="catalog__grid">
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/carbon-automotive.svg" alt="Sample image: carbon fibre rear diffuser" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <h3 class="product__name">Automotive</h3>
-              <p class="product__desc">Diffusers, mirror covers, spoilers, trims and vents</p>
-              <div class="product__foot"><a class="product__cta" href="#contact" data-type="Carbon fibre" data-prefill="I'm interested in carbon automotive parts:">Enquire<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/carbon-motorcycle.svg" alt="Sample image: carbon fibre motorcycle hugger" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <h3 class="product__name">Motorcycle</h3>
-              <p class="product__desc">Huggers, fairings, guards and tank covers</p>
-              <div class="product__foot"><a class="product__cta" href="#contact" data-type="Carbon fibre" data-prefill="I'm interested in carbon motorcycle parts:">Enquire<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/carbon-cycling.svg" alt="Sample image: carbon fibre bottle cage" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <h3 class="product__name">Cycling</h3>
-              <p class="product__desc">Bottle cages, guards and cockpit parts</p>
-              <div class="product__foot"><a class="product__cta" href="#contact" data-type="Carbon fibre" data-prefill="I'm interested in carbon cycling parts:">Enquire<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/carbon-drones.svg" alt="Sample image: carbon fibre quadcopter frame" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <h3 class="product__name">Drones &amp; RC</h3>
-              <p class="product__desc">Frames, arms and top plates</p>
-              <div class="product__foot"><a class="product__cta" href="#contact" data-type="Carbon fibre" data-prefill="I'm interested in carbon drone and RC parts:">Enquire<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/carbon-sheets.svg" alt="Sample image: carbon fibre sheets and a tube" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <h3 class="product__name">Sheets, tubes &amp; profiles</h3>
-              <p class="product__desc">Plates cut to size, tubes and rods</p>
-              <div class="product__foot"><a class="product__cta" href="#contact" data-type="Carbon fibre" data-prefill="I'm interested in carbon sheets, tubes or profiles:">Enquire<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
-          <li class="product">
-            <div class="product__media"><img src="assets/img/products/carbon-accessories.svg" alt="Sample image: carbon fibre keyring tag" width="600" height="800" loading="lazy" decoding="async"></div>
-            <div class="product__body">
-              <h3 class="product__name">Accessories</h3>
-              <p class="product__desc">Keyrings, card holders and phone cases</p>
-              <div class="product__foot"><a class="product__cta" href="#contact" data-type="Carbon fibre" data-prefill="I'm interested in carbon accessories:">Enquire<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Sheets, tubes &amp; profiles" data-item-cta="Ask about sheets, tubes and profiles"><button class="work-card__btn" type="button" aria-label="View larger: CNC-cut plates"><img src="assets/img/work/carbon-06.svg" alt="Sample image: CNC-cut carbon fibre plates" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>CNC-cut plates</span><span>Sheets</span></p></li>
+          <li class="work-card" style="--ar: 600 / 800" data-item-type="Carbon fibre" data-item-product="Sheets, tubes &amp; profiles" data-item-cta="Ask about sheets, tubes and profiles"><button class="work-card__btn" type="button" aria-label="View larger: Sheets and tube"><img src="assets/img/products/carbon-sheets.svg" alt="Sample image: carbon fibre sheets and a tube" width="600" height="800" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Sheets and tube</span><span>Sheets &amp; profiles</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Sheets, tubes &amp; profiles" data-item-cta="Ask about sheets, tubes and profiles"><button class="work-card__btn" type="button" aria-label="View larger: Tubes and rods"><img src="assets/img/work/carbon-07.svg" alt="Sample image: carbon fibre tubes and rods" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Tubes and rods</span><span>Profiles</span></p></li>
+          <li class="work-card" style="--ar: 600 / 800" data-item-type="Carbon fibre" data-item-product="Drone &amp; RC parts" data-item-cta="Ask about drone and RC parts"><button class="work-card__btn" type="button" aria-label="View larger: Quad frame"><img src="assets/img/products/carbon-drones.svg" alt="Sample image: carbon fibre quadcopter frame" width="600" height="800" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Quad frame</span><span>Drones &amp; RC</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Accessories" data-item-cta="Ask about accessories"><button class="work-card__btn" type="button" aria-label="View larger: Phone case"><img src="assets/img/work/carbon-08.svg" alt="Sample image: carbon fibre phone case" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Phone case</span><span>Accessories</span></p></li>
+          <li class="work-card" style="--ar: 600 / 800" data-item-type="Carbon fibre" data-item-product="Accessories" data-item-cta="Ask about accessories"><button class="work-card__btn" type="button" aria-label="View larger: Keyring tag"><img src="assets/img/products/carbon-accessories.svg" alt="Sample image: carbon fibre keyring tag" width="600" height="800" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Keyring tag</span><span>Accessories</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Accessories" data-item-cta="Ask about accessories"><button class="work-card__btn" type="button" aria-label="View larger: Card holder"><img src="assets/img/work/carbon-09.svg" alt="Sample image: carbon fibre card holder" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Card holder</span><span>Accessories</span></p></li>
+          <li class="work-card" data-item-type="Carbon fibre" data-item-product="Automotive parts" data-item-cta="Ask about automotive parts"><button class="work-card__btn" type="button" aria-label="View larger: Bonnet vent"><img src="assets/img/work/carbon-10.svg" alt="Sample image: carbon fibre bonnet vent" width="800" height="600" loading="lazy" decoding="async"></button><p class="work-card__cap"><span>Bonnet vent</span><span>Automotive</span></p></li>
         </ul>
       </div>
     </section>
@@ -206,7 +143,7 @@
           <p class="eyebrow">Custom parts</p>
           <h2 class="section-title" id="custom-title">Made to your spec</h2>
           <p>Need a part that doesn't exist yet, or a carbon version of one that does? We make one-offs and small batches.</p>
-          <a class="btn btn--primary btn--lg" href="#contact" data-type="Carbon fibre" data-prefill="Custom part request:">Start a custom project <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn--primary btn--lg" href="#contact" data-type="Carbon fibre" data-product="A custom part">Start a custom project <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
         <ol class="steps">
           <li><span class="steps__n">1</span><div><strong>Share your idea</strong><span>Send a drawing, a CAD file, photos or the original part.</span></div></li>
@@ -217,7 +154,7 @@
       </div>
     </section>
 
-    <!-- Contact -->
+    <!-- Contact, with the product range to pick from -->
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="contact__inner">
         <div class="contact__info">
@@ -225,8 +162,8 @@
           <h2 class="section-title" id="contact-title">Talk to us</h2>
           <p class="contact__lede">Send a photo, a drawing or a rough idea. We'll tell you what's possible, what it costs and how long it takes.</p>
           <ul class="channels">
-            <li><a class="channel" href="https://wa.me/918105563309?text=Hi%20Carbon6%20Customization%2C%20I%27d%20like%20a%20quote." target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>WhatsApp</b><span class="channel__value">+91 81055 63309</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-            <li><a class="channel" href="tel:+918105563309"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span><span><b>Call</b><span class="channel__value">+91 81055 63309</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a class="channel" href="https://wa.me/919900611996?text=Hi%20Carbon6%20Customization%2C%20I%27d%20like%20a%20quote." target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>WhatsApp</b><span class="channel__value">+91&nbsp;99006&nbsp;11996</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a class="channel" href="tel:+919900611996"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span><span><b>Call</b><span class="channel__value">+91&nbsp;99006&nbsp;11996</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
             <li><a class="channel" href="https://www.instagram.com/c6_customization/" target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg></span><span><b>Instagram</b><span class="channel__value">@c6_customization</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           </ul>
           <p class="contact__aside">Looking for 3D printing? <a href="3d-printing.html#contact" data-transition="print" data-title="pi.XL 3D Printing">Contact pi.XL 3D Printing</a>.</p>
@@ -249,16 +186,37 @@
             <div class="field">
               <label for="cf-type">I'm looking for</label>
               <select id="cf-type" name="type">
-                <option value="Carbon fibre" data-whatsapp="918105563309" data-brand="Carbon6 Customization" selected>Carbon fibre</option>
-                <option value="3D printing" data-whatsapp="919900611996" data-brand="pi.XL 3D Printing">3D printing</option>
+                <option value="Carbon fibre" data-whatsapp="919900611996" data-brand="Carbon6 Customization" data-picker="carbon" selected>Carbon fibre</option>
+                <option value="3D printing" data-whatsapp="919900611996" data-brand="pi.XL 3D Printing" data-picker="print">3D printing</option>
               </select>
             </div>
+            <fieldset class="picker">
+              <legend>I'm interested in</legend>
+              <div class="picker__set" data-picker-set="carbon">
+                <label class="chip"><input type="radio" name="product" value="Automotive parts"><span>Automotive</span></label>
+                <label class="chip"><input type="radio" name="product" value="Motorcycle parts"><span>Motorcycle</span></label>
+                <label class="chip"><input type="radio" name="product" value="Cycling parts"><span>Cycling</span></label>
+                <label class="chip"><input type="radio" name="product" value="Drone &amp; RC parts"><span>Drones &amp; RC</span></label>
+                <label class="chip"><input type="radio" name="product" value="Sheets, tubes &amp; profiles"><span>Sheets &amp; tubes</span></label>
+                <label class="chip"><input type="radio" name="product" value="Accessories"><span>Accessories</span></label>
+                <label class="chip"><input type="radio" name="product" value="A custom part"><span>Custom part</span></label>
+              </div>
+              <div class="picker__set" data-picker-set="print" hidden>
+                <label class="chip"><input type="radio" name="product" value="PITLANE GARAGE (₹799)" disabled><span>GARAGE <b>₹799</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE GARAGE combo (₹1,499)" disabled><span>GARAGE combo <b>₹1,499</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE GRID (₹499)" disabled><span>GRID <b>₹499</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE GRID combo (₹899)" disabled><span>GRID combo <b>₹899</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE PODIUM 3 (₹499)" disabled><span>PODIUM 3 <b>₹499</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="PITLANE PODIUM 5 (₹999)" disabled><span>PODIUM 5 <b>₹999</b></span></label>
+                <label class="chip"><input type="radio" name="product" value="A custom print" disabled><span>Custom print</span></label>
+              </div>
+            </fieldset>
             <div class="field">
               <label for="cf-message">Details</label>
               <textarea id="cf-message" name="message" rows="4" required aria-describedby="cf-message-error" data-error="Please tell us a little about the job." placeholder="Part, vehicle or model, size, finish, quantity"></textarea>
               <p class="field__error" id="cf-message-error"></p>
             </div>
-            <a class="btn btn--primary btn--lg" data-send="whatsapp" href="https://wa.me/918105563309" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>Send on WhatsApp</a>
+            <a class="btn btn--primary btn--lg" data-send="whatsapp" href="https://wa.me/919900611996" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>Send on WhatsApp</a>
             <p class="enquiry__status" data-enquiry-status role="status" aria-live="polite"></p>
             <p class="enquiry__note">Your message opens in WhatsApp, where you can add photos before sending.</p>
           </form>
@@ -284,14 +242,17 @@
 
   <dialog class="lightbox" data-lightbox aria-label="Project image">
     <div class="lightbox__bar">
-      <span class="lightbox__count" data-lightbox-count>01 / 10</span>
+      <span class="lightbox__count" data-lightbox-count>01 / 16</span>
       <button class="lightbox__btn" type="button" data-lightbox-prev aria-label="Previous image"><svg class="icon" aria-hidden="true"><use href="#i-chev-left"/></svg></button>
       <button class="lightbox__btn" type="button" data-lightbox-next aria-label="Next image"><svg class="icon" aria-hidden="true"><use href="#i-chev-right"/></svg></button>
       <button class="lightbox__btn" type="button" data-lightbox-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
     </div>
     <figure class="lightbox__figure">
       <img class="lightbox__img" src="assets/img/work/carbon-01.svg" alt="" width="800" height="600">
-      <figcaption class="lightbox__cap"><span data-lightbox-title></span><span data-lightbox-tag></span></figcaption>
+      <figcaption class="lightbox__foot">
+        <span class="lightbox__cap"><span data-lightbox-title></span><span data-lightbox-tag></span></span>
+        <a class="btn btn--primary lightbox__cta" href="#contact" data-lightbox-cta data-type="" data-product="">Enquire about this</a>
+      </figcaption>
     </figure>
   </dialog>
 </body>
