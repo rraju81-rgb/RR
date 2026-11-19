@@ -23,14 +23,11 @@
   <!-- Opens on the last frame of the home page transition, then reveals the page. -->
   <div class="wipe wipe--print wipe--enter" aria-hidden="true">
     <div class="wipe__strips"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div>
-    <div class="wipe__label"><img class="wipe__logo" src="assets/img/pixl-logo-160.webp" alt="" width="80" height="80"><span class="wipe__title">pi.XL 3D Printing</span><span class="wipe__bar"></span></div>
+    <div class="wipe__label"><img class="wipe__logo" src="assets/img/pixl-logo-320.webp" alt="" width="120" height="120"><span class="wipe__title">pi.XL 3D Printing</span><span class="wipe__bar"></span></div>
   </div>
 
   <svg class="sprite" aria-hidden="true" focusable="false">
-    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4l-4.4 1.1 1.2-4.1A8.5 8.5 0 1 1 20.5 12z"/><path d="M8.8 9.2c.2 3.2 2.8 5.8 6 6"/></symbol>
-    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.6 4.2-2 1.3a10.5 10.5 0 0 0 6.2 6.2l1.3-2 4.2 1.6v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></symbol>
-    <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
     <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
@@ -42,7 +39,7 @@
   <header class="site-header" data-header>
     <div class="site-header__inner">
       <a class="brand" href="index.html">
-        <img class="brand__mark brand__mark--round" src="assets/img/pixl-logo-160.webp" alt="" width="40" height="40">
+        <img class="brand__mark brand__mark--round" src="assets/img/pixl-logo-320.webp" alt="" width="60" height="60">
         <span class="brand__text">
           <span class="brand__name">pi.XL</span>
           <span class="brand__div">3D Printing</span>
@@ -57,7 +54,6 @@
         </button>
         <ul class="site-nav__list" id="site-menu">
           <li><a href="#work">Our work</a></li>
-          <li><a href="#custom">Custom prints</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a class="switch" href="carbon-fibre.html" data-transition="carbon" data-title="Carbon6 Customization"><span class="switch__swatch switch__swatch--carbon" aria-hidden="true"></span>Carbon6<span class="visually-hidden"> Customization</span></a></li>
         </ul>
@@ -136,40 +132,13 @@
       </ul>
     </section>
 
-    <!-- Custom prints -->
-    <section class="section custom" id="custom" aria-labelledby="custom-title">
-      <div class="section__inner custom__inner">
-        <div class="custom__intro">
-          <p class="eyebrow">Custom prints</p>
-          <h2 class="section-title" id="custom-title">Have a file? Or just an idea?</h2>
-          <p>Send us what you have. We check it, suggest a material and quote before anything is printed.</p>
-          <a class="btn btn--primary btn--lg" href="#contact" data-type="3D printing" data-product="A custom print">Start a custom print <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        </div>
-        <ol class="steps">
-          <li><span class="steps__n">1</span><div><strong>Send your file or sketch</strong><span>STL, STEP, OBJ or 3MF. No file? Photos and measurements work too.</span></div></li>
-          <li><span class="steps__n">2</span><div><strong>We check and quote</strong><span>We review printability, pick a material and confirm price and timing.</span></div></li>
-          <li><span class="steps__n">3</span><div><strong>We print and finish</strong><span>Printed, cleaned up, and sanded or painted if you need it.</span></div></li>
-          <li><span class="steps__n">4</span><div><strong>Collect or delivery</strong><span>Pick it up from us, or we pack and ship it to you.</span></div></li>
-        </ol>
-      </div>
-    </section>
 
     <!-- Contact, with the PITLANE range to pick from -->
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="contact__inner">
-        <div class="contact__info">
-          <p class="eyebrow">Contact us</p>
-          <h2 class="section-title" id="contact-title">Talk to us</h2>
-          <p class="contact__lede">Order a PITLANE rack or ask about a custom print. Pick what you want in the form, or message us on WhatsApp or Instagram.</p>
-          <ul class="channels">
-            <li><a class="channel" href="https://wa.me/919900611996?text=Hi%20pi.XL%203D%20Printing%2C%20I%27d%20like%20to%20order%20a%20PITLANE%20rack." target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>WhatsApp</b><span class="channel__value">+91&nbsp;99006&nbsp;11996</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-            <li><a class="channel" href="tel:+919900611996"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span><span><b>Call</b><span class="channel__value">+91&nbsp;99006&nbsp;11996</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-            <li><a class="channel" href="https://www.instagram.com/pi.xl3dprinting/" target="_blank" rel="noopener"><span class="channel__icon"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg></span><span><b>Instagram DM</b><span class="channel__value">@pi.xl3dprinting</span></span><svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          </ul>
-          <p class="contact__aside">Looking for carbon fibre? <a href="carbon-fibre.html#contact" data-transition="carbon" data-title="Carbon6 Customization">Contact Carbon6 Customization</a>.</p>
-        </div>
+        <p class="eyebrow">Contact us</p>
         <div class="contact__panel">
-          <h3>Send us a message</h3>
+          <h2 class="contact__title" id="contact-title">Send us a message</h2>
           <form class="enquiry" data-enquiry-form novalidate>
             <div class="enquiry__row">
               <div class="field">
@@ -221,6 +190,7 @@
             <p class="enquiry__note">Your message opens in WhatsApp, where you can attach your STL or photos before sending.</p>
           </form>
         </div>
+        <p class="contact__aside">Looking for carbon fibre? <a href="carbon-fibre.html#contact" data-transition="carbon" data-title="Carbon6 Customization">Contact Carbon6 Customization</a>.</p>
       </div>
     </section>
   </main>
@@ -228,7 +198,7 @@
   <footer class="site-footer">
     <div class="site-footer__inner">
       <a class="brand" href="index.html">
-        <img class="brand__logo" src="assets/img/carbon6-mark-ink.svg" alt="" width="77" height="26">
+        <img class="brand__logo" src="assets/img/carbon6-mark-ink.svg" alt="" width="115" height="39">
         <span class="brand__text"><span class="brand__name">Carbon6 Studio</span><span class="brand__div">Carbon6 Customization · pi.XL 3D Printing</span><span class="visually-hidden"> (start page)</span></span>
       </a>
       <nav class="site-footer__links" aria-label="Footer">

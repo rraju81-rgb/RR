@@ -6,8 +6,8 @@ The website for **Carbon6 Studio** and its two businesses, **Carbon6 Customizati
 
 | File | What it is |
 | --- | --- |
-| `index.html` | **Start page.** Split diagonally into Carbon6 Customization and pi.XL 3D Printing. Choosing one plays a transition into that business: carbon strips weave across the screen, or the screen is printed layer by layer. The badge on the seam keeps turning between the Carbon6 and pi.XL logos, and the 3D printer prints a different model each time it finishes. |
-| `carbon-fibre.html` | **Carbon6 Customization.** Landing section, Our work (a rolling gallery of work and products), Custom parts, and one Talk to us page with the contact details and a message form. |
+| `index.html` | **Start page.** Split diagonally into Carbon6 Customization and pi.XL 3D Printing. Choosing one plays a transition into that business: carbon strips weave across the screen, or the screen is printed layer by layer. The badge on the seam keeps turning between the Carbon6 and pi.XL logos, and a framed 3D printer prints a different model each time it finishes. |
+| `carbon-fibre.html` | **Carbon6 Customization.** Landing section, Our work (a rolling gallery of work and products), and a contact page with the message form. |
 | `3d-printing.html` | **pi.XL 3D Printing.** The same order, with the PITLANE range and prices in the gallery. |
 | `assets/css/styles.css` | All styling. Colours and fonts are defined at the top. |
 | `assets/js/main.js` | Transitions, the 3D printer animation, gallery, lightbox and the message form. |
@@ -18,13 +18,13 @@ The website for **Carbon6 Studio** and its two businesses, **Carbon6 Customizati
 There is no separate products page. The products live in two places:
 
 1. **Our work.** Product pictures sit in the gallery alongside past work. Selecting any picture opens it larger with a button such as **Ask about automotive parts** or **Order GARAGE · ₹799**.
-2. **Talk to us.** Under "I'm interested in" the form lists the range of the business chosen above it as buttons. The gallery button jumps here with that product already picked, and the WhatsApp message names it.
+2. **The message form.** Under "I'm interested in" the form lists the range of the business chosen above it as buttons, including a custom part or print. The gallery button jumps here with that product already picked, and the WhatsApp message names it.
 
 ## Where the content came from
 
 - **Carbon 6 logo:** converted from `Carbon 6 logo.ai` in Google Drive into `carbon6-logo.svg` and `carbon6-mark.svg` (white, for dark backgrounds) and the `-ink` versions (dark, for light backgrounds). The car on its own (`carbon6-mark`) is used in the headers, the badge and the favicon.
-- **pi.XL logo:** the round pi.XL 3D Printing logo you supplied, cropped to its circle: `pixl-logo.webp` (start page), `pixl-logo-160.webp` (header, badge and transition) and `favicon-pixl.png`.
-- **Contact details:** both businesses use **+91 99006 11996** for WhatsApp and calls. Instagram: @c6_customization (from the Carbon 6 business card) and @pi.xl3dprinting.
+- **pi.XL logo:** the round pi.XL 3D Printing logo you supplied, cropped to its circle: `pixl-logo.webp` (start page), `pixl-logo-320.webp` (header, badge and transition) and `favicon-pixl.png`.
+- **Contact details:** both businesses receive messages on WhatsApp at **+91 99006 11996**. The number is not shown on the pages; it is where the form sends.
 - **pi.XL products, prices and photos:** from `PITLANE_Catalogue_2026_v4.pdf` in Google Drive.
 
 ## What is still a placeholder
@@ -36,15 +36,9 @@ There is no separate products page. The products live in two places:
 
 ### Contact details
 
-To change the number, use find-and-replace across the HTML files:
+To change the WhatsApp number, find-and-replace `919900611996` (digits only, with country code) across the HTML files. It sits on the Send on WhatsApp button and on each "I'm looking for" option (`data-whatsapp`).
 
-| Find | What it is |
-| --- | --- |
-| `919900611996` | WhatsApp and phone links, and the number each form option sends to (digits only, with country code) |
-| `+91&nbsp;99006&nbsp;11996` | The number as shown on the page |
-| `c6_customization` / `pi.xl3dprinting` | Instagram handles |
-
-To give the two businesses different numbers again, change the number on the page you want and in that business's `<option>` (`data-whatsapp`) in the form on both pages.
+To give the two businesses different numbers, change `data-whatsapp` on that business's `<option>` in the form on both pages.
 
 ### Products
 
@@ -65,7 +59,9 @@ There is no server. The form writes the visitor's message into WhatsApp: who the
 
 ### The 3D printer models
 
-The printer on the start page and the pi.XL page cycles through: spiral vase, helical gear, a pi.XL sign, twisted vase, chess rook and a PITLANE podium. The models are defined in `PRINT_MODELS` in `assets/js/main.js`. The layer speed is set per page with `data-layer-ms` on the printer (higher is slower).
+- **Start page:** a framed printer seen from the front right, with a moving gantry and a spool feeding the head. It prints a race car, a tugboat, a trophy, a traffic cone, a rocket and a pi.XL coin, changing filament colour between layers. The models are in `STUDIO_MODELS` in `assets/js/main.js`; each one is a list of cross-sections by height, with `bands` for the colours.
+- **pi.XL page:** the hero printer cycles through a spiral vase, helical gear, pi.XL sign, twisted vase, chess rook and PITLANE podium (`PRINT_MODELS`).
+- The layer speed is set per printer with `data-layer-ms` (higher is slower).
 
 ## Preview on your computer
 
@@ -90,4 +86,4 @@ Any static web host works:
 - **Colours:** aramid gold (`--aramid`) is the carbon fibre accent and hot-nozzle orange (`--nozzle`) is the 3D printing accent, set at the top of `styles.css`.
 - **Fonts:** headings use Archivo at its widest setting, labels use IBM Plex Mono. Both load from Google Fonts.
 - **Accessibility:** works with a keyboard and screen readers, and passes an automated axe-core check on every page at desktop and phone sizes.
-- **Reduced motion:** visitors who turn on "reduce motion" get no transitions or auto-scrolling, the printer shows a finished model, the badge fades between the two logos instead of turning, and the gallery becomes a row they can swipe.
+- **Reduced motion:** visitors who turn on "reduce motion" get no transitions or auto-scrolling, the printers show a finished model, the badge fades between the two logos instead of turning, and the gallery becomes a row they can swipe.

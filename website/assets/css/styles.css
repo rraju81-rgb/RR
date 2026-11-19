@@ -1,8 +1,8 @@
 /* ==========================================================================
    Carbon6 Studio · Carbon6 Customization & pi.XL 3D Printing
    Layout: a diagonal two-door chooser, then for each business a hero, a
-   rolling gallery of work and products, custom parts and a single contact
-   page with a product picker.
+   rolling gallery of work and products, and a contact form with a
+   product picker.
    ========================================================================== */
 
 @property --s {
@@ -45,7 +45,7 @@
   --pad-l: max(var(--gutter), env(safe-area-inset-left, 0px));
   --pad-r: max(var(--gutter), env(safe-area-inset-right, 0px));
   --max: 1440px;
-  --header-h: 72px;
+  --header-h: 80px;
   --radius: 3px;
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --ease-in: cubic-bezier(.55, 0, .9, .45);
@@ -258,9 +258,9 @@ dl, dd { margin: 0; }
   text-decoration: none;
   color: inherit;
 }
-.brand__mark { width: 36px; height: 36px; border-radius: 8px; flex: none; }
-.brand__mark--round { width: 40px; height: 40px; border-radius: 50%; }
-.brand__logo { width: auto; height: 26px; flex: none; }
+.brand__mark { width: 54px; height: 54px; border-radius: 12px; flex: none; }
+.brand__mark--round { width: 60px; height: 60px; border-radius: 50%; }
+.brand__logo { width: auto; height: 39px; flex: none; }
 .brand__text { display: grid; gap: .3rem; line-height: 1; }
 .brand__name {
   font-family: var(--font-display);
@@ -297,8 +297,8 @@ dl, dd { margin: 0; }
   from { --tilt: 0%; }
 }
 
-.chooser:not([data-leaving]):has(.door--carbon:is(:hover, :focus-visible)) { --s: 57; }
-.chooser:not([data-leaving]):has(.door--print:is(:hover, :focus-visible)) { --s: 43; }
+.chooser:not([data-leaving]):has(.door--carbon:is(:hover, :focus-visible)) { --s: 55; }
+.chooser:not([data-leaving]):has(.door--print:is(:hover, :focus-visible)) { --s: 45; }
 .chooser[data-leaving="carbon"] { --s: 112; }
 .chooser[data-leaving="print"] { --s: -12; }
 
@@ -435,7 +435,7 @@ dl, dd { margin: 0; }
 }
 .door--carbon .door__sub { color: var(--aramid); }
 .door--print .door__sub { color: #b8400e; }
-.door__logo { width: clamp(120px, 11vw, 168px); height: auto; margin-bottom: .15rem; }
+.door__logo { width: clamp(180px, 16.5vw, 252px); height: auto; margin-bottom: .15rem; }
 /* pi.XL: the round logo sits beside the title, so it adds no height to a
    column that has to stay clear of the printer below it. */
 .door__lockup {
@@ -445,7 +445,7 @@ dl, dd { margin: 0; }
 }
 .door__logo--pixl {
   flex: none;
-  width: clamp(60px, 6.6vw, 104px);
+  width: clamp(90px, 9.9vw, 156px);
   margin: 0;
   border-radius: 50%;
   box-shadow: 0 10px 28px rgba(18, 20, 23, .26);
@@ -491,7 +491,7 @@ dl, dd { margin: 0; }
    No transform, opacity or z-index here, so the ring can blend (difference)
    with both doors behind it. */
 .badge {
-  --size: clamp(104px, 9vw, 136px);
+  --size: clamp(156px, 13.5vw, 204px);
   position: absolute;
   left: calc(var(--s) * 1% + var(--tilt) * (var(--s) - 50) * .038);
   top: calc(50% + (var(--s) - 50) * 1.9%);
@@ -620,15 +620,18 @@ dl, dd { margin: 0; }
     inset: auto;
     width: auto;
   }
+  /* On the seam, right of centre: clear of the buttons on the left and the
+     printer on the right. */
   .badge {
-    --size: 92px;
-    left: 22%;
-    top: calc(var(--s) * 1% + var(--tilt) * .56);
+    --size: 138px;
+    left: 55%;
+    top: calc(var(--s) * 1% - var(--tilt) * .1 + 1vh);
   }
 }
 
 @media (max-aspect-ratio: 5 / 6) and (max-height: 700px) {
   .door__desc { display: none; }
+  .door__logo--pixl { width: min(90px, 12vh); }
 }
 @media (max-aspect-ratio: 5 / 6) and (max-height: 600px) {
   .door--carbon .door__logo { display: none; }
@@ -637,19 +640,25 @@ dl, dd { margin: 0; }
 /* Shorter windows: a smaller printer, so its head stays clear of the text
    even when it parks above a tall print. */
 @media (min-aspect-ratio: 5 / 6) and (max-height: 760px) {
-  .door__art { height: min(40vh, 30vw); }
+  .door__art { height: min(38vh, 30vw); }
 }
 /* Short landscape screens (a phone on its side): each door keeps its
    eyebrow, title and button, so nothing runs into the printer or off screen. */
 @media (min-aspect-ratio: 5 / 6) and (max-height: 560px) {
   .door__desc { display: none; }
   .door--print .door__content { top: calc(clamp(3.5rem, 15vh, 9rem) + env(safe-area-inset-top, 0px)); }
+  .door__art { height: min(36vh, 30vw); }
+  .door__logo--pixl { width: min(clamp(90px, 9.9vw, 156px), 21vh); }
+  .badge { --size: min(156px, 36vh); }
 }
 @media (min-aspect-ratio: 5 / 6) and (max-height: 400px) {
   .door__content { gap: .5rem; }
   .door__cta { margin-top: .15rem; padding: .55rem .95rem; }
   .door--print .door__content { top: calc(2.75rem + env(safe-area-inset-top, 0px)); }
-  .door__logo--pixl { width: 52px; }
+  .door__logo--pixl { width: min(78px, 20vh); }
+  .door--carbon .door__logo { display: none; }
+  .badge { --size: min(156px, 30vh); }
+  .chooser:not([data-leaving]):has(.door:is(:hover, :focus-visible)) { --s: 50; }
 }
 
 /* ==========================================================================
@@ -720,8 +729,8 @@ dl, dd { margin: 0; }
   color: #fff;
   text-align: center;
 }
-.wipe__logo { width: auto; height: 52px; }
-.wipe--print .wipe__logo { height: 80px; border-radius: 50%; }
+.wipe__logo { width: auto; height: 78px; }
+.wipe--print .wipe__logo { height: 120px; border-radius: 50%; }
 .wipe__title {
   font-family: var(--font-display);
   font-stretch: 125%;
@@ -1027,7 +1036,7 @@ dl, dd { margin: 0; }
   position: absolute;
   left: 50%;
   top: 45%;
-  width: 50%;
+  width: 75%;
   height: auto;
   transform: translate(-50%, -50%);
   opacity: .17;
@@ -1095,26 +1104,6 @@ dl, dd { margin: 0; }
 }
 .printer__hud b { font-weight: 500; color: var(--fg); }
 
-/* ==========================================================================
-   Shared section frame
-   ========================================================================== */
-.section { border-top: 1px solid var(--line); }
-.section__inner {
-  max-width: var(--max);
-  margin-inline: auto;
-  padding-block: clamp(3.5rem, 8vw, 6rem);
-  padding-inline: var(--pad-l) var(--pad-r);
-}
-.section__head {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  align-items: end;
-  gap: 1.25rem 3rem;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
-}
-.section__head > div { display: grid; gap: 1rem; }
-.section__lede { max-width: 50ch; color: var(--muted); }
-
 /* Short facts under the gallery (pi.XL) */
 .facts {
   display: flex;
@@ -1136,15 +1125,14 @@ dl, dd { margin: 0; }
 .facts b { font-weight: 500; color: var(--fg); }
 
 /* ==========================================================================
-   Custom parts
+   Contact: the message form, centred
    ========================================================================== */
-.custom {
+.contact {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: var(--surface);
+  border-top: 1px solid var(--line);
 }
-.theme-carbon .custom::before,
 .theme-carbon .contact::before {
   content: "";
   position: absolute;
@@ -1155,7 +1143,6 @@ dl, dd { margin: 0; }
   -webkit-mask-image: linear-gradient(75deg, transparent 50%, #000 100%);
   mask-image: linear-gradient(75deg, transparent 50%, #000 100%);
 }
-.theme-print .custom::before,
 .theme-print .contact::before {
   content: "";
   position: absolute;
@@ -1165,118 +1152,34 @@ dl, dd { margin: 0; }
   -webkit-mask-image: linear-gradient(75deg, transparent 55%, #000 100%);
   mask-image: linear-gradient(75deg, transparent 55%, #000 100%);
 }
-.custom__inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  align-items: start;
-  gap: clamp(2rem, 5vw, 5rem);
-}
-.custom .section-title { font-size: clamp(2.1rem, 1.2rem + 2.8vw, 3.75rem); }
-.custom__intro { display: grid; justify-items: start; gap: 1.25rem; }
-.custom__intro p:not(.eyebrow) { max-width: 44ch; color: var(--muted); }
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(.75rem, 1.4vw, 1.25rem);
-}
-.steps li {
-  display: grid;
-  align-content: start;
-  gap: .9rem;
-  padding: 1.25rem;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--bg);
-}
-.steps__n {
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid var(--accent);
-  border-radius: 50%;
-  font-family: var(--font-mono);
-  font-size: .9rem;
-  font-weight: 500;
-  color: var(--accent-text);
-}
-.steps div strong { display: block; font-weight: 600; line-height: 1.3; }
-.steps div span { display: block; margin-top: .3rem; font-size: .92rem; line-height: 1.5; color: var(--muted); }
-
-/* ==========================================================================
-   Contact: one page with the details and the message form
-   ========================================================================== */
-.contact {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border-top: 1px solid var(--line);
-}
 .contact__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 46rem);
+  justify-content: center;
+  align-content: center;
+  gap: 1.25rem;
   max-width: var(--max);
   min-height: calc(100svh - var(--header-h));
   margin-inline: auto;
   padding-block: clamp(3.5rem, 8vw, 6rem);
   padding-inline: var(--pad-l) var(--pad-r);
 }
-.contact__info { display: grid; gap: 1.25rem; }
-.contact__lede { max-width: 44ch; font-size: var(--step-1); line-height: 1.5; color: var(--muted); }
-
-.channels { display: grid; gap: .6rem; max-width: 30rem; margin-top: .5rem; }
-.channel {
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 1rem;
-  padding: .75rem 1rem .75rem .75rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  color: var(--fg);
-  text-decoration: none;
-  transition: border-color .2s, transform .25s var(--ease-out);
-}
-.channel:hover { border-color: var(--accent); transform: translateX(3px); }
-.channel__icon {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-.channel__icon .icon { width: 21px; height: 21px; }
-.channel b { display: block; font-weight: 600; line-height: 1.3; }
-.channel__value {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: .8rem;
-  letter-spacing: .02em;
-  color: var(--muted);
-  overflow-wrap: anywhere;
-}
-.channel .icon--arrow { color: var(--muted); }
-.contact__aside { font-size: .9rem; color: var(--muted); }
-.contact__aside a { color: var(--fg); }
-
 .contact__panel {
   padding: clamp(1.25rem, 3vw, 2.25rem);
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   background: var(--surface);
 }
-.contact__panel h3 {
+.contact__title {
   margin-bottom: 1.25rem;
   font-family: var(--font-display);
   font-stretch: 112%;
   font-weight: 800;
-  font-size: var(--step-1);
+  font-size: var(--step-2);
+  line-height: 1.1;
 }
+.contact__aside { font-size: .9rem; color: var(--muted); }
+.contact__aside a { color: var(--fg); }
 
 /* Enquiry form */
 .enquiry { display: grid; gap: .9rem; }
@@ -1393,13 +1296,9 @@ dl, dd { margin: 0; }
 .enquiry__status:empty { display: none; }
 
 @media (max-width: 900px) {
-  .section__head,
-  .custom__inner,
-  .contact__inner { grid-template-columns: minmax(0, 1fr); }
   .contact__inner { min-height: 0; }
 }
 @media (max-width: 560px) {
-  .steps,
   .enquiry__row { grid-template-columns: minmax(0, 1fr); }
 }
 
@@ -1659,7 +1558,7 @@ dl, dd { margin: 0; }
 }
 
 @media (max-width: 900px) {
-  :root { --header-h: 64px; }
+  :root { --header-h: 72px; }
   .hero { min-height: auto; padding-bottom: 3.5rem; }
   .hero__inner { grid-template-columns: minmax(0, 1fr); }
   .hero__visual { order: -1; }
@@ -1674,6 +1573,19 @@ dl, dd { margin: 0; }
   .plate__spec { left: 54px; font-size: .62rem; }
   .plate__ruler { display: none; }
   .lightbox__cta { flex: 1 1 100%; }
+}
+
+/* The narrowest phones: the Carbon6 car logo stands alone in the header.
+   Its name stays readable for screen readers. */
+@media (max-width: 359px) {
+  .site-header .brand__logo + .brand__text .brand__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
 }
 
 /* ==========================================================================
