@@ -1,0 +1,63 @@
+{
+ "L": {
+  "x": [
+   -650.0,
+   -216.66666666666666
+  ],
+  "solid_cm3": 955.2,
+  "cored_cm3": 711.1,
+  "removed_pct": 25.6,
+  "bodies": 1,
+  "voxels": 158159925,
+  "inside_cm3": 985.3,
+  "pocket_cm3": 319.3,
+  "sealed_voxels": 86,
+  "bridged_voxels": 3333,
+  "cleanup_microns": 0,
+  "folded_faces": 0,
+  "watertight": true,
+  "faces": 711142,
+  "seconds": 198.8
+ },
+ "C": {
+  "x": [
+   -216.66666666666666,
+   216.66666666666666
+  ],
+  "solid_cm3": 1052.7,
+  "cored_cm3": 785.7,
+  "removed_pct": 25.4,
+  "bodies": 1,
+  "voxels": 50563200,
+  "inside_cm3": 1113.8,
+  "pocket_cm3": 355.8,
+  "sealed_voxels": 8268,
+  "bridged_voxels": 0,
+  "cleanup_microns": 0,
+  "folded_faces": 0,
+  "watertight": true,
+  "faces": 532306,
+  "seconds": 76.3
+ },
+ "R": {
+  "x": [
+   216.66666666666666,
+   650.0
+  ],
+  "solid_cm3": 955.2,
+  "cored_cm3": 711.1,
+  "removed_pct": 25.6,
+  "bodies": 1,
+  "voxels": 158159925,
+  "inside_cm3": 985.3,
+  "pocket_cm3": 319.3,
+  "sealed_voxels": 86,
+  "bridged_voxels": 3333,
+  "cleanup_microns": 0,
+  "folded_faces": 0,
+  "watertight": true,
+  "faces": 711142,
+  "seconds": 198.8,
+  "mirrored_from": "L"
+ }
+}

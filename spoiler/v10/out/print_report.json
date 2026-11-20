@@ -1,0 +1,184 @@
+{
+ "P1": {
+  "file": "v10_1_LEFT_REAR.stl",
+  "label": "left rear",
+  "stands_on": "its front cut face",
+  "print_extent_mm": [
+   287.0,
+   287.8,
+   140.9
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 18.8,
+  "overhang_gt45_cm2": 17.2,
+  "overhang_gt55_cm2": 13.6,
+  "overhang_gt60_cm2": 12.2,
+  "volume_cm3": 330.4,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P2": {
+  "file": "v10_2_LEFT_FRONT.stl",
+  "label": "left front (with the fin)",
+  "stands_on": "its rear cut face",
+  "print_extent_mm": [
+   333.7,
+   331.5,
+   134.4
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 18.8,
+  "overhang_gt45_cm2": 5.8,
+  "overhang_gt55_cm2": 5.0,
+  "overhang_gt60_cm2": 4.8,
+  "volume_cm3": 376.0,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P3": {
+  "file": "v10_3_CENTRE_REAR.stl",
+  "label": "centre rear",
+  "stands_on": "its front cut face",
+  "print_extent_mm": [
+   325.5,
+   325.5,
+   135.7
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 18.4,
+  "overhang_gt45_cm2": 14.1,
+  "overhang_gt55_cm2": 11.5,
+  "overhang_gt60_cm2": 11.5,
+  "volume_cm3": 445.6,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P4": {
+  "file": "v10_4_CENTRE_FRONT.stl",
+  "label": "centre front",
+  "stands_on": "its rear cut face",
+  "print_extent_mm": [
+   325.7,
+   325.7,
+   133.6
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 18.4,
+  "overhang_gt45_cm2": 6.6,
+  "overhang_gt55_cm2": 6.1,
+  "overhang_gt60_cm2": 6.1,
+  "volume_cm3": 331.1,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P5": {
+  "file": "v10_5_RIGHT_REAR.stl",
+  "label": "right rear",
+  "stands_on": "its front cut face",
+  "print_extent_mm": [
+   287.8,
+   287.0,
+   140.9
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 18.7,
+  "overhang_gt45_cm2": 17.3,
+  "overhang_gt55_cm2": 13.6,
+  "overhang_gt60_cm2": 12.2,
+  "volume_cm3": 330.3,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P6": {
+  "file": "v10_6_RIGHT_FRONT.stl",
+  "label": "right front (with the fin)",
+  "stands_on": "its rear cut face",
+  "print_extent_mm": [
+   331.5,
+   333.7,
+   134.4
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 18.7,
+  "overhang_gt45_cm2": 5.8,
+  "overhang_gt55_cm2": 5.1,
+  "overhang_gt60_cm2": 4.8,
+  "volume_cm3": 376.0,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "SPLINES": {
+  "plate": "v10_SPLINES_plate.stl",
+  "items": [
+   {
+    "file": "v10_SPLINE_01.stl",
+    "extent_mm": [
+     140.4,
+     5.0,
+     5.1
+    ],
+    "overhang_gt45_cm2": 6.4
+   },
+   {
+    "file": "v10_SPLINE_02.stl",
+    "extent_mm": [
+     102.4,
+     5.0,
+     5.2
+    ],
+    "overhang_gt45_cm2": 5.8
+   },
+   {
+    "file": "v10_SPLINE_03.stl",
+    "extent_mm": [
+     184.5,
+     5.0,
+     5.4
+    ],
+    "overhang_gt45_cm2": 10.4
+   },
+   {
+    "file": "v10_SPLINE_04.stl",
+    "extent_mm": [
+     184.5,
+     5.0,
+     5.4
+    ],
+    "overhang_gt45_cm2": 10.4
+   },
+   {
+    "file": "v10_SPLINE_05.stl",
+    "extent_mm": [
+     104.5,
+     5.0,
+     5.3
+    ],
+    "overhang_gt45_cm2": 6.0
+   },
+   {
+    "file": "v10_SPLINE_06.stl",
+    "extent_mm": [
+     140.5,
+     5.0,
+     5.1
+    ],
+    "overhang_gt45_cm2": 6.3
+   }
+  ],
+  "plate_extent_mm": [
+   378.9,
+   35.0,
+   5.4
+  ]
+ },
+ "PIN": {
+  "file": "v10_PIN_3x18.stl",
+  "plate": "v10_PINS_3x18_plate_x19.stl",
+  "size_mm": [
+   3.0,
+   18.0
+  ],
+  "n_needed": 15,
+  "plate_count": 19
+ }
+}

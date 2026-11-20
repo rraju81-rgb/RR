@@ -21,3 +21,8 @@ spec/src/__pycache__/
 v9/out/*.stl
 v9/out/*.npy
 v9/src/__pycache__/
+v10/out/*.stl
+v10/out/*.npy
+v10/out/*.npz
+v10/out/*.log
+v10/src/__pycache__/
