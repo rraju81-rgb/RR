@@ -16,6 +16,7 @@ from mathutils import Euler, Matrix, Vector
 MESH, OUT, SCENE = sys.argv[1], sys.argv[2], sys.argv[3]
 SAMPLES = int(sys.argv[4]) if len(sys.argv) > 4 else 128
 S = 0.001  # mm -> m
+CUT_CX, CUT_CY, CUT_ORTHO = -0.035, 0.020, 0.17   # cut-away camera (m)
 
 MATS = {}
 
@@ -142,6 +143,8 @@ def materials(strap_color=(0.33, 0.0025, 0.006)):
                             rough=0.2),
         "brass": principled("brass", (0.86, 0.62, 0.3), metal=1.0,
                             rough=0.3),
+        "zinc": principled("zinc", (0.25, 0.25, 0.27), metal=1.0,
+                           rough=0.45),
         "sheath": principled("sheath", (0.01, 0.01, 0.01), rough=0.55),
         "strap": principled("strap", strap_color, rough=0.9, bump="weave",
                             sheen=0.12, spec=0.15),
@@ -156,7 +159,7 @@ MAT_OF = {"housing": "housing", "badge": "badge", "lever": "lever",
           "slider": "slider", "pivot_pin": "steel", "strap_pin": "steel",
           "washers": "steel", "clamp_screw": "steel", "insert": "brass",
           "cable_sheath": "sheath", "cable_inner": "steel", "strap": "strap",
-          "trim": "trim"}
+          "trim": "trim", "magnets": "steel", "door_screw": "zinc"}
 
 
 def finish_mesh(obj, angle=32.0):
@@ -288,7 +291,7 @@ if SCENE == "hero":
     b = group(load_dir(os.path.join(MESH, "RH_rest")), "B")
     for g in (a, b):
         for c in g.children:
-            if c.name.startswith(("cable",)):
+            if c.name.startswith(("cable", "door_screw")):
                 c.hide_render = True
     a.rotation_euler = Euler((math.radians(14), 0, math.radians(-34)))
     a.location = (-0.040, 0.0, 0.048)
@@ -301,13 +304,14 @@ if SCENE == "hero":
 
 elif SCENE == "front":
     o = group(load_dir(os.path.join(MESH, "LH_rest"),
-                       skip=("cable_sheath", "cable_inner")), "A")
+                       skip=("cable_sheath", "cable_inner", "door_screw")),
+              "A")
     studio(0.8)
-    camera((0.0, -0.9, 0.0), (0.0, 0.0, 0.0), ortho=0.23, res=(1800, 1100))
+    camera((0.0, -0.9, 0.0), (0.0, 0.0, 0.0), ortho=0.235, res=(1800, 1100))
     render("front")
 
 elif SCENE == "back":
-    o = group(load_dir(os.path.join(MESH, "LH_rest")), "A")
+    o = group(load_dir(os.path.join(MESH, "RH_rest")), "A")
     studio(0.9)
     area("backfill", (-0.2, 0.6, 0.2), (0, 0, 0), 35, 0.5)
     camera((-0.36, 0.42, 0.34), (-0.008, 0.016, 0.0), lens=118,
@@ -315,7 +319,7 @@ elif SCENE == "back":
     render("back")
 
 elif SCENE == "exploded":
-    objs = load_dir(os.path.join(MESH, "LH_rest"))
+    objs = load_dir(os.path.join(MESH, "RH_rest"))
     off = {  # mm, assembly frame (+Y = towards the open back / camera)
         "lever": (8, 62, 0), "strap": (8, 62, 0), "washers": (8, 62, 0),
         "strap_pin": (8, 62, 38),
@@ -324,7 +328,8 @@ elif SCENE == "exploded":
         "insert": (-22, 30, 0),
         "cable_sheath": (-70, 52, 0), "cable_inner": (-70, 52, 0),
     }
-    objs["badge"].hide_render = True
+    for n in ("badge", "magnets", "door_screw"):
+        objs[n].hide_render = True
     for n, o in objs.items():
         o.location = Vector(off.get(n, (0, 0, 0))) * S
     studio(1.0)
@@ -345,13 +350,13 @@ elif SCENE == "cut":
         o = group(load_dir(os.path.join(MESH, f"cut_{pose}")), "A")
         studio(0.9)
         area("down", (0, 0.02, 0.6), (0, 0.02, 0), 30, 0.5)
-        camera((-0.02, 0.02, 0.9), (-0.02, 0.02, 0.0), ortho=0.16,
-               res=(1600, 1250))
+        camera((CUT_CX, CUT_CY, 0.9), (CUT_CX, CUT_CY, 0.0),
+               ortho=CUT_ORTHO, res=(1600, 1250))
         render(f"cut_{pose}")
 
 elif SCENE == "installed":
     objs = load_dir(os.path.join(MESH, "LH_rest"),
-                    skip=("cable_sheath", "cable_inner"))
+                    skip=("cable_sheath", "cable_inner", "door_screw"))
     trim = load_dir(os.path.join(MESH, "trim"))
     bpy.context.scene.render.film_transparent = False
     w = bpy.context.scene.world.node_tree.nodes["Background"]

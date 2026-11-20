@@ -147,7 +147,7 @@ if os.path.exists(os.path.join(SRC, "exploded.png")):
     save(ex, "exploded", 1600)
 
 # --- mechanism panel (orthographic top cut at Z=7) ----------------------------
-def ortho_uv(x, y, W=1600, H=1250, cx=-20.0, cy=20.0, ppm=10.0):
+def ortho_uv(x, y, W=1600, H=1250, cx=-35.0, cy=20.0, ppm=1600 / 170.0):
     return W / 2 + (x - cx) * ppm, H / 2 - (y - cy) * ppm
 
 
@@ -166,11 +166,14 @@ for pose_name, pose, head, sub in (
          ("Strap pin", ortho_uv(spx, spy)),
          ("Cable nipple", ortho_uv(hx + 3.5, hy)),
          ("Sheath anchor slider", ortho_uv(ds.SLIDER_X_NOM, 34)),
-         ("Webbing", ortho_uv(-8.5, -25 if pose_name == "rest" else -40)),
-         ("Face", ortho_uv(25, 1.0))]
+         ("Webbing", ortho_uv(ds.SLOT_X + 3, -25 if pose_name == "rest"
+                              else -40)),
+         ("Door-card screw (OEM)", ortho_uv(ds.SCREW[0], 30)),
+         ("Badge = magnetic screw cover", ortho_uv(ds.SCREW[0] + 8, -0.6)),
+         ("Face", ortho_uv(46, 1.2))]
     callouts(im, a, fs=28)
     # cable direction arrow
-    u0, v0 = ortho_uv(-96, ds.CABLE_Y + 6)
+    u0, v0 = ortho_uv(-114, ds.CABLE_Y + 6)
     d.text((u0, v0 - 34), "to latch", font=font(26), fill=(210, 210, 215))
     if pose_name == "full":
         ua, va = ortho_uv(hx - ds.CABLE_TRAVEL - 2, hy + 9)
@@ -180,8 +183,8 @@ for pose_name, pose, head, sub in (
                   fill=(255, 200, 40))
         d.text((ua, va - 40), f"{ds.CABLE_TRAVEL:.1f} mm", font=font(26),
                fill=(255, 210, 80))
-        ua, va = ortho_uv(-14, -10)
-        ub, vb = ortho_uv(-14, -34)
+        ua, va = ortho_uv(ds.SLOT_X, -10)
+        ub, vb = ortho_uv(ds.SLOT_X, -34)
         d.line([(ua, va), (ub, vb)], fill=(255, 200, 40), width=5)
         d.polygon([(ub, vb + 14), (ub - 10, vb - 6), (ub + 10, vb - 6)],
                   fill=(255, 200, 40))

@@ -108,85 +108,81 @@ def note(ax, xy, xytext, text, fs=7):
 
 
 def housing_sheet():
-    H = ds.build_housing().val().wrapped
+    """A3 sheet of the LH housing (cabin side view matches the OEM photos)."""
+    H = ds.build_housing().mirror("YZ").val().wrapped
     fig = plt.figure(figsize=(16.54, 11.69), dpi=150)   # A3 landscape
-    ax = fig.add_axes([0.03, 0.06, 0.94, 0.9])
+    ax = fig.add_axes([0.03, 0.05, 0.94, 0.91])
     ax.set_aspect("equal")
     ax.axis("off")
-    # front view at origin (X right, Z up)
-    draw_view(ax, H, (0, -1, 0), (1, 0, 0))
-    # top view above (X right, Y up: face at the bottom)
-    TOPY = 70.0
-    draw_view(ax, H, (0, 0, 1), (1, 0, 0), dy=TOPY)
-    # right side view (viewer at +X): Y right, Z up
-    SIDEX = 135.0
-    draw_view(ax, H, (1, 0, 0), (0, 1, 0), dx=SIDEX)
-    # section through the pivot (Y-Z plane seen from +X) -> mechanism layout
-    L, Hh = ds.FACE_L, ds.FACE_H_REAR
-    # --- front view dims
-    xr, xf = -L / 2, L / 2
-    dim(ax, (xr, -Hh / 2), (xf, -Hh / 2), -22, f"{L:.0f}  (visible face)")
-    e0, e1 = ds.EARS[0][0], ds.EARS[1][0]
-    dim(ax, (e0, 0), (e1, 0), -75, f"{e1 - e0:.0f}  (screw ears, verify)")
-    dim(ax, (e0 - ds.EAR_W / 2, -4), (e1 + ds.EAR_W / 2, -4), -88,
-        f"{e1 - e0 + ds.EAR_W:.0f}  overall")
-    dim(ax, (xr, -ds.FACE_H_REAR / 2), (xr, ds.FACE_H_REAR / 2), -14,
-        f"{ds.FACE_H_REAR:.0f}", horiz=False)
-    dim(ax, (xf, -ds.FACE_H_FRONT / 2), (xf, ds.FACE_H_FRONT / 2), 22,
-        f"{ds.FACE_H_FRONT:.0f}", horiz=False)
-    sx = ds.SLOT_X
-    dim(ax, (0, ds.SLOT_LEN / 2), (sx, ds.SLOT_LEN / 2), 30,
-        f"{abs(sx):.0f}", fs=6.5)
-    note(ax, (sx, -ds.SLOT_LEN / 2 + 1), (-52, -49),
-         f"strap slot {ds.SLOT_LEN:.1f} x {ds.SLOT_W:.0f}  (25 mm webbing)")
-    bx0, bx1 = ds.BADGE_X
-    note(ax, (bx1 - 3, -ds.BADGE_H / 2 + 2), (22, -49),
-         f"badge pocket {bx1 - bx0:.0f} x {ds.BADGE_H:.0f} x 1.0-3.0 deep")
-    note(ax, (ds.PIVOT[0], 30), (-128, 46),
-         f"pivot axis X{ds.PIVOT[0]:.0f} / Y{ds.PIVOT[1]:.0f}  (pin 4 x 70)")
-    ax.plot([0, 0], [-45, 45], color=HID, lw=0.4, ls="-.")
-    ax.plot([-95, 95], [0, 0], color=HID, lw=0.4, ls="-.")
-    for z in ds.GROOVE_Z:
-        pass
-    ax.text(-128, 100, "grooves: 6 x R5.5, depth 1.2, pitch 11.5\n"
+    TOPY, SIDEX = 96.0, 158.0
+    draw_view(ax, H, (0, -1, 0), (1, 0, 0))                 # front
+    draw_view(ax, H, (0, 0, 1), (1, 0, 0), dy=TOPY)         # top
+    draw_view(ax, H, (1, 0, 0), (0, 1, 0), dx=SIDEX)        # right (front end)
+    lh = lambda p: (-p[0], p[1])                            # native -> LH
+    face = ds.loop_points("face")
+    fx0, fx1 = -max(p[0] for p in face), -min(p[0] for p in face)
+    fz0, fz1 = min(p[1] for p in face), max(p[1] for p in face)
+    clips = {c["name"]: c for c in ds.TRACE["clips"]}
+    top, bot = lh(clips["top"]["tip"]), lh(clips["bottom"]["tip"])
+    fro, rea = lh(clips["front"]["tip"]), lh(clips["rear"]["tip"])
+    sx, sz = lh(ds.SCREW)
+    pvx = -ds.PIVOT[0]
+    slx = -ds.SLOT_X
+    # --- front view dimensions
+    dim(ax, (fx0, fz0), (fx1, fz0), -22, f"{fx1 - fx0:.1f}  visible face")
+    dim(ax, (rea[0], rea[1]), (fro[0], fro[1]), -66 - (rea[1] + fro[1]) / 2,
+        f"{fro[0] - rea[0]:.1f}  clip tip to clip tip")
+    dim(ax, (fx0, fz0), (fx0, fz1), -16, f"{fz1 - fz0:.1f}", horiz=False)
+    dim(ax, (fro[0], bot[1]), (fro[0], top[1]), 18,
+        f"{top[1] - bot[1]:.1f}  clip to clip", horiz=False)
+    dim(ax, (0, fz1), (sx, fz1), 16, f"{abs(sx):.1f}", fs=6.5)
+    dim(ax, (0, fz1 + 8), (pvx, fz1 + 8), 14, f"{pvx:.1f}", fs=6.5)
+    ax.plot([0, 0], [-48, 56], color=HID, lw=0.4, ls="-.")
+    ax.plot([-105, 115], [0, 0], color=HID, lw=0.4, ls="-.")
+    note(ax, (sx - 4, sz - 4), (-120, -56),
+         f"door-card screw: hole {ds.SCREW_HOLE_D:.0f}, head counterbore "
+         f"{ds.SCREW_HEAD_D:.1f}, seat Y{ds.SCREW_SEAT_Y:.0f} (verify)")
+    note(ax, (sx + 9, sz + 6), (-120, 64),
+         f"magnetic badge {ds.BADGE_W:.0f} x {ds.BADGE_H:.0f} covers the "
+         f"screw (2 + 2 magnets {ds.MAGNET[0]:.0f}x{ds.MAGNET[1]:.0f})")
+    note(ax, (slx, -ds.SLOT_LEN / 2 + 1), (20, -56),
+         f"strap slot {ds.SLOT_LEN:.1f} x {ds.SLOT_W:.0f} "
+         f"({ds.STRAP_W:.0f} mm webbing)")
+    note(ax, (pvx, 26), (60, 64), "pivot axis (OEM position)")
+    note(ax, top, (top[0] - 70, top[1] + 10),
+         f"OEM-position snap clips (4), at Y{ds.CLIP_Y:.0f}")
+    ax.text(62, -46, "front of car  >>", fontsize=7, color=HID)
+    # --- top view
+    dim(ax, (fx1 + 6, TOPY), (fx1 + 6, TOPY + ds.DEPTH), 20,
+        f"{ds.DEPTH:.0f}", horiz=False)
+    ax.plot(pvx, TOPY + ds.PIVOT[1], marker="+", color=DIM, ms=8, mew=0.8)
+    note(ax, (pvx, TOPY + ds.PIVOT[1]), (pvx - 10, TOPY + 58),
+         f"pivot  Y{ds.PIVOT[1]:.0f}")
+    cx0, cx1 = -ds.CHANNEL_X[1], -ds.CHANNEL_X[0]
+    note(ax, ((cx0 + cx1) / 2, TOPY + ds.CABLE_Y), (fro[0] - 10, TOPY + 66),
+         f"cable anchor slider, adj. {ds.SLIDER_TRAVEL:.1f} mm, "
+         f"cable axis Y{ds.CABLE_Y:.1f}")
+    # --- title block
+    k = ds.TRACE["px_per_mm"]
+    ax.text(118, -78,
+            "DOOR STRAP MODULE v2 - Hyundai i20 N (BC3) front doors\n"
+            "Housing, LH shown (RH = mirror). Units mm. Third-angle projection\n"
+            f"Face, housing, clips, screw and pivot traced from OEM photos at "
+            f"{k:.2f} px/mm\n"
+            f"(OEM overall {ds.TRACE['overall_mm']:.0f} mm, clip-to-clip "
+            f"{ds.TRACE['clip_height_mm']:.0f} mm). Measure yours and re-run\n"
+            "oem_trace.py --overall MM to rescale everything.",
+            fontsize=7.2, color=INK, va="top", ha="left",
+            bbox=dict(boxstyle="square,pad=0.6", fc="white", ec=INK, lw=0.6))
+    ax.text(-60, TOPY + 72, "TOP", fontsize=9, color=INK, weight="bold")
+    ax.text(-60, 70, "FRONT (cabin side)", fontsize=9, color=INK,
+            weight="bold")
+    ax.text(SIDEX - 6, 70, "FRONT END", fontsize=9, color=INK, weight="bold")
+    ax.text(-128, 124, "grooves: 6 x R5.5, depth 1.2, pitch 11.5\n"
             "face crown: R160 vertical / R1500 horizontal",
             fontsize=6.5, color=INK, va="top")
-    # --- top view dims
-    dim(ax, (xf, TOPY + 0), (xf, TOPY + ds.DEPTH), 26, f"{ds.DEPTH:.0f}",
-        horiz=False)
-    dim(ax, (xr - ds.FLANGE_W, TOPY + ds.FLANGE_Y0),
-        (xr - ds.FLANGE_W, TOPY + ds.FLANGE_Y0 + ds.FLANGE_T), -20,
-        f"flange {ds.FLANGE_Y0:.0f}-{ds.FLANGE_Y0 + ds.FLANGE_T:.1f}",
-        horiz=False, fs=6.5)
-    dim(ax, (e1, TOPY + ds.EAR_Y[1]), (e1, TOPY), 16,
-        f"ear face Y{ds.EAR_Y[1]:.0f}", horiz=False, fs=6.5)
-    px, py = ds.PIVOT
-    ax.plot(px, TOPY + py, marker="+", color=DIM, ms=8, mew=0.8)
-    note(ax, (px, TOPY + py), (-30, TOPY + 52),
-         f"pivot {px:.0f}, {py:.0f}")
-    cx0, cx1 = ds.CHANNEL_X
-    note(ax, ((cx0 + cx1) / 2, TOPY + ds.CABLE_Y), (-110, TOPY + 52),
-         f"cable anchor slider, adj. {ds.SLIDER_TRAVEL:.1f} mm\n"
-         f"cable axis Y{ds.CABLE_Y:.1f}  Z0")
-    # --- side view dims
-    dim(ax, (SIDEX, -ds.FACE_H_REAR / 2 - ds.FLANGE_W),
-        (SIDEX, ds.FACE_H_REAR / 2 + ds.FLANGE_W), -10,
-        f"{ds.FACE_H_REAR + 2 * ds.FLANGE_W:.0f} (flange)", horiz=False,
-        fs=6.5)
-    # title block
-    ax.text(95, -95,
-            "DOOR STRAP MODULE  -  Hyundai i20 N (BC3) front doors\n"
-            "Housing, LH shown (RH = mirror).  Units: mm.  Projection: third angle\n"
-            "Material: tough ABS-like resin (SLA) or PET-CF.  Mass ~86 g\n"
-            "Red dimensions marked 'verify' are vehicle-interface ESTIMATES",
-            fontsize=7.5, color=INK, va="top", ha="left",
-            bbox=dict(boxstyle="square,pad=0.6", fc="white", ec=INK, lw=0.6))
-    ax.text(-60, TOPY + 66, "TOP", fontsize=9, color=INK, weight="bold")
-    ax.text(-60, 50, "FRONT (occupant side)", fontsize=9, color=INK,
-            weight="bold")
-    ax.text(SIDEX - 10, 50, "RIGHT", fontsize=9, color=INK, weight="bold")
-    ax.set_xlim(-130, 215)
-    ax.set_ylim(-110, 140)
+    ax.set_xlim(-135, 240)
+    ax.set_ylim(-118, 172)
     fig.savefig(os.path.join(OUT, "drawing_housing.png"), dpi=150,
                 facecolor="white")
     fig.savefig(os.path.join(OUT, "drawing_housing.pdf"), facecolor="white")
@@ -197,31 +193,28 @@ def lever_sheet():
     lev = ds.build_lever()
     rest = ds.pose_lever(lev, ds.POSE_REST).val().wrapped
     full = ds.pose_lever(lev, ds.POSE_FULL).val().wrapped
+    px, py = ds.PIVOT
     fig = plt.figure(figsize=(11.69, 8.27), dpi=150)   # A4 landscape
     ax = fig.add_axes([0.04, 0.08, 0.92, 0.86])
     ax.set_aspect("equal")
     ax.axis("off")
-    # face outline for context (section at Z=0)
     import numpy as np
-    xs = np.linspace(-70, 70, 200)
+    xs = np.linspace(px - 46, px + 54, 200)
     ax.plot(xs, [ds.face_y(x, 0) for x in xs], color=INK, lw=1.0)
-    ax.plot(xs, [ds.face_y(x, 0) + ds.FACE_T for x in xs], color=INK,
-            lw=0.6)
-    ax.text(-30, -7, "face (occupant side)", fontsize=8, color=INK)
-    # lever in rest (ink) and full pull (red, hidden lines off)
+    ax.plot(xs, [ds.face_y(x, 0) + ds.FACE_T for x in xs], color=INK, lw=0.6)
+    ax.text(px + 4, -7, "face (occupant side)", fontsize=8, color=INK)
     vis, _ = hlr(full, (0, 0, 1), (1, 0, 0))
     for x, y in vis:
         ax.plot(x, y, color=DIM, lw=0.6, alpha=0.8)
     draw_view(ax, rest, (0, 0, 1), (1, 0, 0), hidden=False, lw=0.9)
-    px, py = ds.PIVOT
     sr = ds.lever_point(ds.STRAP_PIN_LF, ds.POSE_REST)
     sf = ds.lever_point(ds.STRAP_PIN_LF, ds.POSE_FULL)
     hr = ds.lever_point(ds.HOOK_LF, ds.POSE_REST)
     hf = ds.lever_point(ds.HOOK_LF, ds.POSE_FULL)
-    for (a, b, c) in ((sr, "strap pin (rest)", (-4, 41)),
-                      (sf, "strap pin (full pull)", (2, 15)),
-                      (hr, "cable nipple (rest)", (-62, 40)),
-                      (hf, "cable nipple (full)", (-27, 44))):
+    for (a, b, c) in ((sr, "strap pin (rest)", (px + 30, 41)),
+                      (sf, "strap pin (full pull)", (px + 36, 15)),
+                      (hr, "cable nipple (rest)", (px - 28, 40)),
+                      (hf, "cable nipple (full)", (px + 7, 44))):
         ax.plot(*a, marker="o", ms=3, color=INK)
         note(ax, a, c, b)
     ax.plot([px, sr[0]], [py, sr[1]], color=HID, lw=0.5, ls="-.")
@@ -230,19 +223,20 @@ def lever_sheet():
                      theta1=ds.STRAP_ARM_MID - 20, theta2=ds.STRAP_ARM_MID + 20,
                      color=DIM, lw=0.6))
     ax.text(px + 33, py + 13, f"{ds.LEVER_ROT:.0f} deg", color=DIM, fontsize=8)
-    ax.text(-79, 22,
+    ax.text(px - 45, 22,
             f"R{ds.STRAP_ARM:.0f} strap arm, R{ds.HOOK_R:.0f} cable arm\n"
             f"cable travel {ds.CABLE_TRAVEL:.1f} mm, strap travel "
             f"{math.dist(sr, sf):.1f} mm\n"
             f"force ratio {ds.STRAP_ARM / ds.HOOK_R:.2f} : 1",
             fontsize=8, color=INK, va="top")
-    ax.plot([-75, -5], [ds.CABLE_Y, ds.CABLE_Y], color=HID, lw=0.5, ls="--")
-    ax.text(-74, ds.CABLE_Y + 1.2, "cable axis (to latch, rearwards)",
+    ax.plot([px - 41, px + 29], [ds.CABLE_Y, ds.CABLE_Y], color=HID, lw=0.5,
+            ls="--")
+    ax.text(px - 40, ds.CABLE_Y + 1.2, "cable axis (to latch via front end)",
             fontsize=7, color=HID)
-    ax.text(-79, 55, "LEVER KINEMATICS - top view, section Z=0\n"
+    ax.text(px - 45, 55, "LEVER KINEMATICS - top view, section Z=0 (RH)\n"
             "black = rest (cable tension), red = full pull",
             fontsize=10, color=INK, va="top", weight="bold")
-    ax.set_xlim(-80, 20)
+    ax.set_xlim(px - 46, px + 54)
     ax.set_ylim(-12, 58)
     fig.savefig(os.path.join(OUT, "drawing_lever.png"), dpi=150,
                 facecolor="white")

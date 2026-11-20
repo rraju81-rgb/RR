@@ -39,6 +39,8 @@ COLORS = {  # name: (r, g, b, metallic, roughness)
     "insert": (0.78, 0.6, 0.25, 1.0, 0.3),
     "cable_sheath": (0.015, 0.015, 0.015, 0.0, 0.6),
     "cable_inner": (0.7, 0.7, 0.72, 1.0, 0.35),
+    "magnets": (0.75, 0.75, 0.77, 1.0, 0.25),
+    "door_screw": (0.18, 0.18, 0.19, 1.0, 0.4),
     "strap": (0.62, 0.02, 0.025, 0.0, 0.85),
     "trim": (0.03, 0.03, 0.032, 0.0, 0.6),
 }
@@ -70,7 +72,7 @@ def strap_tri(pose, mirror=False, z_range=None):
 def build_glb(path, tol=0.04, ang=0.2):
     """Light, coloured GLB of the LH assembly at rest (glTF: Y-up, metres)."""
     scene = trimesh.Scene()
-    parts = ds.build_assembly(ds.POSE_REST, mirror=False, with_cable=True)
+    parts = ds.build_assembly(ds.POSE_REST, mirror=True, with_cable=True)
     for n, shp in parts.items():
         verts, tris = shp.val().tessellate(tol, ang)
         # keep per-face vertices (process=False) so sharp CAD edges stay sharp
@@ -83,7 +85,7 @@ def build_glb(path, tol=0.04, ang=0.2):
                 name=n, baseColorFactor=[c[0], c[1], c[2], 1.0],
                 metallicFactor=c[3], roughnessFactor=c[4]))
         scene.add_geometry(m, node_name=n, geom_name=n)
-    sm, _ = strap_tri(ds.POSE_REST)
+    sm, _ = strap_tri(ds.POSE_REST, mirror=True)
     _ = sm.vertex_normals
     c = COLORS["strap"]
     sm.visual = trimesh.visual.TextureVisuals(
@@ -112,13 +114,13 @@ def main():
     gauge = ds.build_fit_gauge(housing)
     print("built", round(time.time() - t0, 1), "s")
 
-    parts_lh = {
-        "housing_LH": housing,
-        "lever_LH": ds.pose_lever(lever0, ds.POSE_REST),
-        "fit_gauge_LH": gauge,
+    parts_rh = {                         # native build = RH unit
+        "housing_RH": housing,
+        "lever_RH": ds.pose_lever(lever0, ds.POSE_REST),
+        "fit_gauge_RH": gauge,
     }
-    parts_rh = {k.replace("_LH", "_RH"): v.mirror("YZ")
-                for k, v in parts_lh.items()}
+    parts_lh = {k.replace("_RH", "_LH"): v.mirror("YZ")
+                for k, v in parts_rh.items()}
 
     # ---------------- STEP: individual parts (assembly coordinates) --------
     for name, shp in {**parts_lh, **parts_rh}.items():
@@ -127,7 +129,7 @@ def main():
     step(badge, os.path.join(STEP_DIR, "badge_insert.step"))
 
     # ---------------- STEP: coloured assemblies ----------------------------
-    for side, mirror in (("LH", False), ("RH", True)):
+    for side, mirror in (("RH", False), ("LH", True)):
         parts = ds.build_assembly(ds.POSE_REST, mirror=mirror,
                                   with_cable=False)
         assy = cq.Assembly(name=f"door_strap_{side}")
@@ -137,17 +139,17 @@ def main():
         assy.save(os.path.join(STEP_DIR, f"door_strap_{side}_assembly.step"))
 
     # ---------------- STL: print orientation -------------------------------
-    stl(to_bed(housing, -90), os.path.join(STL_DIR, "housing_LH.stl"))
+    stl(to_bed(housing, -90), os.path.join(STL_DIR, "housing_RH.stl"))
     stl(to_bed(housing.mirror("YZ"), -90), os.path.join(STL_DIR,
-                                                         "housing_RH.stl"))
-    stl(to_bed(lever0), os.path.join(STL_DIR, "lever_LH.stl"))
-    stl(to_bed(lever0.mirror("YZ")), os.path.join(STL_DIR, "lever_RH.stl"))
+                                                         "housing_LH.stl"))
+    stl(to_bed(lever0), os.path.join(STL_DIR, "lever_RH.stl"))
+    stl(to_bed(lever0.mirror("YZ")), os.path.join(STL_DIR, "lever_LH.stl"))
     stl(to_bed(slider, 90), os.path.join(STL_DIR, "cable_slider_x2.stl"))
     stl(to_bed(badge, -90), os.path.join(STL_DIR, "badge_insert_x2.stl"),
         tol=0.01, ang=0.05)
-    stl(to_bed(gauge, -90), os.path.join(STL_DIR, "fit_gauge_LH.stl"))
+    stl(to_bed(gauge, -90), os.path.join(STL_DIR, "fit_gauge_RH.stl"))
     stl(to_bed(gauge.mirror("YZ"), -90), os.path.join(STL_DIR,
-                                                       "fit_gauge_RH.stl"))
+                                                       "fit_gauge_LH.stl"))
     print("STEP/STL done", round(time.time() - t0, 1), "s")
 
     # ---------------- masses ----------------------------------------------
@@ -170,7 +172,7 @@ def main():
                                         mirror=mirror)
             strap.write_obj(os.path.join(d, "strap.obj"), V, F, UV)
 
-    for side, mirror in (("LH", False), ("RH", True)):
+    for side, mirror in (("RH", False), ("LH", True)):
         for pose_name, pose in (("rest", ds.POSE_REST),
                                 ("full", ds.POSE_FULL)):
             parts = ds.build_assembly(pose, mirror=mirror, with_cable=True)
@@ -191,9 +193,9 @@ def main():
         dump(f"cut_{pose_name}", cut, pose, False,
              strap_z=(-ds.STRAP_W / 2, 7.0))
 
-    # door-trim mock-up
+    # door-trim mock-up (built for RH, mirrored for the LH render)
     trim = door_mockup.build_trim()
-    dump("trim", {"trim": trim})
+    dump("trim", {"trim": trim.mirror("YZ")})
     print("render meshes done", round(time.time() - t0, 1), "s")
 
     # ---------------- GLB for the web viewer (LH, rest) --------------------

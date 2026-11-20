@@ -36,7 +36,8 @@ def _chaikin(pts, it=2):
 
 
 def strap_path(pose_deg=ds.POSE_REST, loop_len=62.0, bend=1.0):
-    """Closed centre-line of the webbing (LH unit, loop curls rearwards)."""
+    """Closed centre-line of the webbing (native RH unit). The loop curls
+    towards -X (front of car), away from the badge / screw cover."""
     t = ds.STRAP_T
     rc = ds.PIN_D / 2 + t / 2
     cx, cy = ds.lever_point(ds.STRAP_PIN_LF, pose_deg)
