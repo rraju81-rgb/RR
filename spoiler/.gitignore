@@ -26,3 +26,7 @@ v10/out/*.npy
 v10/out/*.npz
 v10/out/*.log
 v10/src/__pycache__/
+v11/input/
+v11/out/*.ply
+v11/src/__pycache__/
+v11/renders/*.png
