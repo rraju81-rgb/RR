@@ -122,7 +122,7 @@ px, py = ds.PIVOT
 ANCH = {
     "housing": ((40, 38, 30), "Housing (LH) - crowned face, wave grooves"),
     "lever": ((px + 9, py + 10, 17), "Bell-crank lever - PET-CF"),
-    "strap": ((sp[0] - 14, sp[1] - 4, 6), "25 mm webbing loop (sewn)"),
+    "strap": ((sp[0], sp[1] + 3.6, -2), "25 mm webbing loop (sewn)"),
     "strap_pin": ((sp[0], sp[1], 17.5), "Strap pin  4 x 35 stainless"),
     "pivot_pin": ((px, py, 35.6), "Pivot pin  4 x 70 stainless"),
     "washers": ((px + 3, py, 26.8), "M4 thrust washers (2)"),
@@ -142,7 +142,7 @@ if os.path.exists(os.path.join(SRC, "exploded.png")):
         q = (p[0] + o[0], p[1] + o[1], p[2] + o[2])
         anchors.append((lab, project(q, *EXP_CAM, W, H)))
     callouts(ex, anchors, fs=30)
-    title(ex, "Exploded view - LH unit, seen from the open back",
+    title(ex, "Exploded view (LH), from the back",
           "badge insert (front) not shown", fs=40)
     save(ex, "exploded", 1600)
 
@@ -167,8 +167,7 @@ for pose_name, pose, head, sub in (
          ("Cable nipple", ortho_uv(hx + 3.5, hy)),
          ("Sheath anchor slider", ortho_uv(ds.SLIDER_X_NOM, 34)),
          ("Webbing", ortho_uv(-8.5, -25 if pose_name == "rest" else -40)),
-         ("Face", ortho_uv(25, 1.0)),
-         ("Badge insert", ortho_uv(36, -0.8))]
+         ("Face", ortho_uv(25, 1.0))]
     callouts(im, a, fs=28)
     # cable direction arrow
     u0, v0 = ortho_uv(-96, ds.CABLE_Y + 6)
