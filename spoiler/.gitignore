@@ -30,3 +30,5 @@ v11/input/
 v11/out/*.ply
 v11/src/__pycache__/
 v11/renders/*.png
+v11/out/*.log
+v11/out/*.npy

@@ -1,6 +1,0 @@
-FBX version: 7700
-00:04.061  cycles           | WARNING CUEW initialization failed: Error opening the library
-hidden: ['vw_pologti_11_lod0:vw_pologti_11_lod0_trunk_body_2_184v_5fdb391', 'vw_pologti_11_lod0:vw_pologti_11_lod0_trunk_tail_light__7daa448', 'vw_pologti_11_lod0:vw_pologti_11_lod0_winga_black_140ve_f20ead5', 'vw_pologti_11_lod0:vw_pologti_11_lod0_winga_body_3_387v_d4465d6', 'vw_pologti_11_lod0:vw_pologti_11_lod0_winga_body_758ver_0764d4e']
-spoiler moved (Blender m): [0.    0.065 0.015]
-02:15.516  render           | Saved: 'v11/renders/polo_gti_top_rear.png'
-rendered v11/renders/polo_gti_top_rear.png 131.0s
