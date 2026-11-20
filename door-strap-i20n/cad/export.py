@@ -22,7 +22,8 @@ ROOT = os.path.dirname(HERE)
 STEP_DIR = os.path.join(ROOT, "step")
 STL_DIR = os.path.join(ROOT, "stl")
 WEB_DIR = os.path.join(ROOT, "web")
-MESH_DIR = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "_mesh")
+_args = [a for a in sys.argv[1:] if not a.startswith("--")]
+MESH_DIR = _args[0] if _args else os.path.join(ROOT, "_mesh")
 for d in (STEP_DIR, STL_DIR, WEB_DIR, MESH_DIR):
     os.makedirs(d, exist_ok=True)
 
@@ -64,6 +65,38 @@ def strap_tri(pose, mirror=False, z_range=None):
     V, F, UV = strap.strap_mesh(pose, z_range=z_range, mirror=mirror)
     tris = np.vstack([F[:, [0, 1, 2]], F[:, [0, 2, 3]]])
     return trimesh.Trimesh(V, tris, process=False), (V, F, UV)
+
+
+def build_glb(path, tol=0.04, ang=0.2):
+    """Light, coloured GLB of the LH assembly at rest (glTF: Y-up, metres)."""
+    scene = trimesh.Scene()
+    parts = ds.build_assembly(ds.POSE_REST, mirror=False, with_cable=True)
+    for n, shp in parts.items():
+        verts, tris = shp.val().tessellate(tol, ang)
+        # keep per-face vertices (process=False) so sharp CAD edges stay sharp
+        m = trimesh.Trimesh([(v.x, v.y, v.z) for v in verts], tris,
+                            process=False)
+        _ = m.vertex_normals
+        c = COLORS[n]
+        m.visual = trimesh.visual.TextureVisuals(
+            material=trimesh.visual.material.PBRMaterial(
+                name=n, baseColorFactor=[c[0], c[1], c[2], 1.0],
+                metallicFactor=c[3], roughnessFactor=c[4]))
+        scene.add_geometry(m, node_name=n, geom_name=n)
+    sm, _ = strap_tri(ds.POSE_REST)
+    _ = sm.vertex_normals
+    c = COLORS["strap"]
+    sm.visual = trimesh.visual.TextureVisuals(
+        material=trimesh.visual.material.PBRMaterial(
+            name="strap", baseColorFactor=[c[0], c[1], c[2], 1.0],
+            metallicFactor=0.0, roughnessFactor=c[4]))
+    scene.add_geometry(sm, node_name="strap", geom_name="strap")
+    # Z-up -> Y-up puts the face towards +Z (the viewer's default camera)
+    T = trimesh.transformations.rotation_matrix(math.radians(-90), [1, 0, 0])
+    scene.apply_transform(T)
+    scene.apply_scale(0.001)
+    scene.export(path, file_type="glb", include_normals=True)
+    return path
 
 
 def main():
@@ -164,29 +197,7 @@ def main():
     print("render meshes done", round(time.time() - t0, 1), "s")
 
     # ---------------- GLB for the web viewer (LH, rest) --------------------
-    scene = trimesh.Scene()
-    parts = ds.build_assembly(ds.POSE_REST, mirror=False, with_cable=True)
-    for n, shp in parts.items():
-        p = os.path.join(MESH_DIR, "LH_rest", f"{n}.stl")
-        m = trimesh.load(p)
-        c = COLORS[n]
-        m.visual = trimesh.visual.TextureVisuals(
-            material=trimesh.visual.material.PBRMaterial(
-                name=n, baseColorFactor=[c[0], c[1], c[2], 1.0],
-                metallicFactor=c[3], roughnessFactor=c[4]))
-        scene.add_geometry(m, node_name=n, geom_name=n)
-    sm, _ = strap_tri(ds.POSE_REST)
-    c = COLORS["strap"]
-    sm.visual = trimesh.visual.TextureVisuals(
-        material=trimesh.visual.material.PBRMaterial(
-            name="strap", baseColorFactor=[c[0], c[1], c[2], 1.0],
-            metallicFactor=0.0, roughnessFactor=c[4]))
-    scene.add_geometry(sm, node_name="strap", geom_name="strap")
-    # glTF is Y-up, metres: Z-up -> Y-up puts the face towards +Z (viewer)
-    T = trimesh.transformations.rotation_matrix(math.radians(-90), [1, 0, 0])
-    scene.apply_transform(T)
-    scene.apply_scale(0.001)
-    scene.export(os.path.join(WEB_DIR, "door_strap_LH.glb"))
+    build_glb(os.path.join(WEB_DIR, "door_strap_LH.glb"))
 
     # ---------------- checks ----------------------------------------------
     checks = {}
@@ -204,4 +215,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "--glb-only" in sys.argv:
+        print(build_glb(os.path.join(WEB_DIR, "door_strap_LH.glb")))
+    else:
+        main()
