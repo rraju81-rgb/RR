@@ -5,9 +5,9 @@ v12 is v10 with the back edge redesigned, as asked: the leg-and-groove rim is go
 - **Unchanged from v10:**
   - The outside shape, the underside that sits on the car, and the car coordinates (X across the car, Y up, +Z to the rear).
   - The six parts and the way they print.
-  - The pinned 30° joints.
   - The size: 1,300 × 147 × 292 mm overall, and no part is thicker than 10 mm.
 - **New: the back edge** now runs down from the pocket in one smooth 45° slope to a single rounded tip that sits on the car. Behind the tip, the spoiler's own underside carries on unchanged. That is the line marked in red on the owner's close-up.
+- **New: the print set is just the six parts and one pin model.** The front/rear cuts join with dowel pins only (v10 had loose splines there), so there is nothing else to print: `print/` holds the seven files.
 
 ![v10 and v12](docs/v12_rim_v10_v12.png)
 
@@ -49,13 +49,13 @@ The same close-up as the owner's photo, rendered (`docs/rim_v12.png`):
 
 | Part | File | Where | Volume |
 |---|---|---|---|
-| 1 | `v12_1_LEFT_REAR` | left section, rear (with the tip) | 324 cm³ |
-| 2 | `v12_2_LEFT_FRONT` | left section, front (with the left fin) | 376 cm³ |
-| 3 | `v12_3_CENTRE_REAR` | centre section, rear (with the tip) | 442 cm³ |
-| 4 | `v12_4_CENTRE_FRONT` | centre section, front | 331 cm³ |
-| 5 | `v12_5_RIGHT_REAR` | right section, rear (with the tip) | 324 cm³ |
-| 6 | `v12_6_RIGHT_FRONT` | right section, front (with the right fin) | 376 cm³ |
-| | | **Total** | **2,174 cm³** (v10: 2,189 cm³; v8 solid: 2,963 cm³) |
+| 1 | `v12_1_LEFT_REAR` | left section, rear (with the tip) | 327 cm³ |
+| 2 | `v12_2_LEFT_FRONT` | left section, front (with the left fin) | 378 cm³ |
+| 3 | `v12_3_CENTRE_REAR` | centre section, rear (with the tip) | 445 cm³ |
+| 4 | `v12_4_CENTRE_FRONT` | centre section, front | 334 cm³ |
+| 5 | `v12_5_RIGHT_REAR` | right section, rear (with the tip) | 327 cm³ |
+| 6 | `v12_6_RIGHT_FRONT` | right section, front (with the right fin) | 378 cm³ |
+| | | **Total** | **2,189 cm³** (v8 solid: 2,963 cm³) |
 
 - **Across the span:** cuts at x = ±216.7 mm. The centre section is 433 mm wide; each side section is 433 mm including its fin.
 - **Front/rear:** one flat, vertical cut per section. It runs at z = 122 mm across the centre and slopes to z = 100 mm at the ends.
@@ -71,7 +71,7 @@ Every visible surface stays as it is; material more than 8.5 mm below them comes
 |---|---|---|---|---|---|---|
 | mm | 9.3 | 8.3 | 9.8 | 8.4 | 9.3 | 8.3 |
 
-## 4. Joints: pins and 30° chamfers at every seam (as v10)
+## 4. Joints: dowel pins at every seam, 30° tongues across the span
 
 ![joints](docs/v12_joints.png)
 
@@ -86,21 +86,22 @@ Every visible surface stays as it is; material more than 8.5 mm below them comes
 
 **Front/rear cuts** (parts 2|1, 4|3, 6|5):
 
-- Both faces carry a groove.
-- **Splines:** two loose double-sided splines per cut, 102–184 mm long.
-- **Pins:** three 3 mm pins per cut, at x = 0 and ±194 mm on the centre cut and at x = ±239, ±389 and ±501 mm on the side cuts.
+- Both parts print standing on this face, so nothing may stand proud of it. The joint is dowel pins only, about every 80 mm, with round holes and pointed ends:
+  - five pins on the centre cut, at x = 0, ±97 and ±194 mm;
+  - four pins on each side cut, at x = ±239, ±339, ±439 and ±501 mm.
+- There are no loose splines any more, and no grooves in these faces. The pins line the parts up; the glue holds them.
 
 **Pins and fit:**
 
-- 15 pins in all, 3 × 18 mm, in 3.3 mm holes 9.5 mm deep each side, with a 30° lead-in.
+- 19 pins in all, 3 × 18 mm, in 3.3 mm holes 9.5 mm deep each side, with a 30° lead-in. They are all the same: print `v12_PIN_3x18.stl` 23 times (19 + 4 spare), or use 3 mm steel dowels or rod cut to 18 mm.
 - At least 1.6 mm of wall around every hole.
-- Measured clearance: 0.17 mm round every tongue and spline.
+- Measured clearance: 0.17 mm round every tongue.
 
 ![joint detail](docs/v12_joint_detail.png)
 
 ## Print files
 
-`print/` holds bed-ready files for a 420 × 420 mm bed (Anycubic Kobra 3 Max). Each part stands on its cut face, set across the bed's diagonal.
+`print/` holds the whole print set, seven files, bed-ready for a 420 × 420 mm bed (Anycubic Kobra 3 Max). Each part stands on its cut face, set across the bed's diagonal.
 
 | File | Print size (mm) | Notes |
 |---|---|---|
@@ -110,31 +111,28 @@ Every visible surface stays as it is; material more than 8.5 mm below them comes
 | `v12_4_CENTRE_FRONT.stl` | 326 × 326 × 134 | stands on its rear cut |
 | `v12_5_RIGHT_REAR.stl` | 288 × 286 × 141 | stands on its front cut |
 | `v12_6_RIGHT_FRONT.stl` | 332 × 334 × 134 | stands on its rear cut |
-| `v12_SPLINES_plate.stl` | 379 × 35 × 5 | the six splines, flat |
-| `v12_PINS_3x18_plate_x19.stl` | | 15 pins + 4 spare, standing; skip if using metal pins |
+| `v12_PIN_3x18.stl` | 3 × 18 | the pin, standing on end: print 23 (19 + 4 spare); skip if using metal pins |
 
 ![bed layouts](docs/v12_bed_layouts.png)
 
 **Supports: none needed.**
 - The tip's slope leans at 45°.
-- The only steeper faces are short bridges:
-  - the 1.7 mm roofs of the spline grooves, on the bed;
-  - the closed top end of the hidden channel, about 1.5 mm wide.
-- There is less steep area than in v10: parts 1 and 5 have 10.6 cm² over 55° (v10: 13.6), and part 3 has 7.0 (v10: 11.5).
+- The only steeper face is a short bridge: the closed top end of the hidden channel, about 1.5 mm wide (6.7 cm² on parts 1 and 5, 1 cm² on part 3).
+- With the spline grooves gone, the other parts have at most 1.2 cm² over 55° (v10: 5–14 cm² per part).
 - If your slicer flags the fin tip on parts 2 and 6 (under 1 cm²), allow a small tree support there.
 
 **Settings (as v10):**
 - ASA (UV-stable) or PETG.
 - 0.25–0.28 mm layers with a 0.4 mm nozzle.
 - 4 walls, 20–25% gyroid infill.
-- An 8–10 mm brim on every part and on the splines.
+- An 8–10 mm brim on every part.
 
 ## Assembly (as v10)
 
 1. **Dry-fit.**
-   - At each front/rear cut, lay the splines in the rear part's groove and push in its three pins, then press the front part on.
+   - At each front/rear cut, push the pins into the rear part's holes, then press the front part on.
    - At the span seams, push the pins into the centre parts and slide the side parts on along the span.
-2. **Glue.** Use epoxy, or for ASA, ABS/ASA cement, on both faces, in the holes, in the grooves and on the tongues.
+2. **Glue.** Use epoxy, or for ASA, ABS/ASA cement, on both faces, in the holes, and in the grooves and on the tongues of the span seams.
    - Join each front/rear pair first: 1+2, 3+4, 5+6.
    - Then join the three sections at the span seams. Glue on the seam faces also closes the end of the hidden channel.
 3. **Finish.** Fill the seam lines, prime and paint.
@@ -149,25 +147,26 @@ Every visible surface stays as it is; material more than 8.5 mm below them comes
 
 ## Checks on the delivered files
 
-`src/p3_validate.py` checks every part, spline and pin, and stops if a check fails. Results are in `out/validation.json`.
+`src/p3_validate.py` checks every part and pin, and stops if a check fails. Results are in `out/validation.json`.
 
 - **Meshes:** all watertight, with consistent winding, one body each, no self-intersections and no zero-area faces. The print files are checked again as written (float32 STL).
 - **Thickness:** 8.3–9.8 mm at most per part.
 - **Fit:**
-  - No part overlaps a neighbour, a spline or a pin.
-  - Tongue and spline clearance is 0.17 mm.
+  - No part overlaps a neighbour or a pin.
+  - Tongue clearance is 0.17 mm.
   - Pin-hole walls are at least 1.6 mm.
 - **Seams:** the outer outlines of neighbouring parts match to 1–1.4 mm² at the span seams and 5–9 mm² at the front/rear cuts, from the 0.02 mm decimation.
 
 ## Files and rebuilding
 
-- `assembled/`: the six parts, splines and pins in car coordinates, in place.
+- `print/`: the print set, the six parts and the pin (above). The zip `Polo_spoiler_v12_print_package.zip` holds the same seven models plus this README and its figures.
+- The scripts also write the parts and the 19 pins in place on the car to `out/assembled/`, for the checks, figures and renders. These working copies are not part of the print set and are not stored in the repository.
 - `docs/`: the figures above and `rim_v12.png`, a studio render of the tip at part 3's end, from the same camera as the owner's close-up of v10.
 - `src/`: the scripts. `sh v12/src/run_all.sh` from `spoiler/` rebuilds everything in about 25 minutes.
 - **To change the design:** edit `src/layout.py`.
   - Tip: `TIP_T` (how far forward of the contact line), `TIP_R` (radius), `M_FRONT` (slope), `K_BLEND` (fillet).
   - Hidden channel: `SKIN_V`, `SKIRT`, `WALL`, `C_MIN`.
-  - Skin: `T_SKIN`. Cut lines: `C0`, `C1`.
+  - Skin: `T_SKIN`. Cut lines: `C0`, `C1`. Pins on the front/rear cuts: `CUT_PIN_PITCH`.
 - **The back edge** is built by `src/rim.py` (the smooth line and the tip's profile) and `src/p1_core.py` (the pocket, the tip and the channel as smooth fields on a 0.5 mm grid, then marching cubes).
 
 **Limits.**

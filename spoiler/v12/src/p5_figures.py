@@ -2,10 +2,10 @@
   v12_parts.png         the six parts, numbered as marked, from above-behind and from below
   v12_rim.png           the smooth tip: sections at the centre and the thick outer zone, and close-ups
   v12_rim_v10_v12.png   the same close-ups of the back edge in v10 (groove and leg) and in v12 (smooth tip)
-  v12_joints.png        the joint faces: tongue and groove at a span seam, grooves and pin holes at a front/rear cut
-  v12_joint_detail.png  dimensioned tongue/groove/spline and both pin holes
+  v12_joints.png        the joint faces: tongue and groove at a span seam, pin holes at a front/rear cut
+  v12_joint_detail.png  dimensioned tongue/groove and both pin holes
   v12_sections.png      v8 solid against v12 cored
-  v12_bed_layouts.png   every print file on the 420 x 420 mm bed
+  v12_bed_layouts.png   the print set on the 420 x 420 mm bed: the six parts and the pin
 Run from spoiler/:  python3 v12/src/p5_figures.py"""
 import sys, os, json; sys.path.insert(0, 'v12/src'); sys.path.insert(0, 'v6/src')
 import numpy as np, trimesh
@@ -117,11 +117,11 @@ im3 = render([(P4x, c), (parts['P3'], c)] + [(s_, o) for s_ in splines if abs(s_
              eye=(0, 330, 40), target=(0, 5, 95), up=(0, 1, 0), fov=50, W=1000, H=600, edges=True)
 im4 = render([(parts['P3'], c)], eye=(0, -40, -60), target=(0, 20, 125), up=(0, 1, 0), fov=55, W=1000, H=600, edges=True)
 grid([label(im1, 'span seam face of part 1: 30-degree tongue between two pin holes'), label(im2, 'groove face of part 3 with its two pin holes'),
-      label(im3, 'front/rear cut opened: splines and pins (orange) between parts 3 and 4'), label(im4, 'cut face of part 3: groove and pin holes')], cols=2).save(f'{DOC}/v12_joints.png')
+      label(im3, 'front/rear cut opened: the pins (orange) between parts 3 and 4'), label(im4, 'cut face of part 3: pin holes only')], cols=2).save(f'{DOC}/v12_joints.png')
 
 # 4. joint detail
 tan = np.tan(np.radians(CHAMFER_DEG)); wt = TONGUE_BASE - 2 * TONGUE_H * tan; gm = TONGUE_BASE + 2 * CLEAR; gd = TONGUE_H + GROOVE_EXTRA
-fig, axs = plt.subplots(1, 3, figsize=(17, 5)); sk = T_SKIN; L_ = 10.0
+fig, axs = plt.subplots(1, 2, figsize=(12, 5)); sk = T_SKIN; L_ = 10.0
 ax = axs[0]
 ax.add_patch(MPoly([(-L_, -sk / 2), (0, -sk / 2), (0, -TONGUE_BASE / 2), (TONGUE_H, -wt / 2), (TONGUE_H, wt / 2), (0, TONGUE_BASE / 2), (0, sk / 2), (-L_, sk / 2)], fc='#d9dde4', ec='k', lw=1.2))
 ax.add_patch(MPoly([(L_, -sk / 2), (0.05, -sk / 2), (0.05, -gm / 2), (0.05 + gd, -(gm - 2 * gd * tan) / 2), (0.05 + gd, (gm - 2 * gd * tan) / 2), (0.05, gm / 2), (0.05, sk / 2), (L_, sk / 2)], fc='#e8964688', ec='#b85c1a', lw=1.2))
@@ -129,20 +129,13 @@ ax.text(-L_ + 0.4, sk / 2 + 0.6, 'side part (tongue)', fontsize=9); ax.text(1.2,
 ax.text(-9.6, -5.6, 'tongue %.1f wide, %.1f tall,\nsides %d° off the joining direction' % (TONGUE_BASE, TONGUE_H, CHAMFER_DEG), fontsize=8)
 ax.text(2.2, -5.6, 'groove %.1f wide, %.1f deep\n(%.1f mm a side)' % (gm, gd, CLEAR), fontsize=8)
 ax.set_xlim(-L_ - 0.5, L_ + 0.5); ax.set_ylim(-7.2, 6.2); ax.set_aspect('equal'); ax.axis('off'); ax.set_title('span seams: tongue and groove (mm)', fontsize=10)
-ax = axs[1]
-ax.add_patch(MPoly([(-L_, -sk / 2), (-0.05, -sk / 2), (-0.05, -gm / 2), (-0.05 - gd, -(gm - 2 * gd * tan) / 2), (-0.05 - gd, (gm - 2 * gd * tan) / 2), (-0.05, gm / 2), (-0.05, sk / 2), (-L_, sk / 2)], fc='#d9dde4', ec='k', lw=1.2))
-ax.add_patch(MPoly([(L_, -sk / 2), (0.05, -sk / 2), (0.05, -gm / 2), (0.05 + gd, -(gm - 2 * gd * tan) / 2), (0.05 + gd, (gm - 2 * gd * tan) / 2), (0.05, gm / 2), (0.05, sk / 2), (L_, sk / 2)], fc='#d9dde4', ec='k', lw=1.2))
-ax.add_patch(MPoly([(-TONGUE_H, -wt / 2), (0, -TONGUE_BASE / 2), (TONGUE_H, -wt / 2), (TONGUE_H, wt / 2), (0, TONGUE_BASE / 2), (-TONGUE_H, wt / 2)], fc='#f07828', ec='k', lw=1.0))
-ax.text(-L_ + 0.4, sk / 2 + 0.6, 'front part', fontsize=9); ax.text(4.5, sk / 2 + 0.6, 'rear part', fontsize=9)
-ax.text(-6.5, -6.0, 'loose spline (orange): two tongues back to back,\nsits in a groove in each face', fontsize=8)
-ax.set_xlim(-L_ - 0.5, L_ + 0.5); ax.set_ylim(-7.2, 6.2); ax.set_aspect('equal'); ax.axis('off'); ax.set_title('front/rear cuts: groove, spline, groove (mm)', fontsize=10)
-ax = axs[2]; r = HOLE_D / 2
+ax = axs[1]; r = HOLE_D / 2
 a_ = np.linspace(0.25 * np.pi, 1.75 * np.pi, 60); td = np.vstack([[0, r * np.sqrt(2)], np.column_stack([r * np.sin(a_), r * np.cos(a_)])])
 ax.add_patch(MPoly(td + [-4.5, 0], fc='white', ec='k', lw=1.0)); ax.add_patch(plt.Circle((-4.5, 0), PIN_D / 2, fc='#f07828', ec='k', lw=0.8))
 ax.add_patch(plt.Circle((4.5, 0), r, fc='white', ec='k', lw=1.0)); ax.add_patch(plt.Circle((4.5, 0), PIN_D / 2, fc='#f07828', ec='k', lw=0.8))
 ax.annotate('', (-4.5, 3.6), (-4.5, 5.2), arrowprops=dict(arrowstyle='<-')); ax.text(-4.5, 5.4, 'up as printed', fontsize=8, ha='center')
 ax.text(-4.5, -3.6, 'span seams:\nteardrop hole, %.1f mm' % HOLE_D, fontsize=8, ha='center', va='top')
-ax.text(4.5, -3.6, 'front/rear cuts:\nround hole, %.1f mm,\npointed end' % HOLE_D, fontsize=8, ha='center', va='top')
+ax.text(4.5, -3.6, 'front/rear cuts (pins only):\nround hole, %.1f mm,\npointed end' % HOLE_D, fontsize=8, ha='center', va='top')
 ax.text(0, 6.6, 'pins %.0f x %.0f mm in holes %.1f deep each side, 30° lead-in' % (PIN_D, PIN_L, HOLE_DEPTH), fontsize=8, ha='center')
 ax.set_xlim(-9, 9); ax.set_ylim(-7.5, 7.5); ax.set_aspect('equal'); ax.axis('off'); ax.set_title('pin holes, across the pin (mm)', fontsize=10)
 plt.tight_layout(); plt.savefig(f'{DOC}/v12_joint_detail.png', dpi=120); plt.close()
@@ -167,9 +160,8 @@ for pid in IDS:
     r_ = P[pid]
     ims.append(label(im, '%s %s: %.0f x %.0f x %.0f mm, %s' % (pid[1], STEM[pid].replace('v12_', '').split('_', 1)[1], *r_['print_extent_mm'],
                'no support' if r_['overhang_gt55_cm2'] < 3 else 'no support (%.0f cm2 of short bridges)' % r_['overhang_gt55_cm2']), size=16))
-for f, t in (('v12_SPLINES_plate.stl', '%d splines, flat' % J['n_splines']), (P['PIN']['plate'], '%d pins 3 x 18 mm (%d + 4 spare)' % (P['PIN']['plate_count'], J['n_pins']))):
-    m = trimesh.load(f'{PRN}/{f}'); c0 = m.bounds.mean(0); ext = max(m.extents[:2])
-    im = render([(m, (232, 150, 70))], eye=(c0[0] + 0.5 * ext, c0[1] - 0.9 * ext, c0[2] + 0.8 * ext), target=c0, up=(0, 0, 1), fov=45, W=700, H=520, edges=True)
-    ims.append(label(im, t, size=16))
+m = trimesh.load(f'{PRN}/v12_PIN_3x18.stl'); c0 = m.bounds.mean(0)
+im = render([(m, (232, 150, 70))], eye=(c0[0] + 14, c0[1] - 22, c0[2] + 10), target=c0, up=(0, 0, 1), fov=45, W=700, H=520, edges=True)
+ims.append(label(im, 'the pin, 3 x 18 mm: one model, print %d (%d + 4 spare)' % (P['PIN']['print_count'], J['n_pins']), size=16))
 grid(ims, cols=4).save(f'{DOC}/v12_bed_layouts.png')
 print('figures written to', DOC)

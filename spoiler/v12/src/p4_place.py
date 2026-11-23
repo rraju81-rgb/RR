@@ -1,8 +1,8 @@
-"""v12 step 4: print placement on a 420 x 420 x 500 mm bed (Anycubic Kobra 3 Max).
-Every part stands on its FRONT/REAR CUT (a flat face with the spline groove in it): the rear parts on their front face,
-the front parts on their rear face. The skin then rises as a long, low curved wall (130-160 mm tall instead of v9's
-217 mm), set across the bed's diagonal; the visible top surface is printed as a side wall, with no support on it.
-Splines lie flat; pins stand on end, all on one plate.   Run from spoiler/:  python3 v12/src/p4_place.py"""
+"""v12 step 4: the print set, on a 420 x 420 x 500 mm bed (Anycubic Kobra 3 Max): the six parts and one pin model, nothing
+else. Every part stands on its FRONT/REAR CUT (a flat face with only pin holes in it): the rear parts on their front
+face, the front parts on their rear face. The skin then rises as a long, low curved wall (134-141 mm tall), set across
+the bed's diagonal; the visible top surface is printed as a side wall, with no support on it. The pin is one model,
+standing on end: print it as many times as joints.json says (plus spares).   Run from spoiler/:  python3 v12/src/p4_place.py"""
 import sys, json, os, tempfile; sys.path.insert(0, 'v12/src'); sys.path.insert(0, 'v6/src')
 import numpy as np, trimesh
 from check import report
@@ -67,30 +67,16 @@ if __name__ == '__main__':
         r, sx = report(trimesh.load(f'{PRN}/{STEM[pid]}.stl'), STEM[pid])
         rep[pid]['print_file_ok'] = bool(r['watertight'] and r['winding'] and r['bodies'] == 1 and r['selfx_faces'] == 0 and r['zero_area'] == 0)
         print(pid, rep[pid], flush=True)
-    # splines: flat, side by side on one plate
-    J = json.load(open(f'{OUT}/joints.json')); plate = []; x0, y0, row_h = 20.0, 20.0, 0.0; sp_rep = []
-    for i in range(J['n_splines']):
-        s = trimesh.load(f'{ASM}/v12_SPLINE_{i + 1:02d}.stl')
-        # its seam normal: the axis of least extent of the strip's vertices; lies flat, lengthwise along x
-        C = np.cov((s.vertices - s.vertices.mean(0)).T); w, v = np.linalg.eigh(C); nrm = v[:, 0]
-        q, R, tr = place(s, nrm, center=False, lengthwise=True)
-        if x0 + q.extents[0] > BED[0] - 20.0: x0, y0, row_h = 20.0, y0 + row_h + 10.0, 0.0     # next row
-        q.apply_translation([x0 - q.bounds[0][0], y0 - q.bounds[0][1], -q.bounds[0][2]])
-        x0 += q.extents[0] + 10.0; row_h = max(row_h, q.extents[1])
-        q.export(f'{PRN}/v12_SPLINE_{i + 1:02d}.stl'); plate.append(q)
-        sp_rep.append(dict(file=f'v12_SPLINE_{i + 1:02d}.stl', extent_mm=[round(float(v_), 1) for v_ in q.extents], overhang_gt45_cm2=overhangs(q)(45)))
-    pl = trimesh.util.concatenate(plate)
-    if pl.extents[1] > BED[1] - 2 * MARGIN: print('spline plate too long:', pl.extents)
-    pl.export(f'{PRN}/v12_SPLINES_plate.stl'); rep['SPLINES'] = dict(plate='v12_SPLINES_plate.stl', items=sp_rep, plate_extent_mm=[round(float(v_), 1) for v_ in pl.extents])
-    # pins: standing on end; needed + 4 spares on one plate
+    # the pin: one model, standing on end (print it n_pins times, plus a few spare)
+    J = json.load(open(f'{OUT}/joints.json'))
     pin = trimesh.load(f'{OUT}/pin_local.stl'); pin.apply_translation(-pin.bounds[0]); pin.export(f'{PRN}/v12_PIN_3x18.stl')
-    npl = J['n_pins'] + 4; cols = 8; pp = []
-    for i in range(npl):
-        q = pin.copy(); q.apply_translation([(i % cols) * 10.0 + 10, (i // cols) * 10.0 + 10, 0]); pp.append(q)
-    trimesh.util.concatenate(pp).export(f'{PRN}/v12_PINS_3x18_plate_x{npl}.stl')
-    rep['PIN'] = dict(file='v12_PIN_3x18.stl', plate=f'v12_PINS_3x18_plate_x{npl}.stl', size_mm=[3.0, PIN_L], n_needed=J['n_pins'], plate_count=npl)
+    r, sx = report(trimesh.load(f'{PRN}/v12_PIN_3x18.stl'), 'pin')
+    rep['PIN'] = dict(file='v12_PIN_3x18.stl', size_mm=[3.0, PIN_L], n_needed=J['n_pins'], print_count=J['n_pins'] + 4,
+                      print_file_ok=bool(r['watertight'] and r['winding'] and r['bodies'] == 1 and r['selfx_faces'] == 0))
+    files = sorted(os.listdir(PRN)); rep['print_set'] = files
+    assert files == sorted([f'{STEM[k]}.stl' for k in IDS] + ['v12_PIN_3x18.stl']), f'print/ holds {files}'
     json.dump(rep, open(f'{OUT}/print_report.json', 'w'), indent=1)
-    for k in ('SPLINES', 'PIN'): print(k, rep[k])
-    bad = [k for k in IDS if not (rep[k]['print_file_ok'] and rep[k]['fits_420x420x500'])]
+    print('PIN', rep['PIN']); print('print set:', len(rep['print_set']), 'files:', ', '.join(rep['print_set']))
+    bad = [k for k in IDS if not (rep[k]['print_file_ok'] and rep[k]['fits_420x420x500'])] + ([] if rep['PIN']['print_file_ok'] else ['PIN'])
     print('ALL PRINT FILES OK' if not bad else f'PRINT FILE CHECK FAILED: {bad}')
     sys.exit(1 if bad else 0)

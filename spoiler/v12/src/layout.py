@@ -8,7 +8,7 @@ import numpy as np
 
 E_PATH = 'v6/out/E2.stl'          # solid spoiler body, built by v6/src/run_all.sh
 CAR_PATH = 'v6/car/out/car_body_conf.ply'   # car body under the spoiler (1.5 mm tape gap)
-OUT, ASM, PRN, DOC = 'v12/out', 'v12/assembled', 'v12/print', 'v12/docs'
+OUT, ASM, PRN, DOC = 'v12/out', 'v12/out/assembled', 'v12/print', 'v12/docs'   # ASM: parts and pins in place on the car (working copies for the checks, figures and renders; not part of the print set)
 HALF = 650.0
 XS = HALF / 3.0                   # span seams at x = -216.67 and +216.67 (the v9 seams 2|3 and 4|5)
 SECTIONS = [('L', -HALF, -XS), ('C', -XS, XS), ('R', XS, HALF)]
@@ -59,9 +59,10 @@ SKIRT = 2.5
 WALL = 3.0                        # the slope's wall, measured square to it
 C_MIN = 10.0                      # the channel only where the back edge is deeper than this (so it is >= 1.5 mm wide)
 
-# Joints. Span seams (x = +-216.67): a tongue on the side parts and a groove in the centre parts, with two dowel pins per
-# front and per rear segment. Front/rear cuts: both parts print standing on the cut, so both faces carry a groove and
-# loose double-sided splines sit between them, with dowel pins between and beyond the splines.
+# Joints. The print set is the six parts and one pin model (printed as many times as needed), nothing else.
+# Span seams (x = +-216.67): a 30-degree tongue on the side parts and a groove in the centre parts, with dowel pins.
+# Front/rear cuts: both parts print standing on the cut, so nothing may stand proud of it: dowel pins only, about every
+# CUT_PIN_PITCH mm (v10 had loose splines here; v12 has none).
 CHAMFER_DEG = 30.0
 TONGUE_BASE, TONGUE_H = 4.5, 2.5
 CLEAR = 0.20
@@ -74,6 +75,7 @@ HOLE_CHAMFER = 0.4
 MIN_SKIN_PIN = 8.0
 PIN_GAP = 3.0
 CORNER_KEEP = 14.0                # joints keep this far from the point where four parts meet
+CUT_PIN_PITCH = 80.0              # front/rear cuts: one pin about every 80 mm along the cut
 
 # Parts (the owner's numbering): 1 left rear, 2 left front, 3 centre rear, 4 centre front, 5 right rear, 6 right front
 PARTS = [('P1', 'L', 'rear', 'v12_1_LEFT_REAR', 'left rear'), ('P2', 'L', 'front', 'v12_2_LEFT_FRONT', 'left front (with the fin)'),

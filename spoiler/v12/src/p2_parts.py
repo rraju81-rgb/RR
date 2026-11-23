@@ -1,10 +1,11 @@
-"""v12 step 2: cut each cored section into its front and rear part, and make the joints.
-  Span seams (x = -216.67 and +216.67), front segment and rear segment each: two dowel-pin holes and between them a
+"""v12 step 2: cut each cored section into its front and rear part, and make the joints. The print set is the six parts
+and one pin model, nothing else.
+  Span seams (x = -216.67 and +216.67), front segment and rear segment each: dowel-pin holes and between them a
   30-degree TONGUE on the side part and a matching GROOVE in the centre part. In print these faces stand upright, so the
   holes are teardrop-shaped (pointed towards the top of the print) and the tongue/groove ends taper at 45 degrees.
-  Front/rear cuts (one per section): both parts print standing on this face, so both faces get a GROOVE, and loose
-  double-sided SPLINES sit between them, with dowel pins between and beyond the splines (round holes, pointed ends).
-Writes v12/assembled/*.stl (parts, splines and pins in place, car coordinates), v12/out/pin_local.stl, joints.json.
+  Front/rear cuts (one per section): both parts print standing on this face, so nothing stands proud of it: DOWEL PINS
+  only, about every CUT_PIN_PITCH mm (round holes, pointed ends). v10 had loose splines here; v12 has none.
+Writes v12/out/assembled/*.stl (parts and pins in place, car coordinates), v12/out/pin_local.stl, joints.json.
 Run from spoiler/:  python3 v12/src/p2_parts.py"""
 import sys, os, json; sys.path.insert(0, 'v12/src'); sys.path.insert(0, 'v6/src')
 import numpy as np, trimesh, manifold3d as mf
@@ -17,7 +18,7 @@ from check import report
 from p1_core import weld, keep_main, clean_written, decimate_clean, written_folds
 from layout import (OUT, ASM, XS, SECTIONS, chord_plane, part_id, IDS, STEM, SEC, HALF_OF, CHAMFER_DEG, TONGUE_BASE, TONGUE_H,
                     CLEAR, GROOVE_EXTRA, END_DEG, MIN_SKIN_TONGUE, PIN_D, HOLE_D, HOLE_DEPTH, PIN_L, HOLE_CHAMFER, MIN_SKIN_PIN,
-                    PIN_GAP, CORNER_KEEP, C0)
+                    PIN_GAP, CORNER_KEEP, C0, CUT_PIN_PITCH)
 TAN = np.tan(np.radians(CHAMFER_DEG)); TE = np.tan(np.radians(END_DEG)); CLEAR_END = 0.30
 Y = np.array([0.0, 1.0, 0.0])
 
@@ -214,7 +215,7 @@ if __name__ == '__main__':
                 skin_under_tongue_min=round(float(under.min()), 2))
             print('span %+.1f %-5s %s|%s: pins at z=%s (walls %s mm), tongue %.0f mm on %s' % (xs_, half, A, B,
                   [round(float(uv[0]), 1) for _, uv, _ in pin_s], [round(w, 1) for *_, w in pin_s], t1 - t0, S_), flush=True)
-    # 3. front/rear cuts: groove in both faces, loose splines between pins
+    # 3. front/rear cuts: dowel pins only, about every CUT_PIN_PITCH mm (no grooves, no loose splines)
     for sec, x0, x1 in SECTIONS:
         n, d = chord_plane(sec)
         xm = 0.5 * (x0 + x1); p0 = np.array([xm, 0.0, (d - n[0] * xm) / n[2]])
@@ -226,7 +227,7 @@ if __name__ == '__main__':
         okc = (np.abs(X3 - (-XS)) > CORNER_KEEP + foot) & (np.abs(X3 - XS) > CORNER_KEEP + foot)
         run = runs_of((th >= MIN_SKIN_PIN) & okc, s)[0]
         sa, sb = s[run[0]] + foot + 2.0, s[run[-1]] - foot - 2.0
-        npin = 3 if sb - sa > 180 else 2
+        npin = max(3, int((sb - sa) // CUT_PIN_PITCH) + 1)
         targets = list(np.linspace(sa, sb, npin))
         pin_s = []
         for j, target in enumerate(targets):
@@ -239,19 +240,8 @@ if __name__ == '__main__':
                     if good: pin_s.append((v, uv, w)); done = True; break
                 if done: break
             if not done: print(f'   chord {sec}: no good place near s={target:.0f}, pin dropped')
-        assert len(pin_s) >= 2, f'chord seam {sec}: fewer than 2 pins'
+        assert len(pin_s) >= 3, f'chord seam {sec}: fewer than 3 pins'
         sp = []
-        for (va, uva, _), (vb, uvb, _) in zip(pin_s[:-1], pin_s[1:]):
-            t0 = va + HOLE_D / 2 + HOLE_CHAMFER + PIN_GAP; t1 = vb - HOLE_D / 2 - HOLE_CHAMFER - PIN_GAP
-            under = th[(s >= t0) & (s <= t1)]
-            if t1 - t0 < 25 or under.min() < MIN_SKIN_TONGUE:
-                # shorten to the part of the stretch where the skin is thick enough
-                okk = (th >= MIN_SKIN_TONGUE) & (s >= t0) & (s <= t1)
-                rr = runs_of(okk, s)
-                if not rr or s[rr[0][-1]] - s[rr[0][0]] < 25: continue
-                t0, t1 = s[rr[0][0]] + 1.0, s[rr[0][-1]] - 1.0; under = th[(s >= t0) & (s <= t1)]
-            ops[A]['cut'].append(groove(fr, pts, s, t0, t1, -1.0)); ops[B]['cut'].append(groove(fr, pts, s, t0, t1, +1.0))
-            loose_splines.append(spline(fr, pts, s, t0, t1)); sp.append((t0, t1, float(under.min())))
         for v, uv, w in pin_s:
             H = hole_round(fr, uv); ops[A]['cut'].append(H); ops[B]['cut'].append(H)
             loose_pins.append(dict(center=fr.to3(uv)[0].tolist(), axis=fr.n.tolist()))

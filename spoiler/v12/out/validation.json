@@ -2,10 +2,10 @@
  "meshes": {
   "P1": {
    "name": "P1",
-   "faces": 50920,
+   "faces": 84234,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 324.44,
+   "volume_cm3": 326.54,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -25,10 +25,10 @@
   },
   "P2": {
    "name": "P2",
-   "faces": 35580,
+   "faces": 35200,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 376.06,
+   "volume_cm3": 378.17,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -48,14 +48,14 @@
   },
   "P3": {
    "name": "P3",
-   "faces": 47662,
+   "faces": 47244,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 442.03,
+   "volume_cm3": 445.21,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
-   "min_area": 1.142718715796977e-05,
+   "min_area": 5.527253961190581e-07,
    "bounds": [
     [
      -216.67,
@@ -71,10 +71,10 @@
   },
   "P4": {
    "name": "P4",
-   "faces": 18892,
+   "faces": 18474,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 331.1,
+   "volume_cm3": 334.28,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -94,10 +94,10 @@
   },
   "P5": {
    "name": "P5",
-   "faces": 51022,
+   "faces": 84206,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 324.42,
+   "volume_cm3": 326.54,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -117,10 +117,10 @@
   },
   "P6": {
    "name": "P6",
-   "faces": 35698,
+   "faces": 35200,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 376.04,
+   "volume_cm3": 378.17,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -135,144 +135,6 @@
      649.94,
      49.25,
      122.0
-    ]
-   ]
-  },
-  "SPLINE_1": {
-   "name": "SPLINE_1",
-   "faces": 2396,
-   "watertight": true,
-   "winding": true,
-   "volume_cm3": 2.09,
-   "bodies": 1,
-   "selfx_faces": 0,
-   "zero_area": 0,
-   "min_area": 0.5452052976720035,
-   "bounds": [
-    [
-     -384.17,
-     14.2,
-     109.65
-    ],
-    [
-     -244.11,
-     27.28,
-     122.7
-    ]
-   ]
-  },
-  "SPLINE_2": {
-   "name": "SPLINE_2",
-   "faces": 2396,
-   "watertight": true,
-   "winding": true,
-   "volume_cm3": 1.51,
-   "bodies": 1,
-   "selfx_faces": 0,
-   "zero_area": 0,
-   "min_area": 0.3908115962817108,
-   "bounds": [
-    [
-     -495.87,
-     2.04,
-     102.99
-    ],
-    [
-     -393.84,
-     17.84,
-     113.76
-    ]
-   ]
-  },
-  "SPLINE_3": {
-   "name": "SPLINE_3",
-   "faces": 2396,
-   "watertight": true,
-   "winding": true,
-   "volume_cm3": 2.76,
-   "bodies": 1,
-   "selfx_faces": 0,
-   "zero_area": 0,
-   "min_area": 0.7234541585858096,
-   "bounds": [
-    [
-     5.19,
-     25.1,
-     119.5
-    ],
-    [
-     189.62,
-     33.12,
-     124.5
-    ]
-   ]
-  },
-  "SPLINE_4": {
-   "name": "SPLINE_4",
-   "faces": 2396,
-   "watertight": true,
-   "winding": true,
-   "volume_cm3": 2.76,
-   "bodies": 1,
-   "selfx_faces": 0,
-   "zero_area": 0,
-   "min_area": 0.7234523242077557,
-   "bounds": [
-    [
-     -189.34,
-     25.1,
-     119.5
-    ],
-    [
-     -4.91,
-     33.12,
-     124.5
-    ]
-   ]
-  },
-  "SPLINE_5": {
-   "name": "SPLINE_5",
-   "faces": 2396,
-   "watertight": true,
-   "winding": true,
-   "volume_cm3": 1.54,
-   "bodies": 1,
-   "selfx_faces": 0,
-   "zero_area": 0,
-   "min_area": 0.40129488159600546,
-   "bounds": [
-    [
-     393.85,
-     1.74,
-     102.87
-    ],
-    [
-     497.93,
-     17.86,
-     113.76
-    ]
-   ]
-  },
-  "SPLINE_6": {
-   "name": "SPLINE_6",
-   "faces": 2396,
-   "watertight": true,
-   "winding": true,
-   "volume_cm3": 2.09,
-   "bodies": 1,
-   "selfx_faces": 0,
-   "zero_area": 0,
-   "min_area": 0.5470270926979159,
-   "bounds": [
-    [
-     244.02,
-     14.22,
-     109.66
-    ],
-    [
-     384.18,
-     27.3,
-     122.71
     ]
    ]
   },
@@ -396,11 +258,11 @@
    ]
   },
   "P2": {
-   "max_mm": 8.34,
+   "max_mm": 8.33,
    "at": [
-    -230.5,
-    25.9,
-    116.7
+    -273.7,
+    23.9,
+    113.5
    ]
   },
   "P3": {
@@ -412,11 +274,11 @@
    ]
   },
   "P4": {
-   "max_mm": 8.39,
+   "max_mm": 8.41,
    "at": [
-    28.3,
+    -6.1,
     31.4,
-    113.0
+    114.2
    ]
   },
   "P5": {
@@ -428,18 +290,18 @@
    ]
   },
   "P6": {
-   "max_mm": 8.34,
+   "max_mm": 8.33,
    "at": [
-    221.2,
-    26.3,
-    117.1
+    248.0,
+    25.1,
+    115.9
    ]
   }
  },
  "overlaps": {
-  "P1-P2": 0.002,
-  "P3-P4": 0.0,
-  "P5-P6": 0.001,
+  "P1-P2": 0.003,
+  "P3-P4": -0.0,
+  "P5-P6": 0.003,
   "P1-P3": 0.0,
   "P2-P4": -0.0,
   "P3-P5": 0.0,
@@ -455,41 +317,35 @@
   "tongue -216.7 front": 0.169,
   "tongue -216.7 rear": 0.171,
   "tongue +216.7 front": 0.17,
-  "tongue +216.7 rear": 0.17,
-  "spline 1": 0.169,
-  "spline 2": 0.168,
-  "spline 3": 0.169,
-  "spline 4": 0.168,
-  "spline 5": 0.167,
-  "spline 6": 0.17
+  "tongue +216.7 rear": 0.171
  },
  "seams": {
   "-216.7 front": {
-   "mismatch_mm2": 1.32,
+   "mismatch_mm2": 1.33,
    "area_mm2": 807.7
   },
   "-216.7 rear": {
-   "mismatch_mm2": 1.04,
-   "area_mm2": 1033.6
+   "mismatch_mm2": 1.24,
+   "area_mm2": 1033.7
   },
   "+216.7 front": {
    "mismatch_mm2": 1.36,
    "area_mm2": 807.7
   },
   "+216.7 rear": {
-   "mismatch_mm2": 1.12,
+   "mismatch_mm2": 1.3,
    "area_mm2": 1033.6
   },
   "cut L": {
-   "mismatch_mm2": 9.41,
+   "mismatch_mm2": 9.15,
    "area_mm2": 3118.8
   },
   "cut C": {
-   "mismatch_mm2": 5.48,
+   "mismatch_mm2": 5.42,
    "area_mm2": 3696.7
   },
   "cut R": {
-   "mismatch_mm2": 9.45,
+   "mismatch_mm2": 9.16,
    "area_mm2": 3118.8
   }
  },

@@ -151,7 +151,7 @@ def build_parts_v10(studio='light', mode='joint', ver='v10'):
     cut pins and splines in the rear parts). mode 'rim': the centre rear part upside down, to show the back edge (v10: the
     grooved rim; v12: the smooth tip)"""
     import json as _j, sys as _s
-    _s.path.insert(0, f'{ver}/src'); from layout import STEM, SEC, HALF_OF, chord_plane, XS
+    _s.path.insert(0, f'{ver}/src'); from layout import STEM, SEC, HALF_OF, chord_plane, XS, ASM
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
     M = {'spoiler': principled('spoiler_raw_print', (0.030, 0.030, 0.033), rough=0.45, spec=0.5),
@@ -168,18 +168,18 @@ def build_parts_v10(studio='light', mode='joint', ver='v10'):
         m.apply_transform(R); new_mesh('spoiler_P3', m, [M['grey']], loop_normals=spoiler_normals(m))
     else:
         for k in ids:
-            m = trimesh.load(f'{ver}/assembled/{STEM[k]}.stl'); m.apply_translation(off(k))
+            m = trimesh.load(f'{ASM}/{STEM[k]}.stl'); m.apply_translation(off(k))
             new_mesh('spoiler_' + k, m, [M['spoiler']], loop_normals=spoiler_normals(m) if NORMALS else None, auto=None if NORMALS else 30)
         J = _j.load(open(f'{ver}/out/joints.json'))
         for i in range(J['n_pins']):
-            pm = trimesh.load(f'{ver}/assembled/{ver}_PIN_{i + 1:02d}.stl'); c = pm.centroid
+            pm = trimesh.load(f'{ASM}/{ver}_PIN_{i + 1:02d}.stl'); c = pm.centroid
             if abs(abs(c[0]) - XS) < 15 and abs(pm.principal_inertia_vectors[0][0]) > 0.9:     # span pin: stays in the centre part
                 host = 'P3' if c[2] > 122 else 'P4'
             else:                                                            # cut pin: stays in the rear part
                 sec = 'L' if c[0] < -XS else ('R' if c[0] > XS else 'C'); host = [p for p in ids if SEC[p] == sec and HALF_OF[p] == 'rear'][0]
             pm.apply_translation(off(host)); new_mesh(f'pin_{i}', pm, [M['key']], auto=30)
         for i in range(J['n_splines']):
-            sp = trimesh.load(f'{ver}/assembled/{ver}_SPLINE_{i + 1:02d}.stl'); c = sp.centroid
+            sp = trimesh.load(f'{ASM}/{ver}_SPLINE_{i + 1:02d}.stl'); c = sp.centroid
             sec = 'L' if c[0] < -XS else ('R' if c[0] > XS else 'C'); host = [p for p in ids if SEC[p] == sec and HALF_OF[p] == 'rear'][0]
             sp.apply_translation(off(host)); new_mesh(f'spline_{i}', sp, [M['key']], auto=30)
     V3 = __import__('mathutils').Vector
