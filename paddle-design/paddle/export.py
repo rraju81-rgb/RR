@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import os
 from pathlib import Path
 
 from .geometry import Arc, Outline
@@ -15,9 +16,16 @@ class Chromium:
     """Context manager holding one browser for all conversions."""
 
     def __enter__(self) -> "Chromium":
-        from playwright.sync_api import sync_playwright
+        from playwright.sync_api import Error, sync_playwright
         self._pw = sync_playwright().start()
-        self._browser = self._pw.chromium.launch()
+        try:
+            self._browser = self._pw.chromium.launch()
+        except Error:                    # Playwright's own build missing: use a Chromium already installed
+            exe = next((p for p in (os.environ.get("PADDLE_CHROMIUM"), "/opt/pw-browsers/chromium_headless_shell",
+                                    "/opt/pw-browsers/chromium") if p and Path(p).exists()), None)
+            if exe is None:
+                raise
+            self._browser = self._pw.chromium.launch(executable_path=exe)
         return self
 
     def __exit__(self, *exc) -> None:

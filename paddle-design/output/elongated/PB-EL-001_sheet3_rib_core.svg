@@ -220,10 +220,10 @@
 <text x="302" y="169.9" font-size="2.6" text-anchor="middle" font-weight="normal" fill="#000" >SCALE 2:1 · ON A LAND (x = 11), RAMP FROM y = 150; TOP FLUTES MIRROR IT</text>
 <text x="228" y="188" font-size="3.5" text-anchor="start" font-weight="bold" fill="#000" >NOTES</text>
 <text x="228" y="193.6" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >1.</text>
-<text x="233" y="193.6" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >MATERIAL: CARBON FIBRE / EPOXY, MOULDED IN ONE PIECE IN THE SHEET-4 MOULD (CHOPPED FIBRE 10–25 LONG,</text>
+<text x="233" y="193.6" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >MATERIAL: CARBON FIBRE / EPOXY, MOULDED IN ONE PIECE IN THE STACK MOULD PB-MO-003 (CHOPPED FIBRE 10–25 LONG,</text>
 <text x="233" y="197" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >≈ 40 % BY VOLUME, ρ ≈ 1.5 g/cm³). THE PRINTED STL (NOTE 8) IS A TRIAL PIECE / PRINTED ALTERNATIVE.</text>
 <text x="228" y="200.8" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >2.</text>
-<text x="233" y="200.8" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >THICKNESS 10, SET BY THE MOULD (SHEET 4): LID FLANGE ON THE TRAY RIM. BOTH FACES ARE BOND SURFACES.</text>
+<text x="233" y="200.8" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >THICKNESS 10, SET BY THE MOULD (PB-MO-003): CLAMP PLATE ON THE MAIN PLATE. BOTH FACES ARE BOND SURFACES.</text>
 <text x="228" y="204.6" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >3.</text>
 <text x="233" y="204.6" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >WAVE RIB λ22, 8 WAVES SYMMETRIC ABOUT THE CENTRE LINE, WALL 1.6, AMPLITUDE 5.2; LANDS 5.00 BOTH FACES.</text>
 <text x="228" y="208.4" font-size="2.3" text-anchor="start" font-weight="normal" fill="#000" >4.</text>
@@ -247,7 +247,7 @@
 <text x="247.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >Claude Code</text>
 <rect x="270" y="252" width="45" height="10" class="thin" />
 <text x="271.2" y="254.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DATE</text>
-<text x="292.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >2026-11-09</text>
+<text x="292.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >2026-11-23</text>
 <rect x="315" y="252" width="45" height="10" class="thin" />
 <text x="316.2" y="254.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >CHECKED</text>
 <rect x="360" y="252" width="45" height="10" class="thin" />
@@ -257,10 +257,10 @@
 <text x="251" y="269.19" font-size="3.4" text-anchor="middle" font-weight="bold" fill="#000" >PB-EL-001</text>
 <rect x="277" y="262" width="16" height="10" class="thin" />
 <text x="278.2" y="264.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >REV</text>
-<text x="285" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >G</text>
+<text x="285" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >H</text>
 <rect x="293" y="262" width="22" height="10" class="thin" />
 <text x="294.2" y="264.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SHEET</text>
-<text x="304" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >3 / 4</text>
+<text x="304" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >3 / 3</text>
 <rect x="315" y="262" width="18" height="10" class="thin" />
 <text x="316.2" y="264.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SIZE</text>
 <text x="324" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >A3</text>

@@ -1,11 +1,12 @@
-# Pickleball paddle designs – Elongated & Hybrid (REV G)
+# Pickleball paddle designs – Elongated & Hybrid (REV H)
 
 Two 39 cm paddles traced from your hand-made templates and sketches. Each is a carbon-fibre /
 wave-rib sandwich: two 0.3 mm carbon skins bonded to a 10 mm rib support, with a 10 mm frame and
-8 waves across the blade. The rib support is moulded in carbon fibre, in one piece, in a two-half mould. Each mould half
-carries the wave as a row of teeth, and the two rows interlock. A 2 mm plug on the lid fits into
-the tray, so the halves line up. Your rev-8 printed grip goes on the handle and is locked by a
-screw in the butt. The repo holds:
+8 waves across the blade. The rib support is moulded in carbon fibre, in one piece. One stack
+mould makes both paddles' rib supports at once: a 30 mm main plate with the Elongated cavity in
+its top face and the Hybrid cavity in its bottom face, between two 20 mm clamp plates. The plates
+carry the wave as rows of teeth that interlock. Your rev-8 printed grip goes on the handle and is
+locked by a screw in the butt. The repo holds:
 
 - the engineering drawings, full-size templates and DXF cut profiles;
 - the rib-support mould (STL + STEP) and a trial-print rib support;
@@ -79,66 +80,86 @@ towards the USA Pickleball limits, so keep it within the margins above.
 
 | | |
 |---|---|
-| ![Rib support mould, opened up: tray with the moulded part lifted out, lid beside it](output/render/paddles_3d_mould.png) | ![Mould drawing](output/elongated/PB-EL-001_sheet4_compression_mould.png) |
+| ![Stack mould, opened up: top plate, main plate with the Elongated rib support lifted out, bottom plate with the Hybrid one](output/render/paddles_3d_mould.png) | ![Mould drawing](output/mould/PB-MO-003_rib_support_stack_mould.png) |
 
-`python tools/export_mould.py` writes two parts per paddle to [`output/mould/`](output/mould):
+One mould makes both rib supports. `python tools/export_mould.py` writes its plates to
+[`output/mould/`](output/mould), and drawing
+[`PB-MO-003`](output/mould/PB-MO-003_rib_support_stack_mould.pdf) covers it:
 
-- `<design>_mould_bottom`, the tray;
-- `<design>_mould_top`, the lid.
+- `mould_main_plate` (`.stl` + `.step`), the 30 mm main plate in one piece;
+- `mould_main_upper_half.stl` and `mould_main_lower_half.stl`, the same plate split for printing;
+- `mould_top_plate` and `mould_bottom_plate` (`.stl` + `.step`), the two 20 mm clamp plates.
 
-Each comes as `.stl` (in print orientation) and `.step` (for machining). Sheet 4 of each drawing
-covers the mould.
+The STL files are in print orientation and the STEP files are for machining.
 
-- **How it works.** The cavity between the two halves is the rib support.
-  - The tray has a 12 mm deep pocket in the shape of the paddle: 10 mm for the rib support plus
-    2 mm for the lid's plug. The bottom flutes stand in it as 8 teeth.
-  - The lid is a flat plate with a 2 mm plug on its underside, in the same paddle shape. The top
-    flutes hang from the plug as teeth.
-  - When the lid closes, the plug slides into the pocket with 0.2 mm clearance per side. That fit
-    lines the two halves up, so no dowels are needed. The lid's teeth slide between the tray's
-    teeth: the 1.6 mm gaps between them form the wave walls, the 10 mm band around the pocket edge
-    forms the frame, and the toothless handle end forms the solid zone.
-  - The lid flange seats on the tray rim. That hard stop leaves the plug face exactly 10 mm above
-    the pocket floor, so the rib support is 10 mm thick.
-  - The plug also contains the charge: it presses the carbon down into the pocket rather than
-    over the rim. With the lid off, the tray holds about 2.3 times the part's volume.
+- **How it works.** The stack is three plates, 70 mm in all:
+
+  | Plate | Thickness | What it holds |
+  |---|---|---|
+  | Top clamp plate | 20 mm | the Elongated's top-flute teeth, on its underside |
+  | Main plate, top 10 mm | 30 mm in all | the Elongated cavity: a 10 mm pocket with the bottom-flute teeth standing in it |
+  | Main plate, middle 10 mm | | a solid web between the two cavities |
+  | Main plate, bottom 10 mm | | the Hybrid cavity, the same way up from the bottom face |
+  | Bottom clamp plate | 20 mm | the Hybrid's top-flute teeth |
+
+  - Closing the stack slides each clamp plate's teeth between the main plate's. The 1.6 mm gaps
+    between the teeth form the wave walls, the 10 mm band around each pocket edge forms the frame,
+    and the toothless handle end forms the solid zone.
+  - Each clamp plate seats flat on the main plate, so each cavity is exactly 10 mm deep and each
+    rib support is 1 cm thick.
+  - The Hybrid outline fits inside the Elongated one, so both cavities share one 244 × 429 mm
+    plate and one ring of bolts.
+  - The plates are located by the 18 through-bolts, and the wave teeth centre each clamp plate as
+    it closes. There is no plug any more: with the pockets exactly 10 mm deep, the clamp plates
+    close flat.
 - **Release.** Each flute is widest at its open face, so the teeth have natural draft and pull
   straight out. The 45° ramps at the flute starts lean the same way. The CAD check finds zero
-  overlap between tray, lid and part, and the closed cavity matches the rib support exactly.
-- **One piece each half:**
+  overlap between the plates and the parts, and each closed cavity matches its rib support
+  exactly.
+- **Sizes** (all 244 × 429 mm):
 
-  | | Tray | Lid | Moulded part |
-  |---|---|---|---|
-  | Elongated | 244 × 429 × 17 mm, 0.99 kg PLA solid | 244 × 429 × 21.4 mm (10 mm plate + 2 mm plug + teeth), 1.22 kg | 191 cm³, ≈ 286 g |
-  | Hybrid | 234 × 429 × 17 mm, 0.95 kg | 234 × 429 × 21.4 mm, 1.14 kg | 182 cm³, ≈ 274 g |
+  | Plate | Thickness | PLA, solid |
+  |---|---|---|
+  | Main plate | 30 mm | 1.89 kg |
+  | – upper half / lower half (for printing) | 15 mm each | 0.93 / 0.96 kg |
+  | Top clamp plate | 20 mm + 9.4 mm teeth | 2.00 kg |
+  | Bottom clamp plate | 20 mm + 9.4 mm teeth | 1.98 kg |
 
-  The tray floor is 5 mm thick: pressed flat on the bottom platen, it only has to carry the press
-  load straight down. Both halves need a bed of at least 440 mm (500 × 500 class), or you can
-  machine the STEP from aluminium. Print each half back down, teeth up: at least 5 walls and 40 %
-  infill, with 0.12–0.16 mm layers for the teeth.
+  All need a bed of at least 440 mm (500 × 500 class), or you can machine the STEP from
+  aluminium.
+- **Printing.**
+  - Print the clamp plates back down, teeth up.
+  - The main plate has a cavity in each face, so one face would always print upside down on
+    supports. Print it as the two 15 mm halves instead, split through the middle of the web, each
+    with its cavity facing up. The stack bolts clamp the halves together, so they need no glue.
+  - Use at least 5 walls and 40 % infill, with 0.12–0.16 mm layers for the teeth.
 - **Features:**
-  - a 0.5 mm lead-in chamfer on the pocket's top edge, which guides the plug in;
-  - a 2 mm land, then a 2 × 1.5 mm resin overflow groove in the tray rim, with 6 vents;
-  - 18 × M6 bolts (40 mm long);
-  - 2 pry notches.
+  - around each pocket: a 2 mm land, then a 2 × 1.5 mm resin overflow groove, with 6 vents;
+  - 18 × M6 bolts through all three plates (80 mm long);
+  - 2 pry notches at each parting face.
 
   There are no dowel holes and no ejector holes.
-- **Moulding steps** (full list on sheet 4):
-  1. Dry fit. The plug must slide into the pocket by hand; sand it if it binds. Then print the
-     trial rib support (below) in PLA and close the mould on it: the flange must seat fully.
+- **Moulding steps** (full list on PB-MO-003):
+  1. Dry fit. Print both trial rib supports (below) in PLA and close the stack on them: both
+     clamp plates must seat fully.
   2. Sand the cavity faces (P400 → P800), seal them with an epoxy coat, then apply wax ×3 + PVA.
-  3. Fill with forged carbon: about 315 g (Elongated) or 301 g (Hybrid), half chopped carbon tow
-     (10–25 mm) and half epoxy by mass, which is about 40 % fibre by volume. That is the part plus
-     10 %. Pack the wall gaps and the frame first, then the solid handle zone, and spread the rest
-     evenly.
-  4. Close the lid and fit the bolts finger-tight. Press between two flat, stiff platens, or in a
-     press, until the flange seats on the rim. Then tighten the bolts. Excess resin rises past the
-     plug into the groove and leaves through the vents.
-  5. Cure for 24 h at room temperature. Split the mould at the pry notches and lift the lid
-     straight up. Ease the part out from the butt end with a plastic wedge.
-  6. Trim the flash, drill the insert bore and bond the insert.
-- **Woven fabric option.** You can also drape woven carbon over the tray teeth and let the lid press
-  it into the wave; the frame and handle zone still take chopped fill. The tooth gap is `rib_t`:
+  3. Mix the forged carbon: about 315 g for the Elongated and 301 g for the Hybrid, each half
+     chopped carbon tow (10–25 mm) and half epoxy by mass, which is about 40 % fibre by volume.
+     That is the part plus 10 %.
+  4. Fill the Hybrid side first. Lay the main plate Hybrid face up and pack its cavity: the wall
+     gaps and the frame first, then the solid handle zone. Put the bottom plate on and fit 4 bolts.
+  5. Turn the pair over and pack the Elongated cavity the same way. Put the top plate on.
+  6. Fit all bolts finger-tight. Press the stack between two flat, stiff platens, or in a press,
+     until both clamp plates seat. Then tighten the bolts. Excess resin leaves through the grooves
+     and the vents.
+  7. Cure for 24 h at room temperature. Split the stack at the pry notches and ease each part out
+     from the butt end with a plastic wedge.
+  8. Trim the flash, drill the insert bores and bond the inserts.
+
+  With a clamp plate off, a cavity holds about 1.8 times its part's volume (there is no loading
+  well now), so pack the charge firmly.
+- **Woven fabric option.** You can also drape woven carbon over the main plate's teeth and let the
+  clamp plate press it into the wave; the frame and handle zone still take chopped fill. The tooth gap is `rib_t`:
   1.6 mm takes about 6–7 plies of 200 g/m² fabric.
 - **Temperature.** PLA softens near 55 °C, so use a room-temperature-cure epoxy. For a warm cure,
   print the mould in PETG, ASA or PA-CF.
@@ -283,14 +304,14 @@ To run the FEA on thin skins, the model's skins need shell or single-layer wedge
 
 | File | What it is |
 |---|---|
-| [`output/paddle_drawing_set.pdf`](output/paddle_drawing_set.pdf) | All 9 drawing sheets in one PDF |
+| [`output/paddle_drawing_set.pdf`](output/paddle_drawing_set.pdf) | All 8 drawing sheets in one PDF |
 | `output/<design>/*_sheet1_general_arrangement.(pdf/svg/png)` | **General arrangement**, A3, 1:2, first angle: front view with the grip, side view with the 0.3/10/0.3 lay-up, section A–A through the wave core, section B–B through the grip, isometric view, notes |
 | `output/<design>/*_sheet2_template_1to1.(pdf/svg/png)` | **Full-size body template**, A3 portrait, 1:1: tangent points, arc centres, coordinate table, core-frame and solid-zone reference lines, scale-check bars |
 | `output/<design>/*_sheet3_rib_core.(pdf/svg/png)` | **Rib support**: plan view 1:2 with lands and flute ramps, section C–C across the wave 2:1, section D–D through the ramp 2:1, material and moulding notes |
-| `output/<design>/*_sheet4_compression_mould.(pdf/svg/png)` | **Rib support mould**: tray and lid plans 1:3, section X–X through the closed mould 1:2, detail Y 2:1 (the plug in the pocket, the walls), hardware, moulding steps |
 | `output/grip/PB-GR-002_printed_grip_interface.(pdf/svg/png)` | **Printed grip – paddle interface** (both paddles): handle in the grip, sections E–E and G–G across the grip, section F–F through the screw, insert and bores, the fit-test coupon, bill of materials, notes |
 | `output/<design>/*_profile.dxf` | 1:1 cut profile of the skins (mm) for CNC / laser: closed polyline with true arcs |
-| `output/mould/<design>_mould_bottom.stl` / `_mould_top.stl` (+ `.step`) | **Rib support mould**: tray (17 mm, 12 mm pocket) and lid (2 mm plug), in print orientation, plus `mould_report.json` |
+| `output/mould/PB-MO-003_rib_support_stack_mould.(pdf/svg/png)` | **Rib support stack mould** (both paddles): main plate top and bottom faces 1:3, section X–X through the closed stack 1:2, detail Y 2:1, hardware, moulding steps |
+| `output/mould/mould_main_plate.stl` (+ `.step`), `mould_main_upper_half.stl`, `mould_main_lower_half.stl`, `mould_top_plate.stl` / `mould_bottom_plate.stl` (+ `.step`) | **Stack mould plates**, in print orientation, plus `mould_report.json` (sizes, charges, cavity checks) |
 | `output/rib_support/<design>_rib_support.stl` | **Trial rib support**, one piece, plus `rib_support_report.json` |
 | `output/cad/<design>_assembly.step` | 3-D assembly: skins, rib support, screw and insert (named solids) |
 | `output/cad/<design>_assembly.3mf` | The same assembly with the printed grip (a mesh, so it is not in the STEP) |
@@ -335,9 +356,9 @@ pip install -r requirements.txt
 python -m playwright install chromium     # one-off, for PDF/PNG export
 python tools/export_cad.py                # STEP / STL / 3MF + analysis/mass_properties.json
 python tools/export_rib_support.py        # trial rib support, one piece
-python tools/export_mould.py              # rib support mould: tray + lid (STL + STEP)
+python tools/export_mould.py              # rib support stack mould: 3 plates (STL + STEP)
 python tools/hand_check.py                # strength hand check -> analysis/hand_check.json
-python build.py                           # drawings (incl. the mould sheets), templates, DXF, 2-D render
+python build.py                           # drawings (incl. the mould PB-MO-003), templates, DXF, 2-D render
 python tools/render_3d.py                 # photoreal renders (Blender 4.x with Cycles on PATH)
 python tools/export_cad.py --grip 03_tessel_block   # the 3-D files with another of the ten grips
 ```
@@ -352,9 +373,9 @@ The inputs live in `paddle/geometry.py` and `paddle/mould.py`:
 - **`Construction`**: skin and core thickness, frame width, wave pitch, phase, wall and amplitude,
   solid zone, ramp length and the insert bore.
 - **`GripInterface`**: the printed grip's length, base, slot, slits, counterbore and screw.
-- **`MouldSpec`**: floor, lid plate, plug height, plug clearance, lead-in, flange, land, groove,
-  vents, bolts and notches. The pocket depth (core height + plug) and the teeth follow the core
-  height and the wave.
+- **`MouldSpec`**: main plate and clamp plate thickness, flange, land, groove, vents, bolts and
+  notches. The pocket depth and the teeth follow the core height and the wave; the web is what the
+  main plate leaves between its two pockets.
 
 Every drawing, the 3-D model, the print files, the mould and the renders are recomputed from those
 inputs. `geometry.check()` asserts three things: each outline is closed, it is tangent-continuous
@@ -385,3 +406,7 @@ and exactly the specified size, and the specified thickness matches the lay-up.
 - **G.** The rib's frame is 10 mm wide instead of 6 mm, so the mould teeth stop 1 cm from the
   pocket wall. The pitch goes to 22 mm so both paddles keep 8 full teeth in the tray. The tray floor
   is 5 mm instead of 10 mm (tray 22 → 17 mm thick, M6 × 40 bolts). 394 / 379 g.
+- **H.** One stack mould for both paddles replaces the two tray-and-lid moulds: a 30 mm main plate
+  (Elongated cavity in the top 10 mm, 10 mm web, Hybrid cavity in the bottom 10 mm) between two
+  20 mm clamp plates that carry the top-flute teeth. The clamp plates close flat (no plug); M6 × 80
+  bolts through the stack. New shared drawing PB-MO-003; each paddle drawing is now 3 sheets.

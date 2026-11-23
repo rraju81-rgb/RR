@@ -1,120 +1,146 @@
-"""Sheet 4 of each paddle drawing (REV G): the two-half wave mould that forms the rib support.
+"""PB-MO-003 (REV H): the stack mould that forms both rib supports, shared by both paddles.
 
-Plans of the tray (bottom half, teeth up) and of the lid's underside (plug and teeth) 1:3, section
-X-X through the closed mould and the part 1:2, detail Y of the edge 2:1, hardware list and the
-moulding steps.
+Plans of the main plate's top face (Elongated pocket and teeth) and bottom face (Hybrid pocket and
+teeth) 1:3, section X-X through the closed stack and both parts 1:2, detail Y of the edge 2:1,
+hardware list and the moulding steps.
 """
 from __future__ import annotations
 
 import math
 
+from shapely.affinity import scale as sh_scale
+from shapely.affinity import translate
 from shapely.geometry import LineString, Polygon, box
 from shapely.ops import unary_union
 
 from . import wave
 from .geometry import CONSTRUCTION as C
 from .geometry import Outline
-from .mould import MOULD, layout, ring
-from .sheets import GREY, SHEETS, cell, core_inner, fill, hatches, notes_block, polygon_path, title_block
+from .mould import BOTTOM, MOULD, TOP, layout, ring, union_ring, vent_span
+from .sheets import GREY, cell, core_inner, fill, hatches, notes_block, polygon_path, title_block
 from .sheets_construction import _segments, break_line, view_label
 from .svgkit import Doc, View, fmt, frame_iso
 
+MOULD_NO = "PB-MO-003"
 M = MOULD
 BOLT = dict(shank=6.0, head_af=10.0, head_h=4.0, nut_h=5.0, washer_d=12.0, washer_t=1.6)
-BOLT["length"] = 5.0 * math.ceil((M.height + 2 * BOLT["washer_t"] + BOLT["nut_h"] + 2.0) / 5.0)   # 2 mm proud
+BOLT["length"] = 5.0 * math.ceil((M.height + 2 * BOLT["washer_t"] + BOLT["nut_h"] + 1.5) / 5.0)   # 1.5 proud
 
 
-def _x_extent(o: Outline, off: float, y: float) -> float:
-    """Half width at height y of the body outline offset by `off`."""
-    seg = LineString([(-500, y), (500, y)]).intersection(Polygon(ring(o, off)))
+def _x_extent(poly: Polygon, y: float) -> float:
+    """Half width at height y of a shapely polygon symmetric about x = 0."""
+    seg = LineString([(-1000, y), (1000, y)]).intersection(poly)
     return max(abs(x) for x, _ in seg.coords) if seg.geom_type == "LineString" else \
         max(abs(x) for g in seg.geoms for x, _ in g.coords)
 
 
 def teeth(side: int, x_half: float) -> list[tuple[float, float]]:
-    """x intervals of the mould teeth on one side (+1 lid, -1 tray): the gaps between that side's lands."""
+    """x intervals of the mould teeth on one side (+1 clamp plate, -1 main plate): the gaps between lands."""
     lands = wave.land_intervals(x_half, side)
     edges = [-x_half] + [x for iv in lands for x in iv] + [x_half]
     return [(a, b) for a, b in zip(edges[0::2], edges[1::2]) if b - a > 1e-3]
 
 
-def section_geometry(o: Outline, y: float) -> dict:
-    """Shapely polygons (x, z) of the closed mould and the moulded rib support cut at height y (blade)."""
-    h, fl, lt, rim, li = M.h, M.floor, M.lid, M.rim, M.lead_in
+def _flutes(o: Outline, y: float):
+    """Paddle-coordinate (x, z) pieces at height y: half width, frame inner edge, top flutes, bottom flutes, part."""
+    h = M.h
     aw = o.half_width_at(y)
     xi = aw - C.frame_w
-    x_plate = _x_extent(o, M.flange, y)
     wall = Polygon(wave.wall_polygon(-xi, xi, 1600)).buffer(0)
     voids = box(-xi, -h, xi, h).difference(wall)
     pieces = list(getattr(voids, "geoms", [voids]))
     top = [p for p in pieces if p.bounds[3] > h - 1e-6 and p.bounds[1] > -h + 1e-6]
     bot = [p for p in pieces if p.bounds[1] < -h + 1e-6 and p.bounds[3] < h - 1e-6]
-    bolts = [x for x, yb in layout(o).bolts if abs(yb - y) < 0.5]
-    g0, g1 = aw + M.land, aw + M.land + M.groove_w
-    tray = box(-x_plate, -h - fl, x_plate, rim).difference(box(-aw, -h, aw, rim + 1)).union(unary_union(bot))
-    for s in (-1, 1):
-        lo, hi = sorted((s * g0, s * g1))
-        tray = tray.difference(box(lo, rim - M.groove_d, hi, rim + 1))
-        tray = tray.difference(Polygon([(s * aw, rim - li), (s * (aw + li), rim), (s * (aw + li), rim + 1),
-                                        (s * aw, rim + 1)]))                       # lead-in chamfer
-    plug = box(-aw + M.clearance, h, aw - M.clearance, rim + 0.1)
-    lid = box(-x_plate, rim, x_plate, rim + lt).union(plug).union(unary_union(top))
-    for xb in bolts:
-        hole = box(xb - M.bolt_d / 2, -h - fl - 1, xb + M.bolt_d / 2, rim + lt + 1)
-        tray, lid = tray.difference(hole), lid.difference(hole)
     part = unary_union([box(-aw, -h, -xi, h), box(xi, -h, aw, h), wall])
+    return aw, xi, unary_union(top), unary_union(bot), part
+
+
+def _placed(g, up: bool):
+    """A paddle-coordinate (x, z) polygon moved to its cavity in the stack (as mould.place does in 3-D)."""
+    return translate(g, 0, M.shift) if up else translate(sh_scale(g, 1, -1, origin=(0, 0)), 0, -M.shift)
+
+
+def section_geometry(outlines: dict, y: float) -> dict:
+    """Shapely polygons (x, z) of the closed stack and both moulded rib supports cut at height y (blade)."""
+    f, c, h = M.face, M.clamp, M.h
+    pair = (outlines[TOP], outlines[BOTTOM])
+    x_plate = _x_extent(Polygon(union_ring(pair, M.flange)), y)
+    main = box(-x_plate, -f, x_plate, f)
+    top = box(-x_plate, f, x_plate, f + c)
+    bottom = box(-x_plate, -f - c, x_plate, -f)
+    parts, info = {}, {}
+    for key, up in ((TOP, True), (BOTTOM, False)):
+        aw, xi, tf, bf, part = _flutes(outlines[key], y)
+        g0, g1 = aw + M.land, aw + M.land + M.groove_w
+        cut = unary_union([box(-aw, -h, aw, h + 1)] +
+                          [box(lo, h - M.groove_d, hi, h + 1) for lo, hi in ((g0, g1), (-g1, -g0))])
+        main = main.difference(_placed(cut, up)).union(_placed(bf, up))
+        if up:
+            top = top.union(_placed(tf, up))
+        else:
+            bottom = bottom.union(_placed(tf, up))
+        parts[key] = _placed(part, up)
+        info[key] = dict(aw=aw, xi=xi, g0=g0, g1=g1)
+    bolts = [x for x, yb in layout(pair).bolts if abs(yb - y) < 0.5]
+    for xb in bolts:
+        hole = box(xb - M.bolt_d / 2, -f - c - 1, xb + M.bolt_d / 2, f + c + 1)
+        main, top, bottom = main.difference(hole), top.difference(hole), bottom.difference(hole)
     b = BOLT
     hw, ww = b["head_af"] / 2, b["washer_d"] / 2
     steel = []
     for xb in bolts:
-        z_top, z_bot = rim + lt + b["washer_t"], -h - fl - b["washer_t"]
+        z_top, z_bot = f + c + b["washer_t"], -f - c - b["washer_t"]
         steel += [box(xb - b["shank"] / 2, z_bot - b["nut_h"] - 1.5, xb + b["shank"] / 2, z_top),
                   box(xb - hw, z_top, xb + hw, z_top + b["head_h"]),
-                  box(xb - ww, rim + lt, xb + ww, z_top), box(xb - ww, z_bot, xb + ww, -h - fl),
+                  box(xb - ww, f + c, xb + ww, z_top), box(xb - ww, z_bot, xb + ww, -f - c),
                   box(xb - hw, z_bot - b["nut_h"], xb + hw, z_bot)]
-    return dict(tray=tray, lid=lid, part=part, steel=unary_union(steel) if steel else None, aw=aw, xi=xi,
-                x_plate=x_plate, g0=g0, g1=g1, bolts=bolts)
+    return dict(main=main, top=top, bottom=bottom, parts=parts, info=info, x_plate=x_plate, bolts=bolts,
+                steel=unary_union(steel) if steel else None)
 
 
-def mould_notes(o: Outline, rep: dict | None) -> list[str]:
-    sp = o.spec
+def mould_notes(outlines: dict, rep: dict | None) -> list[str]:
+    nt, nb = outlines[TOP].spec.name, outlines[BOTTOM].spec.name
     mass = ""
     if rep:
-        mass = (f" ABOUT {rep['bottom']['mass_g']['PLA'] / 1000:.1f} + {rep['top']['mass_g']['PLA'] / 1000:.1f} kg OF "
-                f"PLA AT 100 %.")
-    charge = f"≈ {rep['charge_g']:.0f} g: " if rep else ""
-    room = f" THE OPEN TRAY HOLDS {rep['open_over_part']:.1f}× THE PART." if rep else ""
-    part = f" THE PART WEIGHS ≈ {rep['part_mass_g']:.0f} g." if rep else ""
+        p = rep["plates"]
+        mass = (f" PLA AT 100 %: MAIN {p['main_plate']['mass_g']['PLA'] / 1000:.1f}, TOP "
+                f"{p['top_plate']['mass_g']['PLA'] / 1000:.1f}, BOTTOM {p['bottom_plate']['mass_g']['PLA'] / 1000:.1f} kg.")
+    charge = (f" ≈ {rep['cavities'][TOP]['charge_g']:.0f} g ({nt}) AND {rep['cavities'][BOTTOM]['charge_g']:.0f} g ({nb}),"
+              if rep else "")
     return [
-        f"TRAY (1) + LID (2): output/mould/{sp.key}_mould_bottom / _top (.stl / .step). THE CAVITY BETWEEN THEM IS THE "
-        f"RIB\nSUPPORT (SHEET 3); THE TEETH ARE ITS FLUTES. CORE HEIGHT {fmt(C.core_t)}, WALLS {fmt(C.rib_t)}.",
-        f"THE LID'S {fmt(M.plug)} PLUG SLIDES INTO THE POCKET ({fmt(M.clearance)} CLEARANCE PER SIDE) AND ALIGNS THE "
-        f"HALVES; THE LID\nFLANGE SEATING ON THE TRAY RIM LEAVES THE PLUG FACE {fmt(C.core_t)} ABOVE THE POCKET FLOOR.",
-        f"PRINT BOTH BACK DOWN, TEETH UP: ≥ 5 WALLS, ≥ 40 % INFILL, 0.12–0.16 LAYERS FOR THE TEETH.\nNEEDS A ≥ 440 mm "
-        f"BED, OR MACHINE THE STEP FROM ALUMINIUM.{mass}",
-        "PLA SOFTENS NEAR 55 °C: ROOM-TEMPERATURE-CURE EPOXY ONLY. FOR A WARM CURE PRINT IN PETG, ASA OR PA-CF.",
-        "DRY FIT FIRST: THE PLUG MUST SLIDE IN BY HAND (SAND IT IF IT BINDS), AND ON THE TRIAL RIB SUPPORT STL\n"
-        "PRINTED IN PLA THE FLANGE MUST SEAT FULLY. THEN SAND THE CAVITY (P400 → P800), SEAL, WAX ×3 + PVA.",
-        f"FILL (FORGED CARBON) {charge}HALF CHOPPED CARBON TOW (10–25 mm), HALF EPOXY BY MASS. PACK THE WALL GAPS\n"
-        f"AND THE FRAME FIRST, THEN THE SOLID HANDLE ZONE, AND SPREAD THE REST EVENLY.{room}",
-        "CLOSE: LID ON, BOLTS (3) FINGER-TIGHT, PRESS BETWEEN 2 FLAT, STIFF PLATENS OR IN A PRESS UNTIL THE FLANGE "
-        "SEATS;\nTIGHTEN THE BOLTS. EXCESS RESIN RISES PAST THE PLUG INTO THE OVERFLOW GROOVE AND OUT OF THE VENTS.",
-        "CURE (24 h AT ROOM TEMPERATURE), SPLIT AT THE PRY NOTCHES, LIFT THE LID STRAIGHT UP, EASE THE PART OUT FROM THE "
-        f"BUTT\nEND WITH A PLASTIC WEDGE (NO EJECTOR HOLES). TRIM THE FLASH, DRILL AND FIT THE M3 INSERT (SHEET 3).{part}",
+        f"MAIN PLATE (1), TOP PLATE (2), BOTTOM PLATE (3): output/mould/mould_main_plate / _top_plate / _bottom_plate "
+        f"(.stl / .step).\nTHE {fmt(M.main)} MAIN PLATE HOLDS BOTH CAVITIES: {nt} IN THE TOP FACE, {nb} IN THE BOTTOM "
+        f"FACE, {fmt(M.web)} WEB BETWEEN.",
+        f"EACH CAVITY IS THAT PADDLE'S RIB SUPPORT (SHEET 3): THE MAIN PLATE CARRIES THE BOTTOM-FLUTE TEETH, EACH "
+        f"{fmt(M.clamp)} CLAMP PLATE\nTHE TOP-FLUTE TEETH. THE CLAMP PLATES SEAT FLAT ON THE MAIN PLATE: CORE HEIGHT "
+        f"{fmt(C.core_t)}, WALLS {fmt(C.rib_t)}, FRAME {fmt(C.frame_w)}.",
+        f"PRINT THE CLAMP PLATES BACK DOWN, TEETH UP, AND THE MAIN PLATE AS TWO {fmt(M.face)} HALVES SPLIT THROUGH THE "
+        f"WEB\n(mould_main_upper_half / _lower_half.stl), EACH CAVITY UP; THE STACK BOLTS CLAMP THEM. ≥ 5 WALLS, ≥ 40 % "
+        f"INFILL.{mass}",
+        "PLA SOFTENS NEAR 55 °C: ROOM-TEMPERATURE-CURE EPOXY ONLY. FOR A WARM CURE PRINT IN PETG, ASA OR PA-CF. "
+        "BED ≥ 440 mm, OR MACHINE THE STEP.",
+        "DRY FIT FIRST WITH BOTH TRIAL RIB SUPPORT STLs PRINTED IN PLA: THE STACK MUST CLOSE FULLY. THEN SAND THE "
+        "CAVITIES (P400 → P800),\nSEAL (EPOXY COAT), WAX ×3 + PVA.",
+        f"FILL (FORGED CARBON){charge} HALF CHOPPED CARBON TOW (10–25 mm), HALF EPOXY BY MASS. MAIN PLATE {nb} "
+        f"FACE UP:\nPACK THAT CAVITY, BOTTOM PLATE ON, 4 BOLTS; TURN THE PAIR OVER, PACK THE {nt} CAVITY, TOP PLATE ON.",
+        "CLOSE: ALL BOLTS (4) FINGER-TIGHT, PRESS THE STACK BETWEEN 2 FLAT, STIFF PLATENS OR IN A PRESS UNTIL BOTH "
+        "CLAMP PLATES SEAT;\nTIGHTEN THE BOLTS. EXCESS RESIN LEAVES BY THE OVERFLOW GROOVES AND THE VENTS.",
+        "CURE 24 h AT ROOM TEMPERATURE, SPLIT AT THE PRY NOTCHES, EASE THE PARTS OUT FROM THE BUTT END WITH A "
+        "PLASTIC WEDGE.\nTRIM THE FLASH, DRILL AND FIT THE M3 INSERTS (SHEET 3).",
     ]
 
 
-def _plan(d: Doc, o: Outline, cx: float, top_y: float, S: float, side: int, lay, x1: float, y1: float) -> View:
-    """Plan of one half: plate, pocket / lid footprint, teeth, flange features.  side -1 tray, +1 lid."""
+def _plan(d: Doc, o: Outline, plate: Polygon, cx: float, top_y: float, S: float, lay, y1: float) -> View:
+    """Plan of one face of the main plate: plate, pocket of paddle o and its teeth, groove, vents, bolts, notches."""
     pv = View(d, (cx, top_y + y1 * S), S)
     P = pv.P
 
     def T(x: float, y: float):
         return P((x, y))
-    d.path(polygon_path(Polygon(ring(o, M.flange)), T), "vis")
+    d.path(polygon_path(plate, T), "vis")
     d.path(pv.outline_path(o), "vis")
     inner = core_inner(o)
-    for a, b in teeth(side, o.spec.width / 2 + C.rib_pitch):
+    for a, b in teeth(-1, o.spec.width / 2 + C.rib_pitch):
         for xa in (a, b):
             for seg in _segments(LineString([(xa, C.solid_to), (xa, 1000)]).intersection(inner)):
                 d.poly([P(q) for q in seg], "thin")
@@ -122,15 +148,14 @@ def _plan(d: Doc, o: Outline, cx: float, top_y: float, S: float, side: int, lay,
             d.poly([P(q) for q in seg], "thin")
         for seg in _segments(inner.exterior.intersection(box(a, C.solid_to, b, 1000))):
             d.poly([P(q) for q in seg], "thin")
-    if side < 0:
-        for off in (M.land, M.land + M.groove_w):
-            d.path(polygon_path(Polygon(ring(o, off)), T), "thin")
-        e_in = M.bolt_off - M.land - M.groove_w / 2
-        for x, y, nx, ny in lay.vents:
-            for s in (-1, 1):
-                ox, oy = -ny * s * M.vent_w / 2, nx * s * M.vent_w / 2
-                pv.line((x - nx * e_in + ox, y - ny * e_in + oy),
-                        (x + nx * (M.flange - M.bolt_off) + ox, y + ny * (M.flange - M.bolt_off) + oy), "thin")
+    for off in (M.land, M.land + M.groove_w):
+        d.path(polygon_path(Polygon(ring(o, off)), T), "thin")
+    for v in lay.vents:
+        (qx, qy), (rx, ry) = vent_span(o, v)
+        ln = math.hypot(rx - qx, ry - qy)
+        ox, oy = -(ry - qy) / ln * M.vent_w / 2, (rx - qx) / ln * M.vent_w / 2
+        for s in (-1, 1):
+            pv.line((qx + s * ox, qy + s * oy), (rx + s * ox, ry + s * oy), "thin")
     for x, y in lay.bolts:
         d.circle(P((x, y)), M.bolt_d / 2 * S, "vis")
     for x, y, nx, ny in lay.notches:
@@ -142,105 +167,119 @@ def _plan(d: Doc, o: Outline, cx: float, top_y: float, S: float, side: int, lay,
     return pv
 
 
-def mould_sheet(o: Outline, report: dict | None = None) -> Doc:
-    sp = o.spec
-    d = Doc(420, 297, f"{sp.drawing_no} {sp.name} paddle - rib support mould")
+def mould_sheet(outlines: dict, report: dict | None = None) -> Doc:
+    """PB-MO-003: outlines = {design key: Outline} for both paddles."""
+    o_t, o_b = outlines[TOP], outlines[BOTTOM]
+    pair = (o_t, o_b)
+    d = Doc(420, 297, f"{MOULD_NO} rib support stack mould")
     H_ = hatches(d)
     frame_iso(d)
-    h, fl, lt, rim = M.h, M.floor, M.lid, M.rim
-    lay = layout(o)
-    plate = Polygon(ring(o, M.flange))
+    f, c = M.face, M.clamp
+    lay = layout(pair)
+    plate = Polygon(union_ring(pair, M.flange))
     x0, y0, x1, y1 = plate.bounds
 
-    # ---- plans, 1:3: tray (teeth up) and lid underside (teeth towards the viewer)
+    # ---- plans of the main plate, 1:3: top face (top paddle) and bottom face (bottom paddle)
     S = 1 / 3
     top_y = 32.0
-    tv = _plan(d, o, 72.0, top_y, S, -1, lay, x1, y1)
-    lv = _plan(d, o, 172.0, top_y, S, +1, lay, x1, y1)
+    tv = _plan(d, o_t, plate, 72.0, top_y, S, lay, y1)
+    bv = _plan(d, o_b, plate, 172.0, top_y, S, lay, y1)
     d.dim_linear(tv.P((x0, y1 - 30)), tv.P((x1, y1 - 30)), "x", top_y - 7, fmt(x1 - x0, 1))
-    d.dim_linear(lv.P((x1 - 20, y0)), lv.P((x1 - 20, y1)), "y", lv.P((x1, 0))[0] + 7, fmt(y1 - y0, 1))
+    d.dim_linear(bv.P((x1 - 20, y0)), bv.P((x1 - 20, y1)), "y", bv.P((x1, 0))[0] + 7, fmt(y1 - y0, 1))
     ys = max(lay.bolts, key=lambda p: (p[0], -abs(p[1] - 300)))[1]          # section through a side bolt
     tv.section_line(ys, x0 - 4, x1 + 4, "X")
-    d.leader_note(tv.P((teeth(-1, sp.width / 2)[3][0] + 2, 300)), (tv.P((x1, 0))[0] + 4, tv.P((0, 340))[1]),
+    d.leader_note(tv.P((teeth(-1, o_t.spec.width / 2)[3][0] + 2, 300)), (tv.P((x1, 0))[0] + 4, tv.P((0, 340))[1]),
                   "TEETH", 2.4, dot=True, arrow=False)
-    view_label(d, 72.0, tv.P((0, y0))[1] + 9, "TRAY (BOTTOM HALF)", "SCALE 1:3 · TEETH = BOTTOM FLUTES")
-    view_label(d, 172.0, lv.P((0, y0))[1] + 9, "LID, UNDERSIDE",
-               f"SCALE 1:3 · PLUG {fmt(M.plug)} HIGH · TEETH = TOP FLUTES")
+    view_label(d, 72.0, tv.P((0, y0))[1] + 9, "MAIN PLATE – TOP FACE",
+               f"SCALE 1:3 · {o_t.spec.name} CAVITY, {fmt(C.core_t)} DEEP")
+    view_label(d, 172.0, bv.P((0, y0))[1] + 9, "MAIN PLATE – BOTTOM FACE",
+               f"SCALE 1:3 · {o_b.spec.name} CAVITY, {fmt(C.core_t)} DEEP")
 
-    # ---- section X-X through the closed mould, 1:2
-    g = section_geometry(o, ys)
+    # ---- section X-X through the closed stack, 1:2
+    g = section_geometry(outlines, ys)
     S2 = 0.5
-    xs_c, zs_c = 318.0, 44.0
+    xs_c, zs_c = 318.0, 46.0
 
     def X(x: float, z: float):
         return (xs_c + x * S2, zs_c - z * S2)
-    for key in ("tray", "lid"):
+    for key in ("top", "main", "bottom"):
         d.path(polygon_path(g[key], X), "vis", extra=fill(H_["cap"]) + ' fill-rule="evenodd"')
-    d.path(polygon_path(g["part"], X), "thin", extra='style="fill:#000"')
+    for part in g["parts"].values():
+        d.path(polygon_path(part, X), "thin", extra='style="fill:#000"')
     if g["steel"] is not None:
         d.path(polygon_path(g["steel"], X), "vis", extra=fill(H_["metal"]))
-    d.line((xs_c - g["x_plate"] * S2 - 4, zs_c), (xs_c + g["x_plate"] * S2 + 4, zs_c), "ctr")
-    d.dim_linear(X(g["x_plate"], -h - fl), X(g["x_plate"], rim + lt), "y", xs_c + g["x_plate"] * S2 + 9,
-                 fmt(M.height))
-    view_label(d, xs_c, zs_c + (h + fl) * S2 + 13, "SECTION X–X",
-               "SCALE 1:2 · CLOSED MOULD, MOULDED RIB SUPPORT BLACK, M6 BOLT")
+    xp = g["x_plate"]
+    d.line((xs_c - xp * S2 - 4, zs_c), (xs_c + xp * S2 + 4, zs_c), "ctr")
+    d.dim_linear(X(xp, -f - c), X(xp, f + c), "y", xs_c + xp * S2 + 16, fmt(M.height))
+    for z0, z1, txt in ((f, f + c, M.clamp), (-f, f, M.main), (-f - c, -f, M.clamp)):
+        d.dim_linear(X(xp, z0), X(xp, z1), "y", xs_c + xp * S2 + 8, fmt(txt))
+    view_label(d, xs_c, zs_c + (f + c) * S2 + 13, "SECTION X–X",
+               f"SCALE 1:2 · CLOSED STACK, PARTS BLACK: {o_t.spec.name} (TOP), {o_b.spec.name} (BOTTOM), M6 BOLT")
 
-    # ---- detail Y: right-hand edge of the closed mould, 2:1
+    # ---- detail Y: right-hand edge of the closed stack, 2:1
     S3 = 2.0
-    aw, xi = g["aw"], g["xi"]
-    wx0, wx1 = aw - 25.0, g["x_plate"] + 0.5
-    wz0, wz1 = -h - 4.0, rim + 4.0                       # floor and lid broken off (full heights in X-X)
+    it = g["info"][TOP]
+    wx0, wx1 = it["xi"] - 14.0, xp + 0.5               # 14 mm of wave: at least one wall crossing
+    wz0, wz1 = -f - 2.0, f + 2.0                         # clamp plates broken off (full heights in X-X)
     win = box(wx0, wz0, wx1, wz1)
-    xd0, zd0 = 262.0 - wx0 * S3, 103.0
+    xd0, zd0 = 262.0 - wx0 * S3, 126.0
 
     def Y(x: float, z: float):
         return (xd0 + x * S3, zd0 - z * S3)
-    for key, style in (("tray", fill(H_["cap"])), ("lid", fill(H_["cap"])), ("part", fill(H_["cf"]))):
+    for key, style in (("top", fill(H_["cap"])), ("main", fill(H_["cap"])), ("bottom", fill(H_["cap"]))):
         geom = g[key].intersection(win)
         if not geom.is_empty:
             d.path(polygon_path(geom, Y), "vis", extra=style + ' fill-rule="evenodd"')
+    for part in g["parts"].values():
+        geom = part.intersection(win)
+        if not geom.is_empty:
+            d.path(polygon_path(geom, Y), "vis", extra=fill(H_["cf"]) + ' fill-rule="evenodd"')
     break_line(d, Y(wx0, wz0), Y(wx0, wz1), 1.0)
     for zz in (wz0, wz1):
-        break_line(d, Y(wx0, zz), Y(g["x_plate"], zz), 1.0)
+        break_line(d, Y(wx0, zz), Y(xp, zz), 1.0)
     xb_ = [x for x in g["bolts"] if x > 0]
     for xb in xb_:
         d.line(Y(xb, wz0 - 1.0), Y(xb, wz1 + 1.0), "ctr")
-    xr = g["x_plate"]
-    d.dim_linear(Y(xr, -h), Y(xr, h), "y", Y(xr, 0)[0] + 5, fmt(C.core_t))
-    d.dim_linear(Y(xr, h), Y(xr, rim), "y", Y(xr, 0)[0] + 5, fmt(M.plug), outside=True)
-    d.dim_linear(Y(aw, 0), Y(xb_[0] if xb_ else aw + M.bolt_off, 0), "x", Y(0, wz0)[1] + 11, fmt(M.bolt_off))
-    d.dim_linear(Y(aw, 0), Y(xr, 0), "x", Y(0, wz0)[1] + 17, fmt(M.flange))
-    d.dim_linear(Y(xi, -h), Y(aw, -h), "x", Y(0, wz0)[1] + 5, fmt(C.frame_w), outside=True)
-    d.leader_note(Y((g["g0"] + g["g1"]) / 2, rim - M.groove_d / 2), (Y(g["g1"], 0)[0] + 6, Y(0, wz1)[1] - 5),
+    xr = xp
+    for z0, z1, txt in ((f - C.core_t, f, C.core_t), (-f + C.core_t, f - C.core_t, M.web), (-f, -f + C.core_t, C.core_t)):
+        d.dim_linear(Y(xr, z0), Y(xr, z1), "y", Y(xr, 0)[0] + 5, fmt(txt))
+    d.dim_linear(Y(it["aw"], 0), Y(xb_[0] if xb_ else it["aw"] + M.bolt_off, 0), "x", Y(0, wz0)[1] + 6,
+                 fmt(M.bolt_off))
+    d.dim_linear(Y(it["aw"], 0), Y(xr, 0), "x", Y(0, wz0)[1] + 12, fmt(M.flange))
+    d.dim_linear(Y(it["xi"], f), Y(it["aw"], f), "x", Y(0, wz1)[1] - 6, fmt(C.frame_w))   # top cavity's frame
+    d.leader_note(Y((it["g0"] + it["g1"]) / 2, f - M.groove_d / 2), (Y(it["g1"], 0)[0] + 6, Y(0, wz1)[1] - 4),
                   f"LAND {fmt(M.land)}, GROOVE {fmt(M.groove_w)} × {fmt(M.groove_d)}", 2.3)
-    xw = min(wave.crossings(wx0 + 4, xi - 2), key=lambda x: abs(x - (wx0 + 8)))   # a wall at the mid-plane
-    d.leader_note(Y(xw, 0.0), (Y(wx0, 0)[0] - 3, Y(0, wz0)[1] + 9), f"WALL {fmt(C.rib_t)} (CARBON)", 2.3)
-    d.text(Y((aw + xb_[0]) / 2 if xb_ else aw + 6, rim + 2.0), "LID", 2.2, fill=GREY)
-    d.text(Y((aw + xb_[0]) / 2 if xb_ else aw + 6, -h - 2.8), "TRAY", 2.2, fill=GREY)
-    view_label(d, (Y(wx0, 0)[0] + Y(xr, 0)[0]) / 2, Y(0, wz0)[1] + 27, "DETAIL Y",
-               f"SCALE 2:1 · PLUG IN THE POCKET, {fmt(M.clearance)} GAP PER SIDE · THE GAPS ARE THE WALLS AND THE FRAME")
+    xw = min(wave.crossings(wx0 + 1.5, it["xi"] - 1), key=lambda x: abs(x - (wx0 + 6)))  # a wall at the mid-plane
+    d.leader_note(Y(xw, M.shift), (Y(wx0, 0)[0] - 3, Y(0, wz0)[1] + 9), f"WALL {fmt(C.rib_t)} (CARBON)", 2.3)
+    xl = (it["aw"] + xb_[0]) / 2 if xb_ else it["aw"] + 6
+    d.text(Y(xl, 0.0), "MAIN PLATE", 2.2, fill=GREY)
+    d.text((Y(wx0, 0)[0], Y(0, wz1)[1] - 2.0), "TOP PLATE (BROKEN)", 2.2, anchor="start", fill=GREY)
+    d.text((Y(wx0, 0)[0] + 4, Y(0, wz0)[1] + 4.2), "BOTTOM PLATE (BROKEN)", 2.2, anchor="start", fill=GREY)
+    view_label(d, (Y(wx0, 0)[0] + Y(xr, 0)[0]) / 2, Y(0, wz0)[1] + 21, "DETAIL Y",
+               f"SCALE 2:1 · {o_t.spec.name} ABOVE THE WEB, {o_b.spec.name} BELOW · THE GAPS ARE THE WALLS AND FRAMES")
 
     # ---- hardware list
-    tx, ty = 28.0, 214.0
+    tx, ty = 228.0, 201.0
     widths = (9.0, 74.0, 10.0)
     rows = [("ITEM", "PART", "QTY"),
-            ("1", f"Tray, {sp.key}_mould_bottom.stl", "1"),
-            ("2", f"Lid, {sp.key}_mould_top.stl", "1"),
-            ("3", f"Hex bolt M6 × {BOLT['length']:.0f}, 2 washers, nut", str(len(lay.bolts))),
-            ("4", "Release wax + PVA; flat platens + clamps or a press", "a/r")]
+            ("1", "Main plate, mould_main_plate (or the 2 halves)", "1"),
+            ("2", "Top plate, mould_top_plate.stl", "1"),
+            ("3", "Bottom plate, mould_bottom_plate.stl", "1"),
+            ("4", f"Hex bolt M6 × {BOLT['length']:.0f}, 2 washers, nut", str(len(lay.bolts))),
+            ("5", "Release wax + PVA; flat platens + clamps or a press", "a/r")]
     yy = ty
     for i, row in enumerate(rows):
         xx = tx
         for w, val in zip(widths, row):
-            cell(d, xx, yy, w, 6.0, "", val, size=2.3, weight="bold" if i == 0 else "normal",
+            cell(d, xx, yy, w, 5.5, "", val, size=2.2, weight="bold" if i == 0 else "normal",
                  anchor="middle" if w < 12 else "start")
             xx += w
-        yy += 6.0
+        yy += 5.5
     d.text((tx, ty - 2.5), "MOULD HARDWARE", 3.0, anchor="start", weight="bold")
 
     # ---- notes + title block
-    notes_block(d, 228.0, 161.0, mould_notes(o, report), size=2.15, lead=3.05)
-    title_block(d, 225.0, 236.0, sp, f"RIB SUPPORT MOULD  ·  TRAY + LID WITH PLUG, TEETH INTERLOCK  ·  {fmt(x1 - x0, 1)} × "
-                f"{fmt(y1 - y0, 1)} mm", "1:3, 1:2, 2:1", f"4 / {SHEETS}", "A3",
-                title=f"RIB SUPPORT MOULD – {sp.name}", material="PLA / PETG (NOTE 2)")
+    notes_block(d, 28.0, 198.0, mould_notes(outlines, report), size=2.15, lead=3.05)
+    title_block(d, 225.0, 236.0, o_t.spec, f"BOTH PADDLES  ·  MAIN PLATE {fmt(M.main)} + 2 CLAMP PLATES {fmt(M.clamp)}  ·  "
+                f"{fmt(x1 - x0, 1)} × {fmt(y1 - y0, 1)} mm", "1:3, 1:2, 2:1", "1 / 1", "A3",
+                title="RIB SUPPORT STACK MOULD", drawing_no=MOULD_NO, material="PLA / PETG (NOTE 3)")
     return d

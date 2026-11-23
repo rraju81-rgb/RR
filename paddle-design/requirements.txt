@@ -5,6 +5,7 @@ pypdf>=4.0
 numpy>=1.26
 shapely>=2.0
 trimesh>=4.0          # also cuts the printed-grip STL for the drawings
+rtree>=1.0            # trimesh mesh sections of the grip STL (sheet 1 + PB-GR-002)
 networkx>=3.0         # trimesh mesh sections and 3MF export
 # 3-D model, STEP/STL/3MF export, rib-support STLs, mass properties, renders
 # (tools/export_cad.py, tools/export_rib_support.py, tools/render_3d.py + Blender 4.x)

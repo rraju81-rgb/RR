@@ -115,7 +115,7 @@ def materials(key: str, tex: dict) -> dict:
 
 PART_MATERIAL = {"face_sheet_top": "cf_top", "face_sheet_bottom": "cf_bottom", "rib_core": "core", "grip": "grip",
                  "screw_M3x12_DIN7984": "steel", "insert_M3": "brass", "mould_bottom": "mould",
-                 "mould_top": "mould"}
+                 "mould_top": "mould", "mould_main": "mould"}
 GRIPS = PADDLE_GRIP                     # any of the ten grips fits both paddles
 GRIP_COLOUR = {"elongated": (0.022, 0.022, 0.025), "hybrid": (0.05, 0.052, 0.058)}
 
@@ -179,7 +179,7 @@ SHOTS = ("hero", "cutaway", "exploded_elongated", "exploded_hybrid", "handle", "
 EXPLODE = {"face_sheet_top": (0, 0, 58), "face_sheet_bottom": (0, 0, -58), "grip": (0, -150, 0),
            "screw_M3x12_DIN7984": (0, -185, 0), "insert_M3": (0, -8, 0)}
 HANDLE_EXPLODE = {"grip": (0, -175, 0), "screw_M3x12_DIN7984": (0, -215, 0), "insert_M3": (0, -9, 0)}
-MOULD_EXPLODE = {"rib_core": (0, 0, 45), "mould_top": (275, 0, 0)}   # mm: part lifted out, lid opened beside it
+MOULD_GAP, MOULD_LIFT = 280.0, 55.0   # mm: plates side by side, parts lifted out of their cavities
 
 
 def shot_scene(shot: str, meshes: dict, cut: dict, moulds: dict | None = None) -> tuple[list[dict], dict, tuple]:
@@ -208,13 +208,16 @@ def shot_scene(shot: str, meshes: dict, cut: dict, moulds: dict | None = None) -
                       parts=parts("elongated", HANDLE_EXPLODE))],
                 dict(location=(0.135, -0.269, 0.228), target=(-0.032, -0.022, 0.012), lens=45,
                      dof=dict(fstop=8.0, distance=0.38)), (-0.03, -0.02, 0.02))
-    if shot == "mould":                           # opened mould: tray with the part lifted out, lid beside it
-        from .mould import MOULD
-        part = {"rib_core": meshes["elongated"]["rib_core"]}
-        ps = part_list("elongated", {**moulds["elongated"], **part}, MOULD_EXPLODE)
-        return ([dict(name="M", location=(-0.1375, -0.03, (MOULD.h + MOULD.floor) / 1000), rotation=(0, 0, 0),
-                      parts=ps)],
-                dict(location=(0.0, -0.50, 0.60), target=(0.0, 0.17, 0.0), lens=40), (0.0, 0.17, 0.02))
+    if shot == "mould":                           # opened stack: top plate, main plate, bottom plate, parts lifted
+        from .mould import BOTTOM, MOULD, TOP
+        ps = [dict(name=n, mesh=moulds[n], material="mould", offset=(0, 0, 0), smooth_angle=28)
+              for n in ("mould_top", "mould_main", "mould_bottom")]
+        ps += [dict(name="rib_top", mesh=meshes[TOP]["rib_core"], material=f"core_{TOP}",
+                    offset=(0, 0, MOULD.face + MOULD.shift + MOULD_LIFT), smooth_angle=28),
+               dict(name="rib_bottom", mesh=moulds["rib_bottom"], material=f"core_{BOTTOM}",
+                    offset=(0, 0, MOULD_LIFT), smooth_angle=28)]
+        return ([dict(name="M", location=(0.0, 0.0, 0.0), rotation=(0, 0, 0), parts=ps)],
+                dict(location=(0.0, -0.72, 0.80), target=(0.0, 0.20, 0.02), lens=38), (0.0, 0.20, 0.03))
     raise ValueError(shot)
 
 
@@ -224,7 +227,8 @@ def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samp
     from .grip import load as load_grip
     from build123d import Pos
 
-    from .mould import MOULD, mould_halves, print_pose
+    from .cad import rib_core
+    from .mould import BOTTOM, MOULD, TOP, mould_stack, place, print_pose
     work = out / "_work"
     meshes, cut, moulds, mats = {}, {}, {}, {}
     for o in outlines:
@@ -235,13 +239,17 @@ def render_all(outlines: list[Outline], out: Path, resolution=(1920, 1200), samp
         top, core = cutaway(o)
         cut[key] = export_meshes([PartDef("face_sheet_top", top, "cf", (0, 0, 0)),
                                   PartDef("rib_core", core, "core", (0, 0, 0))], work / "mesh", key + "_cut")
-        if key == "elongated":                    # only the elongated mould is shown
-            tray, lid = mould_halves(o)
-            lid_open = Pos(0, 0, -MOULD.h - MOULD.floor) * print_pose(lid, True)   # teeth up, on the floor
-            moulds[key] = export_meshes([PartDef("mould_bottom", tray, "pla", (0, 0, 0)),
-                                         PartDef("mould_top", lid_open, "pla", (0, 0, 0))],
-                                        work / "mesh", key + "_mould")
         mats.update(materials(key, write_textures(o, work / "tex")))
+    by_key = {o.spec.key: o for o in outlines}
+    if "mould" in shots and TOP in by_key and BOTTOM in by_key:        # the stack mould makes both paddles
+        top_p, main_p, bottom_p = mould_stack(by_key[TOP], by_key[BOTTOM])
+        f, c, g = MOULD.face, MOULD.clamp, MOULD_GAP
+        moulds = export_meshes([PartDef("mould_top", Pos(-g, 0, 0) * print_pose(top_p, "top"), "pla", (0, 0, 0)),
+                                PartDef("mould_main", print_pose(main_p, "main"), "pla", (0, 0, 0)),
+                                PartDef("mould_bottom", Pos(g, 0, 0) * print_pose(bottom_p, "bottom"), "pla", (0, 0, 0)),
+                                PartDef("rib_bottom", Pos(g, 0, f + c) * place(rib_core(by_key[BOTTOM], with_hole=False),
+                                                                               False), "core", (0, 0, 0))],
+                               work / "mesh", "stack_mould")
     done = []
     for shot in shots:
         groups, cam, target = shot_scene(shot, meshes, cut, moulds)

@@ -17,7 +17,7 @@ from paddle.geometry import DESIGNS, build
 from paddle.render import board
 from paddle.sheets import ga_sheet, template_sheet
 from paddle.sheets_construction import GRIP_NO, core_sheet, grip_sheet
-from paddle.sheets_mould import mould_sheet
+from paddle.sheets_mould import MOULD_NO, mould_sheet
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "output"
@@ -32,7 +32,7 @@ def main() -> None:
     args = ap.parse_args()
 
     mass = json.loads(MASS.read_text()) if MASS.exists() else {}
-    mould = json.loads(MOULD.read_text())["designs"] if MOULD.exists() else {}
+    mould = json.loads(MOULD.read_text()) if MOULD.exists() else None
     jobs = []                      # (svg path, doc)
     outlines = []
     for sp in DESIGNS:
@@ -42,8 +42,7 @@ def main() -> None:
         d.mkdir(parents=True, exist_ok=True)
         for stem, doc in ((f"{sp.drawing_no}_sheet1_general_arrangement", ga_sheet(o, mass.get(sp.key))),
                           (f"{sp.drawing_no}_sheet2_template_1to1", template_sheet(o)),
-                          (f"{sp.drawing_no}_sheet3_rib_core", core_sheet(o, mass.get(sp.key))),
-                          (f"{sp.drawing_no}_sheet4_compression_mould", mould_sheet(o, mould.get(sp.key)))):
+                          (f"{sp.drawing_no}_sheet3_rib_core", core_sheet(o, mass.get(sp.key)))):
             p = d / f"{stem}.svg"
             p.write_text(doc.svg(), encoding="utf-8")
             jobs.append((p, doc))
@@ -54,6 +53,13 @@ def main() -> None:
     d.mkdir(parents=True, exist_ok=True)
     doc = grip_sheet(DESIGNS[0], mass or None)
     p = d / f"{GRIP_NO}_printed_grip_interface.svg"
+    p.write_text(doc.svg(), encoding="utf-8")
+    jobs.append((p, doc))
+
+    d = OUT / "mould"                              # the stack mould is shared by both paddles
+    d.mkdir(parents=True, exist_ok=True)
+    doc = mould_sheet({o.spec.key: o for o in outlines}, mould)
+    p = d / f"{MOULD_NO}_rib_support_stack_mould.svg"
     p.write_text(doc.svg(), encoding="utf-8")
     jobs.append((p, doc))
 

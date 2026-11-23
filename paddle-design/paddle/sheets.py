@@ -1,12 +1,13 @@
-"""Engineering drawing sheets (REV C: carbon / wave-rib sandwich with the printed grip).
+"""Engineering drawing sheets (carbon / wave-rib sandwich with the printed grip).
 
 Per paddle:
   Sheet 1 - A3 landscape general arrangement: front view with the grip, side view with the
-            4 / 8 / 4 lay-up, sections A-A (blade, wave core) and B-B (handle in the grip),
+            lay-up, sections A-A (blade, wave core) and B-B (handle in the grip),
             isometric view, notes, title block; first-angle projection, 1:2.
   Sheet 2 - A3 portrait full-size (1:1) body profile template with the geometry table.
   Sheet 3 - rib support / core (sheets_construction.core_sheet).
-Shared by both paddles: PB-GR-002 printed grip - paddle interface (sheets_construction.grip_sheet).
+Shared by both paddles: PB-GR-002 printed grip - paddle interface (sheets_construction.grip_sheet) and
+PB-MO-003 rib support stack mould (sheets_mould.mould_sheet).
 """
 from __future__ import annotations
 
@@ -18,8 +19,8 @@ from .geometry import GRIP, Outline, PaddleSpec
 from .pictorial import ISOMETRIC, project
 from .svgkit import Doc, View, f, fmt, frame_iso, hatch_pattern, projection_symbol_first_angle
 
-ISSUE = {"rev": "G", "date": "2026-11-09", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
-SHEETS = 4                                  # sheets per paddle drawing
+ISSUE = {"rev": "H", "date": "2026-11-23", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
+SHEETS = 3                                  # sheets per paddle drawing (the mould is PB-MO-003)
 USAP_SUM, USAP_LEN = 609.6, 431.8          # 24 in (length + width), 17 in (length)
 GREY = "#555"
 
@@ -118,7 +119,7 @@ def ga_notes(o: Outline, mass: dict | None = None) -> list[str]:
         f"FACE SHEETS (2 OFF, IDENTICAL): WOVEN CARBON/EPOXY {fmt(C.face_t)} THK (CURED), CUT TO "
         f"{sp.drawing_no}_profile.dxf\n(TEMPLATE: SHEET 2)" + (", OUTER EDGES R0.8." if C.face_t > 1.6 else
                                                                    ", TRIMMED FLUSH WITH THE CORE EDGE."),
-        f"RIB SUPPORT (CORE): CARBON FIBRE MOULDED IN ONE PIECE IN THE TWO-HALF WAVE MOULD (SHEET 4), CLOSED\n"
+        f"RIB SUPPORT (CORE): CARBON FIBRE MOULDED IN ONE PIECE IN THE STACK MOULD PB-MO-003, CLOSED\n"
         f"FRAME {fmt(C.frame_w)}, WAVE RIB λ{fmt(C.rib_pitch)} / WALL {fmt(C.rib_t)} / LANDS {wave.land_width():.2f}, "
         f"SOLID TO y = {fmt(C.solid_to)}, 45° FLUTE RAMPS – SEE SHEET 3.",
         "SKINS BONDED TO THE CORE: EPOXY, ABRADED + PRIMED FACES, PRESSED FLAT BETWEEN PLATENS OR IN A\n"
