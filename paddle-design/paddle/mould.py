@@ -36,7 +36,8 @@ TOP, BOTTOM = "elongated", "hybrid"   # which paddle is moulded in the top / bot
 @dataclass(frozen=True)
 class MouldSpec:
     main: float = 30.0           # main plate: top cavity + web + bottom cavity
-    clamp: float = 20.0          # top and bottom clamp plates
+    clamp: float = 10.0          # top and bottom clamp plates beyond the parting face; with their teeth
+                                 # each is a ~20 mm part, and the closed stack is main + 2 x clamp = 50
     flange: float = 22.0         # plate edge beyond the larger pocket's edge
     land: float = 2.0            # flat between a pocket edge and its overflow groove
     groove_w: float = 2.0        # resin overflow groove around each pocket
@@ -69,6 +70,12 @@ class MouldSpec:
     def shift(self) -> float:
         """Mid-planes of the two ribs at z = +shift (top) and -shift (bottom)."""
         return self.face - self.h
+
+    @property
+    def teeth(self) -> float:
+        """How far a clamp plate's teeth reach below its face: the depth of the top flutes."""
+        from . import wave
+        return C.core_t - wave.under_land_wall()
 
     @property
     def height(self) -> float:

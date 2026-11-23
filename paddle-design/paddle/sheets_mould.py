@@ -112,8 +112,9 @@ def mould_notes(outlines: dict, rep: dict | None) -> list[str]:
         f"(.stl / .step).\nTHE {fmt(M.main)} MAIN PLATE HOLDS BOTH CAVITIES: {nt} IN THE TOP FACE, {nb} IN THE BOTTOM "
         f"FACE, {fmt(M.web)} WEB BETWEEN.",
         f"EACH CAVITY IS THAT PADDLE'S RIB SUPPORT (SHEET 3): THE MAIN PLATE CARRIES THE BOTTOM-FLUTE TEETH, EACH "
-        f"{fmt(M.clamp)} CLAMP PLATE\nTHE TOP-FLUTE TEETH. THE CLAMP PLATES SEAT FLAT ON THE MAIN PLATE: CORE HEIGHT "
-        f"{fmt(C.core_t)}, WALLS {fmt(C.rib_t)}, FRAME {fmt(C.frame_w)}.",
+        f"CLAMP PLATE ({fmt(M.clamp)} + {M.teeth:.1f} TEETH)\nTHE TOP-FLUTE TEETH. THE CLAMP PLATES SEAT FLAT ON THE "
+        f"MAIN PLATE: CLOSED STACK {fmt(M.height)}, CORE HEIGHT {fmt(C.core_t)}, WALLS {fmt(C.rib_t)}, FRAME "
+        f"{fmt(C.frame_w)}.",
         f"PRINT THE CLAMP PLATES BACK DOWN, TEETH UP, AND THE MAIN PLATE AS TWO {fmt(M.face)} HALVES SPLIT THROUGH THE "
         f"WEB\n(mould_main_upper_half / _lower_half.stl), EACH CAVITY UP; THE STACK BOLTS CLAMP THEM. ≥ 5 WALLS, ≥ 40 % "
         f"INFILL.{mass}",
@@ -279,7 +280,7 @@ def mould_sheet(outlines: dict, report: dict | None = None) -> Doc:
 
     # ---- notes + title block
     notes_block(d, 28.0, 198.0, mould_notes(outlines, report), size=2.15, lead=3.05)
-    title_block(d, 225.0, 236.0, o_t.spec, f"BOTH PADDLES  ·  MAIN PLATE {fmt(M.main)} + 2 CLAMP PLATES {fmt(M.clamp)}  ·  "
-                f"{fmt(x1 - x0, 1)} × {fmt(y1 - y0, 1)} mm", "1:3, 1:2, 2:1", "1 / 1", "A3",
+    title_block(d, 225.0, 236.0, o_t.spec, f"BOTH PADDLES · MAIN {fmt(M.main)} + 2 CLAMP PLATES {fmt(M.clamp)} (+ TEETH) · "
+                f"CLOSED {fmt(M.height)} · {fmt(x1 - x0, 1)} × {fmt(y1 - y0, 1)} mm", "1:3, 1:2, 2:1", "1 / 1", "A3",
                 title="RIB SUPPORT STACK MOULD", drawing_no=MOULD_NO, material="PLA / PETG (NOTE 3)")
     return d

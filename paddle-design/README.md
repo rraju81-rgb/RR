@@ -1,10 +1,11 @@
-# Pickleball paddle designs – Elongated & Hybrid (REV H)
+# Pickleball paddle designs – Elongated & Hybrid (REV J)
 
 Two 39 cm paddles traced from your hand-made templates and sketches. Each is a carbon-fibre /
 wave-rib sandwich: two 0.3 mm carbon skins bonded to a 10 mm rib support, with a 10 mm frame and
 8 waves across the blade. The rib support is moulded in carbon fibre, in one piece. One stack
 mould makes both paddles' rib supports at once: a 30 mm main plate with the Elongated cavity in
-its top face and the Hybrid cavity in its bottom face, between two 20 mm clamp plates. The plates
+its top face and the Hybrid cavity in its bottom face, between two clamp plates (about 20 mm each
+with their teeth); closed, the stack is 50 mm. The plates
 carry the wave as rows of teeth that interlock. Your rev-8 printed grip goes on the handle and is
 locked by a screw in the butt. The repo holds:
 
@@ -88,19 +89,19 @@ One mould makes both rib supports. `python tools/export_mould.py` writes its pla
 
 - `mould_main_plate` (`.stl` + `.step`), the 30 mm main plate in one piece;
 - `mould_main_upper_half.stl` and `mould_main_lower_half.stl`, the same plate split for printing;
-- `mould_top_plate` and `mould_bottom_plate` (`.stl` + `.step`), the two 20 mm clamp plates.
+- `mould_top_plate` and `mould_bottom_plate` (`.stl` + `.step`), the two clamp plates.
 
 The STL files are in print orientation and the STEP files are for machining.
 
-- **How it works.** The stack is three plates, 70 mm in all:
+- **How it works.** The stack is three plates, 50 mm in all when closed (10 + 30 + 10):
 
   | Plate | Thickness | What it holds |
   |---|---|---|
-  | Top clamp plate | 20 mm | the Elongated's top-flute teeth, on its underside |
+  | Top clamp plate | 10 mm, plus 9.4 mm teeth | the Elongated's top-flute teeth, on its underside |
   | Main plate, top 10 mm | 30 mm in all | the Elongated cavity: a 10 mm pocket with the bottom-flute teeth standing in it |
   | Main plate, middle 10 mm | | a solid web between the two cavities |
   | Main plate, bottom 10 mm | | the Hybrid cavity, the same way up from the bottom face |
-  | Bottom clamp plate | 20 mm | the Hybrid's top-flute teeth |
+  | Bottom clamp plate | 10 mm, plus 9.4 mm teeth | the Hybrid's top-flute teeth |
 
   - Closing the stack slides each clamp plate's teeth between the main plate's. The 1.6 mm gaps
     between the teeth form the wave walls, the 10 mm band around each pocket edge forms the frame,
@@ -122,8 +123,11 @@ The STL files are in print orientation and the STEP files are for machining.
   |---|---|---|
   | Main plate | 30 mm | 1.89 kg |
   | – upper half / lower half (for printing) | 15 mm each | 0.93 / 0.96 kg |
-  | Top clamp plate | 20 mm + 9.4 mm teeth | 2.00 kg |
-  | Bottom clamp plate | 20 mm + 9.4 mm teeth | 1.98 kg |
+  | Top clamp plate | 10 mm + 9.4 mm teeth = 19.4 mm | 1.09 kg |
+  | Bottom clamp plate | 10 mm + 9.4 mm teeth = 19.4 mm | 1.07 kg |
+
+  The teeth sit inside the cavities when the stack is closed, so only the 10 mm plates add to
+  the 50 mm.
 
   All need a bed of at least 440 mm (500 × 500 class), or you can machine the STEP from
   aluminium.
@@ -135,7 +139,7 @@ The STL files are in print orientation and the STEP files are for machining.
   - Use at least 5 walls and 40 % infill, with 0.12–0.16 mm layers for the teeth.
 - **Features:**
   - around each pocket: a 2 mm land, then a 2 × 1.5 mm resin overflow groove, with 6 vents;
-  - 18 × M6 bolts through all three plates (80 mm long);
+  - 18 × M6 bolts through all three plates (60 mm long);
   - 2 pry notches at each parting face.
 
   There are no dowel holes and no ejector holes.
@@ -373,9 +377,9 @@ The inputs live in `paddle/geometry.py` and `paddle/mould.py`:
 - **`Construction`**: skin and core thickness, frame width, wave pitch, phase, wall and amplitude,
   solid zone, ramp length and the insert bore.
 - **`GripInterface`**: the printed grip's length, base, slot, slits, counterbore and screw.
-- **`MouldSpec`**: main plate and clamp plate thickness, flange, land, groove, vents, bolts and
-  notches. The pocket depth and the teeth follow the core height and the wave; the web is what the
-  main plate leaves between its two pockets.
+- **`MouldSpec`**: main plate and clamp plate thickness (the plate, not counting its teeth), flange,
+  land, groove, vents, bolts and notches. The pocket depth and the teeth follow the core height and
+  the wave; the web is what the main plate leaves between its two pockets.
 
 Every drawing, the 3-D model, the print files, the mould and the renders are recomputed from those
 inputs. `geometry.check()` asserts three things: each outline is closed, it is tangent-continuous
@@ -410,3 +414,5 @@ and exactly the specified size, and the specified thickness matches the lay-up.
   (Elongated cavity in the top 10 mm, 10 mm web, Hybrid cavity in the bottom 10 mm) between two
   20 mm clamp plates that carry the top-flute teeth. The clamp plates close flat (no plug); M6 × 80
   bolts through the stack. New shared drawing PB-MO-003; each paddle drawing is now 3 sheets.
+- **J.** The clamp plates are 10 mm plates (19.4 mm with their teeth), so the closed stack is
+  50 mm instead of 70 mm; M6 × 60 bolts. (I is not used as a revision letter.)
