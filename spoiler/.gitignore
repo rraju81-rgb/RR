@@ -32,3 +32,8 @@ v11/src/__pycache__/
 v11/renders/*.png
 v11/out/*.log
 v11/out/*.npy
+v12/out/*.stl
+v12/out/*.npy
+v12/out/*.npz
+v12/out/*.log
+v12/src/__pycache__/

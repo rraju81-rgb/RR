@@ -142,42 +142,44 @@ PART_LAYOUTS = {'v6': dict(ids=['L', 'C', 'R'], spread=150.0),              # 3 
                 'v7': dict(ids=['P1', 'P2', 'P3', 'P4'], spread=100.0),     # 4 equal pieces, 6 keys
                 'v8': dict(ids=['P1F', 'P1R', 'P2', 'P3', 'P4R', 'P4F'], spread=100.0, zspread=70.0),   # 6 pieces, 10 keys
                 'v9': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=70.0),   # 6 equal cored pieces, pins + spline
-                'v10': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0)}   # 3 across x front/rear
+                'v10': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0),   # 3 across x front/rear
+                'v12': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0)}   # as v10, smooth tip at the back
 
-def build_parts_v10(studio='light', mode='joint'):
-    """v10. mode 'joint': the six parts pulled apart (side parts out along the span, front parts forward off their cut),
-    pins and splines (orange) left in the faces they go into first (span pins in the centre parts, cut pins and splines in
-    the rear parts). mode 'rim': the centre rear part upside down, to show the grooved rim"""
+def build_parts_v10(studio='light', mode='joint', ver='v10'):
+    """v10 and v12 (same six parts). mode 'joint': the six parts pulled apart (side parts out along the span, front parts
+    forward off their cut), pins and splines (orange) left in the faces they go into first (span pins in the centre parts,
+    cut pins and splines in the rear parts). mode 'rim': the centre rear part upside down, to show the back edge (v10: the
+    grooved rim; v12: the smooth tip)"""
     import json as _j, sys as _s
-    _s.path.insert(0, 'v10/src'); from layout import STEM, SEC, HALF_OF, chord_plane, XS
+    _s.path.insert(0, f'{ver}/src'); from layout import STEM, SEC, HALF_OF, chord_plane, XS
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
     M = {'spoiler': principled('spoiler_raw_print', (0.030, 0.030, 0.033), rough=0.45, spec=0.5),
          'key': principled('key', (0.90, 0.13, 0.016), rough=0.65, spec=0.22),
          'grey': principled('grey_print', (0.075, 0.077, 0.082), rough=0.42, spec=0.5)}
-    ids = PART_LAYOUTS['v10']['ids']; g = PART_LAYOUTS['v10']['spread']; gz = PART_LAYOUTS['v10']['zspread']
+    ids = PART_LAYOUTS[ver]['ids']; g = PART_LAYOUTS[ver]['spread']; gz = PART_LAYOUTS[ver]['zspread']
     def off(pid):
         sec = SEC[pid]; n, d = chord_plane(sec)
         o = np.array([{'L': -g, 'C': 0.0, 'R': g}[sec], 0, 0])
         return o + (-n * gz if HALF_OF[pid] == 'front' else 0 * n)
     if mode == 'rim':
-        m = trimesh.load('v10/out/full_P3.stl')                              # full resolution for the close-up
+        m = trimesh.load(f'{ver}/out/full_P3.stl')                           # full resolution for the close-up
         R = trimesh.transformations.rotation_matrix(np.pi, [0, 0, 1])          # upside down about the chord axis
         m.apply_transform(R); new_mesh('spoiler_P3', m, [M['grey']], loop_normals=spoiler_normals(m))
     else:
         for k in ids:
-            m = trimesh.load(f'v10/assembled/{STEM[k]}.stl'); m.apply_translation(off(k))
+            m = trimesh.load(f'{ver}/assembled/{STEM[k]}.stl'); m.apply_translation(off(k))
             new_mesh('spoiler_' + k, m, [M['spoiler']], loop_normals=spoiler_normals(m) if NORMALS else None, auto=None if NORMALS else 30)
-        J = _j.load(open('v10/out/joints.json'))
+        J = _j.load(open(f'{ver}/out/joints.json'))
         for i in range(J['n_pins']):
-            pm = trimesh.load(f'v10/assembled/v10_PIN_{i + 1:02d}.stl'); c = pm.centroid
+            pm = trimesh.load(f'{ver}/assembled/{ver}_PIN_{i + 1:02d}.stl'); c = pm.centroid
             if abs(abs(c[0]) - XS) < 15 and abs(pm.principal_inertia_vectors[0][0]) > 0.9:     # span pin: stays in the centre part
                 host = 'P3' if c[2] > 122 else 'P4'
             else:                                                            # cut pin: stays in the rear part
                 sec = 'L' if c[0] < -XS else ('R' if c[0] > XS else 'C'); host = [p for p in ids if SEC[p] == sec and HALF_OF[p] == 'rear'][0]
             pm.apply_translation(off(host)); new_mesh(f'pin_{i}', pm, [M['key']], auto=30)
         for i in range(J['n_splines']):
-            sp = trimesh.load(f'v10/assembled/v10_SPLINE_{i + 1:02d}.stl'); c = sp.centroid
+            sp = trimesh.load(f'{ver}/assembled/{ver}_SPLINE_{i + 1:02d}.stl'); c = sp.centroid
             sec = 'L' if c[0] < -XS else ('R' if c[0] > XS else 'C'); host = [p for p in ids if SEC[p] == sec and HALF_OF[p] == 'rear'][0]
             sp.apply_translation(off(host)); new_mesh(f'spline_{i}', sp, [M['key']], auto=30)
     V3 = __import__('mathutils').Vector
@@ -381,6 +383,8 @@ VIEWS = {
     'joint_v9': ((-0.47, -0.24, 0.27), (-0.250, -0.128, 0.122), 48),  # v9: one seam opened, tongue face with its two pins
     'joint_v10': ((-0.62, 0.10, 0.30), (-0.25, -0.09, 0.11), 42),     # v10: parts 1-4 corner pulled apart, pins + splines
     'rim_v10': ((-0.33, -0.12, 0.09), (-0.21, -0.205, 0.025), 55),    # v10: centre rear part upside down, grooved rim at its cut end
+    'joint_v12': ((-0.62, 0.10, 0.30), (-0.25, -0.09, 0.11), 42),     # v12: as v10
+    'rim_v12': ((-0.33, -0.12, 0.09), (-0.21, -0.205, 0.025), 55),    # v12: the same close-up as v10, now the smooth tip
     # name: (camera location m, target m, focal mm)
     'rear34': ((-4.35, -5.10, 2.05), (0.0, 0.25, 0.95), 70),
     'rear34_high': ((-3.6, -4.4, 3.3), (0.0, 0.0, 1.05), 60),
@@ -403,9 +407,9 @@ if __name__ == '__main__':
     kw = dict(a.split('=') for a in sys.argv[6:])
     if kw.get('debug') == '1': DEBUG_ZONES = True
     if kw.get('normals') == '0': NORMALS = False
-    if view in ('joint', 'rim') and kw.get('ver') == 'v10':
-        sc, dz = build_parts_v10(studio=kw.get('studio', 'light'), mode=view); lights_only(sc)
-        if 'cam' not in kw: VIEWS[view] = VIEWS[f'{view}_v10']
+    if view in ('joint', 'rim') and kw.get('ver') in ('v10', 'v12'):
+        sc, dz = build_parts_v10(studio=kw.get('studio', 'light'), mode=view, ver=kw['ver']); lights_only(sc)
+        if 'cam' not in kw: VIEWS[view] = VIEWS[f"{view}_{kw['ver']}"]
     elif view == 'joint' and kw.get('ver') == 'v9':
         ver = 'v9'; sc, dz = build_parts_v9(studio=kw.get('studio', 'light')); lights_only(sc)
         if 'cam' not in kw: VIEWS[view] = VIEWS['joint_v9']

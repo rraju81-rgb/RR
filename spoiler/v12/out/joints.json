@@ -1,0 +1,254 @@
+{
+ "span": {
+  "-216.7 front": {
+   "parts": [
+    "P2",
+    "P4"
+   ],
+   "tongue_on": "P2",
+   "groove_in": "P4",
+   "pins_zy": [
+    [
+     102.9,
+     27.7
+    ]
+   ],
+   "pin_walls_mm": [
+    2.2
+   ],
+   "tongue_z": [
+    62.4,
+    97.9
+   ],
+   "tongue_length": 35.9,
+   "tongue_size": [
+    3.0,
+    1.7
+   ],
+   "skin_under_tongue_min": 6.03
+  },
+  "-216.7 rear": {
+   "parts": [
+    "P1",
+    "P3"
+   ],
+   "tongue_on": "P1",
+   "groove_in": "P3",
+   "pins_zy": [
+    [
+     141.5,
+     25.3
+    ],
+    [
+     186.1,
+     25.3
+    ]
+   ],
+   "pin_walls_mm": [
+    2.0,
+    2.0
+   ],
+   "tongue_z": [
+    146.6,
+    181.1
+   ],
+   "tongue_length": 34.5,
+   "tongue_size": [
+    4.5,
+    2.5
+   ],
+   "skin_under_tongue_min": 8.5
+  },
+  "+216.7 front": {
+   "parts": [
+    "P4",
+    "P6"
+   ],
+   "tongue_on": "P6",
+   "groove_in": "P4",
+   "pins_zy": [
+    [
+     102.9,
+     27.7
+    ]
+   ],
+   "pin_walls_mm": [
+    2.2
+   ],
+   "tongue_z": [
+    62.4,
+    97.9
+   ],
+   "tongue_length": 35.9,
+   "tongue_size": [
+    3.0,
+    1.7
+   ],
+   "skin_under_tongue_min": 6.03
+  },
+  "+216.7 rear": {
+   "parts": [
+    "P3",
+    "P5"
+   ],
+   "tongue_on": "P5",
+   "groove_in": "P3",
+   "pins_zy": [
+    [
+     141.5,
+     25.3
+    ],
+    [
+     186.2,
+     25.3
+    ]
+   ],
+   "pin_walls_mm": [
+    2.0,
+    2.0
+   ],
+   "tongue_z": [
+    146.6,
+    181.1
+   ],
+   "tongue_length": 34.5,
+   "tongue_size": [
+    4.5,
+    2.5
+   ],
+   "skin_under_tongue_min": 8.5
+  }
+ },
+ "chord": {
+  "L": {
+   "parts": [
+    "P2",
+    "P1"
+   ],
+   "plane_normal": [
+    -0.0596,
+    -0.0,
+    0.9982
+   ],
+   "plane_d": 134.7,
+   "pins_x": [
+    -239.2,
+    -389.0,
+    -500.5
+   ],
+   "pin_walls_mm": [
+    1.8,
+    1.8,
+    1.6
+   ],
+   "splines": [
+    {
+     "length": 140.3,
+     "x": [
+      -244.2,
+      -384.0
+     ],
+     "skin_min": 8.45
+    },
+    {
+     "length": 102.3,
+     "x": [
+      -394.0,
+      -495.5
+     ],
+     "skin_min": 8.45
+    }
+   ]
+  },
+  "C": {
+   "parts": [
+    "P4",
+    "P3"
+   ],
+   "plane_normal": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "plane_d": 122.0,
+   "pins_x": [
+    194.6,
+    0.1,
+    -194.3
+   ],
+   "pin_walls_mm": [
+    1.8,
+    1.8,
+    1.8
+   ],
+   "splines": [
+    {
+     "length": 184.4,
+     "x": [
+      189.5,
+      5.2
+     ],
+     "skin_min": 8.5
+    },
+    {
+     "length": 184.4,
+     "x": [
+      -4.9,
+      -189.2
+     ],
+     "skin_min": 8.5
+    }
+   ]
+  },
+  "R": {
+   "parts": [
+    "P6",
+    "P5"
+   ],
+   "plane_normal": [
+    0.0596,
+    0.0,
+    0.9982
+   ],
+   "plane_d": 134.7,
+   "pins_x": [
+    502.5,
+    389.0,
+    239.1
+   ],
+   "pin_walls_mm": [
+    1.6,
+    1.8,
+    1.8
+   ],
+   "splines": [
+    {
+     "length": 104.4,
+     "x": [
+      497.6,
+      394.0
+     ],
+     "skin_min": 8.49
+    },
+    {
+     "length": 140.4,
+     "x": [
+      384.0,
+      244.1
+     ],
+     "skin_min": 8.5
+    }
+   ]
+  }
+ },
+ "n_pins": 15,
+ "n_splines": 6,
+ "spline_lengths": [
+  140.1,
+  102.0,
+  184.4,
+  184.4,
+  104.1,
+  140.2
+ ]
+}
