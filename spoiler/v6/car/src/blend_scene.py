@@ -144,7 +144,8 @@ PART_LAYOUTS = {'v6': dict(ids=['L', 'C', 'R'], spread=150.0),              # 3 
                 'v9': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=70.0),   # 6 equal cored pieces, pins + spline
                 'v10': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0),   # 3 across x front/rear
                 'v12': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0),   # as v10, smooth tip at the back
-                'v13': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0)}   # as v12, no brim, corners blended
+                'v13': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0),   # as v12, no brim, corners blended
+                'v14': dict(ids=['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], spread=90.0, zspread=55.0)}   # as v13, closed underside
 
 def build_parts_v10(studio='light', mode='joint', ver='v10'):
     """v10 and v12 (same six parts). mode 'joint': the six parts pulled apart (side parts out along the span, front parts
@@ -388,6 +389,8 @@ VIEWS = {
     'rim_v12': ((-0.33, -0.12, 0.09), (-0.21, -0.205, 0.025), 55),    # v12: the same close-up as v10, now the smooth tip
     'joint_v13': ((-0.62, 0.10, 0.30), (-0.25, -0.09, 0.11), 42),     # v13: as v12
     'rim_v13': ((-0.33, -0.12, 0.09), (-0.21, -0.205, 0.025), 55),    # v13: the same close-up, now flush (no brim)
+    'joint_v14': ((-0.62, 0.10, 0.30), (-0.25, -0.09, 0.11), 42),     # v14: as v13
+    'rim_v14': ((-0.33, -0.12, 0.09), (-0.21, -0.205, 0.025), 55),    # v14: the same close-up, closed underside
     # name: (camera location m, target m, focal mm)
     'rear34': ((-4.35, -5.10, 2.05), (0.0, 0.25, 0.95), 70),
     'rear34_high': ((-3.6, -4.4, 3.3), (0.0, 0.0, 1.05), 60),
@@ -410,7 +413,7 @@ if __name__ == '__main__':
     kw = dict(a.split('=') for a in sys.argv[6:])
     if kw.get('debug') == '1': DEBUG_ZONES = True
     if kw.get('normals') == '0': NORMALS = False
-    if view in ('joint', 'rim') and kw.get('ver') in ('v10', 'v12', 'v13'):
+    if view in ('joint', 'rim') and kw.get('ver') in ('v10', 'v12', 'v13', 'v14'):
         sc, dz = build_parts_v10(studio=kw.get('studio', 'light'), mode=view, ver=kw['ver']); lights_only(sc)
         if 'cam' not in kw: VIEWS[view] = VIEWS[f"{view}_{kw['ver']}"]
     elif view == 'joint' and kw.get('ver') == 'v9':

@@ -44,3 +44,9 @@ v13/out/*.npz
 v13/out/*.log
 v13/out/assembled/
 v13/src/__pycache__/
+v14/out/*.stl
+v14/out/*.npy
+v14/out/*.npz
+v14/out/*.log
+v14/out/assembled/
+v14/src/__pycache__/
