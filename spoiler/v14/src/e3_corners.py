@@ -43,17 +43,20 @@ def inside_box(R, lo, shape):
     jy = lambda y: int(np.clip(np.ceil((y - lo[1]) / H - 0.5), 0, shape[1]))   # first voxel whose centre is at or above y
     return fill_inside(R, xs, zs, -400.0, shape[1], jy)                 # exactly the centres between each pair of hits
 
-def signed_distance(inside, lo, tree, pts, nrm, band):
+def signed_distance(inside, lo, tree, pts, nrm, band, snap=0.0):
     """signed distance (mm, negative inside). Within 0.6 mm of the surface: the distance to the plane of the nearest
     sample's face (exact on the faceted surface, so the zero level is the original surface itself, with no ripple),
     blending to the distance to the nearest sample by 1.2 mm; beyond `band` the distance transform. The sign is the
-    inside test's (exact at the voxel centres)."""
+    inside test's (exact at the voxel centres). Where that sign and the side of the plane disagree, the distance to the
+    nearest sample is used; but a voxel centre within `snap` of the plane lies on the surface, and then gets that
+    (tiny) distance: with snap = 0 such centres got up to 0.13 mm in the faired body (E4), and a speck of that size at
+    each. E4 uses snap = 0.02 mm; E3 was built with 0 (its specks are under 0.075 mm)."""
     d = (ndi.distance_transform_edt(~inside) - ndi.distance_transform_edt(inside)).astype(np.float32) * H
     ii = np.argwhere(np.abs(d) < band); P = lo + (ii + 0.5) * H
     dist, j = tree.query(P, workers=-1)
     sgn = np.where(inside[tuple(ii.T)], -1.0, 1.0)
     pp = ((P - pts[j]) * nrm[j]).sum(1)
-    near = np.where(np.sign(pp) == sgn, pp, sgn * dist)
+    near = np.where(np.sign(pp) == sgn, pp, sgn * np.where(np.abs(pp) < snap, np.abs(pp), dist))
     a = np.clip((dist - 0.6) / 0.6, 0.0, 1.0); a = a * a * (3 - 2 * a)      # plane distance alone within 0.6 mm
     d[tuple(ii.T)] = ((1 - a) * near + a * sgn * dist).astype(np.float32)
     return d

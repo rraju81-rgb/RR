@@ -61,7 +61,7 @@ def main():
     lo = np.floor(lo / H) * H; hi = np.ceil(hi / H) * H; shape = np.round((hi - lo) / H).astype(int)
     log('box', lo.round(1).tolist(), hi.round(1).tolist(), 'voxels %.1fM' % (np.prod(shape) / 1e6))
     e3.H = H                                                              # the corner tools, on this grid
-    cache = f'{OUT}/_e4_d3_{os.path.getsize(E3_PATH)}_{H}_{lo[0]:.1f}_{lo[1]:.1f}_{lo[2]:.1f}.npy'
+    cache = f'{OUT}/_e4_d4_{os.path.getsize(E3_PATH)}_{H}_{lo[0]:.1f}_{lo[1]:.1f}_{lo[2]:.1f}.npy'
     if os.path.exists(cache): d = np.load(cache); log('distance from', cache)
     else:
         inside = e3.inside_box(RayMeshIntersector(E), lo, shape); log('inside')
@@ -69,7 +69,7 @@ def main():
         sub = trimesh.Trimesh(E.vertices, E.faces[np.all((c > lo - 8) & (c < hi + 8), axis=1)], process=False)
         sn, n_odd = sample_normals(sub)
         pts, fi = e3.samples(sub, 0.3); nrm = sn[fi]; tree = cKDTree(pts); log('samples', len(pts), '(%d micro-faces re-normalled)' % n_odd)
-        d = e3.signed_distance(inside, lo, tree, pts, nrm, 7.0); del inside; log('distance')   # exact within 7 mm
+        d = e3.signed_distance(inside, lo, tree, pts, nrm, 7.0, snap=0.02); del inside; log('distance')   # exact within 7 mm
         np.save(cache, d)
     # weight: around the step line, and faded out towards the spoiler's ends (the corners are blended there already)
     curve = P[:, :3][:, [0, 1, 2]]
