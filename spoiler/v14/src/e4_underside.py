@@ -39,6 +39,19 @@ def step_line(E, st):
     for c in (1, 2): P[:, c] = ndi.gaussian_filter1d(P[:, c], 3.0, mode='nearest')
     return P
 
+def sample_normals(m):
+    """the normal each face's samples carry into the distance field: the face's own (its plane, so the field is exact on
+    the faceted surface), except on tiny faces turned far from the surface around them. E3's corner splice left such
+    micro-faces (1e-6 to 1e-2 mm2) standing in its box's planes (x = +-411, z = 206), across the surface: their planes
+    gave the voxels there distances a few tenths short, and the faired body grooves up to 0.3 mm deep along them. Those
+    take the area-weighted mean normal of the faces around them."""
+    n = m.face_normals.copy(); a = m.area_faces
+    vn = trimesh.geometry.mean_vertex_normals(len(m.vertices), m.faces, n * a[:, None])
+    fn = vn[m.faces].sum(1); fn /= np.maximum(np.linalg.norm(fn, axis=1), 1e-12)[:, None]
+    odd = (a < 0.01) & ((n * fn).sum(1) < 0.5)                            # tiny and more than 60 deg off its surroundings
+    n[odd] = fn[odd]
+    return n, int(odd.sum())
+
 def main():
     # the contact line from this step's own input, E3 (not p1_core's rim_curve.npz, which is measured on E4, the output)
     import rim; E = trimesh.load(E3_PATH); st = rim.rim_curve(E, trimesh.load(CAR_PATH, process=False))
@@ -48,13 +61,14 @@ def main():
     lo = np.floor(lo / H) * H; hi = np.ceil(hi / H) * H; shape = np.round((hi - lo) / H).astype(int)
     log('box', lo.round(1).tolist(), hi.round(1).tolist(), 'voxels %.1fM' % (np.prod(shape) / 1e6))
     e3.H = H                                                              # the corner tools, on this grid
-    cache = f'{OUT}/_e4_d2_{os.path.getsize(E3_PATH)}_{H}_{lo[0]:.1f}_{lo[1]:.1f}_{lo[2]:.1f}.npy'
+    cache = f'{OUT}/_e4_d3_{os.path.getsize(E3_PATH)}_{H}_{lo[0]:.1f}_{lo[1]:.1f}_{lo[2]:.1f}.npy'
     if os.path.exists(cache): d = np.load(cache); log('distance from', cache)
     else:
         inside = e3.inside_box(RayMeshIntersector(E), lo, shape); log('inside')
         c = E.triangles_center
         sub = trimesh.Trimesh(E.vertices, E.faces[np.all((c > lo - 8) & (c < hi + 8), axis=1)], process=False)
-        pts, fi = e3.samples(sub, 0.3); nrm = sub.face_normals[fi]; tree = cKDTree(pts); log('samples', len(pts))
+        sn, n_odd = sample_normals(sub)
+        pts, fi = e3.samples(sub, 0.3); nrm = sn[fi]; tree = cKDTree(pts); log('samples', len(pts), '(%d micro-faces re-normalled)' % n_odd)
         d = e3.signed_distance(inside, lo, tree, pts, nrm, 7.0); del inside; log('distance')   # exact within 7 mm
         np.save(cache, d)
     # weight: around the step line, and faded out towards the spoiler's ends (the corners are blended there already)
