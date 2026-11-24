@@ -1,0 +1,204 @@
+{
+ "span": {
+  "-216.7 front": {
+   "parts": [
+    "P2",
+    "P4"
+   ],
+   "tongue_on": "P2",
+   "groove_in": "P4",
+   "pins_zy": [
+    [
+     87.5,
+     29.3
+    ]
+   ],
+   "pin_walls_mm": [
+    2.0
+   ],
+   "tongue_z": [
+    62.4,
+    82.6
+   ],
+   "tongue_length": 20.5,
+   "tongue_size": [
+    3.0,
+    1.7
+   ],
+   "skin_under_tongue_min": 6.04
+  },
+  "-216.7 rear": {
+   "parts": [
+    "P1",
+    "P3"
+   ],
+   "tongue_on": "P1",
+   "groove_in": "P3",
+   "pins_zy": [
+    [
+     141.1,
+     24.8
+    ],
+    [
+     180.9,
+     24.6
+    ]
+   ],
+   "pin_walls_mm": [
+    2.6,
+    2.6
+   ],
+   "tongue_z": [
+    146.1,
+    175.8
+   ],
+   "tongue_length": 29.7,
+   "tongue_size": [
+    4.5,
+    2.5
+   ],
+   "skin_under_tongue_min": 9.5
+  },
+  "+216.7 front": {
+   "parts": [
+    "P4",
+    "P6"
+   ],
+   "tongue_on": "P6",
+   "groove_in": "P4",
+   "pins_zy": [
+    [
+     87.6,
+     29.3
+    ]
+   ],
+   "pin_walls_mm": [
+    2.0
+   ],
+   "tongue_z": [
+    62.4,
+    82.6
+   ],
+   "tongue_length": 20.5,
+   "tongue_size": [
+    3.0,
+    1.7
+   ],
+   "skin_under_tongue_min": 6.04
+  },
+  "+216.7 rear": {
+   "parts": [
+    "P3",
+    "P5"
+   ],
+   "tongue_on": "P5",
+   "groove_in": "P3",
+   "pins_zy": [
+    [
+     141.5,
+     24.8
+    ],
+    [
+     180.9,
+     24.6
+    ]
+   ],
+   "pin_walls_mm": [
+    2.6,
+    2.4
+   ],
+   "tongue_z": [
+    146.6,
+    175.8
+   ],
+   "tongue_length": 29.2,
+   "tongue_size": [
+    4.5,
+    2.5
+   ],
+   "skin_under_tongue_min": 9.5
+  }
+ },
+ "chord": {
+  "L": {
+   "parts": [
+    "P2",
+    "P1"
+   ],
+   "plane_normal": [
+    -0.0596,
+    -0.0,
+    0.9982
+   ],
+   "plane_d": 134.7,
+   "pins_x": [
+    -239.2,
+    -328.2,
+    -417.1,
+    -498.8
+   ],
+   "pin_walls_mm": [
+    1.8,
+    2.0,
+    2.2,
+    1.6
+   ],
+   "splines": []
+  },
+  "C": {
+   "parts": [
+    "P4",
+    "P3"
+   ],
+   "plane_normal": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "plane_d": 122.0,
+   "pins_x": [
+    194.5,
+    97.3,
+    0.1,
+    -97.1,
+    -194.3
+   ],
+   "pin_walls_mm": [
+    1.8,
+    1.8,
+    1.6,
+    1.8,
+    1.8
+   ],
+   "splines": []
+  },
+  "R": {
+   "parts": [
+    "P6",
+    "P5"
+   ],
+   "plane_normal": [
+    0.0596,
+    0.0,
+    0.9982
+   ],
+   "plane_d": 134.7,
+   "pins_x": [
+    499.0,
+    417.9,
+    328.6,
+    239.1
+   ],
+   "pin_walls_mm": [
+    1.6,
+    2.2,
+    2.0,
+    1.8
+   ],
+   "splines": []
+  }
+ },
+ "n_pins": 19,
+ "n_splines": 0,
+ "spline_lengths": []
+}

@@ -1,0 +1,48 @@
+{
+ "left": {
+  "box": [
+   [
+    -548.0,
+    -28.0,
+    142.0
+   ],
+   [
+    -410.0,
+    26.0,
+    207.0
+   ]
+  ],
+  "voxels": 31000320,
+  "added_mm3": 295.3,
+  "removed_mm3": 589.8,
+  "max_weight": 1.0
+ },
+ "right": {
+  "box": [
+   [
+    410.0,
+    -28.0,
+    142.0
+   ],
+   [
+    548.0,
+    26.0,
+    207.0
+   ]
+  ],
+  "voxels": 31000320,
+  "added_mm3": 295.3,
+  "removed_mm3": 589.8,
+  "max_weight": 1.0
+ },
+ "E3": {
+  "faces": 1460304,
+  "watertight": true,
+  "winding": true,
+  "volume_cm3": 2962.55,
+  "bodies": 1,
+  "selfx_faces": 0,
+  "zero_area": 9
+ },
+ "E2_volume_cm3": 2963.14
+}

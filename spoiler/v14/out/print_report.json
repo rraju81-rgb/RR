@@ -1,0 +1,129 @@
+{
+ "P1": {
+  "file": "v14_1_LEFT_REAR.stl",
+  "label": "left rear",
+  "stands_on": "its front cut face",
+  "print_extent_mm": [
+   288.7,
+   287.8,
+   140.9
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 41.6,
+  "overhang_gt45_cm2": 5.9,
+  "overhang_gt55_cm2": 4.4,
+  "overhang_gt60_cm2": 3.7,
+  "volume_cm3": 386.3,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P2": {
+  "file": "v14_2_LEFT_FRONT.stl",
+  "label": "left front (with the fin)",
+  "stands_on": "its rear cut face",
+  "print_extent_mm": [
+   333.7,
+   334.0,
+   134.4
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 41.6,
+  "overhang_gt45_cm2": 7.1,
+  "overhang_gt55_cm2": 5.8,
+  "overhang_gt60_cm2": 3.2,
+  "volume_cm3": 408.7,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P3": {
+  "file": "v14_3_CENTRE_REAR.stl",
+  "label": "centre rear",
+  "stands_on": "its front cut face",
+  "print_extent_mm": [
+   330.2,
+   330.2,
+   135.7
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 51.8,
+  "overhang_gt45_cm2": 5.2,
+  "overhang_gt55_cm2": 4.3,
+  "overhang_gt60_cm2": 4.1,
+  "volume_cm3": 531.6,
+  "redecimated": 0.25,
+  "print_file_ok": true
+ },
+ "P4": {
+  "file": "v14_4_CENTRE_FRONT.stl",
+  "label": "centre front",
+  "stands_on": "its rear cut face",
+  "print_extent_mm": [
+   329.4,
+   329.4,
+   133.6
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 51.8,
+  "overhang_gt45_cm2": 4.6,
+  "overhang_gt55_cm2": 4.1,
+  "overhang_gt60_cm2": 4.0,
+  "volume_cm3": 355.5,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P5": {
+  "file": "v14_5_RIGHT_REAR.stl",
+  "label": "right rear",
+  "stands_on": "its front cut face",
+  "print_extent_mm": [
+   287.8,
+   288.7,
+   140.9
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 41.6,
+  "overhang_gt45_cm2": 5.9,
+  "overhang_gt55_cm2": 4.4,
+  "overhang_gt60_cm2": 3.7,
+  "volume_cm3": 386.2,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "P6": {
+  "file": "v14_6_RIGHT_FRONT.stl",
+  "label": "right front (with the fin)",
+  "stands_on": "its rear cut face",
+  "print_extent_mm": [
+   334.0,
+   333.7,
+   134.4
+  ],
+  "fits_420x420x500": true,
+  "bed_contact_cm2": 41.6,
+  "overhang_gt45_cm2": 7.1,
+  "overhang_gt55_cm2": 5.8,
+  "overhang_gt60_cm2": 3.2,
+  "volume_cm3": 408.7,
+  "redecimated": 0,
+  "print_file_ok": true
+ },
+ "PIN": {
+  "file": "v14_PIN_3x18.stl",
+  "size_mm": [
+   3.0,
+   18.0
+  ],
+  "n_needed": 19,
+  "print_count": 23,
+  "print_file_ok": true
+ },
+ "print_set": [
+  "v14_1_LEFT_REAR.stl",
+  "v14_2_LEFT_FRONT.stl",
+  "v14_3_CENTRE_REAR.stl",
+  "v14_4_CENTRE_FRONT.stl",
+  "v14_5_RIGHT_REAR.stl",
+  "v14_6_RIGHT_FRONT.stl",
+  "v14_PIN_3x18.stl"
+ ]
+}

@@ -13,7 +13,7 @@ A one-page A4 specification of the **finished spoiler as fitted to the car**: th
 **Where the numbers come from** (nothing is typed by hand):
 - Dimensions, chord, thickness, lip angle and plan area are measured from the finished spoiler solid (`spoiler_geometry.json`).
 - The aerodynamic table comes from the CFD wind test in `../aero/` (`../aero/results/aero_results.json`): 100 km/h, with and without the spoiler.
-- Weight, material, finish and fitting match the brochure and `../v13/README.md` (v13: six parts, three across and each split front and rear, walls 10 mm max, pinned and chamfered joints, the back edge flush with no brim, the ducktail corners blended). The profile depth is the outer shape's, which v13 keeps.
+- Weight, material, finish and fitting match the brochure and `../v14/README.md` (v14: six parts, three across and each split front and rear, walls 10 mm max, pinned and chamfered joints, a closed smooth underside with the hollowing inside, the ducktail lip ends blended in). The profile depth is the outer shape's, which v14 keeps.
 
 **Rebuild** from `spoiler/`: `python3 spec/src/drawing.py`, then `python3 spec/src/build_spec.py` (writes the PDF and PNG; needs Node.js with Playwright).
 
