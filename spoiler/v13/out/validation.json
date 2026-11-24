@@ -1,0 +1,354 @@
+{
+ "meshes": {
+  "P1": {
+   "name": "P1",
+   "faces": 125290,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 328.38,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 5.579320713877678e-06,
+   "bounds": [
+    [
+     -591.97,
+     -58.28,
+     99.58
+    ],
+    [
+     -214.17,
+     44.36,
+     256.56
+    ]
+   ]
+  },
+  "P2": {
+   "name": "P2",
+   "faces": 34348,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 376.36,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 0.00011418738127490161,
+   "bounds": [
+    [
+     -649.95,
+     -92.73,
+     -34.26
+    ],
+    [
+     -214.97,
+     49.25,
+     122.0
+    ]
+   ]
+  },
+  "P3": {
+   "name": "P3",
+   "faces": 57042,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 450.61,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 6.852494841834497e-06,
+   "bounds": [
+    [
+     -216.67,
+     15.5,
+     122.0
+    ],
+    [
+     216.67,
+     49.15,
+     257.71
+    ]
+   ]
+  },
+  "P4": {
+   "name": "P4",
+   "faces": 18474,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 334.28,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 3.2392890318956126e-06,
+   "bounds": [
+    [
+     -216.67,
+     21.96,
+     -11.58
+    ],
+    [
+     216.67,
+     54.34,
+     122.0
+    ]
+   ]
+  },
+  "P5": {
+   "name": "P5",
+   "faces": 125264,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 328.38,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 5.117835471586798e-06,
+   "bounds": [
+    [
+     214.17,
+     -58.28,
+     99.58
+    ],
+    [
+     591.97,
+     44.36,
+     256.56
+    ]
+   ]
+  },
+  "P6": {
+   "name": "P6",
+   "faces": 34350,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 376.36,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 0.00011418738127490161,
+   "bounds": [
+    [
+     214.97,
+     -92.73,
+     -34.26
+    ],
+    [
+     649.95,
+     49.25,
+     122.0
+    ]
+   ]
+  },
+  "PIN": {
+   "name": "PIN",
+   "faces": 512,
+   "watertight": true,
+   "winding": true,
+   "volume_cm3": 0.13,
+   "bodies": 1,
+   "selfx_faces": 0,
+   "zero_area": 0,
+   "min_area": 0.030512339181940584,
+   "bounds": [
+    [
+     -225.67,
+     26.21,
+     101.39
+    ],
+    [
+     -207.67,
+     29.21,
+     104.39
+    ]
+   ]
+  }
+ },
+ "extents": {
+  "P1": {
+   "x": [
+    -591.97,
+    -214.17
+   ],
+   "section": [
+    -650.0,
+    -216.67
+   ],
+   "cut_side_mm": [
+    -0.0,
+    140.91
+   ]
+  },
+  "P2": {
+   "x": [
+    -649.95,
+    -214.97
+   ],
+   "section": [
+    -650.0,
+    -216.67
+   ],
+   "cut_side_mm": [
+    -134.35,
+    0.0
+   ]
+  },
+  "P3": {
+   "x": [
+    -216.67,
+    216.67
+   ],
+   "section": [
+    -216.67,
+    216.67
+   ],
+   "cut_side_mm": [
+    0.0,
+    135.71
+   ]
+  },
+  "P4": {
+   "x": [
+    -216.67,
+    216.67
+   ],
+   "section": [
+    -216.67,
+    216.67
+   ],
+   "cut_side_mm": [
+    -133.58,
+    0.0
+   ]
+  },
+  "P5": {
+   "x": [
+    214.17,
+    591.97
+   ],
+   "section": [
+    216.67,
+    650.0
+   ],
+   "cut_side_mm": [
+    -0.0,
+    140.91
+   ]
+  },
+  "P6": {
+   "x": [
+    214.97,
+    649.95
+   ],
+   "section": [
+    216.67,
+    650.0
+   ],
+   "cut_side_mm": [
+    -134.35,
+    0.0
+   ]
+  }
+ },
+ "thickness": {
+  "P1": {
+   "max_mm": 9.31,
+   "at": [
+    -277.8,
+    23.1,
+    203.8
+   ]
+  },
+  "P2": {
+   "max_mm": 8.34,
+   "at": [
+    -223.7,
+    26.3,
+    115.5
+   ]
+  },
+  "P3": {
+   "max_mm": 9.27,
+   "at": [
+    55.1,
+    30.9,
+    205.4
+   ]
+  },
+  "P4": {
+   "max_mm": 8.4,
+   "at": [
+    42.7,
+    31.0,
+    117.4
+   ]
+  },
+  "P5": {
+   "max_mm": 9.31,
+   "at": [
+    263.6,
+    23.9,
+    203.8
+   ]
+  },
+  "P6": {
+   "max_mm": 8.34,
+   "at": [
+    231.2,
+    25.9,
+    116.3
+   ]
+  }
+ },
+ "overlaps": {
+  "P1-P2": 0.003,
+  "P3-P4": 0.0,
+  "P5-P6": 0.002,
+  "P1-P3": 0.0,
+  "P2-P4": 0.0,
+  "P3-P5": 0.0,
+  "P4-P6": -0.0,
+  "P1-P4": 0.0,
+  "P2-P3": 0.0,
+  "P3-P6": 0.0,
+  "P4-P5": 0.0,
+  "spline_max": 0.0,
+  "pin_max": 0.0
+ },
+ "clearance": {
+  "tongue -216.7 front": 0.171,
+  "tongue -216.7 rear": 0.171,
+  "tongue +216.7 front": 0.169,
+  "tongue +216.7 rear": 0.17
+ },
+ "seams": {
+  "-216.7 front": {
+   "mismatch_mm2": 1.33,
+   "area_mm2": 807.7
+  },
+  "-216.7 rear": {
+   "mismatch_mm2": 1.27,
+   "area_mm2": 1092.6
+  },
+  "+216.7 front": {
+   "mismatch_mm2": 1.35,
+   "area_mm2": 807.7
+  },
+  "+216.7 rear": {
+   "mismatch_mm2": 1.46,
+   "area_mm2": 1092.4
+  },
+  "cut L": {
+   "mismatch_mm2": 9.25,
+   "area_mm2": 3118.8
+  },
+  "cut C": {
+   "mismatch_mm2": 5.5,
+   "area_mm2": 3696.7
+  },
+  "cut R": {
+   "mismatch_mm2": 9.25,
+   "area_mm2": 3118.8
+  }
+ },
+ "pin_walls_min_mm": 1.6,
+ "ok": true
+}

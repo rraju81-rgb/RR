@@ -1,6 +1,6 @@
 # Brochure: Polo roof spoiler
 
-A two-page A4 brochure for the roof spoiler, branded Carbon 6 Customization and 3D printed by pi.XL 3D Printing. It describes the current build, v12: six parts (three across, each split front and rear), cored so no wall is thicker than 10 mm, joined with dowel pins (and 30° chamfered tongues at the two side joints), with one smooth, rounded tip along the back edge.
+A two-page A4 brochure for the roof spoiler, branded Carbon 6 Customization and 3D printed by pi.XL 3D Printing. It describes the current build, v13: six parts (three across, each split front and rear), cored so no wall is thicker than 10 mm, joined with dowel pins (and 30° chamfered tongues at the two side joints), with the back edge flush (no brim) and the ducktail corners blended into the body.
 
 **Page 1 shows the owner's own car with our spoiler on it.** The owner's photo (`photo/owner_car_original.png`, as received) had a different, larger wing on the car. That wing was removed and our spoiler was rendered into the photo from its 3D model, from a camera solved to match the photo (`photo/owner_car_with_spoiler.png`; how it is made is in `../car/README.md`, "Owner's photo with the spoiler"). The fine print on page 2 says that the spoiler was added digitally and that the other images are renders.
 
@@ -13,7 +13,7 @@ The page 2 car pictures are outdoor renders styled after that photo: blue metall
 | `Polo_Roof_Spoiler_Brochure.pdf` | The brochure: 2 × A4, with embedded fonts and vector text. |
 | `brochure_page1.png`, `brochure_page2.png` | The pages as images (about 2060 × 2920 px), for WhatsApp or Instagram. |
 | `brochure.html` | Source of both pages: all text and layout. |
-| `img/` | The images as placed on the pages: `hero_owner_car.jpg` from the owner's photo with the spoiler composited in (`prep_photo.py`), and the renders `side_blue`, `top_rear_blue`, `detail_fin_blue` (`blend_photo.py`) and `joints_v12` (`blend_scene.py`, four parts pulled apart at a corner: a tongue and pins), made by `prep_images.py` from `../car/renders/`. |
+| `img/` | The images as placed on the pages: `hero_owner_car.jpg` from the owner's photo with the spoiler composited in (`prep_photo.py`), and the renders `side_blue`, `top_rear_blue`, `detail_fin_blue` (`blend_photo.py`) and `joints_v13` (`blend_scene.py`, four parts pulled apart at a corner: a tongue and pins), made by `prep_images.py` from `../car/renders/`. |
 | `photo/` | The owner's photo of their car, as received (`owner_car_original.png`), and with the old wing replaced by our spoiler (`owner_car_with_spoiler.png`). |
 | `assets/` | Carbon 6 logo (white and dark versions), pi.XL logo, QR codes, and fonts with their licence files. |
 | `make_qr.py` | Makes the two QR codes. |
@@ -38,7 +38,7 @@ Run steps 1 and 3 from this folder. `prep_images.py` works from any folder.
 - **QR codes:** WhatsApp opens https://wa.me/919900611996 and Instagram opens https://instagram.com/c6_customization. Both were decoded from the exported page images, but scan them once with a phone too.
 - **Product claims:**
   - PETG or ASA.
-  - About 1.5–2 kg painted. That is an estimate for v12 (2,189 cm³ of part, 4 walls and 20–25% gyroid: about 1.4 kg in ASA or 1.7 kg in PETG), plus primer and paint. Check it against your slicer.
+  - About 1.5–2 kg painted. That is an estimate for v13 (2,194 cm³ of part, 4 walls and 20–25% gyroid: about 1.4 kg in ASA or 1.7 kg in PETG), plus primer and paint. Check it against your slicer.
   - 72 h before the first wash.
   - "Made for the Polo" assumes the dry-fit on a real 6R / 6C confirms the fit. The spoiler's underside comes from a car model built from VW's dimension data, not from a scan.
 - **Printing:** the PDF is RGB with no bleed. That is fine for an office or digital printer. A print shop may want 3 mm bleed and CMYK, so ask them first.
