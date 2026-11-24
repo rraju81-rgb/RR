@@ -19,6 +19,7 @@ from scipy import ndimage as ndi
 from scipy.spatial import cKDTree
 from skimage.measure import marching_cubes
 from trimesh.ray.ray_pyembree import RayMeshIntersector
+from parity import fill_inside
 from bowtie import tomf, totm
 from check import report
 from layout import (E_PATH, CAR_PATH, OUT, HALF, SECTIONS, T_SKIN, S_FIN, FIN_X, VOX, MARGIN, UNDER_GAP, CUT_GAP, RIM_X,
@@ -157,16 +158,8 @@ def cavity_mesh(RE, vis_pts, hid_pts, box, seams, chord):
     xs = lo[0] + (np.arange(shape[0]) + 0.5) * VOX; ys = (lo[1] + (np.arange(shape[1]) + 0.5) * VOX).astype(np.float32)
     zs = lo[2] + (np.arange(shape[2]) + 0.5) * VOX
     X, Z = np.meshgrid(xs, zs, indexing='ij')
-    O = np.column_stack([X.ravel(), np.full(X.size, lo[1] - 5.0), Z.ravel()])
-    loc, ir, it = RE.intersects_location(O, np.tile([0, 1.0, 0], (len(O), 1)), multiple_hits=True)
-    inside = np.zeros(shape, bool)
-    order = np.lexsort((loc[:, 1], ir)); ir, yh = ir[order], loc[order, 1]
-    starts = np.flatnonzero(np.r_[True, ir[1:] != ir[:-1]]); ends = np.r_[starts[1:], len(ir)]
     jy = lambda y: np.clip(np.round((y - lo[1]) / VOX - 0.5).astype(int), 0, shape[1])
-    for s, e in zip(starts, ends):
-        if (e - s) % 2: continue
-        i, k = np.unravel_index(ir[s], X.shape)
-        for a, b in zip(yh[s:e:2], yh[s + 1:e:2]): inside[i, jy(a):jy(b), k] = True
+    inside = fill_inside(RE, xs, zs, lo[1] - 5.0, shape[1], jy)         # ray parity, robust to rays along edges (parity.py)
     near_in = ndi.binary_dilation(inside, iterations=3)
     sk = skin_at(xs)[:, None, None].astype(np.float32)
     D = distance_field(vis_pts, lo, hi, shape, near_in, lambda D: D < C_MIN + 1.5)       # below the faces that stay

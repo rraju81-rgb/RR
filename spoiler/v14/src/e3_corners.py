@@ -14,6 +14,7 @@ from scipy import ndimage as ndi
 from scipy.spatial import cKDTree
 from skimage.measure import marching_cubes
 from trimesh.ray.ray_pyembree import RayMeshIntersector
+from parity import fill_inside
 from bowtie import tomf, totm
 from check import report, selfx
 from layout import (OUT, E2_PATH, E3_PATH, CORNER_CURVE, CORNER_BOX, R_FILLET, CORNER_W, CORNER_WS, CORNER_SIG, CORNER_END,
@@ -36,20 +37,11 @@ def samples(m, spacing):
     return np.vstack(P), np.concatenate(F)
 
 def inside_box(R, lo, shape):
-    """inside test on the grid: ray parity along +y from far below the solid (so the box may cut the solid anywhere)"""
+    """inside test on the grid: ray parity along +y from far below the solid (so the box may cut the solid anywhere),
+    robust to rays along the mesh's edges (parity.py)"""
     xs = lo[0] + (np.arange(shape[0]) + 0.5) * H; zs = lo[2] + (np.arange(shape[2]) + 0.5) * H
-    X, Z = np.meshgrid(xs, zs, indexing='ij')
-    O = np.column_stack([X.ravel(), np.full(X.size, -400.0), Z.ravel()])
-    loc, ir, _ = R.intersects_location(O, np.tile([0, 1.0, 0], (len(O), 1)), multiple_hits=True)
-    inside = np.zeros(shape, bool)
-    order = np.lexsort((loc[:, 1], ir)); ir, ys = ir[order], loc[order, 1]
-    st = np.flatnonzero(np.r_[True, ir[1:] != ir[:-1]]); en = np.r_[st[1:], len(ir)]
     jy = lambda y: int(np.clip(np.ceil((y - lo[1]) / H - 0.5), 0, shape[1]))   # first voxel whose centre is at or above y
-    for s, e in zip(st, en):
-        if (e - s) % 2: continue
-        i, k = np.unravel_index(ir[s], X.shape)
-        for a, b in zip(ys[s:e:2], ys[s + 1:e:2]): inside[i, jy(a):jy(b), k] = True   # exactly the centres between a and b
-    return inside
+    return fill_inside(R, xs, zs, -400.0, shape[1], jy)                 # exactly the centres between each pair of hits
 
 def signed_distance(inside, lo, tree, pts, nrm, band):
     """signed distance (mm, negative inside). Within 0.6 mm of the surface: the distance to the plane of the nearest

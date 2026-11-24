@@ -14,7 +14,7 @@ from skimage.measure import marching_cubes
 from trimesh.ray.ray_pyembree import RayMeshIntersector
 from bowtie import tomf, totm
 from check import report, selfx
-from layout import OUT, E3_PATH, E_PATH, STEP_SIG, STEP_W, STEP_X
+from layout import OUT, E3_PATH, E_PATH, CAR_PATH, STEP_SIG, STEP_W, STEP_X
 from p1_core import weld, keep_main
 import e3_corners as e3
 
@@ -40,16 +40,15 @@ def step_line(E, st):
     return P
 
 def main():
-    E = trimesh.load(E3_PATH); st = np.load(f'{OUT}/rim_curve.npz') if os.path.exists(f'{OUT}/rim_curve.npz') else None
-    if st is None:
-        import rim; car = trimesh.load('v6/car/out/car_body_conf.ply', process=False); st = rim.rim_curve(E, car)
+    # the contact line from this step's own input, E3 (not p1_core's rim_curve.npz, which is measured on E4, the output)
+    import rim; E = trimesh.load(E3_PATH); st = rim.rim_curve(E, trimesh.load(CAR_PATH, process=False))
     P = step_line(E, st); log('step line: %d points, steepest %.0f-%.0f deg' % (len(P), P[:, 3].min(), P[:, 3].max()))
     m = STEP_W[1] + 4 * STEP_SIG
     lo = np.array([-STEP_X[1] - m, P[:, 1].min() - m, P[:, 2].min() - m]); hi = np.array([m, P[:, 1].max() + m, P[:, 2].max() + m])
     lo = np.floor(lo / H) * H; hi = np.ceil(hi / H) * H; shape = np.round((hi - lo) / H).astype(int)
     log('box', lo.round(1).tolist(), hi.round(1).tolist(), 'voxels %.1fM' % (np.prod(shape) / 1e6))
     e3.H = H                                                              # the corner tools, on this grid
-    cache = f'{OUT}/_e4_d_{os.path.getsize(E3_PATH)}_{H}_{lo[0]:.1f}_{lo[1]:.1f}_{lo[2]:.1f}.npy'
+    cache = f'{OUT}/_e4_d2_{os.path.getsize(E3_PATH)}_{H}_{lo[0]:.1f}_{lo[1]:.1f}_{lo[2]:.1f}.npy'
     if os.path.exists(cache): d = np.load(cache); log('distance from', cache)
     else:
         inside = e3.inside_box(RayMeshIntersector(E), lo, shape); log('inside')
