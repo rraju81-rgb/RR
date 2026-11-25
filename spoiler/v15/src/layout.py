@@ -116,6 +116,8 @@ RIM_L, NOSE_T, NOSE_L = 30.0, 2.6, 4.0
 LAYER_FADE_X = (530.0, 570.0)     # the front line and the back band fade out towards the spoiler's ends (the fins, open on
                                   # their pillar side)
 EDGE_R = 2.5
+EDGE_SET = 0.4                    # the round is set this far below the underside, so it meets the underside at ~33 degrees: a
+                                  # round that met it tangentially left a ragged cut line (a tangent crossing is ill-defined)
 # Joint lands: within LAND[0] mm of a joint face (front/rear cut, span seam) the skin is LAND_T thick, for the pins
 # (MIN_SKIN_PIN) and tongues (MIN_SKIN_TONGUE); it tapers smoothly back to T_SKIN by LAND[1] mm. The span seams' lands
 # stop LAND_REAR mm in front of the rim line, so with the back band the part stays under 10 mm there.

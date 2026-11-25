@@ -104,17 +104,24 @@ V14 = 'v14/out/assembled'
 if os.path.exists(f'{V14}/v14_3_CENTRE_REAR.stl'):
     old = {k: trimesh.load(f'{V14}/v14_{k}.stl') for k in ('1_LEFT_REAR', '2_LEFT_FRONT', '3_CENTRE_REAR', '4_CENTRE_FRONT')}
     new = {k: parts[p] for k, p in (('1_LEFT_REAR', 'P1'), ('2_LEFT_FRONT', 'P2'), ('3_CENTRE_REAR', 'P3'), ('4_CENTRE_FRONT', 'P4'))}
-    fig, axs = plt.subplots(3, 1, figsize=(15, 11.5))
     n_c, d_c = chord_plane('C')
-    cuts = [('span seam x = -216.7 mm: the cut face of part 1 (left rear)', '1_LEFT_REAR', [-XS + 0.05, 0, 0], [1, 0, 0], (2, 1), 'z (mm, to the rear)'),
-            ('span seam x = -216.7 mm: the cut face of part 2 (left front, with the fin)', '2_LEFT_FRONT', [-XS + 0.05, 0, 0], [1, 0, 0], (2, 1), 'z (mm, to the rear)'),
-            ('front/rear cut z = %.0f mm: the cut face of part 3 (centre rear)' % d_c, '3_CENTRE_REAR', [0, 0, d_c + 0.05], [0, 0, 1], (0, 1), 'x (mm, across)')]
-    for ax, (title, k, o, nrm, axes, xl) in zip(axs, cuts):
-        s_old = outline(ax, old[k], o, nrm, axes, fc='#c9ced6', ec='#7d8694', lw=1.0, label='v14: skin + cavity + closed underside')
-        s_new = outline(ax, new[k], o, nrm, axes, fc='#e8964699', ec='#a5521a', lw=1.2, label='v15: the 4 mm shell')
-        ar_o = s_old.to_planar()[0].area if s_old else 0; ar_n = s_new.to_planar()[0].area if s_new else 0
-        ax.autoscale(); ax.set_aspect('equal'); ax.grid(alpha=0.25); ax.legend(loc='upper left', fontsize=8)
-        ax.set_xlabel(xl, fontsize=8); ax.set_title('%s - cut face area %.0f cm2 in v14, %.0f cm2 in v15' % (title, ar_o / 100, ar_n / 100), fontsize=10)
+    cuts = [('span seam x = -216.7 mm, part 1 (left rear)', '1_LEFT_REAR', [-XS - 0.05, 0, 0], [1, 0, 0], (2, 1)),
+            ('span seam x = -216.7 mm, part 2 (left front)', '2_LEFT_FRONT', [-XS - 0.05, 0, 0], [1, 0, 0], (2, 1)),
+            ('front/rear cut z = %.0f mm, part 3 (centre rear)' % d_c, '3_CENTRE_REAR', [0, 0, d_c + 0.05], [0, 0, 1], (0, 1))]
+    fig, axs = plt.subplots(3, 2, figsize=(16, 10.5), gridspec_kw=dict(width_ratios=[1, 1]))
+    for row, (title, k, o, nrm, axes) in zip(axs, cuts):
+        lims = []
+        for ax, (tag, src, kw) in zip(row, (('v14: skin, cavity and closed underside', old, dict(fc='#c9ced6', ec='#5d6674', lw=1.0)),
+                                            ('v15: the %.0f mm shell (joint land %.1f mm at the cut)' % (T_SKIN, LAND_T), new, dict(fc='#e8964699', ec='#a5521a', lw=1.2)))):
+            s_ = src[k].section(plane_origin=o, plane_normal=nrm)
+            polys = [d[:, list(axes)] for d in s_.discrete] if s_ is not None else []
+            for d in polys: ax.add_patch(MPoly(d, closed=True, **kw))
+            area = s_.to_planar()[0].area / 100 if s_ is not None else 0.0
+            ax.set_title('%s\n%s: cut face %.0f cm2' % (title, tag, area), fontsize=9)
+            if polys: P_ = np.vstack(polys); lims.append((P_.min(0), P_.max(0)))
+            ax.set_aspect('equal'); ax.grid(alpha=0.25)
+        lo_ = np.min([l[0] for l in lims], axis=0) - 3; hi_ = np.max([l[1] for l in lims], axis=0) + 3
+        for ax in row: ax.set_xlim(lo_[0], hi_[0]); ax.set_ylim(lo_[1], hi_[1]); ax.set_xlabel('x (mm, across)' if k.startswith('3') else 'z (mm, to the rear)', fontsize=8)
     plt.tight_layout(); plt.savefig(f'{DOC}/v15_cut_v14_v15.png', dpi=100); plt.close()
     cams = [dict(eye=(-290, -95, 150), target=(-205, 14, 205), up=(0, 1, 0), fov=30),
             dict(eye=(-300, -75, 120), target=(-330, 8, 196), up=(0, 1, 0), fov=34),

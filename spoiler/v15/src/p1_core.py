@@ -22,7 +22,7 @@ from parity import fill_inside
 from bowtie import tomf, totm
 from check import report
 from layout import (E_PATH, CAR_PATH, OUT, HALF, SECTIONS, T_SKIN, S_FIN, FIN_X, VOX, MARGIN, UNDER_GAP, CUT_GAP, RIM_X,
-                    TIP_T, OPEN_H, K_WALL, LAYER, RIM_L, NOSE_T, NOSE_L, LAYER_FADE_X, EDGE_R, LAND_T, LAND, LAND_REAR, SHELL_SIG, chord_plane)
+                    TIP_T, OPEN_H, K_WALL, LAYER, RIM_L, NOSE_T, NOSE_L, LAYER_FADE_X, EDGE_R, EDGE_SET, LAND_T, LAND, LAND_REAR, SHELL_SIG, chord_plane)
 import rim
 
 def car_distance(E, car, direction=None):
@@ -223,7 +223,8 @@ def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
     V = ndi.gaussian_filter(D, SHELL_SIG / VOX); del D                   # smooth: rounded inside corners, no voxel steps
     # round the edges of the opening (the convex edge where the removal meets the underside): rounded intersection of the
     # body (S <= 0) and the kept region (V <= 0), radius EDGE_R; G > 0 is what comes off (clipped to near the removal)
-    M = np.maximum(S, V)
+    S -= EDGE_SET                                                       # the round's underside, EDGE_SET below the real one: it
+    M = np.maximum(S, V)                                                # crosses the underside at ~33 degrees, a clean cut line
     G = S + EDGE_R; np.maximum(G, 0.0, out=G); G *= G
     T2 = V + EDGE_R; np.maximum(T2, 0.0, out=T2); T2 *= T2; G += T2; del T2
     np.sqrt(G, out=G); G -= EDGE_R
