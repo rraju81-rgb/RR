@@ -18,8 +18,8 @@ from PIL import Image, ImageDraw, ImageFont
 from trimesh.ray.ray_pyembree import RayMeshIntersector
 from zr import render, grid, label, look_at
 from bowtie import tomf, totm
-from layout import (E_PATH, CAR_PATH, OUT, ASM, PRN, DOC, IDS, STEM, LABEL, SEC, HALF_OF, XS, T_SKIN, LAND_T, LAYER, OPEN_H,
-                    EDGE_R, TONGUE_BASE, TONGUE_H, CLEAR, GROOVE_EXTRA, CHAMFER_DEG, HOLE_D, HOLE_DEPTH, PIN_D, PIN_L, chord_plane)
+from layout import (E_PATH, CAR_PATH, OUT, ASM, PRN, DOC, IDS, STEM, LABEL, SEC, HALF_OF, XS, T_SKIN, LAND_T, BACK_W, OPEN_H,
+                    TONGUE_BASE, TONGUE_H, CLEAR, GROOVE_EXTRA, CHAMFER_DEG, HOLE_D, HOLE_DEPTH, PIN_D, PIN_L, chord_plane)
 os.makedirs(DOC, exist_ok=True)
 parts = {pid: trimesh.load(f'{ASM}/{STEM[pid]}.stl') for pid in IDS}
 J = json.load(open(f'{OUT}/joints.json')); V = json.load(open(f'{OUT}/validation.json'))
@@ -83,11 +83,11 @@ for ax, (x, pp) in zip(axs, [(-100.0, ('P3', 'P4')), (-440.0, ('P1', 'P2'))]):
         ax.annotate('open underneath: nothing\nbut the 4 mm skin here', (zm + 4, h[-2] - 2.5), (zm + 26, y0 - 9), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
     zf = z0 + 0.12 * (z1 - z0)
     ax.annotate('solid where thinner than %.0f mm\n(the tape band at the front)' % OPEN_H, (zf, y1 - 0.25 * (y1 - y0)), (zf + 8, y1 + 12), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
-    ax.annotate('back band: %.0f mm layer on the car\n(adhesive), the hollow above it' % LAYER, (z1 - 0.27 * (z1 - z0), y0 + 0.30 * (y1 - y0)), (z1 - 0.18 * (z1 - z0), y0 - 11), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
+    ax.annotate('back band: the spoiler\'s own underside on the car\n(adhesive), a hidden channel inside', (z1 - 0.27 * (z1 - z0), y0 + 0.30 * (y1 - y0)), (z1 - 0.18 * (z1 - z0), y0 - 11), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
     ax.set_xlim(z0 - 4, z1 + 6); ax.set_ylim(y0 - 16, y1 + 18); ax.set_aspect('equal'); ax.grid(alpha=0.25)
     ax.legend(loc='upper right', fontsize=8, framealpha=0.9)
-    ax.set_title('section at x = %.0f mm (%s), z to the rear: the opening starts with a %d-degree wall, every edge rounded %.1f mm, '
-                 'joint land %.1f mm at the front/rear cut' % (x, 'centre' if x > -216 else 'outer zone', 30, EDGE_R, LAND_T), fontsize=10)
+    ax.set_title('section at x = %.0f mm (%s), z to the rear: one opening, a %d-degree ramp at each end, '
+                 'joint land %.1f mm at the front/rear cut' % (x, 'centre' if x > -216 else 'outer zone', 30, LAND_T), fontsize=10)
 plt.tight_layout(); plt.savefig(f'{DOC}/_shell_sec.png', dpi=105); plt.close()
 sec = Image.open(f'{DOC}/_shell_sec.png'); os.remove(f'{DOC}/_shell_sec.png')
 r1 = render([(FULL['P3'], c)], eye=(-120, -150, 330), target=(-100, 15, 190), up=(0, 1, 0), fov=40, W=900, H=560, spec=0.3)

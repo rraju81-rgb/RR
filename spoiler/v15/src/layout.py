@@ -99,31 +99,25 @@ JOINT_BAND, JOINT_SKIN, JOINT_CAV = 12.0, 9.5, 1.0   # v14: within JOINT_BAND of
                                   # JOINT_SKIN thick over a cavity of at least JOINT_CAV (room for the pin walls)
 C_MIN = 10.0                      # the channel only where the back edge is deeper than this (so it is >= 1.5 mm wide)
 
-# v15 shell. The opening underneath never starts with a step or a line:
-#   where the part is thinner than OPEN_H it stays solid (at the front, where the VHB tape goes, that is 49-85 mm); the
-#   opening starts on the line where it gets that thick, with a 30-degree front wall (K_WALL = 1/tan) up to the 4 mm
-#   ceiling;
-#   back band (adhesive): a closed layer over the underside, LAYER thick at the rim line (where the underside leaves the
-#   car at the back), thinning to NOSE_T at RIM_L mm in front of it and ending there in a rounded nose (a layer that
-#   thinned out to nothing would break up); the hollow carries on above it, under the back edge
-#   (which is up to 16 mm deep, so it could not be solid); behind the rim line the spoiler's own underside (under the
-#   lip) is a visible surface with the 4 mm skin over it;
-#   every edge of the opening is rounded, radius EDGE_R.
+# v15 shell, seen from below: the spoiler's own smooth underside everywhere, with ONE opening in the middle, nothing else.
+#   front: where the part is thinner than OPEN_H it stays solid (the front band, where the VHB tape goes, 49-85 mm);
+#   back:  a band BACK_W mm deep in front of the rim line (where the underside leaves the car at the back) stays closed:
+#          the spoiler's own underside, which takes the adhesive bead;
+#   the opening starts on those two lines with a 30-degree ramp (K_WALL = 1/tan) up to the 4 mm ceiling, front and
+#   back alike: each meets the underside along one clean, crisp line (150 degrees). No rounding there: a round peels a
+#   feather-thin sliver off the underside beside the edge, which broke up into a saw-tooth.
+#   The back edge is up to 16 mm deep, so inside the back band a hidden channel keeps every wall T_CH thick; it runs
+#   along the span and opens only on the span seam faces (one closed shell per part, sealed once the parts are glued).
 OPEN_H = 7.0
+BACK_W = 25.0
 K_WALL = 1.73
-LAYER = 4.0
-RIM_L, NOSE_T, NOSE_L = 30.0, 2.6, 4.0
-LAYER_FADE_X = (530.0, 570.0)     # the front line and the back band fade out towards the spoiler's ends (the fins, open on
-                                  # their pillar side)
-EDGE_R = 2.5
-EDGE_SET = 0.4                    # the round is set this far below the underside, so it meets the underside at ~33 degrees: a
-                                  # round that met it tangentially left a ragged cut line (a tangent crossing is ill-defined)
+T_CH = 4.0
+WALL_FADE_X = (530.0, 570.0)      # both ramps fade out towards the spoiler's ends (the fins, open on their pillar side)
 # Joint lands: within LAND[0] mm of a joint face (front/rear cut, span seam) the skin is LAND_T thick, for the pins
-# (MIN_SKIN_PIN) and tongues (MIN_SKIN_TONGUE); it tapers smoothly back to T_SKIN by LAND[1] mm. The span seams' lands
-# stop LAND_REAR mm in front of the rim line, so with the back band the part stays under 10 mm there.
+# (MIN_SKIN_PIN) and tongues (MIN_SKIN_TONGUE); it tapers smoothly back to T_SKIN by LAND[1] mm (a gentle swell, not a
+# step). The span seams' lands end at the back band.
 LAND_T = 8.6
-LAND = (11.0, 26.0)
-LAND_REAR = 20.0
+LAND = (11.0, 36.0)
 SHELL_SIG = 1.0                   # Gaussian smoothing (mm) of the removal field: no voxel steps, every inside corner rounded
 
 # Joints. The print set is the six parts and one pin model (printed as many times as needed), nothing else.
