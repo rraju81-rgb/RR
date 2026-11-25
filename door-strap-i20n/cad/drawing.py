@@ -165,20 +165,23 @@ def housing_sheet():
     # --- title block
     k = ds.TRACE["px_per_mm"]
     ax.text(118, -78,
-            "DOOR STRAP MODULE v2 - Hyundai i20 N (BC3) front doors\n"
+            "DOOR STRAP MODULE v3 - Hyundai i20 N (BC3) front doors\n"
             "Housing, LH shown (RH = mirror). Units mm. Third-angle projection\n"
-            f"Face, housing, clips, screw and pivot traced from OEM photos at "
-            f"{k:.2f} px/mm\n"
+            "Face: your outlines on the in-car photos, perspective-rectified\n"
+            f"Housing, clips, screw, pivot: OEM photos at {k:.2f} px/mm\n"
             f"(OEM overall {ds.TRACE['overall_mm']:.0f} mm, clip-to-clip "
             f"{ds.TRACE['clip_height_mm']:.0f} mm). Measure yours and re-run\n"
-            "oem_trace.py --overall MM to rescale everything.",
+            "oem_trace.py --overall MM (--face-length MM) to rescale.",
             fontsize=7.2, color=INK, va="top", ha="left",
             bbox=dict(boxstyle="square,pad=0.6", fc="white", ec=INK, lw=0.6))
     ax.text(-60, TOPY + 72, "TOP", fontsize=9, color=INK, weight="bold")
     ax.text(-60, 70, "FRONT (cabin side)", fontsize=9, color=INK,
             weight="bold")
     ax.text(SIDEX - 6, 70, "FRONT END", fontsize=9, color=INK, weight="bold")
-    ax.text(-128, 124, "grooves: 6 x R5.5, depth 1.2, pitch 11.5\n"
+    gz = ds.GROOVE_Z
+    pitch = (gz[-1] - gz[0]) / max(len(gz) - 1, 1)
+    ax.text(-128, 124, f"grooves: {len(gz)} x R{ds.GROOVE_R:.1f}, depth "
+            f"{ds.GROOVE_R - ds.GROOVE_E:.1f}, pitch {pitch:.1f} (measured)\n"
             "face crown: R160 vertical / R1500 horizontal",
             fontsize=6.5, color=INK, va="top")
     ax.set_xlim(-135, 240)

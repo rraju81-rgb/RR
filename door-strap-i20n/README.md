@@ -1,4 +1,4 @@
-# Door strap module for the Hyundai i20 N (BC3, 2021+), front doors - v2
+# Door strap module for the Hyundai i20 N (BC3, 2021+), front doors - v3
 
 An open, parametric design for a motorsport-style **webbing pull strap that replaces the
 interior door-release handle**. It reuses the car's original release cable, latch,
@@ -7,10 +7,24 @@ Hyundai i20N" (PF-PL-AU-0028), redesigned from scratch as editable CAD.
 
 ![hero](renders/hero.jpg)
 
-**v2 is traced from photos of the OEM inner handle** ([`ref/`](ref)). The red outlines on
-those photos become the visible face and the housing outline. The four snap clips, the
-door-card screw (under the square cap) and the lever pivot are placed where the OEM part
-has them. See [`renders/oem_trace_overlay.png`](renders/oem_trace_overlay.png) and
+**v3 takes the face outline from your two in-car photos of a fitted strap plate** and the
+mounting interface from photos of the OEM inner handle ([`ref/`](ref)):
+
+- **Face:** the red outlines on the in-car photos. The plate's ribs are straight and
+  parallel, so their vanishing point in each photo gives the perspective. Both outlines are
+  projected flat; the two views agree to 1.8 mm rms. Their average is placed on the OEM
+  handle, its lower edge 2 mm inside the OEM rim.
+- **Grooves:** five grooves at a 10.0 mm pitch, taken from the rib spacing measured on the
+  flattened photos.
+- **Housing:** the red loop on the photo of the back of the OEM handle (unchanged from v2).
+- **Clips, door-card screw and pivot:** the OEM front photo plus the AE Spares photo. That
+  photo shows the same handle upside down; flipped, it lines up with the front photo within
+  ~2 mm at five points, so the two are averaged.
+
+![trace](renders/oem_trace_overlay.png)
+
+Top: the v3 face (green) projected back into your photos lands on your red outlines. Bottom:
+both flattened outlines, then the result on the two OEM photos. Code:
 [`cad/oem_trace.py`](cad/oem_trace.py).
 
 > **Status: design study, not fit-tested on a car.**
@@ -19,9 +33,13 @@ has them. See [`renders/oem_trace_overlay.png`](renders/oem_trace_overlay.png) a
 >    clip tip to clip tip. Four standard parts agree at that scale: clip heads ~7 mm, pivot
 >    pin ~3 mm, screw cap ~17 mm, spring ~9–10 mm. **Measure your handle and run
 >    `python cad/oem_trace.py --overall <mm>`** (or `--height <mm>`). Everything traced rescales.
-> 2. Hidden details: clip depth, screw-seat depth and the cable end-fitting can't be seen in
+> 2. **Face proportions** depend on the phone's focal length, which the in-car photos don't
+>    record. 1350 px (about a 32 mm-equivalent lens) is used because it gives the best match
+>    to the visible face on the OEM handle; 1100–1400 px changes the face by under 4 %. If you
+>    can measure the opening in your door card, run `oem_trace.py --face-length <mm>`.
+> 3. Hidden details: clip depth, screw-seat depth and the cable end-fitting can't be seen in
 >    the photos. Check them against the OEM part (see [Critical measurements](#8-critical-measurements)).
-> 3. Print the 15-minute **fit gauge** before the real parts.
+> 4. Print the 15-minute **fit gauge** before the real parts.
 
 ---
 
@@ -56,7 +74,8 @@ has them. See [`renders/oem_trace_overlay.png`](renders/oem_trace_overlay.png) a
   The BC3 i20 front handles are **82610-Q0xxx (LH) / 82620-Q0xxx (RH)**, for example
   [82620Q0000](https://ecooparts.com/en/used-auto-part/hyundai/i20-iii/42928196_-82620q0000-hyundai-i20-iii-bc3-bi3-10-t-gdi.html).
   The photos match the BC3 handle's interface: the clips, pin and blocks line up with the
-  Scuderia21 part once mirrored.
+  Scuderia21 part once mirrored. The AE Spares listing photo is the same handle as the
+  front photo (five features agree within ~2 mm after flipping it).
 - No dimensioned drawing of this handle is public. Parts sites show only exploded catalogue
   diagrams, which is why the photo trace plus one calibration measurement is used.
 
@@ -66,8 +85,8 @@ has them. See [`renders/oem_trace_overlay.png`](renders/oem_trace_overlay.png) a
 
 ![mechanism](renders/mechanism.jpg)
 
-1. The **housing** sits in the door-card aperture where the OEM handle sat. It has the traced
-   face and the traced housing outline, and snaps in with OEM-position clips. The door-card
+1. The **housing** sits in the door-card aperture where the OEM handle sat. Its face follows
+   your in-car outline, its body the traced OEM housing, and it snaps in with OEM-position clips. The door-card
    screw passes through its **screw boss**, so the screw clamps the module, the card and the
    door together, exactly like the OEM cup does.
 2. A sewn **20 mm webbing loop** passes through a 21.4 × 6 mm slot and wraps a Ø4 stainless
@@ -85,9 +104,11 @@ has them. See [`renders/oem_trace_overlay.png`](renders/oem_trace_overlay.png) a
 | Lever angle (°) | 0 | 10 | 20 | 30 | 40 |
 | Cable pulled (mm) | 0 | 2.9 | 5.8 | 8.8 | 11.6 |
 
-**Checked in CAD (v2):** the lever was swept from rest to full pull in 2.5° steps. It has zero
+**Checked in CAD (v3):** the lever was swept from rest to full pull in 2.5° steps. It has zero
 intersecting volume with the housing, slider, cable and both pins. The badge, magnets,
 door-card screw, washers and slider also have zero overlap. All 8 print STLs are watertight.
+The v3 face sits higher at the pivot end, so the lever hub was shortened to ±20.5 mm to keep
+a solid lower pivot boss.
 
 ---
 
@@ -96,14 +117,14 @@ door-card screw, washers and slider also have zero overlap. All 8 print STLs are
 | | |
 |---|---|
 | Fits | i20 N (BC3) 2021+, front doors, LH and RH (mirror). OEM photos are LH |
-| Visible face | 165.6 × 67.5 mm (your red loop, smoothed). Crown R160 vertical / R1500 horizontal |
-| Housing outline | 171.9 × 73.1 mm. Depth 40 mm behind the face |
-| Clips | 4 OEM-position T-head clips: clip tip to clip tip 177.6 mm (front/rear) and 91.3 mm (top/bottom) |
-| Overall incl. clips | 180.6 × 91.3 × 40 mm |
+| Visible face | 164.0 × 67.0 mm (in-car outline, flattened). Crown R160 vertical / R1500 horizontal. 5 grooves, pitch 10.0 mm |
+| Housing outline | 170.8 × 72.1 mm. Depth 40 mm behind the face |
+| Clips | 4 OEM-position T-head clips: clip tip to clip tip 177.6 mm (front/rear) and 91.4 mm (top/bottom) |
+| Overall incl. clips | 179.1 × 91.4 × 40 mm |
 | Door-card screw | Ø6 through, Ø12.5 counterbore, head seat 34 mm deep. Covered by a 32 × 22 mm magnetic badge |
 | Strap | 20 mm polyester webbing, cut 255 mm. Loop sticks out ~61 mm at rest, ~81 mm at full pull |
 | Travel | Lever 40°, cable 11.6 mm, strap 20.5 mm. Cable free length 22.0 mm nominal (18.9–25.1) |
-| Mass per door | Housing 96 g (resin), lever 12 g, slider 4 g, badge 3 g |
+| Mass per door | Housing 96 g (resin), lever 11 g, slider 4 g, badge 3 g |
 
 Drawings: [`renders/drawing_housing.pdf`](renders/drawing_housing.pdf), [`renders/drawing_lever.png`](renders/drawing_lever.png).
 
@@ -167,6 +188,7 @@ because a parked car gets hot.
 | # | Measure on the OEM handle | Where it goes |
 |---|---|---|
 | 1 | **Overall length** (rear end of the frame to the front clip tip) or clip-to-clip height | `oem_trace.py --overall` / `--height` (rescales everything traced) |
+| 1b | Length of the handle opening in the door card | `oem_trace.py --face-length` (face only) |
 | 2 | Clip depth from the face and clip shape | `CLIP_Y`, `CLIP_T`, `CLIP_HEAD_L` |
 | 3 | Depth of the screw-head seat in the cup, screw Ø | `SCREW_SEAT_Y`, `SCREW_HOLE_D` |
 | 4 | Cable end-fitting length and width, sheath Ø, inner Ø, nipple | `FITTING`, `SHEATH_D`, `CABLE_D`, `NIPPLE_D/L` |
@@ -189,8 +211,10 @@ registered designs and leave out Hyundai, N and Scuderia21 branding.
 ## 11. Files
 
 ```
-ref/                  your OEM handle photos (front and back, LH) with the red outlines
-cad/oem_trace.py      photo trace -> cad/oem_trace.json (outlines, clips, screw, pivot; mm)
+ref/                  your photos with the red outlines: OEM handle front/back (LH),
+                      in-car front close-up + rear oblique, AE Spares OEM photo
+cad/oem_trace.py      photo trace -> cad/oem_trace.json (face, housing, grooves, clips,
+                      screw, pivot; mm) + renders/oem_trace_overlay.png
 cad/door_strap.py     parametric model (CadQuery) - reads oem_trace.json
 cad/export.py         builds everything -> step/, stl/, web/, build_report.json
 cad/drawing.py        HLR drawings + kinematics chart -> renders/
@@ -203,7 +227,7 @@ Rebuild after measuring:
 
 ```bash
 pip install cadquery trimesh manifold3d matplotlib scikit-image shapely
-python cad/oem_trace.py --overall 185
+python cad/oem_trace.py --overall 185          # add --face-length <mm> if measured
 python cad/export.py
 python cad/drawing.py renders
 ```
@@ -216,3 +240,4 @@ python cad/drawing.py renders
 - Hyundai BC3 owner's manual, door locks (p.150): <https://www.manualslib.com/manual/2053931/Hyundai-Bc3.html>
 - mechdeals, "Handle Assy-Door Inside, RH, INT;RBL" = 82620C7000RDR: <https://mechdeals.com/product-detail/hyundai-i20-handle-assy-door-inside-rh-int-rbl-19587>
 - ecooparts, i20 III (BC3) interior front-right handle 82620Q0000: <https://ecooparts.com/en/used-auto-part/hyundai/i20-iii/42928196_-82620q0000-hyundai-i20-iii-bc3-bi3-10-t-gdi.html>
+- AE Spares listing photo of the inner handle (your image, `ref/oem_handle_aespares.webp`)

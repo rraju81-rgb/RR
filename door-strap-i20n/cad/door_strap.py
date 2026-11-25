@@ -1,5 +1,5 @@
 """
-Door-strap module for the Hyundai i20 N (BC3, 2021-) front doors  -  v2
+Door-strap module for the Hyundai i20 N (BC3, 2021-) front doors  -  v3
 ======================================================================
 
 Parametric CadQuery model of a drop-in replacement for the OEM inner
@@ -7,9 +7,13 @@ door-release handle.  A webbing strap drives a bell-crank lever that pulls
 the ORIGINAL release cable, so the stock latch, central locking and
 "one pull unlocks + opens" behaviour are kept.
 
-v2 geometry is traced from photos of the OEM handle (cad/oem_trace.py ->
-cad/oem_trace.json): visible-face outline, housing outline, the four snap
-clips, the door-card screw (under the square cap) and the lever pivot.
+Geometry comes from cad/oem_trace.py -> cad/oem_trace.json:
+  * face outline (v3): the red outlines on the two in-car photos of the
+    fitted strap plate, perspective-rectified from the rib lines and placed
+    on the OEM handle; groove heights from the measured rib pitch
+  * housing outline: red loop on the photo of the back of the OEM handle
+  * snap clips, door-card screw (under the square cap), lever pivot: the
+    OEM photos (front photo + AE Spares photo, averaged)
 
 Native frame = RH unit seen from the cabin (the LH unit is its mirror):
     X  along the module, +X = REAR of the car (mechanism/pivot end = -X)
@@ -17,9 +21,10 @@ Native frame = RH unit seen from the cabin (the LH unit is its mirror):
     Z  up
 Units: millimetres.
 
-!!  The photo scale (oem_trace.py, default 7.0 px/mm -> 185 mm overall) and
-!!  the cable details are estimates.  Measure your OEM handle, re-run
-!!  oem_trace.py with --overall/--height, and check the cable values below.
+!!  The photo scale (oem_trace.py, default 7.0 px/mm -> 185 mm overall), the
+!!  in-car camera focal length and the cable details are estimates.  Measure
+!!  your OEM handle / door-card opening, re-run oem_trace.py with
+!!  --overall/--height (and --face-length), and check the cable values below.
 """
 
 from __future__ import annotations
@@ -50,8 +55,10 @@ WALL_T = 2.4               # wall thickness
 DEPTH = 40.0               # face apex -> open back
 FLANGE_Y0 = 6.5            # face plate meets the housing; 2 mm deck behind
 
-# decorative grooves (continue the door-trim "parametric" lines)
-GROOVE_Z = (-28.75, -17.25, -5.75, 5.75, 17.25, 28.75)
+# decorative grooves (continue the door-trim "parametric" lines); heights
+# from the rib pitch measured on the rectified in-car photos
+GROOVE_Z = tuple(TRACE.get("grooves", {}).get(
+    "z", (-28.75, -17.25, -5.75, 5.75, 17.25, 28.75)))
 GROOVE_R = 5.5             # groove tool radius (soft, wide "wave" grooves)
 GROOVE_E = 4.3             # tool centre outside surface -> depth = 1.2
 GROOVE_INSET = 6.5         # groove ends this far inside the face outline
@@ -82,7 +89,8 @@ PIN_D = 4.0                # stainless pins (pivot + strap)
 PIN_HOLE_PRESS = 4.0       # housing / cheek holes (press or ream to suit)
 PIN_HOLE_RUN = 4.2         # lever hub bore (running fit)
 HUB_D = 10.0
-HUB_HALF = 26.0            # hub spans Z = +-26
+HUB_HALF = 20.5            # hub spans Z = +-20.5 (v3 face is lower-edged
+                           # near the pivot: leaves room for the lower boss)
 WASHER = (4.3, 9.0, 0.8)   # ISO 7089 M4: id, od, thickness
 BOSS_GAP = 0.4
 LEVER_ROT = 40.0           # lever rotation rest -> full pull (deg)
@@ -90,8 +98,8 @@ STRAP_ARM = 30.0           # pivot -> strap pin
 STRAP_ARM_MID = 11.4       # strap-arm angle at mid travel (deg, lever frame)
 HOOK_R = 17.0              # pivot -> nipple bearing face (sets cable travel)
 HOOK_HALF_T = 6.0
-FINGER = (4.5, 10.5, 30.0, (-25.5, -20.0))   # stop finger r0, r1, width, z
-STOP_SECTOR = (5.6, 12.5, (-40.0, -19.5))    # housing stop ring r0, r1, z
+FINGER = (4.5, 10.5, 30.0, (-20.5, -16.0))   # stop finger r0, r1, width, z
+STOP_SECTOR = (5.6, 12.5, (-40.0, -15.8))    # housing stop ring r0, r1, z
 
 # webbing
 STRAP_W = 20.0             # 20 mm (3/4") webbing suits the 68 mm face

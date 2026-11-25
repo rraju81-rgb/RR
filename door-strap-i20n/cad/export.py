@@ -63,6 +63,11 @@ def to_bed(shape, rx=0.0):
                         -bb.zmin))
 
 
+def mesh_volume(shape, tol=0.02, ang=0.1):
+    v, t = shape.val().tessellate(tol, ang)
+    return float(trimesh.Trimesh([(p.x, p.y, p.z) for p in v], t).volume)
+
+
 def strap_tri(pose, mirror=False, z_range=None):
     V, F, UV = strap.strap_mesh(pose, z_range=z_range, mirror=mirror)
     tris = np.vstack([F[:, [0, 1, 2]], F[:, [0, 2, 3]]])
@@ -153,9 +158,11 @@ def main():
     print("STEP/STL done", round(time.time() - t0, 1), "s")
 
     # ---------------- masses ----------------------------------------------
+    # volumes from a fine tessellation: OCC's volume integral is unreliable on
+    # the extruded spline walls (it varies with tolerance), the mesh is not
     rho = {"housing": 1.15, "lever": 1.30, "slider": 1.30, "badge": 1.15}
-    vols = {"housing": housing.val().Volume(), "lever": lever0.val().Volume(),
-            "slider": slider.val().Volume(), "badge": badge.val().Volume()}
+    vols = {"housing": mesh_volume(housing), "lever": mesh_volume(lever0),
+            "slider": mesh_volume(slider), "badge": mesh_volume(badge)}
     report["volumes_cm3"] = {k: v / 1000 for k, v in vols.items()}
     report["mass_g"] = {k: vols[k] / 1000 * rho[k] for k in vols}
     bb = housing.val().BoundingBox()

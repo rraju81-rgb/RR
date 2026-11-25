@@ -106,21 +106,21 @@
  "cable_travel_mm": 11.628684873072736,
  "slider_travel_mm": 6.200000000000003,
  "volumes_cm3": {
-  "housing": 83.6914474931976,
-  "lever": 9.343395913047358,
-  "slider": 2.830834870908681,
-  "badge": 2.5398325333838296
+  "housing": 83.38385447682789,
+  "lever": 8.608591632267022,
+  "slider": 2.8310123673892655,
+  "badge": 2.537495587744007
  },
  "mass_g": {
-  "housing": 96.24516461717724,
-  "lever": 12.146414686961565,
-  "slider": 3.6800853321812856,
-  "badge": 2.9208074133914037
+  "housing": 95.89143264835207,
+  "lever": 11.191169121947128,
+  "slider": 3.6803160776060455,
+  "badge": 2.918119925905608
  },
  "housing_bbox": [
-  180.59163653984263,
-  39.999883378911534,
-  91.286
+  179.49511115230214,
+  40.65782144057023,
+  91.4330002005635
  ],
  "stl_checks": {
   "badge_insert_x2.stl": {
@@ -143,56 +143,56 @@
   },
   "fit_gauge_LH.stl": {
    "watertight": true,
-   "volume_cm3": 26.73,
+   "volume_cm3": 26.21,
    "extents": [
-    180.6,
-    91.3,
-    13.1
+    179.1,
+    91.4,
+    13.0
    ]
   },
   "fit_gauge_RH.stl": {
    "watertight": true,
-   "volume_cm3": 26.73,
+   "volume_cm3": 26.21,
    "extents": [
-    180.6,
-    91.3,
-    13.1
+    179.1,
+    91.4,
+    13.0
    ]
   },
   "housing_LH.stl": {
    "watertight": true,
-   "volume_cm3": 84.04,
+   "volume_cm3": 83.38,
    "extents": [
-    180.6,
-    91.3,
+    179.1,
+    91.4,
     40.0
    ]
   },
   "housing_RH.stl": {
    "watertight": true,
-   "volume_cm3": 84.04,
+   "volume_cm3": 83.38,
    "extents": [
-    180.6,
-    91.3,
+    179.1,
+    91.4,
     40.0
    ]
   },
   "lever_LH.stl": {
    "watertight": true,
-   "volume_cm3": 9.34,
+   "volume_cm3": 8.61,
    "extents": [
     44.4,
     28.5,
-    52.0
+    41.0
    ]
   },
   "lever_RH.stl": {
    "watertight": true,
-   "volume_cm3": 9.34,
+   "volume_cm3": 8.61,
    "extents": [
     44.4,
     28.5,
-    52.0
+    41.0
    ]
   }
  }
