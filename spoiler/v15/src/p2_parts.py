@@ -15,7 +15,7 @@ from shapely.geometry import Polygon
 from matplotlib.path import Path as MPath
 from bowtie import tomf, totm
 from check import report
-from p1_core import weld, keep_main, clean_written, decimate_clean, written_folds
+from p1_core import weld, keep_main, clean_written, decimate_clean, written_folds, unfold
 from layout import (OUT, ASM, XS, SECTIONS, chord_plane, part_id, IDS, STEM, SEC, HALF_OF, CHAMFER_DEG, TONGUE_BASE, TONGUE_H,
                     CLEAR, GROOVE_EXTRA, END_DEG, MIN_SKIN_TONGUE, PIN_D, HOLE_D, HOLE_DEPTH, PIN_L, HOLE_CHAMFER, MIN_SKIN_PIN,
                     PIN_GAP, CORNER_KEEP, C0, CUT_PIN_PITCH)
@@ -264,6 +264,7 @@ if __name__ == '__main__':
         except AssertionError: base = keep_main(totm(M))
         out, perc = decimate_clean(base, pid)
         nsx = written_folds(out, pid)
+        if nsx: out, _ = unfold(out, pid); nsx = written_folds(out, pid)   # v15: relax the few folds the booleans left
         print('   %s: %d faces -> %d (%.0f%%), folded faces in the written file: %d' % (pid, len(base.faces), len(out.faces), 100 * perc, nsx), flush=True)
         nb = len(out.split(only_watertight=False))
         out.export(f'{ASM}/{STEM[pid]}.stl')

@@ -103,6 +103,33 @@ def decimate_clean(m0, name, percs=(0.12, 0.2, 0.35, 0.55), max_dev=0.02):
         if written_folds(md, name) == 0: return md, perc
     return m0, 1.0
 
+def unfold(m, name='', rounds=6):
+    """the booleans can leave a few folded (self-intersecting) faces, sub-millimetre (where a rounded edge meets the
+    underside at a slant, or on a splice seam of the body): take out each fold with the ring of faces round it and fill
+    the small hole again, until the mesh as written to a float32 STL has none. Returns (mesh, rounds used); the surface
+    moves by well under a micron."""
+    import tempfile, pymeshlab
+    from check import selfx
+    def written(q):
+        with tempfile.NamedTemporaryFile(suffix='.stl') as f:
+            q.export(f.name); return trimesh.load(f.name)
+    w = written(m); v0 = w.volume
+    for r in range(rounds + 1):
+        sx = selfx(w)
+        if len(sx) == 0:
+            assert w.is_watertight and w.is_winding_consistent and abs(w.volume - v0) < 1.0, f'{name}: unfolding broke the mesh'
+            return w, r
+        if r == rounds: break
+        print('   %s: %d folded faces, taken out and filled' % (name, len(sx)), flush=True)
+        ms = pymeshlab.MeshSet(); ms.add_mesh(pymeshlab.Mesh(vertex_matrix=np.asarray(w.vertices, float), face_matrix=np.asarray(w.faces, np.int32)))
+        ms.apply_filter('compute_selection_by_self_intersections_per_face')
+        ms.apply_filter('apply_selection_dilatation')                   # the folds and one ring round them
+        ms.apply_filter('meshing_remove_selected_vertices_and_faces')
+        ms.apply_filter('meshing_remove_unreferenced_vertices')
+        ms.apply_filter('meshing_close_holes', maxholesize=200, newfaceselected=False, selfintersection=False)
+        g = ms.current_mesh(); w = written(trimesh.Trimesh(g.vertex_matrix(), g.face_matrix(), process=True))
+    raise AssertionError(f'{name}: folded faces remain after unfolding')
+
 def keep_main(m):
     """drop zero-volume slivers the booleans can leave (a few faces, < 1 mm3); anything bigger is an error"""
     b = m.split(only_watertight=False)
@@ -289,6 +316,7 @@ if __name__ == '__main__':
         cut = tomf(pm)
         res_ = M - cut
         cored, tol, nsx = clean_written(lambda t_: keep_main(weld(totm(res_.simplify(t_) if t_ else res_))), sec, (0.0, 0.001, 0.002, 0.004))
+        if nsx: cored, ur = unfold(cored, sec); nsx = 0; info['unfold_rounds'] = ur   # v15: relax the few folds the booleans left
         info['cleanup_microns'] = round(tol * 1000); info['folded_faces'] = nsx
         bodies = len(cored.split(only_watertight=False))
         cored.export(f'{OUT}/cored_{sec}.stl')
