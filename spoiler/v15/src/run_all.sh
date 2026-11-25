@@ -1,8 +1,8 @@
 #!/bin/sh
 # Rebuild the v15 package: the six parts of v10 (3 across x front/rear) as a thin shell, open underneath: a 4 mm skin
-# under every visible surface, thickening smoothly to the joint lands at the cuts; a closed band at the front (the tape)
-# that the opening starts on with a 30-degree ramp; at the back no band and no ramp: the opening runs right to the back
-# edge and the shell wraps round it as a smooth 4 mm offset of the outside; the ducktail lip ends blended into the body
+# under the top, thickening smoothly to the joint lands at the cuts; solid where the part is thinner than 7 mm (the
+# front band, where the tape goes, and the ducktail lip near its tip), and the opening starts from both with the same
+# 30-degree ramp: no band, no hook, nothing wrapped round the back edge; the ducktail lip ends blended into the body
 # (v14); pinned 30-degree joints. Run from the spoiler/ folder:  sh v15/src/run_all.sh
 # (about an hour on 4 cores). v15 cores the same outer body as v14 (v14/out/E4.stl, built by the v14 scripts from
 # the v6 solid and the car body under it); everything is built first if missing.

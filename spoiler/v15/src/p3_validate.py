@@ -95,6 +95,24 @@ for sec, x0, x1 in SECTIONS:
     PA, PB = seam_profile(parts[a], fr, -1, holes=False), seam_profile(parts[b], fr, +1, holes=False)
     r = dict(mismatch_mm2=round(float(PA.symmetric_difference(PB).area), 2), area_mm2=round(float(PA.area), 1))
     res['seams'][f'cut {sec}'] = r; print(f'cut {sec} {a}|{b}', r)
+print('--- the back: nothing sits on the car there; how far the rear parts clear it (straight down)')
+from layout import CAR_PATH
+from trimesh.ray.ray_pyembree import RayMeshIntersector
+car = trimesh.load(CAR_PATH, process=False); Rc = RayMeshIntersector(car)
+st = np.load(f'{OUT}/rim_curve.npz'); o_ = np.argsort(st['x']); gaps = {'span': [], 'ends': []}
+for k in IDS:
+    if HALF_OF[k] != 'rear': continue
+    P_ = parts[k].sample(60000); zr_ = np.interp(P_[:, 0], st['x'][o_], st['z'][o_])
+    P_ = P_[(P_[:, 2] > zr_ - 30) & (np.abs(P_[:, 0]) < 540)]
+    loc, ir, _ = Rc.intersects_location(P_ - [0, 0.01, 0], np.tile([0, -1.0, 0], (len(P_), 1)), multiple_hits=False)
+    g = np.full(len(P_), np.inf); g[ir] = P_[ir, 1] - loc[:, 1]
+    for xb in np.arange(-540.0, 540.0, 20.0):
+        m_ = (P_[:, 0] >= xb) & (P_[:, 0] < xb + 20) & np.isfinite(g)
+        if m_.sum() > 20: gaps['ends' if abs(xb + 10) > 500 else 'span'].append(float(g[m_].min()))
+res['back_clearance_mm'] = [round(min(gaps['span']), 1), round(max(gaps['span']), 1)]          # |x| < 500
+res['back_clearance_ends_mm'] = [round(min(gaps['ends']), 1), round(max(gaps['ends']), 1)]     # the lip ends, by the fins
+print('the back of the rear parts is %.1f-%.1f mm above the car across the span, %.1f-%.1f mm at the lip ends' % (
+    *res['back_clearance_mm'], *res['back_clearance_ends_mm']))
 res['ok'] = ok
 json.dump(res, open(f'{OUT}/validation.json', 'w'), indent=1)
 print('ALL CHECKS PASSED' if ok else 'SOME CHECKS FAILED')

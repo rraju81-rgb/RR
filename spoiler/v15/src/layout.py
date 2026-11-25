@@ -65,36 +65,29 @@ MARGIN = 12.0                     # each section's voxel grid reaches this far p
 UNDER_GAP = 4.0                   # a face sits on the car if the car is within this along its normal
 CUT_GAP = 120.0                   # a face faces the car (may be trimmed) if the car is within this along its normal
 
-# The rim line (rim.py): where the spoiler's underside leaves the car at the back, as a smooth line in plan. v15 uses only
-# the line itself (the shell is open in front of it and wraps round the back edge behind it); v14's tip, slope and
-# channel constants are gone.
+# The rim line (rim.py): where the spoiler's underside leaves the car at the back, as a smooth line in plan. v15 uses it
+# only to end the span seams' joint lands before the back edge; v14's tip, slope and channel constants are gone.
 RIM_G = (2.0, 2.5)                # the rim line follows the contact boundary between these gaps (car to underside)
 RIM_WIN, RIM_SIG = 41.0, 25.0     # rim line: lower envelope over 41 mm, then Gaussian smoothing over 25 mm
 RIM_X = 560.0                     # the rim runs |x| <= RIM_X (the skin meets the car just inside this)
-RIM_BAND = 8.0                    # v15: underside faces this close to the rim line are split along it point by point
 TIP_T = 1.5                       # rim.py: the v14 tip's offset from the rim line (rim.py still reports it)
 TIP_R = 4.0                       # rim.py: radius of the v14 tip's round
 TIP_EPS = 0.05                    # rim.py: the v14 tip's lowest point below the original underside
 M_FRONT = 1.0                     # rim.py: slope of the v14 tip's front face
 
-# v15 shell, seen from below: the spoiler's own smooth underside at the front, then ONE opening that runs all the way to
-# the back edge; nothing else.
-#   front: where the part is thinner than OPEN_H it stays solid (the front band, where the VHB tape goes, 49-85 mm). The
-#          opening starts on that line with a 30-degree ramp (K_WALL = 1/tan) up to the 4 mm ceiling, which meets the
-#          underside along one clean, crisp line (150 degrees). No rounding there: a round peels a feather-thin sliver
-#          off the underside beside the edge, which broke up into a saw-tooth.
-#   back:  no band, no ramp, no brim (the user marked the v15 back band and its ramp as a brim, twice). The opening runs
-#          to the line where the underside leaves the car (the rim line), and the shell wraps round the back edge as a
-#          smooth T_SKIN offset of the outside (the top, the back edge and the lip's own underside), so the rear side seen
-#          from below is as smooth as the top. The shell's edge along the rim line takes the adhesive bead.
-#   The front ramp acts only more than FRONT_TO mm in front of the rim line.
+# v15 shell, seen from below: ONE opening between the front band and the ducktail lip; nothing else.
+#   One rule, front and back: where the part is thinner than OPEN_H it stays solid, which is the front band (where the
+#   VHB tape goes, 49-85 mm deep) and the ducktail lip near its tip. The opening starts from both with a 30-degree ramp
+#   (K_WALL = 1/tan) up to the 4 mm ceiling, which meets the underside along one clean, crisp line (150 degrees). No
+#   rounding there: a round peels a feather-thin sliver off the underside beside the edge, which broke up into a
+#   saw-tooth. The lip's own underside behind the rim line is open too: no band, no skin wrapped round the back edge (it
+#   formed a hook with a slot behind it, and the user marked it as a brim, as with the back band and its ramp before it).
 OPEN_H = 7.0
 K_WALL = 1.73
-FRONT_TO = 65.0
-WALL_FADE_X = (530.0, 570.0)      # the front ramp fades out towards the spoiler's ends (the fins, open on their pillar side)
+WALL_FADE_X = (530.0, 570.0)      # both ramps fade out towards the spoiler's ends (the fins, open on their pillar side)
 # Joint lands: within LAND[0] mm of a joint face (front/rear cut, span seam) the skin is LAND_T thick, for the pins
 # (MIN_SKIN_PIN) and tongues (MIN_SKIN_TONGUE); it tapers smoothly back to T_SKIN by LAND[1] mm (a gentle swell, not a
-# step). The span seams' lands end LAND_BACK mm in front of the rim line: behind that the shell is T_SKIN all round.
+# step). The span seams' lands end LAND_BACK mm in front of the rim line: behind that the shell is T_SKIN.
 LAND_T = 8.6
 LAND = (11.0, 36.0)
 LAND_BACK = 37.0

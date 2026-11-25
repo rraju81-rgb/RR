@@ -2,10 +2,10 @@
  "meshes": {
   "P1": {
    "name": "P1",
-   "faces": 101698,
+   "faces": 85580,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 258.96,
+   "volume_cm3": 220.69,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -48,10 +48,10 @@
   },
   "P3": {
    "name": "P3",
-   "faces": 78666,
+   "faces": 80368,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 342.56,
+   "volume_cm3": 303.86,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -59,7 +59,7 @@
    "bounds": [
     [
      -216.67,
-     19.28,
+     20.61,
      122.0
     ],
     [
@@ -94,10 +94,10 @@
   },
   "P5": {
    "name": "P5",
-   "faces": 101666,
+   "faces": 85576,
    "watertight": true,
    "winding": true,
-   "volume_cm3": 258.96,
+   "volume_cm3": 220.69,
    "bodies": 1,
    "selfx_faces": 0,
    "zero_area": 0,
@@ -250,11 +250,11 @@
  },
  "thickness": {
   "P1": {
-   "max_mm": 8.96,
+   "max_mm": 8.61,
    "at": [
-    -374.6,
-    16.3,
-    203.8
+    -226.6,
+    24.7,
+    145.0
    ]
   },
   "P2": {
@@ -266,11 +266,11 @@
    ]
   },
   "P3": {
-   "max_mm": 8.95,
+   "max_mm": 8.61,
    "at": [
-    191.9,
-    27.9,
-    206.6
+    -70.5,
+    30.0,
+    128.6
    ]
   },
   "P4": {
@@ -282,11 +282,11 @@
    ]
   },
   "P5": {
-   "max_mm": 9.04,
+   "max_mm": 8.61,
    "at": [
-    382.4,
-    15.5,
-    203.0
+    225.2,
+    25.1,
+    135.0
    ]
   },
   "P6": {
@@ -300,7 +300,7 @@
  },
  "overlaps": {
   "P1-P2": 0.002,
-  "P3-P4": -0.0,
+  "P3-P4": 0.0,
   "P5-P6": 0.002,
   "P1-P3": 0.0,
   "P2-P4": -0.0,
@@ -315,9 +315,9 @@
  },
  "clearance": {
   "tongue -216.7 front": 0.169,
-  "tongue -216.7 rear": 0.13,
+  "tongue -216.7 rear": 0.131,
   "tongue +216.7 front": 0.169,
-  "tongue +216.7 rear": 0.13
+  "tongue +216.7 rear": 0.131
  },
  "seams": {
   "-216.7 front": {
@@ -325,19 +325,19 @@
    "area_mm2": 811.4
   },
   "-216.7 rear": {
-   "mismatch_mm2": 1.28,
-   "area_mm2": 896.5
+   "mismatch_mm2": 1.2,
+   "area_mm2": 787.0
   },
   "+216.7 front": {
    "mismatch_mm2": 1.36,
    "area_mm2": 811.4
   },
   "+216.7 rear": {
-   "mismatch_mm2": 1.49,
-   "area_mm2": 896.4
+   "mismatch_mm2": 1.28,
+   "area_mm2": 787.1
   },
   "cut L": {
-   "mismatch_mm2": 9.18,
+   "mismatch_mm2": 9.17,
    "area_mm2": 3151.5
   },
   "cut C": {
@@ -345,10 +345,18 @@
    "area_mm2": 3739.8
   },
   "cut R": {
-   "mismatch_mm2": 9.18,
+   "mismatch_mm2": 9.17,
    "area_mm2": 3151.5
   }
  },
  "pin_walls_min_mm": 1.6,
+ "back_clearance_mm": [
+  5.5,
+  11.8
+ ],
+ "back_clearance_ends_mm": [
+  1.0,
+  4.1
+ ],
  "ok": true
 }
