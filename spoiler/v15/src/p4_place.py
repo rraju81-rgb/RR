@@ -8,7 +8,7 @@ import numpy as np, trimesh
 from check import report
 from bowtie import tomf, totm
 from layout import OUT, ASM, PRN, IDS, STEM, SEC, HALF_OF, LABEL, chord_plane, PIN_L
-from p1_core import written_folds, decimate_clean
+from p1_core import written_folds, decimate_clean, unfold
 
 BED = (420.0, 420.0, 500.0); MARGIN = 12.0
 Yc = np.array([0.0, 1.0, 0.0])
@@ -39,6 +39,7 @@ def place(m, up, center=True, lengthwise=False):
             if written_folds(q) == 0: out = q; tr = tr + [0.0017 * k, 0.0011 * k, 0.0]; break
         else:
             out, perc = decimate_clean(out, 'placed', percs=(0.9, 0.75, 0.6, 0.45, 0.3), max_dev=0.03); place.last_tol = round(1 - perc, 2)
+            if written_folds(out) != 0: out, _ = unfold(out, 'placed')  # v15: take out the last few folds and fill
     return out, R, tr
 
 def overhangs(p):
