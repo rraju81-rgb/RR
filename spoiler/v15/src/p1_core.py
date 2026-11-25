@@ -22,7 +22,7 @@ from parity import fill_inside
 from bowtie import tomf, totm
 from check import report
 from layout import (E_PATH, CAR_PATH, OUT, HALF, SECTIONS, T_SKIN, S_FIN, FIN_X, VOX, MARGIN, UNDER_GAP, CUT_GAP, RIM_X,
-                    TIP_T, OPEN_H, K_WALL, WALL_FADE_X, LAND_T, LAND, LAND_BACK, SHELL_SIG, chord_plane)
+                    TIP_T, OPEN_H, K_WALL, FRONT_TO, BACK_FACE, WALL_FADE_X, LAND_T, LAND, LAND_BACK, SHELL_SIG, chord_plane)
 import rim
 
 def car_distance(E, car, direction=None):
@@ -197,9 +197,9 @@ def smoothstep(t):
 
 def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
     """v15: the region to remove inside box, as a closed mesh (grid on the global lattice): one opening, everything more
-    than the skin below the visible faces (vis_pts), open through every face on or facing the car (hid_pts), the lip's own
-    underside included; solid where the part is thinner than OPEN_H (the front band and the ducktail lip near its tip),
-    and the opening starts from both with the same 30-degree ramp (no band, no hook, no brim); joint lands along the cuts.
+    than the skin below the visible faces (vis_pts), open through every face on or facing the car and every face at the
+    back that faces backward (hid_pts); solid where the part is thinner than OPEN_H at the front (the band), where the
+    opening starts with a 30-degree ramp; at the back the plain top skin runs flush to the trailing edge; joint lands.
     One field, Gaussian-smoothed, so the inside of the shell is smooth everywhere, nothing starts with a step and the
     opening's edges are clean lines.
     rim_xz: the rim line in plan (x, z), sorted by x.
@@ -219,9 +219,11 @@ def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
     s_o = np.clip((th - OPEN_H) / g, -40.0, 40.0); del th, g             # plan distance past the line where it is OPEN_H thick
     zr = np.interp(xs, rim_xz[:, 0], rim_xz[:, 1])[:, None]
     fade = 1.0 - smoothstep((np.abs(X) - WALL_FADE_X[0]) / (WALL_FADE_X[1] - WALL_FADE_X[0]))
-    # one rule, front and back: the part stays solid where it is thinner than OPEN_H (the front band, and the ducktail
-    # lip near its tip), and the opening starts from both with the same ramp; it fades out towards the fins
-    s_o = (s_o * fade + 40.0 * (1.0 - fade)).astype(np.float32)[:, None, :]
+    # the front band only: the part stays solid where it is thinner than OPEN_H, and the opening starts from it with a
+    # ramp. At the back the shell is the plain top skin right to the trailing edge (the lip strip and its ramp line read
+    # as a crooked rim); it fades out towards the fins
+    f_front = fade * (1.0 - smoothstep((Z - (zr - FRONT_TO)) / 15.0))
+    s_o = (s_o * f_front + 40.0 * (1.0 - f_front)).astype(np.float32)[:, None, :]; del f_front
     d_ch = np.abs(chord[0][0] * X + chord[0][2] * Z - chord[1])
     w = 1.0 - smoothstep((d_ch - LAND[0]) / (LAND[1] - LAND[0]))
     for sx in seams:                                                     # span seams: they end before the back edge
@@ -293,10 +295,13 @@ if __name__ == '__main__':
     st = rim.rim_curve(E, car); np.savez(f'{OUT}/rim_curve.npz', **st)
     o = np.argsort(st['x']); rim_xz = np.column_stack([st['x'][o], st['z'][o]])
     # v15: the shell opens through every face that sits on or faces the car, the ducktail lip's own underside behind the
-    # rim line included. A skin under the lip wrapped round the back edge as a hook with a slot behind it, and read as a
-    # brim; now the lip is solid where it is thinner than OPEN_H and the opening starts from it with the front's ramp.
-    c = E.triangles_center
-    hidden = clean_hidden(E, cuttable.copy())
+    # rim line included, and through every face in the rear half that looks backward rather than up (the trailing edge,
+    # and at the spoiler's ends the blunt nose of the blended lip end, which the skin wrapped round as a hook). What is
+    # left at the back is the plain top skin, flush right to the trailing edge: no hook, no slot, no rim, no nose.
+    c = E.triangles_center; n_ = E.face_normals
+    back = (n_[:, 2] > BACK_FACE[0]) & (n_[:, 1] < BACK_FACE[1]) & (c[:, 2] > BACK_FACE[2]) & (np.abs(c[:, 0]) < FIN_X[0])
+    hidden = clean_hidden(E, clean_cuttable(E, cuttable | back))   # stray visible faces left among the opened back faces
+                                                                       # (a few slivers on each nose) would keep the wrap
     np.save(f'{OUT}/E2_contact.npy', contact); np.save(f'{OUT}/E2_cuttable.npy', hidden)
     vis_pts = surface_points(trimesh.Trimesh(E.vertices, E.faces[~hidden], process=False), 0.35)
     hid_pts = surface_points(trimesh.Trimesh(E.vertices, E.faces[hidden], process=False), 0.35)

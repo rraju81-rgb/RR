@@ -75,16 +75,22 @@ TIP_R = 4.0                       # rim.py: radius of the v14 tip's round
 TIP_EPS = 0.05                    # rim.py: the v14 tip's lowest point below the original underside
 M_FRONT = 1.0                     # rim.py: slope of the v14 tip's front face
 
-# v15 shell, seen from below: ONE opening between the front band and the ducktail lip; nothing else.
-#   One rule, front and back: where the part is thinner than OPEN_H it stays solid, which is the front band (where the
-#   VHB tape goes, 49-85 mm deep) and the ducktail lip near its tip. The opening starts from both with a 30-degree ramp
-#   (K_WALL = 1/tan) up to the 4 mm ceiling, which meets the underside along one clean, crisp line (150 degrees). No
-#   rounding there: a round peels a feather-thin sliver off the underside beside the edge, which broke up into a
-#   saw-tooth. The lip's own underside behind the rim line is open too: no band, no skin wrapped round the back edge (it
-#   formed a hook with a slot behind it, and the user marked it as a brim, as with the back band and its ramp before it).
+# v15 shell, seen from below: the front band, then ONE opening that runs flush to the trailing edge; nothing else.
+#   front: where the part is thinner than OPEN_H it stays solid (the front band, where the VHB tape goes, 49-85 mm deep);
+#          the opening starts on it with a 30-degree ramp (K_WALL = 1/tan) up to the 4 mm ceiling, which meets the
+#          underside along one clean, crisp line (150 degrees). No rounding there: a round peels a feather-thin sliver off
+#          the underside beside the edge, which broke up into a saw-tooth. The ramp acts only more than FRONT_TO mm in
+#          front of the rim line.
+#   back:  the plain top skin, flush right to the trailing edge. The lip's own underside and every face in the rear half
+#          that faces backward, more than 45 degrees from up (n_z > BACK_FACE[0], n_y < BACK_FACE[1], z > BACK_FACE[2]), are open, so
+#          nothing wraps round the back: the user marked as brims, in turn, a back band with its ramp, the skin wrapped
+#          round the back edge (a hook with a slot), the lip strip with its ramp line (a crooked rim) and the skin wrapped
+#          round the blunt nose at each end of the lip. Only the last ~10 mm of the lip, where it is under 4 mm, is solid.
 OPEN_H = 7.0
 K_WALL = 1.73
-WALL_FADE_X = (530.0, 570.0)      # both ramps fade out towards the spoiler's ends (the fins, open on their pillar side)
+FRONT_TO = 65.0
+BACK_FACE = (0.3, 0.7, 100.0)
+WALL_FADE_X = (530.0, 570.0)      # the front ramp fades out towards the spoiler's ends (the fins, open on their pillar side)
 # Joint lands: within LAND[0] mm of a joint face (front/rear cut, span seam) the skin is LAND_T thick, for the pins
 # (MIN_SKIN_PIN) and tongues (MIN_SKIN_TONGUE); it tapers smoothly back to T_SKIN by LAND[1] mm (a gentle swell, not a
 # step). The span seams' lands end LAND_BACK mm in front of the rim line: behind that the shell is T_SKIN.

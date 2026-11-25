@@ -28,10 +28,10 @@ text = f"""# Polo Oettinger-style roof spoiler v15: a thin {T_SKIN:.0f} mm shell
 v15 is v14 with the closed underside taken out again, as marked in blue on the v14 cut faces:
 
 - **Thinner.** In v14 every part was a skin, a cavity and a closed underside one over the other, so its cut faces showed the whole depth of the spoiler, up to 19 mm. v15 is a **{T_SKIN:.0f} mm shell** under every visible surface (as thin as the spoiler's own front edge) and open underneath. It is thicker only where it has to be: {LAND_T} mm joint lands along the cuts for the pins and tongues. The six parts weigh in at **{tot:,.0f} cm³** of plastic, down from {tot14:,.0f} cm³ in v14 and 2,194 cm³ in v13.
-- **Smooth and simple underneath, no brim.** Seen from below there is the front band, one opening and the ducktail lip, nothing else:
-  - one rule, front and back: the spoiler stays solid where it is thinner than {OPEN_H:.0f} mm, which is the front band (49–85 mm deep) and the ducktail lip near its tip;
-  - the opening starts from both with the same {wall_deg:.0f}° ramp up into the {T_SKIN:.0f} mm ceiling; at the back that ramp is a smooth slope that runs into the lip's own underside;
-  - there is no band, no hook, no slot and no channel at the back: nothing wraps round the back edge.
+- **Smooth and simple underneath, flush at the back.** Seen from below there is the front band, one opening and the plain top skin, nothing else:
+  - the front band (where the spoiler is thinner than {OPEN_H:.0f} mm, 49–85 mm deep) stays solid, and the opening starts on it with a {wall_deg:.0f}° ramp up into the {T_SKIN:.0f} mm ceiling;
+  - at the back the shell is the plain {T_SKIN:.0f} mm top skin, flush right to the trailing edge: only the last ~10 mm of the lip, where it is under {T_SKIN:.0f} mm thick, is solid, and the inside runs into it at about 7°;
+  - no band, no hook, no slot, no rim, and nothing wrapped round the ends: at each end of the spoiler the lip's blunt nose is open underneath too.
 - **Unchanged:** the outside shape, including v14's blended ducktail lip ends; the six parts and the way they print; the seven-file print set; the joints; and the 10 mm limit.
 
 ![underside, v14 and v15](docs/v15_back_v14_v15.png)
@@ -41,19 +41,19 @@ v15 is v14 with the closed underside taken out again, as marked in blue on the v
 ![sections](docs/v15_shell.png)
 
 - **Skin:** {T_SKIN:.0f} mm under the top surface and the front edge, and on the fins' outer faces.
-- **Open underneath** through every face that sits on or faces the car, the ducktail lip's own underside included, and through the fins' pillar side.
+- **Open underneath** through every face that sits on or faces the car (the ducktail lip's own underside included), through every face at the back that faces backward, and through the fins' pillar side.
 - **Front band:** solid where the spoiler is thinner than {OPEN_H:.0f} mm. That is the band at the front, 49–85 mm deep, where the VHB tape goes.
-- **The opening** starts from the front band and ends at the lip with the same {wall_deg:.0f}° ramp up to the {T_SKIN:.0f} mm ceiling, so it never starts with a step. Each ramp meets the underside along one clean, crisp line, a smooth curve across the whole span.
-- **The back:** no band, no hook, no slot. The lip is solid where it is thinner than {OPEN_H:.0f} mm, about the last 20–35 mm to its tip; in front of that the opening runs on under the lip, and the inside rises in one smooth slope into the lip's own underside, as you drew it. From below, the back of the spoiler is the lip's own smooth underside.
+- **The opening** starts on the front band with a {wall_deg:.0f}° ramp up to the {T_SKIN:.0f} mm ceiling, so it never starts with a step, and the ramp meets the underside along one clean, crisp line, a smooth curve across the whole span.
+- **The back: flush.** The shell is the plain {T_SKIN:.0f} mm top skin right to the trailing edge: no band, no hook, no slot, no rim. Only the last ~10 mm of the lip, where it is under {T_SKIN:.0f} mm thick, is solid, and the inside runs into it at about 7°, so from below the back is the smooth inside of the top skin. At each end of the spoiler the lip's blunt nose is open underneath too, so nothing wraps round it.
 - **Joint lands:** along every cut (the span seams and the front/rear cuts) the skin is {LAND_T} mm thick for {LAND[0]:.0f} mm. It then tapers smoothly back to {T_SKIN:.0f} mm by {LAND[1]:.0f} mm from the cut, so the pin holes and grooves have walls all round. From below they show as gentle swells along the cuts. The span seams' lands stop {LAND_BACK:.0f} mm before the line where the underside leaves the car, so the shell under the lip's root is {T_SKIN:.0f} mm.
-- **Smooth everywhere:** the whole inside comes from one smooth field, so both ramps run into the ceiling in soft curves. The only edges are the two crisp lines where the ramps meet the underside. There are no voxel steps, no slots and no ledges.
+- **Smooth everywhere:** the whole inside comes from one smooth field, so the ramp runs into the ceiling in a soft curve and the inside follows the top right to the trailing edge. The only edge is the crisp line where the ramp meets the underside at the front. There are no voxel steps, no slots and no ledges.
 - **Fins:** parts 2 and 6 are hollowed from the pillar side, as before. That face sits against the car's pillar.
 
 ## 2. The cut faces, v14 and v15
 
 ![cut faces](docs/v15_cut_v14_v15.png)
 
-The faces you marked: in v14 a cut face showed the skin, the cavity and the closed underside, the whole depth of the spoiler. In v15 it shows the {LAND_T} mm joint land over the opening, plus the solid front band and the solid lip at the back.
+The faces you marked: in v14 a cut face showed the skin, the cavity and the closed underside, the whole depth of the spoiler. In v15 it shows the {LAND_T} mm joint land over the opening, plus the solid front band; at the back, the {T_SKIN:.0f} mm top skin alone.
 
 ## 3. The six parts
 
@@ -113,7 +113,7 @@ The pins and tongues sit in the joint lands, the {LAND_T} mm thickening of the s
 
 ![bed layouts](docs/v15_bed_layouts.png)
 
-**Supports:** none for the long spans: standing on its cut face, each shell is a thin upright wall, and the ramps at the front band and at the lip print without support. A slicer may flag a few cm² of steep facets ({', '.join('%.0f cm² on part %s' % (us[k], k[1]) for k in IDS)}); on parts 1 and 5 about half of that is at the outer end of the lip, next to the fin, where a small tree support does no harm, as at the fin tips of parts 2 and 6.
+**Supports:** {('none needed. Standing on its cut face, each shell is a thin upright wall: the front ramp prints without support, and at the back there is only the plain top skin. ' + 'A slicer may flag a few cm² of scattered steep facets (' + ', '.join('%.0f cm² on part %s' % (us[k], k[1]) for k in IDS if us[k] >= 0.5) + '), which it bridges.') if max(us.values()) < 6 else ('parts ' + ', '.join(k[1] for k in IDS if us[k] >= 6) + ' have ' + ', '.join('%.0f cm²' % us[k] for k in IDS if us[k] >= 6) + ' with nothing below them when standing on their cut face: use tree supports from the build plate only, at about 45°.')} If your slicer flags the fin tip on parts 2 and 6, allow a small tree support there.
 
 **Settings:** ASA (UV-stable) or PETG; 0.25–0.28 mm layers with a 0.4 mm nozzle; 4 walls (at {T_SKIN:.0f} mm the shell is then solid), 20–25% gyroid infill for the lands and the front band; an 8–10 mm slicer brim (the bed-adhesion setting, not part of the model) on every part. A thin shell this size can lift at the corners while printing, so keep that brim and an enclosure.
 
@@ -126,7 +126,7 @@ The pins and tongues sit in the joint lands, the {LAND_T} mm thickening of the s
 ## Mounting
 
 - **Front band:** two strips of 12 mm 3M VHB tape on the solid front band. The 1.5 mm tape gap is built into the underside.
-- **The back:** nothing at the back rests on the car any more. With the hook gone, the back of the shell is open and clears the car by {clr_min:.0f}–{clr_max:.0f} mm across the span; only the lip's outer ends, next to the fins, come within {end_min:.0f}–{end_max:.0f} mm, where a dab of PU adhesive can go. So the spoiler is held by the front band and the fins: use the full length of the front band, and bond the fins well.
+- **The back:** nothing at the back rests on the car. The back of the shell is open and clears the car by {clr_min:.0f}–{clr_max:.0f} mm across the span{(' and ' + ('%.0f' % end_min) + '–' + ('%.0f' % end_max) + ' mm at the lip ends by the fins') if end_min >= 3 else ('; only the lip ends by the fins come within ' + ('%.0f' % end_min) + '–' + ('%.0f' % end_max) + ' mm, where a dab of PU adhesive can go')}. So the spoiler is held by the front band and the fins: use the full length of the front band, and bond the fins well.
 - **Fins:** a bead of PU adhesive or 6 mm VHB tape on the edges that touch the pillars. With nothing at the back, the fins and the front band carry the spoiler.
 
 ## Checks on the delivered files
@@ -145,7 +145,7 @@ The pins and tongues sit in the joint lands, the {LAND_T} mm thickening of the s
 - `docs/`: the figures above and `rim_v15.png`, a studio render of the back edge at part 3's end.
 - `src/`: the scripts. `sh v15/src/run_all.sh` from `spoiler/` rebuilds everything in about an hour. v15 cores the same outer body as v14 (`v14/out/E4.stl`), which the v14 scripts build first if it is missing.
 - **To change the design:** edit `src/layout.py`.
-  - Shell: `T_SKIN` (the skin), `OPEN_H` and `K_WALL` (where the part stays solid, front band and lip, and the ramps).
+  - Shell: `T_SKIN` (the skin), `OPEN_H` and `K_WALL` (the front band and its ramp), `BACK_FACE` (which faces at the back are open).
   - Joint lands: `LAND_T`, `LAND`, `LAND_BACK`. Cut lines: `C0`, `C1`. Pins on the front/rear cuts: `CUT_PIN_PITCH`.
 
 **Limits.**
