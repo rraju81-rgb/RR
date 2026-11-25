@@ -100,18 +100,21 @@ JOINT_BAND, JOINT_SKIN, JOINT_CAV = 12.0, 9.5, 1.0   # v14: within JOINT_BAND of
 C_MIN = 10.0                      # the channel only where the back edge is deeper than this (so it is >= 1.5 mm wide)
 
 # v15 shell. The opening underneath never starts with a step or a line:
-#   where the part is thinner than OPEN_H it stays solid (the front, where the VHB tape goes, is 49-85 mm of it); where it
-#   gets deeper the opening comes in as a smooth ramp, from the underside up into the 4 mm ceiling, fully open by
-#   OPEN_H + OPEN_DH;
-#   back band (adhesive): a closed layer LAYER thick over the underside at the rim line (where the underside leaves the
-#   car at the back), feathering out over RIM_L mm in front of it; the hollow carries on above it, under the back edge
+#   where the part is thinner than OPEN_H it stays solid (at the front, where the VHB tape goes, that is 49-85 mm); the
+#   opening starts on the line where it gets that thick, with a 30-degree front wall (K_WALL = 1/tan) up to the 4 mm
+#   ceiling;
+#   back band (adhesive): a closed layer over the underside, LAYER thick at the rim line (where the underside leaves the
+#   car at the back), thinning to NOSE_T at RIM_L mm in front of it and ending there in a rounded nose (a layer that
+#   thinned out to nothing would break up); the hollow carries on above it, under the back edge
 #   (which is up to 16 mm deep, so it could not be solid); behind the rim line the spoiler's own underside (under the
 #   lip) is a visible surface with the 4 mm skin over it;
 #   every edge of the opening is rounded, radius EDGE_R.
-OPEN_H, OPEN_DH = 7.0, 4.0
+OPEN_H = 7.0
+K_WALL = 1.73
 LAYER = 4.0
-RIM_L = 36.0
-LAYER_FADE_X = (530.0, 570.0)     # the back band fades out towards the spoiler's ends (the fins, open on the pillar side)
+RIM_L, NOSE_T, NOSE_L = 30.0, 2.6, 4.0
+LAYER_FADE_X = (530.0, 570.0)     # the front line and the back band fade out towards the spoiler's ends (the fins, open on
+                                  # their pillar side)
 EDGE_R = 2.5
 # Joint lands: within LAND[0] mm of a joint face (front/rear cut, span seam) the skin is LAND_T thick, for the pins
 # (MIN_SKIN_PIN) and tongues (MIN_SKIN_TONGUE); it tapers smoothly back to T_SKIN by LAND[1] mm. The span seams' lands

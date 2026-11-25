@@ -22,7 +22,7 @@ from parity import fill_inside
 from bowtie import tomf, totm
 from check import report
 from layout import (E_PATH, CAR_PATH, OUT, HALF, SECTIONS, T_SKIN, S_FIN, FIN_X, VOX, MARGIN, UNDER_GAP, CUT_GAP, RIM_X,
-                    TIP_T, OPEN_H, OPEN_DH, LAYER, RIM_L, LAYER_FADE_X, EDGE_R, LAND_T, LAND, LAND_REAR, SHELL_SIG, chord_plane)
+                    TIP_T, OPEN_H, K_WALL, LAYER, RIM_L, NOSE_T, NOSE_L, LAYER_FADE_X, EDGE_R, LAND_T, LAND, LAND_REAR, SHELL_SIG, chord_plane)
 import rim
 
 def car_distance(E, car, direction=None):
@@ -162,12 +162,18 @@ def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
     jy = lambda y: np.clip(np.round((y - lo[1]) / VOX - 0.5).astype(int), 0, shape[1])
     inside = fill_inside(RE, xs, zs, lo[1] - 5.0, shape[1], jy)         # ray parity, robust to rays along edges (parity.py)
     near_in = ndi.binary_dilation(inside, iterations=6)
-    # plan fields (x, z): the back band's layer and the skin (with the joint lands)
+    # plan fields (x, z): the line where the opening starts, the back band's layer, and the skin (with the joint lands)
+    th = inside.sum(axis=1).astype(np.float32) * VOX                    # the part's thickness in each column
+    th = ndi.gaussian_filter(th, 2.0 / VOX)
+    gx, gz = np.gradient(th, VOX); g = np.maximum(np.hypot(gx, gz), 0.03); del gx, gz
+    s_o = np.clip((th - OPEN_H) / g, -40.0, 40.0); del th, g             # plan distance past the line where it is OPEN_H thick
     zr = np.interp(xs, rim_xz[:, 0], rim_xz[:, 1])[:, None]
     s_r = zr - Z                                                         # mm in front of the rim line
-    t_rim = np.where(s_r <= 0, LAYER, LAYER - (LAYER + 1.0) * smoothstep(s_r / RIM_L))
+    t_rim = LAYER - (LAYER - NOSE_T) * smoothstep(s_r / RIM_L)                 # 4 mm at the rim line, NOSE_T at RIM_L in front,
+    t_rim -= (NOSE_T + 1.0) * np.clip((s_r - RIM_L) / NOSE_L, 0.0, 1.0)      # then the nose (-1: open)
     fade = 1.0 - smoothstep((np.abs(X) - LAYER_FADE_X[0]) / (LAYER_FADE_X[1] - LAYER_FADE_X[0]))
     t_rim = (t_rim * fade - (1.0 - fade)).astype(np.float32)[:, None, :]   # -1: no layer (open)
+    s_o = (s_o * fade + 40.0 * (1.0 - fade)).astype(np.float32)[:, None, :]
     d_ch = np.abs(chord[0][0] * X + chord[0][2] * Z - chord[1])
     w = 1.0 - smoothstep((d_ch - LAND[0]) / (LAND[1] - LAND[0]))
     for sx in seams:                                                     # span seams: stop short of the back band
@@ -175,19 +181,14 @@ def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
         w = np.maximum(w, w_s)
     t_skin = (T_SKIN + (LAND_T - T_SKIN) * w).astype(np.float32)[:, None, :]
     del X, Z, d_ch, w, s_r, fade
-    # exact distances where they matter (the ramp ends at OPEN_H + OPEN_DH = 11 mm deep; the lands are 8.6 mm), the
-    # distance transform beyond
+    # exact distances where they matter (the lands are 8.6 mm, the front wall up to ~10 mm), the distance transform beyond
     D = distance_field(vis_pts, lo, hi, shape, near_in, lambda D: D < 12.5)                 # below the visible faces
     Dh = distance_field(hid_pts, lo, hi, shape, near_in, lambda D: D < 12.5)                # over the hidden faces
-    # the layer kept over the hidden faces: where the part (depth = D + Dh through each point) is thinner than OPEN_H,
-    # up to the ceiling (solid); then a ramp down to nothing, open by OPEN_H + OPEN_DH; and the back band
-    A = D + Dh                                                           # depth
-    u = A - OPEN_H; u /= OPEN_DH; np.clip(u, 0.0, 1.0, out=u); su = u * u; su *= 3.0 - 2.0 * u; del u
-    A -= t_skin; A *= 1.0 - su; A -= su; del su                          # (depth - skin)(1 - s) - s
-    np.maximum(A, t_rim, out=A)                                          # A: the layer's thickness (-1: open)
     S = np.minimum(D, Dh); np.negative(S, out=S, where=inside)           # signed distance to the body (negative inside)
-    D -= t_skin                                                          # removal field: below the skin ...
-    np.negative(Dh, out=Dh, where=~inside); Dh -= A; del A               # ... and above the layer
+    D -= t_skin                                                          # removal field: more than the skin below the visible faces,
+    W = Dh * (-K_WALL); W += s_o; W *= 1.0 / np.sqrt(1.0 + K_WALL ** 2)  # past the front wall,
+    np.minimum(D, W, out=D); del W
+    np.negative(Dh, out=Dh, where=~inside); Dh -= t_rim                  # and above the back band's layer
     np.minimum(D, Dh, out=D); del Dh
     V = ndi.gaussian_filter(D, SHELL_SIG / VOX); del D                   # smooth: rounded inside corners, no voxel steps
     # round the edges of the opening (the convex edge where the removal meets the underside): rounded intersection of the
