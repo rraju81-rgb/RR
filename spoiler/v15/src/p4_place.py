@@ -1,7 +1,8 @@
 """v15 step 4: the print set, on a 420 x 420 x 500 mm bed (Anycubic Kobra 3 Max): the six parts and one pin model, nothing
 else. Every part stands on its FRONT/REAR CUT (a flat face with only pin holes in it): the rear parts on their front
 face, the front parts on their rear face. The skin then rises as a long, low curved wall (134-141 mm tall), set across
-the bed's diagonal; the visible top surface is printed as a side wall, with no support on it. The pin is one model,
+the bed's diagonal; the visible top surface is printed as a side wall, with no support on it. The rear parts need tree
+support inside their back edge only (it hangs free at the top of the print; unsupported_gt45_cm2). The pin is one model,
 standing on end: print it as many times as joints.json says (plus spares).   Run from spoiler/:  python3 v15/src/p4_place.py"""
 import sys, json, os, tempfile; sys.path.insert(0, 'v15/src'); sys.path.insert(0, 'v6/src')
 import numpy as np, trimesh
@@ -42,6 +43,19 @@ def place(m, up, center=True, lengthwise=False):
             if written_folds(out) != 0: out, _ = unfold(out, 'placed')  # v15: take out the last few folds and fill
     return out, R, tr
 
+def unsupported(p, deg=45.0, gap=2.0):
+    """v15: faces steeper than deg (off the bed) with no part within gap mm straight below them, i.e. what a slicer
+    will support (cm2). On the rear parts that is the inside of the back edge: with no band or ramp under it, the
+    shell's edge is at the top of the print and hangs free"""
+    from trimesh.ray.ray_pyembree import RayMeshIntersector
+    n = p.face_normals; c = p.triangles_center
+    idx = np.flatnonzero((n[:, 2] < -np.sin(np.radians(deg))) & (c[:, 2] > 1.0))
+    if len(idx) == 0: return 0.0
+    O = c[idx] - [0, 0, 0.02]
+    loc, ir, _ = RayMeshIntersector(p).intersects_location(O, np.tile([0, 0, -1.0], (len(idx), 1)), multiple_hits=False)
+    g = np.full(len(idx), np.inf); g[ir] = O[ir, 2] - loc[:, 2]
+    return round(float(p.area_faces[idx[g > gap]].sum()) / 100, 1)
+
 def overhangs(p):
     n = p.face_normals; zc = p.triangles_center[:, 2]; A = p.area_faces
     def ov(deg):
@@ -62,7 +76,7 @@ if __name__ == '__main__':
         rep[pid] = dict(file=f'{STEM[pid]}.stl', label=LABEL[pid], stands_on='its %s cut face' % ('front' if HALF_OF[pid] == 'rear' else 'rear'),
                         print_extent_mm=[round(float(v), 1) for v in e], fits_420x420x500=fits,
                         bed_contact_cm2=round(float(p.area_faces[(nz < -0.999) & (zc < 0.05)].sum()) / 100, 1),
-                        overhang_gt45_cm2=ov(45), overhang_gt55_cm2=ov(55), overhang_gt60_cm2=ov(60),
+                        overhang_gt45_cm2=ov(45), overhang_gt55_cm2=ov(55), overhang_gt60_cm2=ov(60), unsupported_gt45_cm2=unsupported(p),
                         volume_cm3=round(float(p.volume) / 1000, 1), redecimated=place.last_tol)
         p.export(f'{PRN}/{STEM[pid]}.stl'); np.save(f'{OUT}/_place_{pid}.npy', np.column_stack([R, tr]))
         r, sx = report(trimesh.load(f'{PRN}/{STEM[pid]}.stl'), STEM[pid])

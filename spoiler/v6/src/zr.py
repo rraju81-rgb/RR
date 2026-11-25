@@ -51,10 +51,31 @@ def prep(m, crease=35.0):
         s = m
     return s
 
+def corner_shaded(m, angle=20.0):
+    """unmerged copy of m whose corners carry their own normals: each corner averages the area-weighted normals of the
+    faces round its vertex that lie within `angle` of its own face. Shading then never bleeds across a crease, not even
+    through a fan of thin boolean slivers along it (which smooth_shade's per-edge test lets through, drawing a saw-tooth)"""
+    F = np.asarray(m.faces, np.int64); N = np.asarray(m.face_normals); A = np.asarray(m.area_faces)
+    nv = len(m.vertices); cv = F.ravel(); nc = len(cv); cf = np.repeat(np.arange(len(F)), 3)
+    fs = cf[np.argsort(cv, kind='stable')]                               # faces round each vertex, grouped by vertex
+    deg = np.bincount(cv, minlength=nv); start = np.concatenate([[0], np.cumsum(deg)[:-1]])
+    out = np.zeros((nc, 3)); cosa = np.cos(np.radians(angle)); step = 1_000_000
+    for lo in range(0, nc, step):                                        # in chunks, to bound the memory
+        c = np.arange(lo, min(lo + step, nc)); reps = deg[cv[c]]
+        ci = np.repeat(c, reps); off = np.arange(reps.sum()) - np.repeat(np.cumsum(reps) - reps, reps)
+        g = fs[np.repeat(start[cv[c]], reps) + off]
+        ok = np.einsum('ij,ij->i', N[cf[ci]], N[g]) > cosa
+        g = g[ok]; k = ci[ok] - lo; w = A[g]
+        for j in range(3):
+            out[lo:lo + len(c), j] = np.bincount(k, weights=N[g, j] * w, minlength=len(c))
+    out /= np.linalg.norm(out, axis=1)[:, None] + 1e-12
+    return trimesh.Trimesh(np.asarray(m.vertices)[cv], np.arange(nc).reshape(-1, 3), vertex_normals=out, process=False)
+
 def render(items, eye, target, up=(0, 1, 0), fov=30.0, W=1400, H=1000, bg=(30, 30, 34), ortho=None,
            light=None, zebra=0.0, zebra_axis=None, spec=0.35, ambient=0.22, edges=False, ssaa=2, crease=35.0,
-           fill_light=0.25):
-    """items: list of (trimesh, rgb[0-255]) or (trimesh, rgb, dict(alpha..)). zebra: stripe frequency (0=off)"""
+           fill_light=0.25, corner=None):
+    """items: list of (trimesh, rgb[0-255]) or (trimesh, rgb, dict(alpha..)). zebra: stripe frequency (0=off).
+    corner: if set (degrees), shade with per-corner normals (corner_shaded) instead of splitting at creases"""
     S = ssaa; Wr, Hr = W * S, H * S
     eye, r, u, f = look_at(eye, target, up)
     if light is None:
@@ -67,7 +88,7 @@ def render(items, eye, target, up=(0, 1, 0), fov=30.0, W=1400, H=1000, bg=(30, 3
     for it in items:
         m, rgb = it[0], it[1]
         per_face = np.ndim(rgb) == 2                  # (n_faces, 3) colours: keep the mesh's own face order
-        s = m if per_face else prep(m, crease)
+        s = m if per_face else (corner_shaded(m, corner) if corner else prep(m, crease))
         V = np.asarray(s.vertices, float); Fc = np.asarray(s.faces, np.int64)
         N = np.asarray(s.vertex_normals, float)
         d = V - eye; x = d @ r; y = d @ u; z = d @ f

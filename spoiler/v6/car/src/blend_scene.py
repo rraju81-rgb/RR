@@ -31,6 +31,24 @@ def spoiler_normals(tm):
     from car_zones import smooth_normals
     return split_normals(tm, smooth_normals(tm.vertices, tm.faces, iters=30, tau=0.012), 30.0)
 
+def corner_normals(tm, angle=20.0):
+    """v15: per-corner normals: each corner averages the area-weighted normals of the faces round its vertex that lie
+    within `angle` of its own face. The cored shell's crisp edges are lined with thin boolean slivers; normals smoothed
+    across them (spoiler_normals) draw light flecks along the edge, these do not"""
+    F = np.asarray(tm.faces, np.int64); N = np.asarray(tm.face_normals); A = np.asarray(tm.area_faces)
+    cv = F.ravel(); nc = len(cv); cf = np.repeat(np.arange(len(F)), 3)
+    fs = cf[np.argsort(cv, kind='stable')]
+    deg = np.bincount(cv, minlength=len(tm.vertices)); start = np.concatenate([[0], np.cumsum(deg)[:-1]])
+    out = np.zeros((nc, 3)); cosa = np.cos(np.radians(angle)); step = 1_000_000
+    for lo in range(0, nc, step):
+        c = np.arange(lo, min(lo + step, nc)); reps = deg[cv[c]]
+        ci = np.repeat(c, reps); off = np.arange(reps.sum()) - np.repeat(np.cumsum(reps) - reps, reps)
+        g = fs[np.repeat(start[cv[c]], reps) + off]
+        ok = np.einsum('ij,ij->i', N[cf[ci]], N[g]) > cosa
+        g = g[ok]; k = ci[ok] - lo; w = A[g]
+        for j in range(3): out[lo:lo + len(c), j] = np.bincount(k, weights=N[g, j] * w, minlength=len(c))
+    return out / (np.linalg.norm(out, axis=1)[:, None] + 1e-12)
+
 def new_mesh(name, tm, mats, mat_idx=None, smooth=True, auto=None, normals=None, loop_normals=None):
     me = bpy.data.meshes.new(name)
     V = to_bl(tm.vertices); F = np.asarray(tm.faces, np.int32)
@@ -168,11 +186,11 @@ def build_parts_v10(studio='light', mode='joint', ver='v10'):
     if mode == 'rim':
         m = trimesh.load(f'{ver}/out/full_P3.stl')                           # full resolution for the close-up
         R = trimesh.transformations.rotation_matrix(np.pi, [0, 0, 1])          # upside down about the chord axis
-        m.apply_transform(R); new_mesh('spoiler_P3', m, [M['grey']], loop_normals=spoiler_normals(m))
+        m.apply_transform(R); new_mesh('spoiler_P3', m, [M['grey']], loop_normals=(corner_normals if ver == 'v15' else spoiler_normals)(m))
     else:
         for k in ids:
             m = trimesh.load(f'{ASM}/{STEM[k]}.stl'); m.apply_translation(off(k))
-            new_mesh('spoiler_' + k, m, [M['spoiler']], loop_normals=spoiler_normals(m) if NORMALS else None, auto=None if NORMALS else 30)
+            new_mesh('spoiler_' + k, m, [M['spoiler']], loop_normals=(corner_normals if ver == 'v15' else spoiler_normals)(m) if NORMALS else None, auto=None if NORMALS else 30)
         J = _j.load(open(f'{ver}/out/joints.json'))
         for i in range(J['n_pins']):
             pm = trimesh.load(f'{ASM}/{ver}_PIN_{i + 1:02d}.stl'); c = pm.centroid

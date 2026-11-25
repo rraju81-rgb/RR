@@ -65,59 +65,39 @@ MARGIN = 12.0                     # each section's voxel grid reaches this far p
 UNDER_GAP = 4.0                   # a face sits on the car if the car is within this along its normal
 CUT_GAP = 120.0                   # a face faces the car (may be trimmed) if the car is within this along its normal
 
-# Smooth tip (new in v14). One smooth line along the back (as v10: where the spoiler's underside leaves the car at the
-# back, smoothed), and on it ONE rounded tip that sits on the car. In front of the tip the pocket ceiling comes down a
-# smooth 45-degree slope to the tip (45 degrees so the rear parts still print standing on their front cut without
-# support); behind the tip the spoiler's own underside carries on exactly as it is. No groove, no leg, no steps.
+# The rim line (rim.py): where the spoiler's underside leaves the car at the back, as a smooth line in plan. v15 uses only
+# the line itself (the shell is open in front of it and wraps round the back edge behind it); v14's tip, slope and
+# channel constants are gone.
 RIM_G = (2.0, 2.5)                # the rim line follows the contact boundary between these gaps (car to underside)
 RIM_WIN, RIM_SIG = 41.0, 25.0     # rim line: lower envelope over 41 mm, then Gaussian smoothing over 25 mm
 RIM_X = 560.0                     # the rim runs |x| <= RIM_X (the skin meets the car just inside this)
-RIM_FADE = 12.0                   # (v12 faded the tip out over 548-560 mm, which left a crease where it stopped)
-RIM_END = 640.0                   # v14: the tip's field runs on to the spoiler's ends (no switch-off crease)
-END_FADE = (340.0, 470.0)    # |x| over which the tip's face moves forward towards the ends
-TIP_SHIFT = 10.0             # v14, no brim: the pocket's back face starts this far (mm) forward of the contact line
-END_SHIFT = 22.0             # and this far at the spoiler's ends; behind it the spoiler's own underside carries on, flush
-                                  # smoothly into the spoiler's own underside; the hidden channel keeps it under 10 mm there
-TIP_T = 1.5                       # the tip sits this far forward of the rim line, inside the contact band
-EDGE_DROP = 0.4                   # v14: the pocket's round starts this far below the underside, so it leaves it at ~26 deg (a clean edge)
-TIP_R = 4.0                       # v14: radius of the round where the pocket's back face leaves the underside
-TIP_EPS = 0.05                    # the tip's lowest point is this far below the original underside (so it just touches it)
-M_FRONT = 1.0                     # slope of the tip's front face (1 = 45 degrees, the steepest that prints without support)
-K_BLEND = 2.5                     # fillet between the pocket ceiling and the slope
-# Where the back edge is deeper than C_MIN (the outer zone, |x| > ~180 mm, up to 16 mm deep), a solid tip would be
-# thicker than 10 mm. There it is hollow inside: a hidden channel along the back, closed all round by a SKIN_V top skin,
-# a SKIRT under it (the spoiler's own underside, unchanged) and the WALL of the 45-degree slope. The channel runs through
-# the span seams, so each part's channel opens only on its seam face (one closed shell per part, no trapped cavity);
-# once the parts are glued it is sealed. From outside nothing shows.
-SKIN_V = 6.0
-SKIRT = 2.5
-WALL = 3.0                        # the slope's wall, measured square to it
-SKIN_MIN = 6.0                    # v14: the top skin over the cavity thins to this where the part is shallow
-CAV_MIN = 1.5                     # v14: the cavity is at least this tall wherever it is
-FIN_OPEN_X = 570.0                # v14: beyond this |x| (the fins) the cavity opens on the hidden pillar side
-JOINT_BAND, JOINT_SKIN, JOINT_CAV = 12.0, 9.5, 1.0   # v14: within JOINT_BAND of a joint face the top skin may be up to
-                                  # JOINT_SKIN thick over a cavity of at least JOINT_CAV (room for the pin walls)
-C_MIN = 10.0                      # the channel only where the back edge is deeper than this (so it is >= 1.5 mm wide)
+RIM_BAND = 8.0                    # v15: underside faces this close to the rim line are split along it point by point
+TIP_T = 1.5                       # rim.py: the v14 tip's offset from the rim line (rim.py still reports it)
+TIP_R = 4.0                       # rim.py: radius of the v14 tip's round
+TIP_EPS = 0.05                    # rim.py: the v14 tip's lowest point below the original underside
+M_FRONT = 1.0                     # rim.py: slope of the v14 tip's front face
 
-# v15 shell, seen from below: the spoiler's own smooth underside everywhere, with ONE opening in the middle, nothing else.
-#   front: where the part is thinner than OPEN_H it stays solid (the front band, where the VHB tape goes, 49-85 mm);
-#   back:  a band BACK_W mm deep in front of the rim line (where the underside leaves the car at the back) stays closed:
-#          the spoiler's own underside, which takes the adhesive bead;
-#   the opening starts on those two lines with a 30-degree ramp (K_WALL = 1/tan) up to the 4 mm ceiling, front and
-#   back alike: each meets the underside along one clean, crisp line (150 degrees). No rounding there: a round peels a
-#   feather-thin sliver off the underside beside the edge, which broke up into a saw-tooth.
-#   The back edge is up to 16 mm deep, so inside the back band a hidden channel keeps every wall T_CH thick; it runs
-#   along the span and opens only on the span seam faces (one closed shell per part, sealed once the parts are glued).
+# v15 shell, seen from below: the spoiler's own smooth underside at the front, then ONE opening that runs all the way to
+# the back edge; nothing else.
+#   front: where the part is thinner than OPEN_H it stays solid (the front band, where the VHB tape goes, 49-85 mm). The
+#          opening starts on that line with a 30-degree ramp (K_WALL = 1/tan) up to the 4 mm ceiling, which meets the
+#          underside along one clean, crisp line (150 degrees). No rounding there: a round peels a feather-thin sliver
+#          off the underside beside the edge, which broke up into a saw-tooth.
+#   back:  no band, no ramp, no brim (the user marked the v15 back band and its ramp as a brim, twice). The opening runs
+#          to the line where the underside leaves the car (the rim line), and the shell wraps round the back edge as a
+#          smooth T_SKIN offset of the outside (the top, the back edge and the lip's own underside), so the rear side seen
+#          from below is as smooth as the top. The shell's edge along the rim line takes the adhesive bead.
+#   The front ramp acts only more than FRONT_TO mm in front of the rim line.
 OPEN_H = 7.0
-BACK_W = 25.0
 K_WALL = 1.73
-T_CH = 4.0
-WALL_FADE_X = (530.0, 570.0)      # both ramps fade out towards the spoiler's ends (the fins, open on their pillar side)
+FRONT_TO = 65.0
+WALL_FADE_X = (530.0, 570.0)      # the front ramp fades out towards the spoiler's ends (the fins, open on their pillar side)
 # Joint lands: within LAND[0] mm of a joint face (front/rear cut, span seam) the skin is LAND_T thick, for the pins
 # (MIN_SKIN_PIN) and tongues (MIN_SKIN_TONGUE); it tapers smoothly back to T_SKIN by LAND[1] mm (a gentle swell, not a
-# step). The span seams' lands end at the back band.
+# step). The span seams' lands end LAND_BACK mm in front of the rim line: behind that the shell is T_SKIN all round.
 LAND_T = 8.6
 LAND = (11.0, 36.0)
+LAND_BACK = 37.0
 SHELL_SIG = 1.0                   # Gaussian smoothing (mm) of the removal field: no voxel steps, every inside corner rounded
 
 # Joints. The print set is the six parts and one pin model (printed as many times as needed), nothing else.

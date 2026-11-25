@@ -34,7 +34,7 @@ class Frame:
 
 def seam_profile(m, fr, side, holes=True):
     """largest polygon of m's section just inside the seam face (side -1: part A, +1: part B), in (u, v); with holes=True
-    the holes in it are cut out (v15: the hidden channel along the back edge opens on the span seam faces)"""
+    the holes in it are cut out (a hole in a seam face is not material)"""
     s = m.section(plane_origin=fr.p0 + side * 0.05 * fr.n, plane_normal=fr.n)
     polys = sorted([Polygon(fr.to2(d)).buffer(0) for d in s.discrete], key=lambda p: -p.area)
     P = polys[0]
@@ -50,7 +50,7 @@ def midline(P, h=0.05):
     uu, vv = np.meshgrid(u0 - 4 * h + np.arange(nu) * h, v0 - 4 * h + np.arange(nv) * h, indexing='ij')
     pts2 = np.column_stack([uu.ravel(), vv.ravel()])
     mask = MPath(np.asarray(P.exterior.coords)).contains_points(pts2).reshape(uu.shape)
-    for ring in P.interiors:                                              # holes (the hidden channel) are not material
+    for ring in P.interiors:                                              # holes in the face are not material
         mask &= ~MPath(np.asarray(ring.coords)).contains_points(pts2).reshape(uu.shape)
     D = ndi.distance_transform_edt(mask) * h
     sk = skeletonize(mask)

@@ -1,7 +1,7 @@
 """v15 step 5: figures in v15/docs/.
   v15_parts.png         the six parts, numbered as marked, from above-behind and from below
   v15_shell.png         the thin shell: sections at the centre and the outer zone (4 mm skin, solid front band, the
-                        opening's 30-degree front wall, the back band and the hollow above it), close-ups from below
+                        opening's 30-degree front ramp, the shell wrapping round the back edge), close-ups from below
   v15_cut_v14_v15.png   the cut faces you marked: v14 (skin, cavity and closed underside) against v15 (the 4 mm shell),
                         at the span seam and at the front/rear cut
   v15_back_v14_v15.png  the underside at the back in v14 (closed) and v15 (open, smooth), same cameras
@@ -16,9 +16,13 @@ import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon as MPoly
 from PIL import Image, ImageDraw, ImageFont
 from trimesh.ray.ray_pyembree import RayMeshIntersector
-from zr import render, grid, label, look_at
+from functools import partial
+from zr import render as zrender, grid, label, look_at
+# per-corner normals: the opening's 30-degree edges are creases lined with thin boolean slivers, and normals smoothed
+# across them draw a false saw-tooth along each edge; shading each corner from the faces near its own face keeps it clean
+render = partial(zrender, corner=20.0)
 from bowtie import tomf, totm
-from layout import (E_PATH, CAR_PATH, OUT, ASM, PRN, DOC, IDS, STEM, LABEL, SEC, HALF_OF, XS, T_SKIN, LAND_T, BACK_W, OPEN_H,
+from layout import (E_PATH, CAR_PATH, OUT, ASM, PRN, DOC, IDS, STEM, LABEL, SEC, HALF_OF, XS, T_SKIN, LAND_T, OPEN_H,
                     TONGUE_BASE, TONGUE_H, CLEAR, GROOVE_EXTRA, CHAMFER_DEG, HOLE_D, HOLE_DEPTH, PIN_D, PIN_L, chord_plane)
 os.makedirs(DOC, exist_ok=True)
 parts = {pid: trimesh.load(f'{ASM}/{STEM[pid]}.stl') for pid in IDS}
@@ -63,6 +67,7 @@ def full_rear(sec):
 FULL = {'P3': full_rear('C'), 'P1': full_rear('L')}
 FULL['P3'].export(f'{OUT}/full_P3.stl')                              # for the studio close-up (blend_scene.py rim)
 E = trimesh.load(E_PATH); car = trimesh.load(CAR_PATH, process=False)
+_st = np.load(f'{OUT}/rim_curve.npz'); _o = np.argsort(_st['x']); RIM = np.column_stack([_st['x'][_o], _st['z'][_o]])
 fig, axs = plt.subplots(2, 1, figsize=(15, 9.6))
 for ax, (x, pp) in zip(axs, [(-100.0, ('P3', 'P4')), (-440.0, ('P1', 'P2'))]):
     outline(ax, E, [x, 0, 0], [1, 0, 0], (2, 1), fc='#eef0f3', ec='#b9bec7', lw=0.8, label='solid spoiler (v8-v14 outside)')
@@ -80,20 +85,23 @@ for ax, (x, pp) in zip(axs, [(-100.0, ('P3', 'P4')), (-440.0, ('P1', 'P2'))]):
     h = hits(zm, R)
     if len(h) >= 2:
         ax.annotate('skin %.1f mm' % (h[-1] - h[-2]), (zm, 0.5 * (h[-1] + h[-2])), (zm - 25, y1 + 9), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
-        ax.annotate('open underneath: nothing\nbut the 4 mm skin here', (zm + 4, h[-2] - 2.5), (zm + 26, y0 - 9), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
+        ax.annotate('open underneath: nothing\nbut the 4 mm skin here', (zm + 4, h[-2] - 2.5), (zm - 12, y0 - 9), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
     zf = z0 + 0.12 * (z1 - z0)
     ax.annotate('solid where thinner than %.0f mm\n(the tape band at the front)' % OPEN_H, (zf, y1 - 0.25 * (y1 - y0)), (zf + 8, y1 + 12), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
-    ax.annotate('back band: the spoiler\'s own underside on the car\n(adhesive), a hidden channel inside', (z1 - 0.27 * (z1 - z0), y0 + 0.30 * (y1 - y0)), (z1 - 0.18 * (z1 - z0), y0 - 11), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
-    ax.set_xlim(z0 - 4, z1 + 6); ax.set_ylim(y0 - 16, y1 + 18); ax.set_aspect('equal'); ax.grid(alpha=0.25)
+    zb = float(np.interp(x, RIM[:, 0], RIM[:, 1])) - 2.0                  # the shell's edge along the rim line
+    loc, _, _ = RayMeshIntersector(E).intersects_location([[x, y0 - 30, zb]], [[0, 1.0, 0]], multiple_hits=False)
+    yb = float(loc[0, 1]) if len(loc) else y0
+    ax.annotate('back edge: no band, no brim - the %.0f mm shell wraps round it;\nits edge on the car takes the adhesive' % T_SKIN, (zb, yb), (zb + 0.02 * (z1 - z0), y0 - 22), fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', lw=0.8))
+    ax.set_xlim(z0 - 4, z1 + 6); ax.set_ylim(y0 - 27, y1 + 18); ax.set_aspect('equal'); ax.grid(alpha=0.25)
     ax.legend(loc='upper right', fontsize=8, framealpha=0.9)
-    ax.set_title('section at x = %.0f mm (%s), z to the rear: one opening, a %d-degree ramp at each end, '
+    ax.set_title('section at x = %.0f mm (%s), z to the rear: one opening: a %d-degree ramp at the front, open right to the back edge; '
                  'joint land %.1f mm at the front/rear cut' % (x, 'centre' if x > -216 else 'outer zone', 30, LAND_T), fontsize=10)
 plt.tight_layout(); plt.savefig(f'{DOC}/_shell_sec.png', dpi=105); plt.close()
 sec = Image.open(f'{DOC}/_shell_sec.png'); os.remove(f'{DOC}/_shell_sec.png')
 r1 = render([(FULL['P3'], c)], eye=(-120, -150, 330), target=(-100, 15, 190), up=(0, 1, 0), fov=40, W=900, H=560, spec=0.3)
 r2 = render([(FULL['P3'], c)], eye=(-60, -260, 60), target=(-60, 15, 165), up=(0, 1, 0), fov=52, W=900, H=560, spec=0.3)
 r3 = render([(FULL['P1'], c)], eye=(-430, -160, 300), target=(-440, 0, 170), up=(0, 1, 0), fov=44, W=900, H=560, spec=0.3)
-row = grid([label(r1, 'from below-behind: the back band and the lip (part 3)', size=18), label(r2, 'from below-front: into the shell (part 3)', size=18),
+row = grid([label(r1, 'from below-behind: the back edge and the lip (part 3)', size=18), label(r2, 'from below-front: into the shell (part 3)', size=18),
             label(r3, 'outer zone from below-behind (part 1)', size=18)], cols=3)
 W = max(sec.width, row.width); canvas = Image.new('RGB', (W, sec.height + row.height), (255, 255, 255))
 canvas.paste(sec, ((W - sec.width) // 2, 0)); canvas.paste(row.resize((W, int(row.height * W / row.width))) if row.width != W else row, (0, sec.height))

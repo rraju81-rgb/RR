@@ -21,8 +21,8 @@ from trimesh.ray.ray_pyembree import RayMeshIntersector
 from parity import fill_inside
 from bowtie import tomf, totm
 from check import report
-from layout import (E_PATH, CAR_PATH, OUT, HALF, SECTIONS, T_SKIN, S_FIN, FIN_X, VOX, MARGIN, UNDER_GAP, CUT_GAP, RIM_X,
-                    TIP_T, OPEN_H, BACK_W, K_WALL, T_CH, WALL_FADE_X, LAND_T, LAND, SHELL_SIG, chord_plane)
+from layout import (E_PATH, CAR_PATH, OUT, HALF, SECTIONS, T_SKIN, S_FIN, FIN_X, VOX, MARGIN, UNDER_GAP, CUT_GAP, RIM_X, RIM_BAND,
+                    TIP_T, OPEN_H, K_WALL, FRONT_TO, WALL_FADE_X, LAND_T, LAND, LAND_BACK, SHELL_SIG, chord_plane)
 import rim
 
 def car_distance(E, car, direction=None):
@@ -100,7 +100,16 @@ def decimate_clean(m0, name, percs=(0.12, 0.2, 0.35, 0.55), max_dev=0.02):
         if not (md.is_watertight and md.is_winding_consistent) or abs(md.volume - m0.volume) > 5e-4 * abs(m0.volume): continue
         P = md.sample(20000); _, d, _ = trimesh.proximity.closest_point(m0, P)
         if d.max() > max_dev: continue
-        if written_folds(md, name) == 0: return md, perc
+        nf = written_folds(md, name)
+        if nf == 0: return md, perc
+        if nf < 100:
+            # v15: the collapse can fold a few tiny faces where the shell's inner surfaces meet in a sharp V (inside the
+            # pocket under the lip); take them out and fill as for the booleans, then check the result the same way
+            try: mu, _ = unfold(md, name)
+            except AssertionError: continue
+            P = mu.sample(20000); _, d, _ = trimesh.proximity.closest_point(m0, P)
+            if d.max() <= max_dev and abs(mu.volume - m0.volume) <= 5e-4 * abs(m0.volume) and written_folds(mu, name) == 0:
+                return mu, perc
     return m0, 1.0
 
 def unfold(m, name='', rounds=6):
@@ -170,15 +179,28 @@ def clean_cuttable(E, cuttable, max_area=500.0):
     print('cuttable: %d small islands of visible faces made cuttable' % n, flush=True)
     return out
 
+def clean_hidden(E, hidden, max_area=1.0):
+    """v15: the reverse of clean_cuttable. A line of slivers runs across the top surface (near-zero area, so their normals
+    are noise), and some pass the cuttable tests. As hidden points they would tell the coring that the underside is right
+    there under the top skin: the channel in the back band then stops short and leaves the part 11.5 mm thick at the top of
+    the back ramp. Small islands of hidden faces inside the visible surface are visible."""
+    adj = E.face_adjacency; kk = hidden[adj[:, 0]] & hidden[adj[:, 1]]
+    comps = trimesh.graph.connected_components(adj[kk], nodes=np.flatnonzero(hidden), min_len=1)
+    big = max(len(c) for c in comps); out = hidden.copy(); n = 0
+    for c in comps:
+        if len(c) < big and E.area_faces[c].sum() < max_area: out[c] = False; n += 1
+    print('hidden: %d small islands of hidden faces made visible' % n, flush=True)
+    return out
+
 def smoothstep(t):
     t = np.clip(t, 0.0, 1.0); return t * t * (3.0 - 2.0 * t)
 
 def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
     """v15: the region to remove inside box, as a closed mesh (grid on the global lattice): one opening, everything more
-    than the skin below the visible faces (vis_pts), open through the underside on the car (hid_pts), between a 30-degree
-    ramp at the front (where the part gets OPEN_H thick) and one at the back (BACK_W in front of the rim line); joint
-    lands along the cuts; and a hidden channel inside the back band. One field, Gaussian-smoothed, so the inside of the
-    shell is smooth everywhere, nothing starts with a step and the opening's edges are clean lines.
+    than the skin below the visible faces (vis_pts), open through the underside on the car (hid_pts), from a 30-degree
+    ramp at the front (where the part gets OPEN_H thick) all the way to the back edge, where the shell wraps round as a
+    smooth offset of the outside (no band, no ramp, no brim); joint lands along the cuts. One field, Gaussian-smoothed,
+    so the inside of the shell is smooth everywhere, nothing starts with a step and the opening's edges are clean lines.
     rim_xz: the rim line in plan (x, z), sorted by x.
     A removal piece is kept if it opens through the hidden faces, or runs through one of the section's seams (x in
     seams) or across its front/rear cut (chord = (n, d)); anything sealed is left solid."""
@@ -195,34 +217,26 @@ def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
     gx, gz = np.gradient(th, VOX); g = np.maximum(np.hypot(gx, gz), 0.03); del gx, gz
     s_o = np.clip((th - OPEN_H) / g, -40.0, 40.0); del th, g             # plan distance past the line where it is OPEN_H thick
     zr = np.interp(xs, rim_xz[:, 0], rim_xz[:, 1])[:, None]
-    s_b = np.clip(zr - Z - BACK_W, -40.0, 40.0)                          # plan distance in front of the back band
     fade = 1.0 - smoothstep((np.abs(X) - WALL_FADE_X[0]) / (WALL_FADE_X[1] - WALL_FADE_X[0]))
-    f_front = fade * (1.0 - smoothstep((Z - (zr - BACK_W - 40.0)) / 15.0))   # the front ramp belongs to the front only
+    f_front = fade * (1.0 - smoothstep((Z - (zr - FRONT_TO)) / 15.0))   # the front ramp belongs to the front only
     s_o = (s_o * f_front + 40.0 * (1.0 - f_front)).astype(np.float32)[:, None, :]; del f_front
-    s_b = (s_b * fade + 40.0 * (1.0 - fade)).astype(np.float32)[:, None, :]
     d_ch = np.abs(chord[0][0] * X + chord[0][2] * Z - chord[1])
     w = 1.0 - smoothstep((d_ch - LAND[0]) / (LAND[1] - LAND[0]))
-    for sx in seams:                                                     # span seams: up to the back band
-        w_s = (1.0 - smoothstep((np.abs(X - sx) - LAND[0]) / (LAND[1] - LAND[0]))) * (1.0 - smoothstep((Z - (zr - BACK_W - 12.0)) / 10.0))
+    for sx in seams:                                                     # span seams: they end before the back edge
+        w_s = (1.0 - smoothstep((np.abs(X - sx) - LAND[0]) / (LAND[1] - LAND[0]))) * (1.0 - smoothstep((Z - (zr - LAND_BACK)) / 10.0))
         w = np.maximum(w, w_s)
     t_skin = (T_SKIN + (LAND_T - T_SKIN) * w).astype(np.float32)[:, None, :]
     del X, Z, d_ch, w, fade
     # exact distances where they matter (the lands are 8.6 mm, the ramps up to ~12 mm), the distance transform beyond
     D = distance_field(vis_pts, lo, hi, shape, near_in, lambda D: D < 12.5)                 # below the visible faces
     Dh = distance_field(hid_pts, lo, hi, shape, near_in, lambda D: D < 12.5)                # over the underside on the car
-    S = np.minimum(D, Dh); np.negative(S, out=S, where=inside)           # signed distance to the body (negative inside)
     kn = 1.0 / np.sqrt(1.0 + K_WALL ** 2)
-    Wb = Dh * (-K_WALL); Wb += s_b; Wb *= kn                             # > 0 in front of the back ramp
-    # the hidden channel inside the back band: at least T_CH from the top, the lip, the underside and the back ramp
-    C_ = D - T_CH; np.minimum(C_, Dh - T_CH, out=C_); np.minimum(C_, -Wb - T_CH, out=C_)
-    np.copyto(C_, -1.0, where=~inside)
-    # the opening: more than the skin below the visible faces, and past both ramps
+    # the opening: more than the skin below the visible faces (the top, the back edge, the lip's own underside behind the
+    # rim line), and past the front ramp. At the back nothing else: the shell wraps round the back edge as a smooth offset
     D -= t_skin
-    W = Dh * (-K_WALL); W += s_o; W *= kn; np.minimum(D, W, out=D); del W
-    np.minimum(D, Wb, out=D); del Wb, Dh
-    np.maximum(D, C_, out=D); del C_                                     # opening or channel
-    G = ndi.gaussian_filter(D, SHELL_SIG / VOX); del D, S                # smooth: rounded inside corners, no voxel steps; the
-                                                                        # ramps meet the underside along a crisp, clean line
+    W = Dh * (-K_WALL); W += s_o; W *= kn; np.minimum(D, W, out=D); del W, Dh
+    G = ndi.gaussian_filter(D, SHELL_SIG / VOX); del D                   # smooth: rounded inside corners, no voxel steps; the
+                                                                        # front ramp meets the underside along a crisp, clean line
     zone = ndi.binary_dilation(inside, iterations=2)
     G[~zone] = -1.0
     deep = G > 0
@@ -278,11 +292,21 @@ if __name__ == '__main__':
     o = np.argsort(st['x']); rim_xz = np.column_stack([st['x'][o], st['z'][o]])
     # v15: the shell opens only through faces that sit on (or face) the car IN FRONT of the rim line, and through the fins'
     # pillar side; behind the rim line the spoiler's own underside (under the ducktail lip) is a visible face with its skin
-    c = E.triangles_center
-    hidden = cuttable & ((c[:, 2] < np.interp(c[:, 0], rim_xz[:, 0], rim_xz[:, 1])) | (np.abs(c[:, 0]) > RIM_X))
+    c = E.triangles_center; zr_c = np.interp(c[:, 0], rim_xz[:, 0], rim_xz[:, 1])
+    hidden = cuttable & ((c[:, 2] < zr_c) | (np.abs(c[:, 0]) > RIM_X))
+    hidden = clean_hidden(E, hidden)
     np.save(f'{OUT}/E2_contact.npy', contact); np.save(f'{OUT}/E2_cuttable.npy', hidden)
-    vis_pts = surface_points(trimesh.Trimesh(E.vertices, E.faces[~hidden], process=False), 0.35)
-    hid_pts = surface_points(trimesh.Trimesh(E.vertices, E.faces[hidden], process=False), 0.35)
+    # v15: along the rim line the underside is split point by point, not face by face. E4's faces there are up to 7.5 mm
+    # long (in the centre), so a face-by-face split steps along the line, and the shell's back edge (4 mm in front of it)
+    # followed the steps: +-0.6 mm every 7.5 mm. Underside faces within RIM_BAND of the line give their sample points to the
+    # open side in front of the line and to the skin side behind it.
+    band = (cuttable & (np.abs(c[:, 0]) <= RIM_X) & (np.abs(c[:, 2] - zr_c) < RIM_BAND) & (E.face_normals[:, 1] < 0.0)
+            & (hidden | (c[:, 2] >= zr_c)))
+    vis_pts = surface_points(trimesh.Trimesh(E.vertices, E.faces[~hidden & ~band], process=False), 0.35)
+    hid_pts = surface_points(trimesh.Trimesh(E.vertices, E.faces[hidden & ~band], process=False), 0.35)
+    bp = surface_points(trimesh.Trimesh(E.vertices, E.faces[band], process=False), 0.35)
+    front = bp[:, 2] < np.interp(bp[:, 0], rim_xz[:, 0], rim_xz[:, 1])
+    vis_pts = np.vstack([vis_pts, bp[~front]]); hid_pts = np.vstack([hid_pts, bp[front]]); del bp, front
     inner = np.abs(st['x']) < 540
     print('rim: %d stations, x %.0f..%.0f; back edge %.1f-%.1f mm deep at the rim; %d visible, %d hidden faces; %.1fs' % (
         len(st['x']), st['x'].min(), st['x'].max(), np.nanmin(st['depth_tip'][inner]), np.nanmax(st['depth_tip'][inner]),
