@@ -200,7 +200,10 @@ def shell_mesh(RE, vis_pts, hid_pts, box, seams, chord, rim_xz):
     t_rim -= (NOSE_T + 1.0) * np.clip((s_r - RIM_L) / NOSE_L, 0.0, 1.0)      # then the nose (-1: open)
     fade = 1.0 - smoothstep((np.abs(X) - LAYER_FADE_X[0]) / (LAYER_FADE_X[1] - LAYER_FADE_X[0]))
     t_rim = (t_rim * fade - (1.0 - fade)).astype(np.float32)[:, None, :]   # -1: no layer (open)
-    s_o = (s_o * fade + 40.0 * (1.0 - fade)).astype(np.float32)[:, None, :]
+    # the front wall belongs to the front of the opening only: towards the back band it fades out (its height above the
+    # underside would read as distance behind the rim line there and close the hollow under the back edge too early)
+    f_front = fade * (1.0 - smoothstep((Z - (zr - RIM_L - 30.0)) / 15.0))
+    s_o = (s_o * f_front + 40.0 * (1.0 - f_front)).astype(np.float32)[:, None, :]; del f_front
     d_ch = np.abs(chord[0][0] * X + chord[0][2] * Z - chord[1])
     w = 1.0 - smoothstep((d_ch - LAND[0]) / (LAND[1] - LAND[0]))
     for sx in seams:                                                     # span seams: stop short of the back band
