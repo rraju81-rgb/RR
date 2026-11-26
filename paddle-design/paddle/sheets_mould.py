@@ -251,7 +251,8 @@ def mould_sheet(outlines: dict, report: dict | None = None) -> Doc:
     d.leader_note(Y((it["g0"] + it["g1"]) / 2, f - M.groove_d / 2), (Y(it["g1"], 0)[0] + 6, Y(0, wz1)[1] - 4),
                   f"LAND {fmt(M.land)}, GROOVE {fmt(M.groove_w)} × {fmt(M.groove_d)}", 2.3)
     xw = min(wave.crossings(wx0 + 1.5, it["xi"] - 1), key=lambda x: abs(x - (wx0 + 6)))  # a wall at the mid-plane
-    d.leader_note(Y(xw, M.shift), (Y(wx0, 0)[0] - 3, Y(0, wz0)[1] + 9), f"WALL {fmt(C.rib_t)} (CARBON)", 2.3)
+    d.leader_note(Y(xw, M.shift), (Y(wx0, 0)[0] - 3, Y(0, wz0)[1] + 9),
+                  f"{'WEB' if wave.is_square() else 'WALL'} {fmt(C.rib_t)} (CARBON)", 2.3)
     xl = (it["aw"] + xb_[0]) / 2 if xb_ else it["aw"] + 6
     d.text(Y(xl, 0.0), "MAIN PLATE", 2.2, fill=GREY)
     d.text((Y(wx0, 0)[0], Y(0, wz1)[1] - 2.0), "TOP PLATE (BROKEN)", 2.2, anchor="start", fill=GREY)

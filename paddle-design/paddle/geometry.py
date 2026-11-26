@@ -138,12 +138,16 @@ class Construction:
     face_t: float = 0.3          # carbon-fibre face sheet, top and bottom (identical parts)
     core_t: float = 10.0         # rib core height between the face sheets
     frame_w: float = 10.0        # closed perimeter frame of the rib core (covers the whole side)
-    rib_pitch: float = 22.0      # wave length (crest to crest) across the width: 8 waves inside the
-                                 # 10 mm frame of either paddle (REV E had 18 mm, 11 waves)
+    rib_pitch: float = 21.2      # wave length (crest to crest) across the width: 8 waves inside the
+                                 # 10 mm frame of either paddle, and no tooth narrower than 4.8 mm beside it
     rib_phase: float = 0.5       # crest offset from the centre line, in pitches: 0.5 puts a trough on the
                                  # centre line, so the 8 crests (and the tray's 8 teeth) sit 4 each side
-    rib_t: float = 1.6           # wave-rib wall thickness
-    rib_amp: float = 5.2         # wave centre-line amplitude; crests are cut flat at the faces = bond lands
+    rib_profile: str = "square"  # "square": flat lands against each face joined by webs square to the
+                                 # faces; "sine": the sinusoidal wave of REV B-J, crests cut flat into lands
+    rib_t: float = 1.6           # wave-rib wall (sheet) thickness
+    rib_draft: float = 1.5       # square profile: the webs lean this many degrees, so every flute (and the
+                                 # mould tooth that forms it) is wider at its open face and releases
+    rib_amp: float = 5.2         # sine profile: centre-line amplitude; crests are cut flat at the faces = lands
     solid_to: float = 150.0      # core is solid from the butt up to this height (handle + throat)
     runout_len: float = 10.0     # flute run-out: 45 deg ramp, longest at the flute's open face so the mould
                                  # tooth pulls straight out (and it prints without support); 0 = square

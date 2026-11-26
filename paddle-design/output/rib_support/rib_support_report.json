@@ -1,22 +1,22 @@
 {
- "note": "rib support = 10 mm wave-rib core, frame 10 mm, wave pitch 22 / wall 1.6 / amplitude 5.2 mm, solid to y = 150 with 45 deg run-outs, M3 insert bore in the butt; one piece, print flat, 100 % infill, no supports",
+ "note": "rib support = 10 mm wave-rib core (square profile), frame 10 mm, wave pitch 21.2 / wall 1.6 mm, solid to y = 150 with 45 deg run-outs, M3 insert bore in the butt; one piece, print flat, 100 % infill, no supports",
  "designs": {
   "elongated": {
    "file": "elongated_rib_support.stl",
-   "triangles": 41990,
+   "triangles": 2372,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 190.34,
-   "cad_volume_cm3": 190.47,
+   "volume_cm3": 222.87,
+   "cad_volume_cm3": 222.88,
    "size_mm": [
     200.0,
     385.0,
     10.0
    ],
    "mass_g": {
-    "PA-CF": 224.6,
-    "PETG": 241.7,
-    "PLA": 236.0
+    "PA-CF": 263.0,
+    "PETG": 283.0,
+    "PLA": 276.4
    },
    "fits_bed": [
     "400 x 400",
@@ -25,20 +25,20 @@
   },
   "hybrid": {
    "file": "hybrid_rib_support.stl",
-   "triangles": 38258,
+   "triangles": 2536,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 182.7,
-   "cad_volume_cm3": 182.27,
+   "volume_cm3": 212.0,
+   "cad_volume_cm3": 212.02,
    "size_mm": [
     190.0,
     385.0,
     10.0
    ],
    "mass_g": {
-    "PA-CF": 215.6,
-    "PETG": 232.0,
-    "PLA": 226.5
+    "PA-CF": 250.2,
+    "PETG": 269.2,
+    "PLA": 262.9
    },
    "fits_bed": [
     "400 x 400",

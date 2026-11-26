@@ -12,8 +12,8 @@
     "watertight": true
    },
    "rib_core": {
-    "volume_cm3": 190.47,
-    "mass_g": 285.7,
+    "volume_cm3": 222.88,
+    "mass_g": 334.33,
     "watertight": true
    },
    "face_sheet_bottom": {
@@ -37,9 +37,9 @@
     "watertight": true
    }
   },
-  "mass_g": 393.9,
-  "balance_mm": 205.8,
-  "swing_weight_kgcm2": 96.8
+  "mass_g": 442.5,
+  "balance_mm": 213.1,
+  "swing_weight_kgcm2": 113.0
  },
  "hybrid": {
   "parts": {
@@ -49,8 +49,8 @@
     "watertight": true
    },
    "rib_core": {
-    "volume_cm3": 182.27,
-    "mass_g": 273.4,
+    "volume_cm3": 212.02,
+    "mass_g": 318.04,
     "watertight": true
    },
    "face_sheet_bottom": {
@@ -74,8 +74,8 @@
     "watertight": true
    }
   },
-  "mass_g": 378.7,
-  "balance_mm": 200.6,
-  "swing_weight_kgcm2": 87.6
+  "mass_g": 423.3,
+  "balance_mm": 207.8,
+  "swing_weight_kgcm2": 101.8
  }
 }

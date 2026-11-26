@@ -1,5 +1,5 @@
 {
- "note": "stack mould for both paddles: main plate 30 mm (elongated cavity in the top face, 10 mm web, hybrid cavity in the bottom face) between two 10 mm clamp plates that carry the top-flute teeth. Each cavity is the 10 mm rib support (wave walls 1.6 mm, frame 10 mm, solid to y = 150); the clamp plates seat flat on the main plate. Fill: chopped carbon fibre + epoxy.",
+ "note": "stack mould for both paddles: main plate 30 mm (elongated cavity in the top face, 10 mm web, hybrid cavity in the bottom face) between two 10 mm clamp plates that carry the top-flute teeth. Each cavity is the 10 mm rib support (square-wave rib, webs and lands 1.6 mm, frame 10 mm, solid to y = 150); the clamp plates seat flat on the main plate. Fill: chopped carbon fibre + epoxy.",
  "top_cavity": "elongated",
  "bottom_cavity": "hybrid",
  "main_mm": 30.0,
@@ -13,20 +13,20 @@
  "plates": {
   "main_plate": {
    "file": "mould_main_plate.stl",
-   "triangles": 52680,
+   "triangles": 15478,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 1523.68,
-   "cad_volume_cm3": 1523.67,
+   "volume_cm3": 1485.13,
+   "cad_volume_cm3": 1485.2,
    "size_mm": [
     244.0,
     429.0,
     30.0
    ],
    "mass_g": {
-    "PLA": 1889.4,
-    "PETG": 1935.1,
-    "PA-CF": 1797.9
+    "PLA": 1841.6,
+    "PETG": 1886.1,
+    "PA-CF": 1752.5
    },
    "fits_bed": [
     "500 x 500"
@@ -34,20 +34,20 @@
   },
   "main_upper_half": {
    "file": "mould_main_upper_half.stl",
-   "triangles": 30888,
+   "triangles": 12624,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 748.64,
-   "cad_volume_cm3": 748.66,
+   "volume_cm3": 728.87,
+   "cad_volume_cm3": 728.92,
    "size_mm": [
     244.0,
     429.0,
     15.0
    ],
    "mass_g": {
-    "PLA": 928.3,
-    "PETG": 950.8,
-    "PA-CF": 883.4
+    "PLA": 903.8,
+    "PETG": 925.7,
+    "PA-CF": 860.1
    },
    "fits_bed": [
     "500 x 500"
@@ -55,20 +55,20 @@
   },
   "main_lower_half": {
    "file": "mould_main_lower_half.stl",
-   "triangles": 31644,
+   "triangles": 12706,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 775.04,
-   "cad_volume_cm3": 775.65,
+   "volume_cm3": 756.26,
+   "cad_volume_cm3": 756.28,
    "size_mm": [
     244.0,
     429.0,
     15.0
    ],
    "mass_g": {
-    "PLA": 961.0,
-    "PETG": 984.3,
-    "PA-CF": 914.5
+    "PLA": 937.8,
+    "PETG": 960.5,
+    "PA-CF": 892.4
    },
    "fits_bed": [
     "500 x 500"
@@ -76,20 +76,20 @@
   },
   "top_plate": {
    "file": "mould_top_plate.stl",
-   "triangles": 33112,
+   "triangles": 10364,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 882.48,
-   "cad_volume_cm3": 882.26,
+   "volume_cm3": 869.73,
+   "cad_volume_cm3": 869.77,
    "size_mm": [
     244.0,
     429.0,
-    19.4
+    18.4
    ],
    "mass_g": {
-    "PLA": 1094.3,
-    "PETG": 1120.8,
-    "PA-CF": 1041.3
+    "PLA": 1078.5,
+    "PETG": 1104.6,
+    "PA-CF": 1026.3
    },
    "fits_bed": [
     "500 x 500"
@@ -97,20 +97,20 @@
   },
   "bottom_plate": {
    "file": "mould_bottom_plate.stl",
-   "triangles": 28200,
+   "triangles": 10436,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 863.82,
-   "cad_volume_cm3": 863.55,
+   "volume_cm3": 853.29,
+   "cad_volume_cm3": 853.35,
    "size_mm": [
     244.0,
     429.0,
-    19.4
+    18.4
    ],
    "mass_g": {
-    "PLA": 1071.1,
-    "PETG": 1097.0,
-    "PA-CF": 1019.3
+    "PLA": 1058.1,
+    "PETG": 1083.7,
+    "PA-CF": 1006.9
    },
    "fits_bed": [
     "500 x 500"
@@ -120,11 +120,11 @@
  "cavities": {
   "elongated": {
    "face": "top",
-   "part_volume_cm3": 190.6,
-   "part_mass_g": 285.9,
-   "charge_g": 315,
-   "open_volume_cm3": 343.2,
-   "open_over_part": 1.8,
+   "part_volume_cm3": 223.0,
+   "part_mass_g": 334.6,
+   "charge_g": 368,
+   "open_volume_cm3": 362.9,
+   "open_over_part": 1.63,
    "cavity_vs_part_mm3": 0,
    "clash_mm3": {
     "main": 0,
@@ -133,11 +133,11 @@
   },
   "hybrid": {
    "face": "bottom",
-   "part_volume_cm3": 182.4,
-   "part_mass_g": 273.6,
-   "charge_g": 301,
-   "open_volume_cm3": 316.3,
-   "open_over_part": 1.73,
+   "part_volume_cm3": 212.2,
+   "part_mass_g": 318.3,
+   "charge_g": 350,
+   "open_volume_cm3": 335.6,
+   "open_over_part": 1.58,
    "cavity_vs_part_mm3": 0,
    "clash_mm3": {
     "main": 0,

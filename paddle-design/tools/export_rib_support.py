@@ -53,8 +53,8 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for old in OUT.glob("*.stl"):                  # the REV C two-piece files must not linger
         old.unlink()
-    report = dict(note=f"rib support = {C.core_t:g} mm wave-rib core, frame {C.frame_w:g} mm, wave pitch "
-                       f"{C.rib_pitch:g} / wall {C.rib_t:g} / amplitude {C.rib_amp:g} mm, solid to y = {C.solid_to:g} "
+    report = dict(note=f"rib support = {C.core_t:g} mm wave-rib core ({C.rib_profile} profile), frame {C.frame_w:g} mm, "
+                       f"wave pitch {C.rib_pitch:g} / wall {C.rib_t:g} mm, solid to y = {C.solid_to:g} "
                        f"with 45 deg run-outs, M3 insert bore in the butt; one piece, print flat, 100 % infill, "
                        f"no supports", designs={})
     for sp in DESIGNS:

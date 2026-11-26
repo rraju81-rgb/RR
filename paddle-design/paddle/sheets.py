@@ -19,7 +19,7 @@ from .geometry import GRIP, Outline, PaddleSpec
 from .pictorial import ISOMETRIC, project
 from .svgkit import Doc, View, f, fmt, frame_iso, hatch_pattern, projection_symbol_first_angle
 
-ISSUE = {"rev": "J", "date": "2026-11-23", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
+ISSUE = {"rev": "K", "date": "2026-11-26", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
 SHEETS = 3                                  # sheets per paddle drawing (the mould is PB-MO-003)
 USAP_SUM, USAP_LEN = 609.6, 431.8          # 24 in (length + width), 17 in (length)
 GREY = "#555"
@@ -120,7 +120,8 @@ def ga_notes(o: Outline, mass: dict | None = None) -> list[str]:
         f"{sp.drawing_no}_profile.dxf\n(TEMPLATE: SHEET 2)" + (", OUTER EDGES R0.8." if C.face_t > 1.6 else
                                                                    ", TRIMMED FLUSH WITH THE CORE EDGE."),
         f"RIB SUPPORT (CORE): CARBON FIBRE MOULDED IN ONE PIECE IN THE STACK MOULD PB-MO-003, CLOSED\n"
-        f"FRAME {fmt(C.frame_w)}, WAVE RIB λ{fmt(C.rib_pitch)} / WALL {fmt(C.rib_t)} / LANDS {wave.land_width():.2f}, "
+        f"FRAME {fmt(C.frame_w)}, {wave.rib_name()} λ{fmt(C.rib_pitch)} / {'WEBS' if wave.is_square() else 'WALL'} "
+        f"{fmt(C.rib_t)} / LANDS {wave.land_width():.2f}, "
         f"SOLID TO y = {fmt(C.solid_to)}, 45° FLUTE RAMPS – SEE SHEET 3.",
         "SKINS BONDED TO THE CORE: EPOXY, ABRADED + PRIMED FACES, PRESSED FLAT BETWEEN PLATENS OR IN A\n"
         "VACUUM BAG.",

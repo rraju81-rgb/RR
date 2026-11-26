@@ -66,8 +66,10 @@ def core_notes(o: Outline, mass: dict | None) -> list[str]:
         "≈ 40 % BY VOLUME, ρ ≈ 1.5 g/cm³). THE PRINTED STL (NOTE 8) IS A TRIAL PIECE / PRINTED ALTERNATIVE.",
         f"THICKNESS {fmt(C.core_t)}, SET BY THE MOULD (PB-MO-003): CLAMP PLATE ON THE MAIN PLATE. BOTH FACES ARE "
         f"BOND SURFACES.",
-        f"WAVE RIB λ{fmt(C.rib_pitch)}, {len(wave.crests(C.frame_w - sp.width / 2, sp.width / 2 - C.frame_w))} WAVES SYMMETRIC ABOUT THE "
-        f"CENTRE LINE, WALL {fmt(C.rib_t)}, AMPLITUDE {fmt(C.rib_amp)}; LANDS {wave.land_width():.2f} BOTH FACES.",
+        f"{wave.rib_name()} λ{fmt(C.rib_pitch)}, {len(wave.crests(C.frame_w - sp.width / 2, sp.width / 2 - C.frame_w))} "
+        f"WAVES SYMMETRIC ABOUT THE CENTRE LINE, " +
+        (f"WEBS {fmt(C.rib_t)} ({C.rib_draft:g}° DRAFT)" if wave.is_square() else
+         f"WALL {fmt(C.rib_t)}, AMPLITUDE {fmt(C.rib_amp)}") + f"; LANDS {wave.land_width():.2f} BOTH FACES.",
         f"FRAME {fmt(C.frame_w)}, CLOSED. SOLID TO y = {fmt(C.solid_to)}; EACH FLUTE ENDS IN A 45° RAMP, "
         f"{fmt(C.runout_len)} LONG, LONGEST AT\nITS OPEN FACE (D–D), SO THE MOULD TEETH PULL STRAIGHT OUT.",
         f"AFTER MOULDING DRILL Ø{fmt(C.insert_d)} × {fmt(C.insert_depth)} + Ø{fmt(C.screw_relief_d)} × "
@@ -111,11 +113,8 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
         for seg in _segments(LineString([(x0, y_open), (x1, y_open)]).intersection(inner)):
             d.poly([P(q) for q in seg], "vis")
     hc_ = C.core_t / 2                            # lower edge of each top-flute run-out (meets the flute floor)
-    for ua, ub in wave.channel_bounds(a + C.rib_pitch, +1):
-        pts = []
-        for i in range(61):
-            xs_, zs_ = wave.surface_point(ua + (ub - ua) * i / 60, +1)
-            pts.append((xs_, C.solid_to + C.runout_len * (hc_ - zs_) / (2 * hc_)))
+    for floor in wave.flute_floors(a + C.rib_pitch, +1):
+        pts = [(xs_, C.solid_to + C.runout_len * (hc_ - zs_) / (2 * hc_)) for xs_, zs_ in floor]
         for seg in _segments(LineString(pts).intersection(inner)):
             d.poly([P(q) for q in seg], "vis")
     y0 = sp.cap_length                            # insert bore + clearance (hidden)
@@ -168,25 +167,25 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
     d.rect(p[0], p[1], q[0] - p[0], q[1] - p[1], "vis", extra=fill(H["core"]))
     d.poly([Cc(x, z) for x, z in wave.wall_polygon(xs, xi)], "vis", closed=True, extra=fill(H["core"]))
     break_line(d, Cc(xs, hc + C.face_t + 1), Cc(xs, -hc - C.face_t - 1))
-    d.poly([Cc(x, wave.centre_line(x)) for x in [xs + i * (xi - xs) / 200 for i in range(201)]], "ctr")
+    d.poly([Cc(x, z) for x, z in wave.centre_line_points(xs, xi)], "ctr")
     crests = wave.crests(xs + 3, xi - 3)
     c1, c2 = crests[-2:] if len(crests) > 1 else (crests[0] - C.rib_pitch, crests[0])
     ztop = hc + C.face_t
     d.dim_linear(Cc(c1, ztop), Cc(c2, ztop), "x", zc - ztop * S2 - 6, fmt(C.rib_pitch))
     lw = wave.land_width()
-    d.dim_linear(Cc(c1 - lw / 2, hc), Cc(c1 + lw / 2, hc), "x", zc - ztop * S2 - 13, f"{lw:.2f}", outside=True)
+    d.dim_linear(Cc(c2 - lw / 2, hc), Cc(c2 + lw / 2, hc), "x", zc - ztop * S2 - 13, f"{lw:.2f}", outside=True)
     d.dim_linear(Cc(xi, ztop), Cc(aw, ztop), "x", zc - ztop * S2 - 6, fmt(C.frame_w))
     d.dim_linear(Cc(aw, hc), Cc(aw, -hc), "y", xc + aw * S2 + 6, fmt(C.core_t))
     # wall thickness and amplitude callouts
     xm = c2 - C.rib_pitch / 4                         # wall crossing the mid-plane
     zb = zc + (hc + C.face_t) * S2                    # bottom of the phantom face sheet
     xk = Cc(xs, 0)[0] + 4
-    d.leader_note(Cc(xm, 0.0), (xk, zb + 6), f"WALL {fmt(C.rib_t)} (NORMAL TO THE CENTRE LINE)", 2.6)
+    d.leader_note(Cc(xm, 0.0), (xk, zb + 6), f"WEB {fmt(C.rib_t)} (SQUARE TO THE FACES)" if wave.is_square()
+                  else f"WALL {fmt(C.rib_t)} (NORMAL TO THE CENTRE LINE)", 2.6)
     d.leader_note(Cc(c1, hc - wave.under_land_wall() / 2), (xk, zb + 12),
                   f"{wave.under_land_wall():.1f} UNDER EACH LAND", 2.6)
     xa_ = c2 - C.rib_pitch / 2 + 2.0
-    d.leader_note(Cc(xa_, wave.centre_line(xa_)), (xk, zb + 18),
-                  f"CENTRE LINE z = {wave.centre_line_formula()}", 2.6, arrow=False, dot=True)
+    d.leader_note(Cc(xa_, wave.centre_line(xa_)), (xk, zb + 18), wave.profile_note(), 2.6, arrow=False, dot=True)
     view_label(d, xc + (xs + aw) / 2 * S2, zb + 25, "SECTION C–C (PART)", "SCALE 2:1 · FACE SHEETS SHOWN PHANTOM")
 
     # ---- section D-D (along the centre land x = 0, through the flute run-out), 2:1
@@ -198,7 +197,7 @@ def core_sheet(o: Outline, mass: dict | None = None) -> Doc:
 
     for z0 in (hc, -hc - C.face_t):
         phantom_rect(d, D(yd0, z0 + C.face_t), D(yd1, z0))
-    z_top = C.rib_amp - C.rib_t / 2                   # lower surface of the wall under the land (x = 0)
+    z_top = hc - wave.under_land_wall()               # lower surface of the wall under the land
     y_foot = C.solid_to                               # the bottom flute opens at the bottom face here
     y_head = C.solid_to + (hc + z_top) * C.runout_len / C.core_t     # ... and reaches the wall here
     solid = [D(yd0, -hc), D(y_foot, -hc), D(y_head, z_top), D(yd1, z_top), D(yd1, hc), D(yd0, hc)]

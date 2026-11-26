@@ -49,6 +49,12 @@ def flute_channel_faces(x_half: float, y0: float, ext: float = 1.0) -> list[tupl
     subtracting it from the solid core slab leaves exactly the clipped wave."""
     zlim = C.core_t / 2
     faces = []
+    if wave.is_square():                     # straight-sided flutes: faces straight from the polygons
+        for s in (+1, -1):
+            for poly in wave.channel_polygons(x_half, s, ext):
+                pts = [Vector(*_xz(p, y0)) for p in list(poly.exterior.coords)[:-1]]
+                faces.append((s, Face(Wire.make_polygon(pts, close=True))))
+        return faces
     for s in (+1, -1):
         zt = s * (zlim + ext)
         for a, b in wave.channel_bounds(x_half, s):
@@ -106,7 +112,7 @@ def flute_voids(o: Outline) -> dict[int, Part]:
 
 
 def rib_core(o: Outline, with_hole: bool = True):
-    """Closed perimeter frame + solid handle/throat zone + clipped sinusoidal wave rib, one part."""
+    """Closed perimeter frame + solid handle/throat zone + the wave rib (square or sine profile), one part."""
     sp = o.spec
     voids = flute_voids(o)
     core = extrude(outline_face(o, -C.core_t / 2), amount=C.core_t) - voids[+1] - voids[-1]

@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from build123d import export_step, extrude  # noqa: E402
 
-from paddle import cad, mould  # noqa: E402
+from paddle import cad, mould, wave  # noqa: E402
 from paddle.geometry import CONSTRUCTION as C  # noqa: E402
 from paddle.geometry import DESIGNS, build  # noqa: E402
 
@@ -47,10 +47,11 @@ def main() -> None:
     top, main_plate, bottom = mould.mould_stack(o_top, o_bot)
     upper, lower = mould.main_halves(main_plate)
     lay = mould.layout((o_top, o_bot))
+    rib = (f"square-wave rib, webs and lands {C.rib_t:g} mm" if wave.is_square() else f"wave walls {C.rib_t:g} mm")
     report = dict(note=f"stack mould for both paddles: main plate {M.main:g} mm ({mould.TOP} cavity in the top face, "
                        f"{M.web:g} mm web, {mould.BOTTOM} cavity in the bottom face) between two {M.clamp:g} mm clamp "
-                       f"plates that carry the top-flute teeth. Each cavity is the {C.core_t:g} mm rib support (wave "
-                       f"walls {C.rib_t:g} mm, frame {C.frame_w:g} mm, solid to y = {C.solid_to:g}); the clamp plates "
+                       f"plates that carry the top-flute teeth. Each cavity is the {C.core_t:g} mm rib support ({rib}, "
+                       f"frame {C.frame_w:g} mm, solid to y = {C.solid_to:g}); the clamp plates "
                        f"seat flat on the main plate. Fill: chopped carbon fibre + epoxy.",
                   top_cavity=mould.TOP, bottom_cavity=mould.BOTTOM, main_mm=M.main, web_mm=M.web, clamp_mm=M.clamp,
                   stack_mm=M.height, core_height_mm=C.core_t, bolts_M6=len(lay.bolts), pry_notches=len(lay.notches),

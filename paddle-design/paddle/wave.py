@@ -1,10 +1,14 @@
 """Wave-rib geometry shared by the solid model and the drawings (pure math, mm).
 
-The rib centre line is z = A cos(2 pi (x / pitch - phase)): the crests (top bond lands) sit at
+The rib is a corrugated sheet of thickness t (rib_t) between the face sheets, z = -h .. +h with
+h = core_t / 2, its flutes running along the paddle.  Its crests (top bond lands) sit at
 x = (k + phase) pitch, so phase 0 puts a crest on the paddle centre line x = 0 and phase 0.5 a
-trough, with the crests symmetric either side.  Its two surfaces are offset by half the wall
-thickness along the normal; where a surface passes the face-sheet plane z = +-core_t / 2 it is
-cut flat, which forms the bond lands.
+trough, with the crests symmetric either side.  Two profiles (Construction.rib_profile):
+  square - flat lands lying against each face sheet, joined by webs square to the faces.  The webs
+           lean by the draft angle, alternately, so that every flute is wider at its open face.
+  sine   - the centre line z = A cos(2 pi (x / pitch - phase)); the two surfaces are offset by half
+           the wall thickness along the normal and cut flat where they pass the face-sheet plane,
+           which forms the bond lands.
 """
 from __future__ import annotations
 
@@ -15,8 +19,18 @@ import numpy as np
 from .geometry import CONSTRUCTION as C
 
 
+def is_square() -> bool:
+    return C.rib_profile == "square"
+
+
+def rib_name() -> str:
+    """The rib as named on the drawings."""
+    return "SQUARE-WAVE RIB" if is_square() else "WAVE RIB"
+
+
+# --------------------------------------------------------------------------- sine profile
 def surface_point(u: float, s: int, amp: float | None = None) -> tuple[float, float]:
-    """(x, z) of the upper (s = +1) / lower (s = -1) rib surface at centre-line parameter u."""
+    """(x, z) of the upper (s = +1) / lower (s = -1) rib surface at centre-line parameter u (sine)."""
     A = C.rib_amp if amp is None else amp
     k = 2 * math.pi / C.rib_pitch
     v = k * u - 2 * math.pi * C.rib_phase
@@ -26,26 +40,8 @@ def surface_point(u: float, s: int, amp: float | None = None) -> tuple[float, fl
     return u - s * C.rib_t / 2 * d / n, z + s * C.rib_t / 2 / n
 
 
-def centre_line(x: float) -> float:
-    """z of the rib centre line at x."""
-    return C.rib_amp * math.cos(2 * math.pi * (x / C.rib_pitch - C.rib_phase))
-
-
-def crests(x0: float, x1: float) -> list[float]:
-    """x of the crests (top lands) strictly between x0 and x1."""
-    k0 = math.floor(x0 / C.rib_pitch - C.rib_phase)
-    xs = ((k + C.rib_phase) * C.rib_pitch for k in range(k0, k0 + int((x1 - x0) / C.rib_pitch) + 3))
-    return [x for x in xs if x0 < x < x1]
-
-
-def crossings(x0: float, x1: float) -> list[float]:
-    """x where the centre line crosses the mid-plane z = 0, strictly between x0 and x1."""
-    q = C.rib_pitch / 4
-    return sorted({c + d for c in crests(x0 - q, x1 + q) for d in (-q, q) if x0 < c + d < x1})
-
-
 def centre_line_formula() -> str:
-    """The centre line as printed on the drawings."""
+    """The sine centre line as printed on the drawings."""
     a, p = f"{C.rib_amp:g}", f"{C.rib_pitch:g}"
     if abs(C.rib_phase) < 1e-9:
         return f"{a}·cos(2πx/{p})"
@@ -55,7 +51,7 @@ def centre_line_formula() -> str:
 
 
 def channel_bounds(x_half: float, s: int, amp: float | None = None) -> list[tuple[float, float]]:
-    """Centre-line parameter intervals of the open flutes on side s (+1 top, -1 bottom) for |x| <= x_half.
+    """Centre-line parameter intervals of the open flutes on side s (+1 top, -1 bottom) for |x| <= x_half (sine).
 
     A flute on side s lies between two bond lands of that side; its ends are the roots of
     s * z_surface(u) = core_t / 2."""
@@ -80,16 +76,95 @@ def channel_bounds(x_half: float, s: int, amp: float | None = None) -> list[tupl
     return list(zip(bounds[0::2], bounds[1::2]))
 
 
-def land_width(amp: float | None = None) -> float:
-    """Width of one bond land (the flat cut crest) in the face-sheet plane."""
-    # lands and top flutes alternate with the pitch: land = pitch - one whole flute
-    x_half = 2.5 * C.rib_pitch
-    a, b = next(iv for iv in channel_bounds(x_half, +1, amp) if -x_half < iv[0] and iv[1] < x_half)
-    return C.rib_pitch - (surface_point(b, +1, amp)[0] - surface_point(a, +1, amp)[0])
+# --------------------------------------------------------------------------- square profile
+def _square() -> tuple[float, float, float]:
+    """(zt, a, d): height of a land's centre line, a land's centre-line length, a web's lean over its height."""
+    zt = C.core_t / 2 - C.rib_t / 2
+    d = 2 * zt * math.tan(math.radians(C.rib_draft))
+    return zt, C.rib_pitch / 2 - d, d
+
+
+def centre_line_points(x0: float, x1: float) -> list[tuple[float, float]]:
+    """The sheet's centre line from x0 to x1 as a polyline (the exact corners of a square profile)."""
+    lam, ph = C.rib_pitch, C.rib_phase
+    if not is_square():
+        return [(x, centre_line(x)) for x in np.linspace(x0, x1, max(50, int((x1 - x0) / lam * 400)))]
+    from shapely.geometry import LineString, box
+    zt, a, d = _square()
+    pts = []
+    for k in range(math.floor(x0 / lam - ph) - 1, math.ceil(x1 / lam - ph) + 2):
+        xc = (k + ph) * lam                                    # a crest: middle of a top land
+        pts += [(xc - a / 2, zt), (xc + a / 2, zt), (xc + a / 2 + d, -zt), (xc + a / 2 + d + a, -zt)]
+    return list(LineString(pts).intersection(box(x0, -zt - 1.0, x1, zt + 1.0)).coords)
+
+
+def _sheet(x0: float, x1: float):
+    """Shapely cross-section of the square rib sheet between x0 and x1, cut at the face sheets."""
+    from shapely.geometry import LineString, box
+    h, lam = C.core_t / 2, C.rib_pitch
+    band = LineString(centre_line_points(x0 - lam, x1 + lam)).buffer(C.rib_t / 2, cap_style="flat",
+                                                                       join_style="mitre", mitre_limit=10.0)
+    return band.intersection(box(x0, -h, x1, h))
+
+
+def _open_face(p, s: int) -> tuple[float, float] | None:
+    """x extent where polygon p meets the face z = s * h (None if it does not)."""
+    from shapely.geometry import LineString
+    h = C.core_t / 2
+    seg = p.intersection(LineString([(-1e4, s * h), (1e4, s * h)]))
+    return None if seg.is_empty or seg.length < 1e-6 else (seg.bounds[0], seg.bounds[2])
+
+
+def channel_polygons(x_half: float, s: int, ext: float = 0.0) -> list:
+    """Open flutes on side s (+1 top, -1 bottom) within |x| <= x_half as shapely (x, z) polygons, each run
+    `ext` past its open face, so that subtracting them from the core slab leaves the rib (square profile)."""
+    from shapely.geometry import box
+    h = C.core_t / 2
+    voids = box(-x_half, -h, x_half, h).difference(_sheet(-x_half, x_half))
+    out = []
+    for p in getattr(voids, "geoms", [voids]):
+        if p.area < 1e-6:
+            continue
+        span = _open_face(p, s)
+        if span is None or _open_face(p, -s) is not None:
+            continue
+        if ext > 0:
+            p = p.union(box(span[0], min(s * h, s * (h + ext)), span[1], max(s * h, s * (h + ext))))
+        out.append(p)
+    return sorted(out, key=lambda q: q.bounds[0])
+
+
+# --------------------------------------------------------------------------- both profiles
+def centre_line(x: float) -> float:
+    """z of the sheet's centre line at x."""
+    if not is_square():
+        return C.rib_amp * math.cos(2 * math.pi * (x / C.rib_pitch - C.rib_phase))
+    xs, zs = zip(*centre_line_points(x - C.rib_pitch, x + C.rib_pitch))
+    return float(np.interp(x, xs, zs))
+
+
+def crests(x0: float, x1: float) -> list[float]:
+    """x of the crests (middles of the top lands) strictly between x0 and x1."""
+    k0 = math.floor(x0 / C.rib_pitch - C.rib_phase)
+    xs = ((k + C.rib_phase) * C.rib_pitch for k in range(k0, k0 + int((x1 - x0) / C.rib_pitch) + 3))
+    return [x for x in xs if x0 < x < x1]
+
+
+def crossings(x0: float, x1: float) -> list[float]:
+    """x where the centre line crosses the mid-plane z = 0 (the webs, for a square profile), strictly
+    between x0 and x1."""
+    q = C.rib_pitch / 4
+    return sorted({c + d for c in crests(x0 - q, x1 + q) for d in (-q, q) if x0 < c + d < x1})
 
 
 def land_intervals(x_half: float, s: int) -> list[tuple[float, float]]:
     """x intervals of the bond lands on side s within |x| <= x_half (face-sheet plane)."""
+    if is_square():
+        from shapely.geometry import box
+        h = C.core_t / 2
+        strip = box(-x_half, h - 0.01, x_half, h) if s > 0 else box(-x_half, -h, x_half, -h + 0.01)
+        hit = _sheet(-x_half, x_half).intersection(strip)
+        return sorted((g.bounds[0], g.bounds[2]) for g in getattr(hit, "geoms", [hit]) if not g.is_empty)
     edges = [-x_half]
     for a, b in channel_bounds(x_half + C.rib_pitch, s):
         edges += [surface_point(a, s)[0], surface_point(b, s)[0]]
@@ -102,8 +177,23 @@ def land_intervals(x_half: float, s: int) -> list[tuple[float, float]]:
     return out
 
 
+def land_width(amp: float | None = None) -> float:
+    """Width of one bond land in the face-sheet plane."""
+    x_half = 2.5 * C.rib_pitch
+    if is_square():
+        return next(b - a for a, b in land_intervals(x_half, +1) if -x_half < a and b < x_half)
+    # lands and top flutes alternate with the pitch: land = pitch - one whole flute
+    a, b = next(iv for iv in channel_bounds(x_half, +1, amp) if -x_half < iv[0] and iv[1] < x_half)
+    return C.rib_pitch - (surface_point(b, +1, amp)[0] - surface_point(a, +1, amp)[0])
+
+
 def wall_polygon(x0: float, x1: float, n: int = 400) -> list[tuple[float, float]]:
-    """Cross-section (x, z) of the wave wall between x0 and x1, clipped flat at the face sheets."""
+    """Cross-section (x, z) of the rib wall between x0 and x1, clipped flat at the face sheets."""
+    if is_square():
+        sheet = _sheet(x0, x1)
+        if sheet.geom_type != "Polygon":
+            sheet = max(sheet.geoms, key=lambda g: g.area)
+        return list(sheet.exterior.coords)
     h = C.core_t / 2
     us = np.linspace(x0, x1, n)
     top = [surface_point(u, +1) for u in us]
@@ -114,5 +204,36 @@ def wall_polygon(x0: float, x1: float, n: int = 400) -> list[tuple[float, float]
 
 
 def under_land_wall(amp: float | None = None) -> float:
-    """Wall thickness left under the middle of a land (crest): core_t/2 - (A - t/2)."""
+    """Wall thickness under the middle of a land: the sheet itself for a square profile,
+    core_t/2 - (A - t/2) for a sine."""
+    if is_square():
+        return C.rib_t
     return C.core_t / 2 - ((C.rib_amp if amp is None else amp) - C.rib_t / 2)
+
+
+def flute_floors(x_half: float, s: int, n: int = 41) -> list[list[tuple[float, float]]]:
+    """For each open flute on side s: (x, z of its floor) across its open face (for the drawings)."""
+    if not is_square():
+        out = []
+        for a, b in channel_bounds(x_half, s):
+            out.append([surface_point(a + (b - a) * i / (n - 1), s) for i in range(n)])
+        return out
+    from shapely.geometry import LineString
+    out = []
+    for p in channel_polygons(x_half, s):
+        xa, xb = _open_face(p, s)
+        pts = []
+        for x in np.linspace(xa + 1e-4, xb - 1e-4, n):
+            cut = p.intersection(LineString([(x, -1e3), (x, 1e3)]))
+            zs = [z for g in getattr(cut, "geoms", [cut]) for _, z in g.coords]
+            if zs:
+                pts.append((x, min(zs) if s > 0 else max(zs)))
+        out.append(pts)
+    return out
+
+
+def profile_note() -> str:
+    """How the profile is described in section C-C of the rib-support sheet."""
+    if is_square():
+        return f"SQUARE WAVE: WEBS SQUARE TO THE FACES, {C.rib_draft:g}° DRAFT"
+    return f"CENTRE LINE z = {centre_line_formula()}"

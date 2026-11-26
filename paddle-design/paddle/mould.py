@@ -4,13 +4,13 @@ The main plate holds both cavities: the Elongated rib support is a pocket in its
 Hybrid one a pocket in its bottom face, each as deep as the core, with a solid web between them.
 In each pocket stand the teeth of that paddle's bottom flutes.  The top clamp plate carries the
 Elongated's top-flute teeth and the bottom clamp plate the Hybrid's; closing the stack slides each
-set of teeth between the main plate's, and the gaps between them are the wave walls.  A clamp plate
-seats flat on the main plate, so each cavity is exactly the rib support: its closed frame, the solid
-handle and throat zone and the wave walls.  Chopped carbon fibre and epoxy ("forged carbon") packed
+set of teeth between the main plate's, and the gaps between them form the rib (the webs and lands of
+the square wave).  A clamp plate seats flat on the main plate, so each cavity is exactly the rib
+support: its closed frame, the solid handle and throat zone and the rib.  Chopped carbon fibre and epoxy ("forged carbon") packed
 into each cavity is pressed into shape when the stack is pressed shut.
 
-Every flute is longest where it opens and every wall is a function of x alone, so the plates pull
-straight off the parts.  Around each pocket: a land and a resin overflow groove with vents; through
+Every flute is longest where it opens (its ramp) and, for the square wave, widest there too (the web
+draft), and nothing changes along a flute but the ramp, so the plates pull straight off the parts.  Around each pocket: a land and a resin overflow groove with vents; through
 all three plates: M6 bolts; at both parting faces: pry notches.
 
 World coordinates (mm): the main plate runs z = -face .. +face (face = main / 2) with the web in the
