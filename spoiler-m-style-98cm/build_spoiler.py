@@ -193,6 +193,126 @@ def render(ob, out):
         bpy.ops.render.render(write_still=True)
     ob.scale = (1, 1, 1)
 
+# ---------------------------------------------------------------- 3-piece split
+# Two 6 mm locating pins per joint, moulded onto the centre piece, push into
+# blind holes in the left/right pieces. Two pins per joint stop the pieces
+# rotating. Glue the joint (epoxy / CA / ABS slurry) to lock it permanently.
+S = dict(
+    pieces      = 3,      # equal-length pieces
+    pin_d       = 6.0,    # pin diameter
+    pin_len     = 12.0,   # protrusion beyond the joint face (also embedded depth)
+    pin_chamfer = 0.8,    # lead-in chamfer on the pin tip
+    clearance   = 0.15,   # radial clearance of the hole (tune for your printer)
+    hole_extra  = 0.8,    # hole is this much deeper than the pin (glue pocket)
+    pin_y       = (11.0, 27.0),   # pin positions measured back from the nose (mm)
+)
+
+def _revolved(name, cx, cy, cz, xs, rs, segs=48):
+    """Solid of revolution about an X-parallel axis through (cy, cz)."""
+    me = bpy.data.meshes.new(name); bm = bmesh.new()
+    rings = []
+    for x, r in zip(xs, rs):
+        rings.append([bm.verts.new((cx + x, cy + r * math.cos(2 * math.pi * k / segs),
+                                    cz + r * math.sin(2 * math.pi * k / segs))) for k in range(segs)])
+    for a, b in zip(rings[:-1], rings[1:]):
+        for k in range(segs):
+            bm.faces.new((a[k], a[(k + 1) % segs], b[(k + 1) % segs], b[k]))
+    bm.faces.new(list(reversed(rings[0]))); bm.faces.new(rings[-1])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me); bm.free()
+    o = bpy.data.objects.new(name, me); bpy.context.scene.collection.objects.link(o)
+    return o
+
+def _boolean(target, tool, op):
+    m = target.modifiers.new("b", "BOOLEAN"); m.operation = op; m.solver = "EXACT"; m.object = tool
+    bpy.context.view_layer.objects.active = target
+    bpy.ops.object.modifier_apply(modifier=m.name)
+
+def _box(name, x0, x1):
+    bpy.ops.mesh.primitive_cube_add(size=1)
+    b = bpy.context.active_object; b.name = name
+    b.scale = (x1 - x0, 1000, 1000); b.location = ((x0 + x1) / 2, 0, 0)
+    bpy.ops.object.transform_apply(scale=True, location=False)
+    return b
+
+def _pin_axis(xc, y_back):
+    """(y, z) of a pin axis at joint x=xc: y_back from the nose, z mid-thickness."""
+    sec = section(xc)
+    y = min(p[0] for p in sec) + y_back
+    def z_at(pts):
+        for a, c in zip(pts, pts[1:]):
+            if (a[0] - y) * (c[0] - y) <= 0 and a[0] != c[0]:
+                return a[1] + (c[1] - a[1]) * (y - a[0]) / (c[0] - a[0])
+    n_top = P["prof_pts"] + 4
+    zt, zb = z_at(sec[:n_top]), z_at(sec[n_top:])
+    return y, (zt + zb) / 2, zt - zb
+
+def split(ob):
+    half = P["length"] / 2
+    n = S["pieces"]
+    cuts = [-half + P["length"] * i / n for i in range(1, n)]
+    edges = [-half - 50] + cuts + [half + 50]
+    names = ["Piece_L", "Piece_C", "Piece_R"] if n == 3 else [f"Piece_{i+1}" for i in range(n)]
+    pieces = []
+    for i in range(n):
+        pc = ob.copy(); pc.data = ob.data.copy(); pc.name = names[i]
+        bpy.context.scene.collection.objects.link(pc)
+        box = _box("cut", edges[i], edges[i + 1])
+        _boolean(pc, box, "INTERSECT")
+        bpy.data.objects.remove(box)
+        pieces.append(pc)
+    r, L, ch = S["pin_d"] / 2, S["pin_len"], S["pin_chamfer"]
+    rh, Lh = r + S["clearance"], L + S["hole_extra"]
+    for j, xc in enumerate(cuts):
+        # pins live on the piece nearer the centre; holes go in the outer piece
+        inner, outer = (pieces[j + 1], pieces[j]) if xc < 0 else (pieces[j], pieces[j + 1])
+        sgn = -1 if xc < 0 else 1            # pin points outwards
+        for yb in S["pin_y"]:
+            y, z, thk = _pin_axis(xc, yb)
+            print(f"joint x={xc:.1f}  pin y={yb}  wall each side={(thk - S['pin_d'])/2:.2f} mm")
+            xs = [-L * sgn, (L - ch) * sgn, L * sgn]
+            if sgn < 0: xs = xs[::-1]
+            rs = [r, r, r - ch] if sgn > 0 else [r - ch, r, r]
+            pin = _revolved("pin", xc, y, z, xs, rs)
+            _boolean(inner, pin, "UNION"); bpy.data.objects.remove(pin)
+            hx = [-1.0 * sgn, Lh * sgn]
+            if sgn < 0: hx = hx[::-1]
+            hole = _revolved("hole", xc, y, z, hx, [rh, rh])
+            _boolean(outer, hole, "DIFFERENCE"); bpy.data.objects.remove(hole)
+    for pc in pieces:
+        for f in pc.data.polygons: f.use_smooth = True
+    return pieces
+
+def export_pieces(pieces, out):
+    for pc in pieces:
+        bpy.ops.object.select_all(action="DESELECT"); pc.select_set(True)
+        bpy.context.view_layer.objects.active = pc
+        fn = os.path.join(out, "m_style_spoiler_98cm_" + pc.name.lower() + ".stl")
+        bpy.ops.export_mesh.stl(filepath=fn, use_selection=True, global_scale=1.0)
+        bpy.context.view_layer.update()
+        d = pc.dimensions
+        print(f"{pc.name}: {d.x:.1f} x {d.y:.1f} x {d.z:.1f} mm  -> {os.path.basename(fn)}")
+
+def render_exploded(ob, pieces, out, gap=70.0):
+    """Exploded 3/4 view + close-up of a joint."""
+    ob.hide_render = True
+    offs = {"Piece_L": -gap, "Piece_C": 0.0, "Piece_R": gap}
+    for pc in pieces:
+        pc.location.x = offs.get(pc.name, 0.0)
+    scn = bpy.context.scene
+    cam = scn.camera
+    for name, loc, tgt, lens in [
+        ("render_exploded",     (0.95, -1.15, 0.6),   (0, 0.02, 0), 40),
+        ("render_joint_detail", (0.33, -0.17, 0.12),  (0.20, 0.02, 0.0), 55),
+    ]:
+        cam.location = loc; cam.data.lens = lens
+        cam.rotation_euler = (Vector(tgt) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
+        scn.render.filepath = os.path.join(out, name + ".png")
+        bpy.ops.render.render(write_still=True)
+    for pc in pieces:
+        pc.location.x = 0.0
+    ob.hide_render = False
+
 if __name__ == "__main__":
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     out = argv[argv.index("--out") + 1] if "--out" in argv else os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
@@ -202,5 +322,15 @@ if __name__ == "__main__":
     bpy.context.view_layer.update()
     d = ob.dimensions
     print(f"BBOX mm  X={d.x:.1f}  Y={d.y:.1f}  Z={d.z:.1f}  tris={len(ob.data.polygons)}")
+    pieces = split(ob) if "--no-split" not in argv else []
+    if pieces:
+        export_pieces(pieces, out)
+        for pc in pieces: pc.hide_render = True
     if "--render" in argv:
         render(ob, out)
+        if pieces:
+            for pc in pieces:
+                pc.hide_render = False
+                pc.scale = (0.001, 0.001, 0.001)
+                pc.data.materials.clear(); pc.data.materials.append(ob.data.materials[0])
+            render_exploded(ob, pieces, out, gap=0.07)

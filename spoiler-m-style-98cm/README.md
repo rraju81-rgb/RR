@@ -29,6 +29,29 @@ reference product photos (gloss black ABS, adhesive-tape mount).
 - `m_style_spoiler_98cm.glb` – for web/AR viewers (metres)
 - `render_*.png` – studio renders
 
+## 3-piece version (pin-and-hole joints)
+![Exploded](output/render_exploded.png)
+![Joint](output/render_joint_detail.png)
+
+The spoiler is split into three equal 326.7 mm sections so each fits a typical printer bed:
+
+| File | Size (mm) | Joint feature |
+|---|---|---|
+| `m_style_spoiler_98cm_piece_l.stl` | 326.7 × 123 × 55 | 2 blind holes |
+| `m_style_spoiler_98cm_piece_c.stl` | 350.7 × 76 × 17 (incl. pins) | 2 pins each end |
+| `m_style_spoiler_98cm_piece_r.stl` | 326.7 × 123 × 55 | 2 blind holes |
+
+- **Pins**: Ø6 mm, protrude 12 mm, 0.8 mm lead-in chamfer, moulded onto the centre piece.
+  Two pins per joint (11 mm and 27 mm back from the nose, at mid-thickness) stop the pieces rotating.
+- **Holes**: Ø6.3 mm (0.15 mm radial clearance), 12.8 mm deep; the extra 0.8 mm is a glue pocket.
+- Wall around each pin: 4.0 mm (front pin), 3.1 mm (rear pin).
+- **Locking**: dry-fit, then glue the faces and pins (epoxy, CA, or ABS/acetone slurry for ABS)
+  and clamp. Sand and paint over the seams for a one-piece look.
+- Print each piece lying on its flat mounting pad. The centre piece's pins then print as horizontal
+  cylinders; use 100 % infill for the outer 10 mm of each piece for strong joints.
+- If the pins fit too tight or loose, change `clearance` in the `S` dict and rebuild.
+  `--no-split` skips the split.
+
 ## Regenerate / customise
 Every dimension is a parameter in the `P` dict at the top of `build_spoiler.py`.
 ```bash
@@ -38,7 +61,7 @@ blender -b -P build_spoiler.py -- --render
 
 ## Manufacturing notes
 - The model is solid. For a moulded ABS part, shell it to ~2.5 mm wall thickness in your CAD tool.
-- 98 cm is longer than most 3D printer beds. Split it into 3–4 sections with alignment pins,
-  or print it diagonally on a large-format printer. ASA or ABS is recommended for UV and heat resistance.
+- 98 cm is longer than most 3D printer beds, so use the 3-piece version above.
+  ASA or ABS is recommended for UV and heat resistance.
 - Dimensions were set from the listed 98 cm length and proportions read off the product photos;
   check the fit against your vehicle before production.
