@@ -147,8 +147,8 @@ def export(ob, out):
     ob.scale = (1, 1, 1)
 
 # ---------------------------------------------------------------- render
-def render(ob, out):
-    """Studio renders at real-world scale (metres)."""
+def render(ob, out, studio=True):
+    """Studio renders at real-world scale (metres). studio=False only sets the scene up."""
     ob.scale = (0.001, 0.001, 0.001)
     scn = bpy.context.scene
     scn.render.engine = "CYCLES"
@@ -186,7 +186,7 @@ def render(ob, out):
         "render_tip_detail": ((-0.78, 0.38, 0.22), (-0.40, 0.02, -0.01), 55),
         "render_rear":     ((0, 1.6, 0.18),      (0, 0.02, 0.0),  50),
     }
-    for name, (loc, tgt, lens) in views.items():
+    for name, (loc, tgt, lens) in (views.items() if studio else []):
         co.location = loc; cam.lens = lens
         co.rotation_euler = (Vector(tgt) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
         scn.render.filepath = os.path.join(out, name + ".png")
@@ -194,14 +194,16 @@ def render(ob, out):
     ob.scale = (1, 1, 1)
 
 # ---------------------------------------------------------------- 3-piece split
-# Two 6 mm locating pins per joint, moulded onto the centre piece, push into
-# blind holes in the left/right pieces. Two pins per joint stop the pieces
-# rotating. Glue the joint (epoxy / CA / ABS slurry) to lock it permanently.
+# Loose dowel pins: every joint face gets two blind holes, and separate
+# printed pins (chamfered both ends) bridge the joint. Two pins per joint stop
+# the pieces rotating. Glue pins + faces (epoxy / CA / ABS slurry) to lock.
 S = dict(
     pieces      = 3,      # equal-length pieces
     pin_d       = 6.0,    # pin diameter
-    pin_len     = 12.0,   # protrusion beyond the joint face (also embedded depth)
-    pin_chamfer = 0.8,    # lead-in chamfer on the pin tip
+    pin_len     = 12.0,   # half-length: depth the pin enters each piece (pin = 24 mm)
+    pin_chamfer = 0.8,    # lead-in chamfer on both pin ends
+    hole_chamfer= 0.5,    # countersink at the hole mouth (easy entry, no elephant foot)
+    spare_pins  = 1,      # extra pins in the print set
     clearance   = 0.15,   # radial clearance of the hole (tune for your printer)
     hole_extra  = 0.8,    # hole is this much deeper than the pin (glue pocket)
     pin_y       = (11.0, 27.0),   # pin positions measured back from the nose (mm)
@@ -261,27 +263,49 @@ def split(ob):
         _boolean(pc, box, "INTERSECT")
         bpy.data.objects.remove(box)
         pieces.append(pc)
-    r, L, ch = S["pin_d"] / 2, S["pin_len"], S["pin_chamfer"]
-    rh, Lh = r + S["clearance"], L + S["hole_extra"]
+    r, L = S["pin_d"] / 2, S["pin_len"]
+    rh, Lh, hc = r + S["clearance"], L + S["hole_extra"], S["hole_chamfer"]
+    pin_axes = []
     for j, xc in enumerate(cuts):
-        # pins live on the piece nearer the centre; holes go in the outer piece
-        inner, outer = (pieces[j + 1], pieces[j]) if xc < 0 else (pieces[j], pieces[j + 1])
-        sgn = -1 if xc < 0 else 1            # pin points outwards
+        a_, b_ = pieces[j], pieces[j + 1]             # the two pieces meeting at this joint
         for yb in S["pin_y"]:
             y, z, thk = _pin_axis(xc, yb)
-            print(f"joint x={xc:.1f}  pin y={yb}  wall each side={(thk - S['pin_d'])/2:.2f} mm")
-            xs = [-L * sgn, (L - ch) * sgn, L * sgn]
-            if sgn < 0: xs = xs[::-1]
-            rs = [r, r, r - ch] if sgn > 0 else [r - ch, r, r]
-            pin = _revolved("pin", xc, y, z, xs, rs)
-            _boolean(inner, pin, "UNION"); bpy.data.objects.remove(pin)
-            hx = [-1.0 * sgn, Lh * sgn]
-            if sgn < 0: hx = hx[::-1]
-            hole = _revolved("hole", xc, y, z, hx, [rh, rh])
-            _boolean(outer, hole, "DIFFERENCE"); bpy.data.objects.remove(hole)
+            print(f"joint x={xc:.1f}  pin y={yb}  wall each side={(thk - 2 * rh)/2:.2f} mm")
+            # one tool drills both faces: Ø(pin+clearance), Lh deep each side, countersunk mouth
+            hole = _revolved("hole", xc, y, z, [-Lh, -hc, 0.0, hc, Lh], [rh, rh, rh + hc, rh, rh])
+            _boolean(a_, hole, "DIFFERENCE"); _boolean(b_, hole, "DIFFERENCE")
+            bpy.data.objects.remove(hole)
+            pin_axes.append((xc, y, z))
+    split.pin_axes = pin_axes
     for pc in pieces:
         for f in pc.data.polygons: f.use_smooth = True
     return pieces
+
+def make_pin(name="Pin", cx=0.0, cy=0.0, cz=0.0):
+    """Separate dowel along X, chamfered both ends, centred on (cx, cy, cz)."""
+    r, L, ch = S["pin_d"] / 2, S["pin_len"], S["pin_chamfer"]
+    p = _revolved(name, cx, cy, cz, [-L, -L + ch, L - ch, L], [r - ch, r, r, r - ch])
+    for f in p.data.polygons: f.use_smooth = True
+    return p
+
+def export_pins(out):
+    """Single pin + a print set (4 needed + spares), standing upright for printing."""
+    n = 2 * len(S["pin_y"]) + S["spare_pins"]
+    made = []
+    for k in range(n):
+        p = make_pin(f"PinSet_{k}")
+        p.rotation_euler = (0, math.radians(-90), 0)   # X axis -> Z (upright, strongest)
+        p.location = ((k % 3) * 12.0, (k // 3) * 12.0, S["pin_len"])
+        made.append(p)
+    bpy.context.view_layer.update()
+    for sel, fn in [(made[:1], "m_style_spoiler_98cm_pin.stl"),
+                    (made, f"m_style_spoiler_98cm_pins_x{n}.stl")]:
+        bpy.ops.object.select_all(action="DESELECT")
+        for o in sel: o.select_set(True)
+        bpy.context.view_layer.objects.active = sel[0]
+        bpy.ops.export_mesh.stl(filepath=os.path.join(out, fn), use_selection=True, global_scale=1.0)
+    for o in made: bpy.data.objects.remove(o)
+    print(f"Pin: Ø{S['pin_d']} x {2*S['pin_len']} mm, need {2*len(S['pin_y'])} (+{S['spare_pins']} spare)")
 
 def export_pieces(pieces, out):
     for pc in pieces:
@@ -299,11 +323,19 @@ def render_exploded(ob, pieces, out, gap=70.0):
     offs = {"Piece_L": -gap, "Piece_C": 0.0, "Piece_R": gap}
     for pc in pieces:
         pc.location.x = offs.get(pc.name, 0.0)
+    pins = []
+    for (xc, y, z) in getattr(split, "pin_axes", []):
+        p = make_pin("PinR", xc, y, z)
+        p.scale = (0.001, 0.001, 0.001)
+        # float each pin in the middle of its gap
+        p.location.x = (gap / 2) * (1 if xc > 0 else -1)
+        p.data.materials.append(bpy.data.materials["Gloss_Black_ABS"])
+        pins.append(p)
     scn = bpy.context.scene
     cam = scn.camera
     for name, loc, tgt, lens in [
         ("render_exploded",     (0.95, -1.15, 0.6),   (0, 0.02, 0), 40),
-        ("render_joint_detail", (0.33, -0.17, 0.12),  (0.20, 0.02, 0.0), 55),
+        ("render_joint_detail", (0.36, -0.15, 0.11),  (0.215, 0.02, 0.0), 50),
     ]:
         cam.location = loc; cam.data.lens = lens
         cam.rotation_euler = (Vector(tgt) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
@@ -311,6 +343,7 @@ def render_exploded(ob, pieces, out, gap=70.0):
         bpy.ops.render.render(write_still=True)
     for pc in pieces:
         pc.location.x = 0.0
+    for p in pins: bpy.data.objects.remove(p)
     ob.hide_render = False
 
 if __name__ == "__main__":
@@ -325,9 +358,10 @@ if __name__ == "__main__":
     pieces = split(ob) if "--no-split" not in argv else []
     if pieces:
         export_pieces(pieces, out)
+        export_pins(out)
         for pc in pieces: pc.hide_render = True
     if "--render" in argv:
-        render(ob, out)
+        render(ob, out, studio="--split-renders-only" not in argv)
         if pieces:
             for pc in pieces:
                 pc.hide_render = False

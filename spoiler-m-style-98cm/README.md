@@ -29,28 +29,32 @@ reference product photos (gloss black ABS, adhesive-tape mount).
 - `m_style_spoiler_98cm.glb` – for web/AR viewers (metres)
 - `render_*.png` – studio renders
 
-## 3-piece version (pin-and-hole joints)
+## 3-piece version (loose dowel pins)
 ![Exploded](output/render_exploded.png)
 ![Joint](output/render_joint_detail.png)
 
-The spoiler is split into three equal 326.7 mm sections so each fits a typical printer bed:
+The spoiler is split into three equal 326.7 mm sections. Each joint face has two blind holes,
+and **separate printed pins** bridge the joint, so no part has anything sticking out.
 
-| File | Size (mm) | Joint feature |
+| File | Size (mm) | Notes |
 |---|---|---|
-| `m_style_spoiler_98cm_piece_l.stl` | 326.7 × 123 × 55 | 2 blind holes |
-| `m_style_spoiler_98cm_piece_c.stl` | 350.7 × 76 × 17 (incl. pins) | 2 pins each end |
-| `m_style_spoiler_98cm_piece_r.stl` | 326.7 × 123 × 55 | 2 blind holes |
+| `m_style_spoiler_98cm_piece_l.stl` | 326.7 × 123 × 55 | 2 holes (inner end) |
+| `m_style_spoiler_98cm_piece_c.stl` | 326.7 × 76 × 17 | 2 holes at each end |
+| `m_style_spoiler_98cm_piece_r.stl` | 326.7 × 123 × 55 | 2 holes (inner end) |
+| `m_style_spoiler_98cm_pin.stl` | Ø6 × 24 | a single pin |
+| `m_style_spoiler_98cm_pins_x5.stl` | 5 pins | print set: 4 needed + 1 spare |
 
-- **Pins**: Ø6 mm, protrude 12 mm, 0.8 mm lead-in chamfer, moulded onto the centre piece.
-  Two pins per joint (11 mm and 27 mm back from the nose, at mid-thickness) stop the pieces rotating.
-- **Holes**: Ø6.3 mm (0.15 mm radial clearance), 12.8 mm deep; the extra 0.8 mm is a glue pocket.
-- Wall around each pin: 4.0 mm (front pin), 3.1 mm (rear pin).
-- **Locking**: dry-fit, then glue the faces and pins (epoxy, CA, or ABS/acetone slurry for ABS)
-  and clamp. Sand and paint over the seams for a one-piece look.
-- Print each piece lying on its flat mounting pad. The centre piece's pins then print as horizontal
-  cylinders; use 100 % infill for the outer 10 mm of each piece for strong joints.
+- **Pins**: Ø6 × 24 mm, 0.8 mm chamfer on both ends so they slide in either way round.
+  Print them **standing upright** (as laid out in the set file) for the strongest pins.
+- **Holes**: Ø6.3 mm (0.15 mm radial clearance), 12.8 mm deep in each face, with a 0.5 mm
+  countersink at the mouth. The extra 0.8 mm depth is a glue pocket.
+- Pins sit 11 mm and 27 mm back from the nose at mid-thickness. That leaves 3.9 mm of wall around
+  the front pin and 2.9 mm around the rear pin.
+- **Assembly**: push the pins into one piece, dry-fit, then glue the pins and faces
+  (epoxy, CA, or ABS/acetone slurry for ABS) and clamp. Sand and paint over the seams.
+- Print each body piece lying on its flat mounting pad.
 - If the pins fit too tight or loose, change `clearance` in the `S` dict and rebuild.
-  `--no-split` skips the split.
+  `--split-renders-only` redraws just the exploded and joint views; `--no-split` skips the split.
 
 ## Regenerate / customise
 Every dimension is a parameter in the `P` dict at the top of `build_spoiler.py`.
