@@ -142,6 +142,12 @@
 <circle cx="81" cy="158.14" r="1.1" class="vis" />
 <circle cx="63" cy="158.14" r="1.1" class="vis" />
 <circle cx="72" cy="171.667" r="1.1" class="vis" />
+<circle cx="109.333" cy="58.609" r="1" class="vis" />
+<line x1="107.133" y1="58.609" x2="111.533" y2="58.609" class="thin" />
+<line x1="109.333" y1="56.409" x2="109.333" y2="60.809" class="thin" />
+<circle cx="34.667" cy="58.609" r="1" class="vis" />
+<line x1="32.467" y1="58.609" x2="36.867" y2="58.609" class="thin" />
+<line x1="34.667" y1="56.409" x2="34.667" y2="60.809" class="thin" />
 <polyline points="112.667,77.086 110.667,77.086 110.667,81.752 112.667,81.752" class="vis" />
 <polyline points="31.333,81.752 33.333,81.752 33.333,77.086 31.333,77.086" class="vis" />
 <line x1="72" y1="177.667" x2="72" y2="30.333" class="ctr" />
@@ -213,6 +219,12 @@
 <circle cx="181" cy="158.14" r="1.1" class="vis" />
 <circle cx="163" cy="158.14" r="1.1" class="vis" />
 <circle cx="172" cy="171.667" r="1.1" class="vis" />
+<circle cx="209.333" cy="58.609" r="1" class="vis" />
+<line x1="207.133" y1="58.609" x2="211.533" y2="58.609" class="thin" />
+<line x1="209.333" y1="56.409" x2="209.333" y2="60.809" class="thin" />
+<circle cx="134.667" cy="58.609" r="1" class="vis" />
+<line x1="132.467" y1="58.609" x2="136.867" y2="58.609" class="thin" />
+<line x1="134.667" y1="56.409" x2="134.667" y2="60.809" class="thin" />
 <polyline points="212.667,77.086 210.667,77.086 210.667,81.752 212.667,81.752" class="vis" />
 <polyline points="131.333,81.752 133.333,81.752 133.333,77.086 131.333,77.086" class="vis" />
 <line x1="172" y1="177.667" x2="172" y2="30.333" class="ctr" />
@@ -336,55 +348,61 @@
 <text x="266" y="164.2" font-size="2.2" text-anchor="start" font-weight="normal" fill="#555" >BOTTOM PLATE (BROKEN)</text>
 <text x="308" y="181" font-size="3.5" text-anchor="middle" font-weight="bold" fill="#000" >DETAIL Y</text>
 <text x="308" y="185.3" font-size="2.6" text-anchor="middle" font-weight="normal" fill="#000" >SCALE 2:1 · ELONGATED ABOVE THE WEB, HYBRID BELOW · THE GAPS ARE THE WALLS AND FRAMES</text>
-<rect x="228" y="201" width="9" height="5.5" class="thin" />
-<text x="232.5" y="204.52" font-size="2.2" text-anchor="middle" font-weight="bold" fill="#000" >ITEM</text>
-<rect x="237" y="201" width="74" height="5.5" class="thin" />
-<text x="239.5" y="204.52" font-size="2.2" text-anchor="start" font-weight="bold" fill="#000" >PART</text>
-<rect x="311" y="201" width="10" height="5.5" class="thin" />
-<text x="316" y="204.52" font-size="2.2" text-anchor="middle" font-weight="bold" fill="#000" >QTY</text>
-<rect x="228" y="206.5" width="9" height="5.5" class="thin" />
-<text x="232.5" y="210.02" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
-<rect x="237" y="206.5" width="74" height="5.5" class="thin" />
-<text x="239.5" y="210.02" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Main plate, mould_main_plate (or the 2 halves)</text>
-<rect x="311" y="206.5" width="10" height="5.5" class="thin" />
-<text x="316" y="210.02" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
-<rect x="228" y="212" width="9" height="5.5" class="thin" />
-<text x="232.5" y="215.52" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >2</text>
-<rect x="237" y="212" width="74" height="5.5" class="thin" />
-<text x="239.5" y="215.52" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Top plate, mould_top_plate.stl</text>
-<rect x="311" y="212" width="10" height="5.5" class="thin" />
-<text x="316" y="215.52" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
-<rect x="228" y="217.5" width="9" height="5.5" class="thin" />
-<text x="232.5" y="221.02" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >3</text>
-<rect x="237" y="217.5" width="74" height="5.5" class="thin" />
-<text x="239.5" y="221.02" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Bottom plate, mould_bottom_plate.stl</text>
-<rect x="311" y="217.5" width="10" height="5.5" class="thin" />
-<text x="316" y="221.02" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
-<rect x="228" y="223" width="9" height="5.5" class="thin" />
-<text x="232.5" y="226.52" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >4</text>
-<rect x="237" y="223" width="74" height="5.5" class="thin" />
-<text x="239.5" y="226.52" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Hex bolt M6 × 60, 2 washers, nut</text>
-<rect x="311" y="223" width="10" height="5.5" class="thin" />
-<text x="316" y="226.52" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >18</text>
-<rect x="228" y="228.5" width="9" height="5.5" class="thin" />
-<text x="232.5" y="232.02" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >5</text>
-<rect x="237" y="228.5" width="74" height="5.5" class="thin" />
-<text x="239.5" y="232.02" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Release wax + PVA; flat platens + clamps or a press</text>
-<rect x="311" y="228.5" width="10" height="5.5" class="thin" />
-<text x="316" y="232.02" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >a/r</text>
-<text x="228" y="198.5" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >MOULD HARDWARE</text>
+<rect x="228" y="200" width="9" height="5" class="thin" />
+<text x="232.5" y="203.27" font-size="2.2" text-anchor="middle" font-weight="bold" fill="#000" >ITEM</text>
+<rect x="237" y="200" width="74" height="5" class="thin" />
+<text x="239.5" y="203.27" font-size="2.2" text-anchor="start" font-weight="bold" fill="#000" >PART</text>
+<rect x="311" y="200" width="10" height="5" class="thin" />
+<text x="316" y="203.27" font-size="2.2" text-anchor="middle" font-weight="bold" fill="#000" >QTY</text>
+<rect x="228" y="205" width="9" height="5" class="thin" />
+<text x="232.5" y="208.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
+<rect x="237" y="205" width="74" height="5" class="thin" />
+<text x="239.5" y="208.27" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Main plate, mould_main_plate (or the 2 halves)</text>
+<rect x="311" y="205" width="10" height="5" class="thin" />
+<text x="316" y="208.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
+<rect x="228" y="210" width="9" height="5" class="thin" />
+<text x="232.5" y="213.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >2</text>
+<rect x="237" y="210" width="74" height="5" class="thin" />
+<text x="239.5" y="213.27" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Top plate, mould_top_plate.stl</text>
+<rect x="311" y="210" width="10" height="5" class="thin" />
+<text x="316" y="213.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
+<rect x="228" y="215" width="9" height="5" class="thin" />
+<text x="232.5" y="218.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >3</text>
+<rect x="237" y="215" width="74" height="5" class="thin" />
+<text x="239.5" y="218.27" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Bottom plate, mould_bottom_plate.stl</text>
+<rect x="311" y="215" width="10" height="5" class="thin" />
+<text x="316" y="218.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >1</text>
+<rect x="228" y="220" width="9" height="5" class="thin" />
+<text x="232.5" y="223.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >4</text>
+<rect x="237" y="220" width="74" height="5" class="thin" />
+<text x="239.5" y="223.27" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Hex bolt M6 × 60, 2 washers, nut</text>
+<rect x="311" y="220" width="10" height="5" class="thin" />
+<text x="316" y="223.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >18</text>
+<rect x="228" y="225" width="9" height="5" class="thin" />
+<text x="232.5" y="228.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >5</text>
+<rect x="237" y="225" width="74" height="5" class="thin" />
+<text x="239.5" y="228.27" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Dowel pin Ø6 h6 × 50, ground (holes Ø6 H7)</text>
+<rect x="311" y="225" width="10" height="5" class="thin" />
+<text x="316" y="228.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >2</text>
+<rect x="228" y="230" width="9" height="5" class="thin" />
+<text x="232.5" y="233.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >6</text>
+<rect x="237" y="230" width="74" height="5" class="thin" />
+<text x="239.5" y="233.27" font-size="2.2" text-anchor="start" font-weight="normal" fill="#000" >Release wax + PVA; flat platens + clamps or a press</text>
+<rect x="311" y="230" width="10" height="5" class="thin" />
+<text x="316" y="233.27" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000" >a/r</text>
+<text x="228" y="197.5" font-size="3" text-anchor="start" font-weight="bold" fill="#000" >MOULD HARDWARE</text>
 <text x="28" y="198" font-size="3.5" text-anchor="start" font-weight="bold" fill="#000" >NOTES</text>
 <text x="28" y="203.6" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >1.</text>
 <text x="33" y="203.6" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >MAIN PLATE (1), TOP PLATE (2), BOTTOM PLATE (3): output/mould/mould_main_plate / _top_plate / _bottom_plate (.stl / .step).</text>
 <text x="33" y="206.65" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >THE 30 MAIN PLATE HOLDS BOTH CAVITIES: ELONGATED IN THE TOP FACE, HYBRID IN THE BOTTOM FACE, 10 WEB BETWEEN.</text>
 <text x="28" y="210.1" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >2.</text>
 <text x="33" y="210.1" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >EACH CAVITY IS THAT PADDLE'S RIB SUPPORT (SHEET 3): THE MAIN PLATE CARRIES THE BOTTOM-FLUTE TEETH, EACH CLAMP PLATE (10 + 8.4 TEETH)</text>
-<text x="33" y="213.15" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >THE TOP-FLUTE TEETH. THE CLAMP PLATES SEAT FLAT ON THE MAIN PLATE: CLOSED STACK 50, CORE HEIGHT 10, WALLS 1.6, FRAME 10.</text>
+<text x="33" y="213.15" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >THE TOP-FLUTE TEETH. THE CLAMP PLATES SEAT FLAT ON THE MAIN PLATE: CLOSED STACK 50, CORE HEIGHT 10, WEBS 1.6, FRAME 10.</text>
 <text x="28" y="216.6" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >3.</text>
 <text x="33" y="216.6" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >PRINT THE CLAMP PLATES BACK DOWN, TEETH UP, AND THE MAIN PLATE AS TWO 15 HALVES SPLIT THROUGH THE WEB</text>
 <text x="33" y="219.65" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >(mould_main_upper_half / _lower_half.stl), EACH CAVITY UP; THE STACK BOLTS CLAMP THEM. ≥ 5 WALLS, ≥ 40 % INFILL. PLA AT 100 %: MAIN 1.8, TOP 1.1, BOTTOM 1.1 kg.</text>
 <text x="28" y="223.1" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >4.</text>
-<text x="33" y="223.1" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >PLA SOFTENS NEAR 55 °C: ROOM-TEMPERATURE-CURE EPOXY ONLY. FOR A WARM CURE PRINT IN PETG, ASA OR PA-CF. BED ≥ 440 mm, OR MACHINE THE STEP.</text>
+<text x="33" y="223.1" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >PLA SOFTENS NEAR 55 °C: ROOM-TEMPERATURE-CURE EPOXY ONLY. WARM CURE: PETG / ASA / PA-CF, OR THE ALUMINIUM PLATES OF PB-MO-004.</text>
 <text x="28" y="226.55" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >5.</text>
 <text x="33" y="226.55" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >DRY FIT FIRST WITH BOTH TRIAL RIB SUPPORT STLs PRINTED IN PLA: THE STACK MUST CLOSE FULLY. THEN SAND THE CAVITIES (P400 → P800),</text>
 <text x="33" y="229.6" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >SEAL (EPOXY COAT), WAX ×3 + PVA.</text>
@@ -392,8 +410,8 @@
 <text x="33" y="233.05" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >FILL (FORGED CARBON) ≈ 368 g (ELONGATED) AND 350 g (HYBRID), HALF CHOPPED CARBON TOW (10–25 mm), HALF EPOXY BY MASS. MAIN PLATE HYBRID FACE UP:</text>
 <text x="33" y="236.1" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >PACK THAT CAVITY, BOTTOM PLATE ON, 4 BOLTS; TURN THE PAIR OVER, PACK THE ELONGATED CAVITY, TOP PLATE ON.</text>
 <text x="28" y="239.55" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >7.</text>
-<text x="33" y="239.55" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >CLOSE: ALL BOLTS (4) FINGER-TIGHT, PRESS THE STACK BETWEEN 2 FLAT, STIFF PLATENS OR IN A PRESS UNTIL BOTH CLAMP PLATES SEAT;</text>
-<text x="33" y="242.6" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >TIGHTEN THE BOLTS. EXCESS RESIN LEAVES BY THE OVERFLOW GROOVES AND THE VENTS.</text>
+<text x="33" y="239.55" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >CLOSE: THE 2 DOWEL PINS (5) THROUGH THE STACK, ALL BOLTS (4) FINGER-TIGHT, PRESS THE STACK BETWEEN 2 FLAT, STIFF PLATENS</text>
+<text x="33" y="242.6" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >OR IN A PRESS UNTIL BOTH CLAMP PLATES SEAT; TIGHTEN THE BOLTS. EXCESS RESIN LEAVES BY THE OVERFLOW GROOVES AND THE VENTS.</text>
 <text x="28" y="246.05" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >8.</text>
 <text x="33" y="246.05" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >CURE 24 h AT ROOM TEMPERATURE, SPLIT AT THE PRY NOTCHES, EASE THE PARTS OUT FROM THE BUTT END WITH A PLASTIC WEDGE.</text>
 <text x="33" y="249.1" font-size="2.15" text-anchor="start" font-weight="normal" fill="#000" >TRIM THE FLASH, DRILL AND FIT THE M3 INSERTS (SHEET 3).</text>
@@ -406,7 +424,7 @@
 <text x="247.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >Claude Code</text>
 <rect x="270" y="252" width="45" height="10" class="thin" />
 <text x="271.2" y="254.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >DATE</text>
-<text x="292.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >2026-11-26</text>
+<text x="292.5" y="259.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >2026-11-27</text>
 <rect x="315" y="252" width="45" height="10" class="thin" />
 <text x="316.2" y="254.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >CHECKED</text>
 <rect x="360" y="252" width="45" height="10" class="thin" />
@@ -416,7 +434,7 @@
 <text x="251" y="269.19" font-size="3.4" text-anchor="middle" font-weight="bold" fill="#000" >PB-MO-003</text>
 <rect x="277" y="262" width="16" height="10" class="thin" />
 <text x="278.2" y="264.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >REV</text>
-<text x="285" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >K</text>
+<text x="285" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >L</text>
 <rect x="293" y="262" width="22" height="10" class="thin" />
 <text x="294.2" y="264.6" font-size="1.9" text-anchor="start" font-weight="normal" fill="#555" >SHEET</text>
 <text x="304" y="269.12" font-size="3.2" text-anchor="middle" font-weight="normal" fill="#000" >1 / 1</text>

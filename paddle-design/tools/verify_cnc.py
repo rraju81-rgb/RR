@@ -83,10 +83,10 @@ def shade_png(path: Path, S, inside, crop) -> None:
     import matplotlib.pyplot as plt
     from matplotlib.colors import LightSource
     i0, i1, j0, j1 = crop
-    Z = np.where(inside, S, np.nan)[i0:i1, j0:j1]
-    ls = LightSource(azdeg=315, altdeg=35)
-    rgb = ls.shade(np.nan_to_num(Z, nan=float(np.nanmin(Z))), cmap=plt.cm.Greys_r, vert_exag=4, blend_mode="soft",
-                   vmin=float(np.nanmin(Z)) - 6, vmax=0.0)
+    Z = np.where(inside, np.clip(S, -12.0, 0.0), np.nan)[i0:i1, j0:j1]      # holes read as deep, not -30
+    ls = LightSource(azdeg=315, altdeg=40)
+    rgb = ls.shade(np.nan_to_num(Z, nan=0.0), cmap=plt.cm.Greys_r, vert_exag=2, blend_mode="overlay",
+                   vmin=-14.0, vmax=1.0)
     rgb[..., 3] = np.where(np.isnan(Z), 0.0, 1.0)
     plt.imsave(path, rgb[::-1])
 
@@ -129,7 +129,10 @@ def main() -> None:
     region = shapely.contains_xy(plate.buffer(-1.0), XX, YY)
     inside = shapely.contains_xy(plate.buffer(0.5), XX, YY)
     meshes = {k: trimesh.load(MOULD / f"mould_{k}.stl", force="mesh") for k in ("main_plate", "top_plate", "bottom_plate")}
-    report = dict(cell_mm=args.cell, tol_mm=TOL, posts={})
+    old = OUT / "verify_report.json"
+    report = json.loads(old.read_text()) if old.exists() else {}
+    report.update(cell_mm=args.cell, tol_mm=TOL)
+    report.setdefault("posts", {})
     posts = ["iso"] + (["generic"] if args.generic else [])
     for post in posts:
         rep = {}
