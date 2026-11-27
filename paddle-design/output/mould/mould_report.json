@@ -8,25 +8,26 @@
  "stack_mm": 50.0,
  "core_height_mm": 10.0,
  "bolts_M6": 18,
+ "dowels": 2,
  "pry_notches": 2,
  "vents_per_face": 6,
  "plates": {
   "main_plate": {
    "file": "mould_main_plate.stl",
-   "triangles": 15478,
+   "triangles": 16494,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 1485.13,
-   "cad_volume_cm3": 1485.2,
+   "volume_cm3": 1483.44,
+   "cad_volume_cm3": 1483.5,
    "size_mm": [
     244.0,
     429.0,
     30.0
    ],
    "mass_g": {
-    "PLA": 1841.6,
-    "PETG": 1886.1,
-    "PA-CF": 1752.5
+    "PLA": 1839.5,
+    "PETG": 1884.0,
+    "PA-CF": 1750.5
    },
    "fits_bed": [
     "500 x 500"
@@ -34,20 +35,20 @@
   },
   "main_upper_half": {
    "file": "mould_main_upper_half.stl",
-   "triangles": 12624,
+   "triangles": 13640,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 728.87,
-   "cad_volume_cm3": 728.92,
+   "volume_cm3": 728.02,
+   "cad_volume_cm3": 728.07,
    "size_mm": [
     244.0,
     429.0,
     15.0
    ],
    "mass_g": {
-    "PLA": 903.8,
-    "PETG": 925.7,
-    "PA-CF": 860.1
+    "PLA": 902.7,
+    "PETG": 924.6,
+    "PA-CF": 859.1
    },
    "fits_bed": [
     "500 x 500"
@@ -55,20 +56,20 @@
   },
   "main_lower_half": {
    "file": "mould_main_lower_half.stl",
-   "triangles": 12706,
+   "triangles": 13722,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 756.26,
-   "cad_volume_cm3": 756.28,
+   "volume_cm3": 755.41,
+   "cad_volume_cm3": 755.43,
    "size_mm": [
     244.0,
     429.0,
     15.0
    ],
    "mass_g": {
-    "PLA": 937.8,
-    "PETG": 960.5,
-    "PA-CF": 892.4
+    "PLA": 936.7,
+    "PETG": 959.4,
+    "PA-CF": 891.4
    },
    "fits_bed": [
     "500 x 500"
@@ -76,20 +77,20 @@
   },
   "top_plate": {
    "file": "mould_top_plate.stl",
-   "triangles": 10364,
+   "triangles": 11380,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 869.73,
-   "cad_volume_cm3": 869.77,
+   "volume_cm3": 869.16,
+   "cad_volume_cm3": 869.21,
    "size_mm": [
     244.0,
     429.0,
     18.4
    ],
    "mass_g": {
-    "PLA": 1078.5,
-    "PETG": 1104.6,
-    "PA-CF": 1026.3
+    "PLA": 1077.8,
+    "PETG": 1103.8,
+    "PA-CF": 1025.6
    },
    "fits_bed": [
     "500 x 500"
@@ -97,20 +98,20 @@
   },
   "bottom_plate": {
    "file": "mould_bottom_plate.stl",
-   "triangles": 10436,
+   "triangles": 11452,
    "watertight": true,
    "bodies": 1,
-   "volume_cm3": 853.29,
-   "cad_volume_cm3": 853.35,
+   "volume_cm3": 852.72,
+   "cad_volume_cm3": 852.78,
    "size_mm": [
     244.0,
     429.0,
     18.4
    ],
    "mass_g": {
-    "PLA": 1058.1,
-    "PETG": 1083.7,
-    "PA-CF": 1006.9
+    "PLA": 1057.4,
+    "PETG": 1083.0,
+    "PA-CF": 1006.2
    },
    "fits_bed": [
     "500 x 500"

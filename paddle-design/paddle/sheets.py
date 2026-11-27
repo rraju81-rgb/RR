@@ -19,8 +19,8 @@ from .geometry import GRIP, Outline, PaddleSpec
 from .pictorial import ISOMETRIC, project
 from .svgkit import Doc, View, f, fmt, frame_iso, hatch_pattern, projection_symbol_first_angle
 
-ISSUE = {"rev": "K", "date": "2026-11-26", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
-SHEETS = 3                                  # sheets per paddle drawing (the mould is PB-MO-003)
+ISSUE = {"rev": "L", "date": "2026-11-27", "drawn": "Claude Code", "status": "ISSUED FOR REVIEW"}
+SHEETS = 3                                  # sheets per paddle drawing (mould: PB-MO-003, CNC: PB-MO-004/005)
 USAP_SUM, USAP_LEN = 609.6, 431.8          # 24 in (length + width), 17 in (length)
 GREY = "#555"
 
@@ -125,8 +125,8 @@ def ga_notes(o: Outline, mass: dict | None = None) -> list[str]:
         f"SOLID TO y = {fmt(C.solid_to)}, 45° FLUTE RAMPS – SEE SHEET 3.",
         "SKINS BONDED TO THE CORE: EPOXY, ABRADED + PRIMED FACES, PRESSED FLAT BETWEEN PLATENS OR IN A\n"
         "VACUUM BAG.",
-        "STRENGTH: NOT QUALIFIED BY FEA. HAND CHECK (analysis/hand_check.json, README): THE 0.3 SKINS\n"
-        "FAIL A TIP HIT (SKIN BUCKLING BETWEEN THE LANDS, HANDLE SKIN, CORE); 0.6 SKINS PASS.",
+        "STRENGTH: NOT QUALIFIED BY FEA. HAND CHECK (analysis/hand_check.json, README): THE BLADE PASSES ON\n"
+        "0.3 SKINS; A TIP HIT FAILS THE SOLID HANDLE ZONE (HANDLE SKIN, CORE); 0.6 SKINS PASS EVERY CHECK.",
         f"GRIP: PRINTED PLA GRIP (ANY OF THE TEN REV-8 DESIGNS; DRAWN: {g['name']}, {g['mass_g']:.0f} g), LOCKED BY A "
         f"DIN 7984\nM3 × {fmt(GRIP.screw_len)} SCREW INTO A BONDED M3 INSERT. " +
         (f"REV-8 SLOT {fmt(GRIP.slot_t)} > HANDLE {fmt(sp.thickness)}: REGENERATE – PB-GR-002."

@@ -17,12 +17,28 @@ from paddle.geometry import DESIGNS, build
 from paddle.render import board
 from paddle.sheets import ga_sheet, template_sheet
 from paddle.sheets_construction import GRIP_NO, core_sheet, grip_sheet
+from paddle.sheets_cnc import blueprint, cnc_diagram, machining_blueprint
 from paddle.sheets_mould import MOULD_NO, mould_sheet
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "output"
 MASS = ROOT / "analysis" / "mass_properties.json"     # written by tools/export_cad.py
 MOULD = OUT / "mould" / "mould_report.json"            # written by tools/export_mould.py
+CNC = OUT / "cnc"                                      # tools/export_cnc.py and tools/verify_cnc.py
+
+
+class Blueprint:
+    """A sheet drawn in ink, delivered in blueprint colours (white on blue)."""
+
+    def __init__(self, doc):
+        self.doc, self.w, self.h = doc, doc.w, doc.h
+
+    def svg(self) -> str:
+        return blueprint(self.doc.svg())
+
+
+def _json(p: Path):
+    return json.loads(p.read_text()) if p.exists() else None
 
 
 def main() -> None:
@@ -62,6 +78,14 @@ def main() -> None:
     p = d / f"{MOULD_NO}_rib_support_stack_mould.svg"
     p.write_text(doc.svg(), encoding="utf-8")
     jobs.append((p, doc))
+
+    cnc = (_json(CNC / "cnc_report.json"), _json(CNC / "toolpaths.json"), _json(CNC / "verify_report.json"))
+    for stem, doc in (("PB-MO-004_machining_blueprint", Blueprint(machining_blueprint(cnc[0]))),
+                      ("PB-MO-005_cnc_machining_diagram", cnc_diagram(*cnc))):
+        p = CNC / f"{stem}.svg"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(doc.svg(), encoding="utf-8")
+        jobs.append((p, doc))
 
     svg, bw, bh = board(outlines)
     render_svg = OUT / "render" / "paddles_2d_render.svg"

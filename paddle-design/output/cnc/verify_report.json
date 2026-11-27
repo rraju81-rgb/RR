@@ -1,0 +1,831 @@
+{
+ "cell_mm": 0.25,
+ "tol_mm": 0.03,
+ "posts": {
+  "iso": {
+   "fixture": {
+    "events": [
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 22,
+      "text": "T2 plunging 4.00 into solid at X-7.00 Y0.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 23,
+      "text": "T2 plunging 4.00 into solid at X33.58 Y-27.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 24,
+      "text": "T2 plunging 4.00 into solid at X33.58 Y27.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 25,
+      "text": "T2 plunging 4.00 into solid at X96.01 Y27.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 26,
+      "text": "T2 plunging 4.00 into solid at X96.01 Y-27.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 27,
+      "text": "T2 plunging 4.00 into solid at X145.25 Y-50.41"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 28,
+      "text": "T2 plunging 4.00 into solid at X178.20 Y-103.19"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 29,
+      "text": "T2 plunging 4.00 into solid at X238.53 Y-112.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 30,
+      "text": "T2 plunging 4.00 into solid at X300.96 Y-112.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 31,
+      "text": "T2 plunging 4.00 into solid at X362.94 Y-108.23"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 32,
+      "text": "T2 plunging 4.00 into solid at X401.10 Y-62.38"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 33,
+      "text": "T2 plunging 4.00 into solid at X402.00 Y0.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 34,
+      "text": "T2 plunging 4.00 into solid at X401.10 Y62.38"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 35,
+      "text": "T2 plunging 4.00 into solid at X362.94 Y108.23"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 36,
+      "text": "T2 plunging 4.00 into solid at X300.96 Y112.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 37,
+      "text": "T2 plunging 4.00 into solid at X238.53 Y112.00"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 38,
+      "text": "T2 plunging 4.00 into solid at X178.20 Y103.19"
+     },
+     {
+      "kind": "PLUNGE INTO MATERIAL",
+      "line": 39,
+      "text": "T2 plunging 4.00 into solid at X145.25 Y50.41"
+     }
+    ],
+    "removed_cm3": {
+     "T2": 3.7,
+     "T7": 0.9,
+     "T11": 6.0,
+     "T12": 6.2,
+     "T9": 1.0,
+     "T10": 0.1,
+     "T1": 26.3
+    }
+   },
+   "main_A": {
+    "max_gouge": 0.13614632189273834,
+    "max_leftover": 10.0,
+    "gouge_cells": 448,
+    "leftover_cells": 2222,
+    "cells": 1159566,
+    "events": [],
+    "removed_cm3": {
+     "T7": 1.0,
+     "T8": 18.2,
+     "T9": 1.6,
+     "T10": 0.1,
+     "T2": 344.4,
+     "T3": 9.7,
+     "T4": 9.1,
+     "T5": 0.2,
+     "T6": 3.4
+    },
+    "moves": 15524,
+    "leftover_clusters": [
+     {
+      "max": 10.0,
+      "cells": 15,
+      "X": 5.7,
+      "Y": -14.3
+     },
+     {
+      "max": 10.0,
+      "cells": 15,
+      "X": 5.7,
+      "Y": 14.3
+     },
+     {
+      "max": 0.321,
+      "cells": 118,
+      "X": 401.1,
+      "Y": -62.4
+     },
+     {
+      "max": 0.321,
+      "cells": 118,
+      "X": 401.1,
+      "Y": 62.4
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": 116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": 116.7
+     },
+     {
+      "max": 0.299,
+      "cells": 122,
+      "X": 178.2,
+      "Y": -103.2
+     },
+     {
+      "max": 0.299,
+      "cells": 122,
+      "X": 178.2,
+      "Y": 103.2
+     },
+     {
+      "max": 0.295,
+      "cells": 123,
+      "X": 145.2,
+      "Y": -50.5
+     },
+     {
+      "max": 0.295,
+      "cells": 123,
+      "X": 145.2,
+      "Y": 50.5
+     },
+     {
+      "max": 0.292,
+      "cells": 122,
+      "X": 33.6,
+      "Y": -27.0
+     },
+     {
+      "max": 0.292,
+      "cells": 122,
+      "X": 33.6,
+      "Y": 27.0
+     },
+     {
+      "max": 0.292,
+      "cells": 120,
+      "X": 301.0,
+      "Y": -112.0
+     },
+     {
+      "max": 0.292,
+      "cells": 120,
+      "X": 301.0,
+      "Y": 112.0
+     },
+     {
+      "max": 0.289,
+      "cells": 121,
+      "X": 362.9,
+      "Y": -108.2
+     },
+     {
+      "max": 0.289,
+      "cells": 121,
+      "X": 362.9,
+      "Y": 108.2
+     },
+     {
+      "max": 0.29,
+      "cells": 120,
+      "X": 238.5,
+      "Y": -112.0
+     },
+     {
+      "max": 0.29,
+      "cells": 120,
+      "X": 238.5,
+      "Y": 112.0
+     },
+     {
+      "max": 0.277,
+      "cells": 112,
+      "X": 96.1,
+      "Y": -27.0
+     },
+     {
+      "max": 0.277,
+      "cells": 112,
+      "X": 96.1,
+      "Y": 27.0
+     },
+     {
+      "max": 0.268,
+      "cells": 108,
+      "X": -7.0,
+      "Y": 0.0
+     },
+     {
+      "max": 0.268,
+      "cells": 108,
+      "X": 402.0,
+      "Y": 0.0
+     }
+    ],
+    "leftover_cluster_count": 24,
+    "gouge_clusters": [
+     {
+      "max": 0.136,
+      "cells": 7,
+      "X": 359.4,
+      "Y": -108.1
+     },
+     {
+      "max": 0.136,
+      "cells": 7,
+      "X": 178.1,
+      "Y": -99.6
+     },
+     {
+      "max": 0.136,
+      "cells": 7,
+      "X": 178.1,
+      "Y": 99.6
+     },
+     {
+      "max": 0.136,
+      "cells": 7,
+      "X": 359.4,
+      "Y": 108.1
+     },
+     {
+      "max": 0.121,
+      "cells": 7,
+      "X": 174.6,
+      "Y": -103.1
+     },
+     {
+      "max": 0.121,
+      "cells": 7,
+      "X": 174.6,
+      "Y": 103.1
+     },
+     {
+      "max": 0.115,
+      "cells": 6,
+      "X": 297.4,
+      "Y": -112.0
+     },
+     {
+      "max": 0.115,
+      "cells": 6,
+      "X": 297.4,
+      "Y": 112.0
+     },
+     {
+      "max": 0.101,
+      "cells": 6,
+      "X": 242.1,
+      "Y": -112.0
+     },
+     {
+      "max": 0.101,
+      "cells": 6,
+      "X": 242.1,
+      "Y": 112.0
+     },
+     {
+      "max": 0.1,
+      "cells": 6,
+      "X": 328.9,
+      "Y": -112.0
+     },
+     {
+      "max": 0.1,
+      "cells": 6,
+      "X": 328.9,
+      "Y": 112.0
+     },
+     {
+      "max": 0.096,
+      "cells": 6,
+      "X": 363.0,
+      "Y": -104.6
+     },
+     {
+      "max": 0.096,
+      "cells": 6,
+      "X": 363.0,
+      "Y": 104.6
+     },
+     {
+      "max": 0.084,
+      "cells": 6,
+      "X": 99.6,
+      "Y": -27.0
+     },
+     {
+      "max": 0.084,
+      "cells": 6,
+      "X": 99.6,
+      "Y": 27.0
+     },
+     {
+      "max": 0.077,
+      "cells": 5,
+      "X": 141.6,
+      "Y": -50.4
+     },
+     {
+      "max": 0.077,
+      "cells": 5,
+      "X": 141.6,
+      "Y": 50.4
+     },
+     {
+      "max": 0.075,
+      "cells": 5,
+      "X": 33.6,
+      "Y": -30.6
+     },
+     {
+      "max": 0.075,
+      "cells": 5,
+      "X": 33.6,
+      "Y": -23.4
+     },
+     {
+      "max": 0.075,
+      "cells": 5,
+      "X": 33.6,
+      "Y": 23.4
+     },
+     {
+      "max": 0.075,
+      "cells": 5,
+      "X": 33.6,
+      "Y": 30.6
+     },
+     {
+      "max": 0.073,
+      "cells": 5,
+      "X": 148.9,
+      "Y": -50.4
+     },
+     {
+      "max": 0.073,
+      "cells": 5,
+      "X": 148.9,
+      "Y": 50.4
+     },
+     {
+      "max": 0.074,
+      "cells": 4,
+      "X": 238.5,
+      "Y": -115.6
+     },
+     {
+      "max": 0.074,
+      "cells": 4,
+      "X": 301.0,
+      "Y": -115.6
+     },
+     {
+      "max": 0.074,
+      "cells": 4,
+      "X": 238.5,
+      "Y": -108.4
+     },
+     {
+      "max": 0.074,
+      "cells": 4,
+      "X": 301.0,
+      "Y": -108.4
+     },
+     {
+      "max": 0.074,
+      "cells": 4,
+      "X": 238.5,
+      "Y": 108.4
+     },
+     {
+      "max": 0.074,
+      "cells": 4,
+      "X": 301.0,
+      "Y": 108.4
+     }
+    ],
+    "gouge_cluster_count": 244
+   },
+   "main_B": {
+    "max_gouge": 0.0,
+    "max_leftover": 10.0,
+    "gouge_cells": 0,
+    "leftover_cells": 90,
+    "cells": 1159566,
+    "events": [],
+    "removed_cm3": {
+     "T2": 318.0,
+     "T3": 9.1,
+     "T4": 8.8,
+     "T5": 0.2,
+     "T6": 3.3,
+     "T1": 346.4
+    },
+    "moves": 20169,
+    "leftover_clusters": [
+     {
+      "max": 10.0,
+      "cells": 15,
+      "X": 5.7,
+      "Y": -14.3
+     },
+     {
+      "max": 10.0,
+      "cells": 15,
+      "X": 5.7,
+      "Y": 14.3
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": 116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": 116.7
+     }
+    ],
+    "leftover_cluster_count": 6,
+    "gouge_clusters": [],
+    "gouge_cluster_count": 0
+   },
+   "top_clamp": {
+    "max_gouge": 0.0,
+    "max_leftover": 2.5,
+    "gouge_cells": 0,
+    "leftover_cells": 2192,
+    "cells": 1159566,
+    "events": [],
+    "removed_cm3": {
+     "T7": 1.0,
+     "T8": 12.1,
+     "T9": 1.1,
+     "T10": 0.1,
+     "T1": 801.4,
+     "T3": 11.6,
+     "T4": 10.1,
+     "T5": 0.2
+    },
+    "moves": 20605,
+    "leftover_clusters": [
+     {
+      "max": 0.321,
+      "cells": 118,
+      "X": 401.1,
+      "Y": -62.4
+     },
+     {
+      "max": 0.321,
+      "cells": 118,
+      "X": 401.1,
+      "Y": 62.4
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": 116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": 116.7
+     },
+     {
+      "max": 0.299,
+      "cells": 122,
+      "X": 178.2,
+      "Y": -103.2
+     },
+     {
+      "max": 0.299,
+      "cells": 122,
+      "X": 178.2,
+      "Y": 103.2
+     },
+     {
+      "max": 0.295,
+      "cells": 123,
+      "X": 145.2,
+      "Y": -50.5
+     },
+     {
+      "max": 0.295,
+      "cells": 123,
+      "X": 145.2,
+      "Y": 50.5
+     },
+     {
+      "max": 0.292,
+      "cells": 122,
+      "X": 33.6,
+      "Y": -27.0
+     },
+     {
+      "max": 0.292,
+      "cells": 122,
+      "X": 33.6,
+      "Y": 27.0
+     },
+     {
+      "max": 0.292,
+      "cells": 120,
+      "X": 301.0,
+      "Y": -112.0
+     },
+     {
+      "max": 0.292,
+      "cells": 120,
+      "X": 301.0,
+      "Y": 112.0
+     },
+     {
+      "max": 0.289,
+      "cells": 121,
+      "X": 362.9,
+      "Y": -108.2
+     },
+     {
+      "max": 0.289,
+      "cells": 121,
+      "X": 362.9,
+      "Y": 108.2
+     },
+     {
+      "max": 0.29,
+      "cells": 120,
+      "X": 238.5,
+      "Y": -112.0
+     },
+     {
+      "max": 0.29,
+      "cells": 120,
+      "X": 238.5,
+      "Y": 112.0
+     },
+     {
+      "max": 0.277,
+      "cells": 112,
+      "X": 96.1,
+      "Y": -27.0
+     },
+     {
+      "max": 0.277,
+      "cells": 112,
+      "X": 96.1,
+      "Y": 27.0
+     },
+     {
+      "max": 0.268,
+      "cells": 108,
+      "X": -7.0,
+      "Y": 0.0
+     },
+     {
+      "max": 0.268,
+      "cells": 108,
+      "X": 402.0,
+      "Y": 0.0
+     }
+    ],
+    "leftover_cluster_count": 22,
+    "gouge_clusters": [],
+    "gouge_cluster_count": 0
+   },
+   "bottom_clamp": {
+    "max_gouge": 0.0,
+    "max_leftover": 2.5,
+    "gouge_cells": 0,
+    "leftover_cells": 2192,
+    "cells": 1159566,
+    "events": [],
+    "removed_cm3": {
+     "T7": 1.0,
+     "T8": 12.1,
+     "T9": 1.1,
+     "T10": 0.1,
+     "T1": 818.0,
+     "T3": 12.0,
+     "T4": 9.9,
+     "T5": 0.2
+    },
+    "moves": 20428,
+    "leftover_clusters": [
+     {
+      "max": 0.321,
+      "cells": 118,
+      "X": 401.1,
+      "Y": -62.4
+     },
+     {
+      "max": 0.321,
+      "cells": 118,
+      "X": 401.1,
+      "Y": 62.4
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": -116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 263.5,
+      "Y": 116.7
+     },
+     {
+      "max": 2.5,
+      "cells": 15,
+      "X": 276.0,
+      "Y": 116.7
+     },
+     {
+      "max": 0.299,
+      "cells": 122,
+      "X": 178.2,
+      "Y": -103.2
+     },
+     {
+      "max": 0.299,
+      "cells": 122,
+      "X": 178.2,
+      "Y": 103.2
+     },
+     {
+      "max": 0.295,
+      "cells": 123,
+      "X": 145.2,
+      "Y": -50.5
+     },
+     {
+      "max": 0.295,
+      "cells": 123,
+      "X": 145.2,
+      "Y": 50.5
+     },
+     {
+      "max": 0.292,
+      "cells": 122,
+      "X": 33.6,
+      "Y": -27.0
+     },
+     {
+      "max": 0.292,
+      "cells": 122,
+      "X": 33.6,
+      "Y": 27.0
+     },
+     {
+      "max": 0.292,
+      "cells": 120,
+      "X": 301.0,
+      "Y": -112.0
+     },
+     {
+      "max": 0.292,
+      "cells": 120,
+      "X": 301.0,
+      "Y": 112.0
+     },
+     {
+      "max": 0.289,
+      "cells": 121,
+      "X": 362.9,
+      "Y": -108.2
+     },
+     {
+      "max": 0.289,
+      "cells": 121,
+      "X": 362.9,
+      "Y": 108.2
+     },
+     {
+      "max": 0.29,
+      "cells": 120,
+      "X": 238.5,
+      "Y": -112.0
+     },
+     {
+      "max": 0.29,
+      "cells": 120,
+      "X": 238.5,
+      "Y": 112.0
+     },
+     {
+      "max": 0.277,
+      "cells": 112,
+      "X": 96.1,
+      "Y": -27.0
+     },
+     {
+      "max": 0.277,
+      "cells": 112,
+      "X": 96.1,
+      "Y": 27.0
+     },
+     {
+      "max": 0.268,
+      "cells": 108,
+      "X": -7.0,
+      "Y": 0.0
+     },
+     {
+      "max": 0.268,
+      "cells": 108,
+      "X": 402.0,
+      "Y": 0.0
+     }
+    ],
+    "leftover_cluster_count": 22,
+    "gouge_clusters": [],
+    "gouge_cluster_count": 0
+   }
+  }
+ }
+}

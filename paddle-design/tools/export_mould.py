@@ -54,7 +54,8 @@ def main() -> None:
                        f"frame {C.frame_w:g} mm, solid to y = {C.solid_to:g}); the clamp plates "
                        f"seat flat on the main plate. Fill: chopped carbon fibre + epoxy.",
                   top_cavity=mould.TOP, bottom_cavity=mould.BOTTOM, main_mm=M.main, web_mm=M.web, clamp_mm=M.clamp,
-                  stack_mm=M.height, core_height_mm=C.core_t, bolts_M6=len(lay.bolts), pry_notches=len(lay.notches),
+                  stack_mm=M.height, core_height_mm=C.core_t, bolts_M6=len(lay.bolts), dowels=len(lay.dowels),
+                  pry_notches=len(lay.notches),
                   vents_per_face=len(lay.vents), plates={}, cavities={})
     for name, shape, pose, step in (("main_plate", main_plate, "main", True), ("main_upper_half", upper, "upper", False),
                                     ("main_lower_half", lower, "lower", False), ("top_plate", top, "top", True),

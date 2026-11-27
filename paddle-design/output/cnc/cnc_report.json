@@ -1,0 +1,2140 @@
+{
+ "note": "stack mould PB-MO-003 machined in aluminium: fixture plate, OP 10 drilling, main plate faces A + B, clamp plates; machine coordinates X = paddle y, Y = -paddle x, Z0 = top of stock",
+ "tools": {
+  "1": {
+   "kind": "flat",
+   "d": 10.0,
+   "flute": 32.0,
+   "taper": 0.0,
+   "desc": "D10 3FL CARBIDE END MILL, LOC 32 (LONG), ALU - CLEARING + PROFILES",
+   "stickout": 40.0
+  },
+  "2": {
+   "kind": "flat",
+   "d": 8.0,
+   "flute": 20.0,
+   "taper": 0.0,
+   "desc": "D8 3FL CARBIDE END MILL, LOC 20, ALU - CAVITY ROUGHING",
+   "stickout": 26.0
+  },
+  "3": {
+   "kind": "flat",
+   "d": 6.0,
+   "flute": 16.0,
+   "taper": 0.0,
+   "desc": "D6 3FL CARBIDE END MILL, LOC 16, ALU - FLOORS, WALLS, NOTCHES",
+   "stickout": 24.0
+  },
+  "4": {
+   "kind": "taper",
+   "d": 3.0,
+   "flute": 12.0,
+   "taper": 1.5,
+   "desc": "TAPERED END MILL 1.5 DEG/SIDE, TIP D3 FLAT, LOC 12, SHANK D6 - TEETH SIDES",
+   "stickout": 22.0
+  },
+  "5": {
+   "kind": "ball",
+   "d": 6.0,
+   "flute": 12.0,
+   "taper": 0.0,
+   "desc": "D6 BALL NOSE 2FL CARBIDE - 45 DEG RAMPS",
+   "stickout": 24.0
+  },
+  "6": {
+   "kind": "flat",
+   "d": 2.0,
+   "flute": 6.0,
+   "taper": 0.0,
+   "desc": "D2 2FL CARBIDE END MILL, LOC 6 - GROOVES, VENTS",
+   "stickout": 14.0
+  },
+  "7": {
+   "kind": "spot",
+   "d": 10.0,
+   "flute": 5.0,
+   "taper": 0.0,
+   "desc": "D10 90 DEG SPOT DRILL, CARBIDE",
+   "stickout": 0.0
+  },
+  "8": {
+   "kind": "drill",
+   "d": 6.6,
+   "flute": 40.0,
+   "taper": 0.0,
+   "desc": "D6.6 DRILL 5XD (M6 CLEARANCE)",
+   "stickout": 45.0
+  },
+  "9": {
+   "kind": "drill",
+   "d": 5.8,
+   "flute": 40.0,
+   "taper": 0.0,
+   "desc": "D5.8 DRILL 5XD (DOWEL PILOT)",
+   "stickout": 45.0
+  },
+  "10": {
+   "kind": "ream",
+   "d": 6.0,
+   "flute": 40.0,
+   "taper": 0.0,
+   "desc": "D6 H7 MACHINE REAMER",
+   "stickout": 45.0
+  },
+  "11": {
+   "kind": "drill",
+   "d": 5.0,
+   "flute": 30.0,
+   "taper": 0.0,
+   "desc": "D5.0 DRILL (M6 TAP DRILL) - FIXTURE",
+   "stickout": 35.0
+  },
+  "12": {
+   "kind": "drill",
+   "d": 8.5,
+   "flute": 30.0,
+   "taper": 0.0,
+   "desc": "D8.5 DRILL (M10 TAP DRILL) - FIXTURE",
+   "stickout": 35.0
+  }
+ },
+ "cuts": {
+  "vmc": {
+   "rough_clamp": {
+    "rpm": 8000,
+    "feed": 1500,
+    "plunge": 400,
+    "ap": 2.05,
+    "ae": 5.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "profile": {
+    "rpm": 8000,
+    "feed": 700,
+    "plunge": 400,
+    "ap": 4.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "relief": {
+    "rpm": 8000,
+    "feed": 900,
+    "plunge": 400,
+    "ap": 1.5,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "rough": {
+    "rpm": 10000,
+    "feed": 1400,
+    "plunge": 450,
+    "ap": 2.05,
+    "ae": 3.2,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "cbore": {
+    "rpm": 10000,
+    "feed": 0,
+    "plunge": 300,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "floor": {
+    "rpm": 10000,
+    "feed": 1000,
+    "plunge": 350,
+    "ap": 0.2,
+    "ae": 3.6,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "wall": {
+    "rpm": 10000,
+    "feed": 900,
+    "plunge": 350,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "notch": {
+    "rpm": 10000,
+    "feed": 900,
+    "plunge": 300,
+    "ap": 2.5,
+    "ae": 2.5,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "taper": {
+    "rpm": 10000,
+    "feed": 600,
+    "plunge": 200,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "semi": {
+    "rpm": 10000,
+    "feed": 1800,
+    "plunge": 400,
+    "ap": 0.0,
+    "ae": 1.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "ball": {
+    "rpm": 10000,
+    "feed": 1500,
+    "plunge": 400,
+    "ap": 0.0,
+    "ae": 0.25,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "groove": {
+    "rpm": 10000,
+    "feed": 300,
+    "plunge": 100,
+    "ap": 0.5,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 2.0
+   },
+   "vent": {
+    "rpm": 10000,
+    "feed": 300,
+    "plunge": 100,
+    "ap": 0.4,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 2.0
+   },
+   "spot": {
+    "rpm": 3500,
+    "feed": 0,
+    "plunge": 250,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "drill66": {
+    "rpm": 4500,
+    "feed": 0,
+    "plunge": 450,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 3.0,
+    "ramp_deg": 3.0
+   },
+   "drill58": {
+    "rpm": 5000,
+    "feed": 0,
+    "plunge": 450,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 3.0,
+    "ramp_deg": 3.0
+   },
+   "ream": {
+    "rpm": 1200,
+    "feed": 0,
+    "plunge": 240,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "drill50": {
+    "rpm": 5500,
+    "feed": 0,
+    "plunge": 450,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 3.0,
+    "ramp_deg": 3.0
+   },
+   "drill85": {
+    "rpm": 3500,
+    "feed": 0,
+    "plunge": 350,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 3.0,
+    "ramp_deg": 3.0
+   }
+  },
+  "router": {
+   "rough_clamp": {
+    "rpm": 16000,
+    "feed": 1000,
+    "plunge": 300,
+    "ap": 1.0,
+    "ae": 4.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "profile": {
+    "rpm": 16000,
+    "feed": 600,
+    "plunge": 300,
+    "ap": 1.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "relief": {
+    "rpm": 16000,
+    "feed": 800,
+    "plunge": 300,
+    "ap": 0.75,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "rough": {
+    "rpm": 18000,
+    "feed": 1100,
+    "plunge": 300,
+    "ap": 1.0,
+    "ae": 3.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "cbore": {
+    "rpm": 16000,
+    "feed": 0,
+    "plunge": 150,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "floor": {
+    "rpm": 18000,
+    "feed": 900,
+    "plunge": 250,
+    "ap": 0.2,
+    "ae": 3.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "wall": {
+    "rpm": 18000,
+    "feed": 800,
+    "plunge": 250,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "notch": {
+    "rpm": 18000,
+    "feed": 800,
+    "plunge": 250,
+    "ap": 1.25,
+    "ae": 2.5,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "taper": {
+    "rpm": 18000,
+    "feed": 450,
+    "plunge": 150,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "semi": {
+    "rpm": 18000,
+    "feed": 1200,
+    "plunge": 300,
+    "ap": 0.0,
+    "ae": 1.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "ball": {
+    "rpm": 18000,
+    "feed": 1000,
+    "plunge": 300,
+    "ap": 0.0,
+    "ae": 0.25,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "groove": {
+    "rpm": 24000,
+    "feed": 400,
+    "plunge": 100,
+    "ap": 0.25,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 2.0
+   },
+   "vent": {
+    "rpm": 24000,
+    "feed": 400,
+    "plunge": 100,
+    "ap": 0.2,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 2.0
+   },
+   "spot": {
+    "rpm": 8000,
+    "feed": 0,
+    "plunge": 150,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "drill66": {
+    "rpm": 6000,
+    "feed": 0,
+    "plunge": 240,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 2.0,
+    "ramp_deg": 3.0
+   },
+   "drill58": {
+    "rpm": 6000,
+    "feed": 0,
+    "plunge": 240,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 2.0,
+    "ramp_deg": 3.0
+   },
+   "ream": {
+    "rpm": 6000,
+    "feed": 0,
+    "plunge": 300,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 0.0,
+    "ramp_deg": 3.0
+   },
+   "drill50": {
+    "rpm": 6000,
+    "feed": 0,
+    "plunge": 240,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 2.0,
+    "ramp_deg": 3.0
+   },
+   "drill85": {
+    "rpm": 6000,
+    "feed": 0,
+    "plunge": 180,
+    "ap": 0.0,
+    "ae": 0.0,
+    "peck": 2.0,
+    "ramp_deg": 3.0
+   }
+  }
+ },
+ "profiles": {
+  "vmc": {
+   "post": "iso",
+   "programs": [
+    {
+     "number": 100,
+     "key": "OP00_fixture_plate",
+     "title": "FIXTURE PLATE (OP 00)",
+     "plate": "fixture",
+     "stock_t": 20.0,
+     "face": "",
+     "tools": [
+      2,
+      7,
+      11,
+      12,
+      9,
+      10,
+      1
+     ],
+     "ops": [
+      {
+       "name": "DRILL RELIEFS D8 X 4 DEEP AT THE 18 BOLT HOLES (PLUNGE)",
+       "tool": 2,
+       "rpm": 10000,
+       "feed": 0,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.44,
+       "cut_m": 0.11,
+       "rapid_m": 1.25,
+       "stop": ""
+      },
+      {
+       "name": "SPOT THE 18 RELIEF FLOORS",
+       "tool": 7,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.55,
+       "cut_m": 0.12,
+       "rapid_m": 1.26,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 2 DOWEL HOLES",
+       "tool": 7,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.06,
+       "cut_m": 0.01,
+       "rapid_m": 0.27,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 6 CLAMP-STUD HOLES",
+       "tool": 7,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.24,
+       "cut_m": 0.04,
+       "rapid_m": 1.15,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 18 X D5.0 X 18 DEEP (M6 TAP DRILL, BLIND)",
+       "tool": 11,
+       "rpm": 5500,
+       "feed": 0,
+       "plunge": 450,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 1.17,
+       "cut_m": 0.41,
+       "rapid_m": 3.72,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 6 X D8.5 X 18 DEEP (M10 TAP DRILL, BLIND)",
+       "tool": 12,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 350,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.53,
+       "cut_m": 0.14,
+       "rapid_m": 1.97,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 2 X D5.8 X 14 DEEP (DOWEL PILOT, BLIND)",
+       "tool": 9,
+       "rpm": 5000,
+       "feed": 0,
+       "plunge": 450,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.11,
+       "cut_m": 0.04,
+       "rapid_m": 0.47,
+       "stop": ""
+      },
+      {
+       "name": "REAM 2 X D6 H7 X 12 DEEP (PRESS FIT FOR M6 PINS)",
+       "tool": 10,
+       "rpm": 1200,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.25,
+       "cut_m": 0.06,
+       "rapid_m": 0.26,
+       "stop": ""
+      },
+      {
+       "name": "RELIEF GROOVE 1.5 DEEP UNDER THE PROFILE PATH",
+       "tool": 1,
+       "rpm": 8000,
+       "feed": 900,
+       "plunge": 400,
+       "ap": 1.5,
+       "ae": 0.0,
+       "minutes": 2.89,
+       "cut_m": 2.56,
+       "rapid_m": 0.07,
+       "stop": ""
+      }
+     ],
+     "minutes": 7.2,
+     "files": [
+      "output/cnc/iso/O0100_OP00_fixture_plate.nc"
+     ]
+    },
+    {
+     "number": 110,
+     "key": "OP10_main_plate_drill",
+     "title": "MAIN PLATE - OP 10 DRILL AND REAM",
+     "plate": "main",
+     "stock_t": 30.0,
+     "face": "",
+     "tools": [
+      7,
+      8,
+      9,
+      10
+     ],
+     "ops": [
+      {
+       "name": "SPOT 18 BOLT HOLES (0.4 X 45 DEG CHAMFER)",
+       "tool": 7,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.49,
+       "cut_m": 0.1,
+       "rapid_m": 1.25,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 2 DOWEL HOLES",
+       "tool": 7,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.06,
+       "cut_m": 0.01,
+       "rapid_m": 0.27,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 18 X D6.6 THRU (PECK)",
+       "tool": 8,
+       "rpm": 4500,
+       "feed": 0,
+       "plunge": 450,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 2.19,
+       "cut_m": 0.72,
+       "rapid_m": 8.8,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 2 X D5.8 THRU (DOWEL PILOT)",
+       "tool": 9,
+       "rpm": 5000,
+       "feed": 0,
+       "plunge": 450,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.25,
+       "cut_m": 0.08,
+       "rapid_m": 1.11,
+       "stop": ""
+      },
+      {
+       "name": "REAM 2 X D6 H7 THRU",
+       "tool": 10,
+       "rpm": 1200,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.57,
+       "cut_m": 0.13,
+       "rapid_m": 0.26,
+       "stop": ""
+      }
+     ],
+     "minutes": 4.1,
+     "files": [
+      "output/cnc/iso/O0110_OP10_main_plate_drill.nc"
+     ]
+    },
+    {
+     "number": 210,
+     "key": "OP10_clamp_plates_drill",
+     "title": "CLAMP PLATES (TOP + BOTTOM) - OP 10 DRILL AND REAM",
+     "plate": "clamp",
+     "stock_t": 20.0,
+     "face": "",
+     "tools": [
+      7,
+      8,
+      9,
+      10
+     ],
+     "ops": [
+      {
+       "name": "SPOT 18 BOLT HOLES (0.4 X 45 DEG CHAMFER)",
+       "tool": 7,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.49,
+       "cut_m": 0.1,
+       "rapid_m": 1.25,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 2 DOWEL HOLES",
+       "tool": 7,
+       "rpm": 3500,
+       "feed": 0,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.06,
+       "cut_m": 0.01,
+       "rapid_m": 0.27,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 18 X D6.6 THRU (PECK)",
+       "tool": 8,
+       "rpm": 4500,
+       "feed": 0,
+       "plunge": 450,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 1.5,
+       "cut_m": 0.51,
+       "rapid_m": 5.4,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 2 X D5.8 THRU (DOWEL PILOT)",
+       "tool": 9,
+       "rpm": 5000,
+       "feed": 0,
+       "plunge": 450,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.18,
+       "cut_m": 0.06,
+       "rapid_m": 0.73,
+       "stop": ""
+      },
+      {
+       "name": "REAM 2 X D6 H7 THRU",
+       "tool": 10,
+       "rpm": 1200,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.4,
+       "cut_m": 0.09,
+       "rapid_m": 0.26,
+       "stop": ""
+      }
+     ],
+     "minutes": 3.2,
+     "files": [
+      "output/cnc/iso/O0210_OP10_clamp_plates_drill.nc"
+     ]
+    },
+    {
+     "number": 120,
+     "key": "OP20_main_plate_face_A_elongated",
+     "title": "MAIN PLATE - OP 20 FACE A (ELONGATED)",
+     "plate": "main",
+     "stock_t": 30.0,
+     "face": "elongated",
+     "tools": [
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "ops": [
+      {
+       "name": "ROUGH ELONGATED CAVITY TO Z-9.8, TEETH +0.3",
+       "tool": 2,
+       "rpm": 10000,
+       "feed": 1400,
+       "plunge": 450,
+       "ap": 2.05,
+       "ae": 3.2,
+       "minutes": 44.67,
+       "cut_m": 59.96,
+       "rapid_m": 6.35,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY FLOOR Z-10",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 1000,
+       "plunge": 350,
+       "ap": 0.2,
+       "ae": 3.6,
+       "minutes": 10.29,
+       "cut_m": 10.02,
+       "rapid_m": 1.63,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY WALL (FULL DEPTH, CLIMB)",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 900,
+       "plunge": 350,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 1.16,
+       "cut_m": 1.03,
+       "rapid_m": 0.08,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 900,
+       "plunge": 300,
+       "ap": 2.5,
+       "ae": 2.5,
+       "minutes": 0.67,
+       "cut_m": 0.49,
+       "rapid_m": 0.32,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 10000,
+       "feed": 600,
+       "plunge": 200,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 6.2,
+       "cut_m": 3.68,
+       "rapid_m": 0.38,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1800,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.33,
+       "cut_m": 0.54,
+       "rapid_m": 0.18,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1500,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 1.2,
+       "cut_m": 1.76,
+       "rapid_m": 0.19,
+       "stop": ""
+      },
+      {
+       "name": "OVERFLOW GROOVE 2 X 1.5",
+       "tool": 6,
+       "rpm": 10000,
+       "feed": 300,
+       "plunge": 100,
+       "ap": 0.5,
+       "ae": 0.0,
+       "minutes": 11.08,
+       "cut_m": 3.3,
+       "rapid_m": 0.06,
+       "stop": ""
+      },
+      {
+       "name": "VENTS 2 X 0.8",
+       "tool": 6,
+       "rpm": 10000,
+       "feed": 300,
+       "plunge": 100,
+       "ap": 0.4,
+       "ae": 0.0,
+       "minutes": 2.29,
+       "cut_m": 0.59,
+       "rapid_m": 0.62,
+       "stop": ""
+      }
+     ],
+     "minutes": 78.6,
+     "files": [
+      "output/cnc/iso/O0120_OP20_main_plate_face_A_elongated.nc"
+     ]
+    },
+    {
+     "number": 130,
+     "key": "OP30_main_plate_face_B_hybrid",
+     "title": "MAIN PLATE - OP 30 FACE B (HYBRID) + PROFILE",
+     "plate": "main",
+     "stock_t": 30.0,
+     "face": "hybrid",
+     "tools": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      1
+     ],
+     "ops": [
+      {
+       "name": "ROUGH HYBRID CAVITY TO Z-9.8, TEETH +0.3",
+       "tool": 2,
+       "rpm": 10000,
+       "feed": 1400,
+       "plunge": 450,
+       "ap": 2.05,
+       "ae": 3.2,
+       "minutes": 43.37,
+       "cut_m": 58.24,
+       "rapid_m": 5.2,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY FLOOR Z-10",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 1000,
+       "plunge": 350,
+       "ap": 0.2,
+       "ae": 3.6,
+       "minutes": 10.2,
+       "cut_m": 9.96,
+       "rapid_m": 1.49,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY WALL (FULL DEPTH, CLIMB)",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 900,
+       "plunge": 350,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 1.12,
+       "cut_m": 1.0,
+       "rapid_m": 0.08,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 900,
+       "plunge": 300,
+       "ap": 2.5,
+       "ae": 2.5,
+       "minutes": 0.67,
+       "cut_m": 0.49,
+       "rapid_m": 0.32,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 10000,
+       "feed": 600,
+       "plunge": 200,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 6.02,
+       "cut_m": 3.56,
+       "rapid_m": 0.38,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1800,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.33,
+       "cut_m": 0.54,
+       "rapid_m": 0.18,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1500,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 1.2,
+       "cut_m": 1.76,
+       "rapid_m": 0.19,
+       "stop": ""
+      },
+      {
+       "name": "OVERFLOW GROOVE 2 X 1.5",
+       "tool": 6,
+       "rpm": 10000,
+       "feed": 300,
+       "plunge": 100,
+       "ap": 0.5,
+       "ae": 0.0,
+       "minutes": 10.77,
+       "cut_m": 3.21,
+       "rapid_m": 0.06,
+       "stop": ""
+      },
+      {
+       "name": "VENTS 2 X 0.8",
+       "tool": 6,
+       "rpm": 10000,
+       "feed": 300,
+       "plunge": 100,
+       "ap": 0.4,
+       "ae": 0.0,
+       "minutes": 2.33,
+       "cut_m": 0.6,
+       "rapid_m": 0.62,
+       "stop": ""
+      },
+      {
+       "name": "OUTER PROFILE THROUGH 30 (+0.5 INTO THE FIXTURE RELIEF)",
+       "tool": 1,
+       "rpm": 8000,
+       "feed": 700,
+       "plunge": 400,
+       "ap": 4.0,
+       "ae": 0.0,
+       "minutes": 17.41,
+       "cut_m": 12.17,
+       "rapid_m": 0.15,
+       "stop": ""
+      }
+     ],
+     "minutes": 94.2,
+     "files": [
+      "output/cnc/iso/O0130_OP30_main_plate_face_B_hybrid.nc"
+     ]
+    },
+    {
+     "number": 220,
+     "key": "OP20_top_clamp_plate",
+     "title": "TOP CLAMP PLATE - OP 20 TEETH + PROFILE",
+     "plate": "clamp",
+     "stock_t": 20.0,
+     "face": "elongated",
+     "tools": [
+      1,
+      3,
+      4,
+      5,
+      1
+     ],
+     "ops": [
+      {
+       "name": "FACE TOOTH TIPS Z-1.6, CLEAR TO SEAT Z-9.8",
+       "tool": 1,
+       "rpm": 8000,
+       "feed": 1500,
+       "plunge": 400,
+       "ap": 2.05,
+       "ae": 5.0,
+       "minutes": 50.28,
+       "cut_m": 72.29,
+       "rapid_m": 6.38,
+       "stop": ""
+      },
+      {
+       "name": "FINISH SEAT FACE Z-10",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 1000,
+       "plunge": 350,
+       "ap": 0.2,
+       "ae": 3.6,
+       "minutes": 18.34,
+       "cut_m": 18.03,
+       "rapid_m": 1.65,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP IN THE SEAT",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 900,
+       "plunge": 300,
+       "ap": 2.5,
+       "ae": 2.5,
+       "minutes": 0.67,
+       "cut_m": 0.49,
+       "rapid_m": 0.4,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 10000,
+       "feed": 600,
+       "plunge": 200,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 6.82,
+       "cut_m": 4.04,
+       "rapid_m": 0.43,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1800,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.37,
+       "cut_m": 0.62,
+       "rapid_m": 0.14,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1500,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 1.39,
+       "cut_m": 2.06,
+       "rapid_m": 0.15,
+       "stop": ""
+      },
+      {
+       "name": "OUTER PROFILE THROUGH 20 (+0.5 INTO THE FIXTURE RELIEF)",
+       "tool": 1,
+       "rpm": 8000,
+       "feed": 700,
+       "plunge": 400,
+       "ap": 4.0,
+       "ae": 0.0,
+       "minutes": 13.93,
+       "cut_m": 9.74,
+       "rapid_m": 0.12,
+       "stop": "FIT THE 18 BOLTS M6 X 25 THROUGH THE FLANGE INTO THE FIXTURE (HEADS ON THE SEAT FACE), KEEP THE TOE CLAMPS ON THE WASTE, CYCLE START"
+      }
+     ],
+     "minutes": 92.5,
+     "files": [
+      "output/cnc/iso/O0220_OP20_top_clamp_plate.nc"
+     ]
+    },
+    {
+     "number": 320,
+     "key": "OP20_bottom_clamp_plate",
+     "title": "BOTTOM CLAMP PLATE - OP 20 TEETH + PROFILE",
+     "plate": "clamp",
+     "stock_t": 20.0,
+     "face": "hybrid",
+     "tools": [
+      1,
+      3,
+      4,
+      5,
+      1
+     ],
+     "ops": [
+      {
+       "name": "FACE TOOTH TIPS Z-1.6, CLEAR TO SEAT Z-9.8",
+       "tool": 1,
+       "rpm": 8000,
+       "feed": 1500,
+       "plunge": 400,
+       "ap": 2.05,
+       "ae": 5.0,
+       "minutes": 51.88,
+       "cut_m": 74.45,
+       "rapid_m": 7.57,
+       "stop": ""
+      },
+      {
+       "name": "FINISH SEAT FACE Z-10",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 1000,
+       "plunge": 350,
+       "ap": 0.2,
+       "ae": 3.6,
+       "minutes": 18.94,
+       "cut_m": 18.58,
+       "rapid_m": 2.03,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP IN THE SEAT",
+       "tool": 3,
+       "rpm": 10000,
+       "feed": 900,
+       "plunge": 300,
+       "ap": 2.5,
+       "ae": 2.5,
+       "minutes": 0.67,
+       "cut_m": 0.49,
+       "rapid_m": 0.4,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 10000,
+       "feed": 600,
+       "plunge": 200,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 6.57,
+       "cut_m": 3.89,
+       "rapid_m": 0.42,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1800,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.37,
+       "cut_m": 0.62,
+       "rapid_m": 0.14,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 10000,
+       "feed": 1500,
+       "plunge": 400,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 1.39,
+       "cut_m": 2.06,
+       "rapid_m": 0.15,
+       "stop": ""
+      },
+      {
+       "name": "OUTER PROFILE THROUGH 20 (+0.5 INTO THE FIXTURE RELIEF)",
+       "tool": 1,
+       "rpm": 8000,
+       "feed": 700,
+       "plunge": 400,
+       "ap": 4.0,
+       "ae": 0.0,
+       "minutes": 13.93,
+       "cut_m": 9.74,
+       "rapid_m": 0.12,
+       "stop": "FIT THE 18 BOLTS M6 X 25 THROUGH THE FLANGE INTO THE FIXTURE (HEADS ON THE SEAT FACE), KEEP THE TOE CLAMPS ON THE WASTE, CYCLE START"
+      }
+     ],
+     "minutes": 94.4,
+     "files": [
+      "output/cnc/iso/O0320_OP20_bottom_clamp_plate.nc"
+     ]
+    }
+   ],
+   "total_hours": 6.2
+  },
+  "router": {
+   "post": "generic",
+   "programs": [
+    {
+     "number": 100,
+     "key": "OP00_fixture_plate",
+     "title": "FIXTURE PLATE (OP 00)",
+     "plate": "fixture",
+     "stock_t": 20.0,
+     "face": "",
+     "tools": [
+      2,
+      7,
+      11,
+      12,
+      9,
+      10,
+      1
+     ],
+     "ops": [
+      {
+       "name": "DRILL RELIEFS D8 X 4 DEEP AT THE 18 BOLT HOLES (PLUNGE)",
+       "tool": 2,
+       "rpm": 16000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.93,
+       "cut_m": 0.11,
+       "rapid_m": 1.25,
+       "stop": ""
+      },
+      {
+       "name": "SPOT THE 18 RELIEF FLOORS",
+       "tool": 7,
+       "rpm": 8000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.99,
+       "cut_m": 0.12,
+       "rapid_m": 1.26,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 2 DOWEL HOLES",
+       "tool": 7,
+       "rpm": 8000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.12,
+       "cut_m": 0.01,
+       "rapid_m": 0.27,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 6 CLAMP-STUD HOLES",
+       "tool": 7,
+       "rpm": 8000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.47,
+       "cut_m": 0.04,
+       "rapid_m": 1.15,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 18 X D5.0 X 18 DEEP (M6 TAP DRILL, BLIND)",
+       "tool": 11,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 2.62,
+       "cut_m": 0.44,
+       "rapid_m": 4.67,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 6 X D8.5 X 18 DEEP (M10 TAP DRILL, BLIND)",
+       "tool": 12,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 180,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 1.2,
+       "cut_m": 0.15,
+       "rapid_m": 2.28,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 2 X D5.8 X 14 DEEP (DOWEL PILOT, BLIND)",
+       "tool": 9,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.25,
+       "cut_m": 0.04,
+       "rapid_m": 0.51,
+       "stop": ""
+      },
+      {
+       "name": "REAM 2 X D6 H7 X 12 DEEP (PRESS FIT FOR M6 PINS)",
+       "tool": 10,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.23,
+       "cut_m": 0.06,
+       "rapid_m": 0.26,
+       "stop": ""
+      },
+      {
+       "name": "RELIEF GROOVE 1.5 DEEP UNDER THE PROFILE PATH",
+       "tool": 1,
+       "rpm": 16000,
+       "feed": 800,
+       "plunge": 300,
+       "ap": 0.75,
+       "ae": 0.0,
+       "minutes": 6.3,
+       "cut_m": 5.0,
+       "rapid_m": 0.07,
+       "stop": ""
+      }
+     ],
+     "minutes": 30.6,
+     "files": [
+      "output/cnc/generic/0100_OP00_fixture_plate/01_T2_flat_D8.nc",
+      "output/cnc/generic/0100_OP00_fixture_plate/02_T7_spot_D10.nc",
+      "output/cnc/generic/0100_OP00_fixture_plate/03_T11_drill_D5.nc",
+      "output/cnc/generic/0100_OP00_fixture_plate/04_T12_drill_D8.5.nc",
+      "output/cnc/generic/0100_OP00_fixture_plate/05_T9_drill_D5.8.nc",
+      "output/cnc/generic/0100_OP00_fixture_plate/06_T10_ream_D6.nc",
+      "output/cnc/generic/0100_OP00_fixture_plate/07_T1_flat_D10.nc"
+     ]
+    },
+    {
+     "number": 110,
+     "key": "OP10_main_plate_drill",
+     "title": "MAIN PLATE - OP 10 DRILL AND REAM",
+     "plate": "main",
+     "stock_t": 30.0,
+     "face": "",
+     "tools": [
+      7,
+      8,
+      9,
+      10
+     ],
+     "ops": [
+      {
+       "name": "SPOT 18 BOLT HOLES (0.4 X 45 DEG CHAMFER)",
+       "tool": 7,
+       "rpm": 8000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.89,
+       "cut_m": 0.1,
+       "rapid_m": 1.25,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 2 DOWEL HOLES",
+       "tool": 7,
+       "rpm": 8000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.12,
+       "cut_m": 0.01,
+       "rapid_m": 0.27,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 18 X D6.6 THRU (PECK)",
+       "tool": 8,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 5.33,
+       "cut_m": 0.77,
+       "rapid_m": 12.63,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 2 X D5.8 THRU (DOWEL PILOT)",
+       "tool": 9,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.61,
+       "cut_m": 0.09,
+       "rapid_m": 1.54,
+       "stop": ""
+      },
+      {
+       "name": "REAM 2 X D6 H7 THRU",
+       "tool": 10,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.48,
+       "cut_m": 0.13,
+       "rapid_m": 0.26,
+       "stop": ""
+      }
+     ],
+     "minutes": 17.4,
+     "files": [
+      "output/cnc/generic/0110_OP10_main_plate_drill/01_T7_spot_D10.nc",
+      "output/cnc/generic/0110_OP10_main_plate_drill/02_T8_drill_D6.6.nc",
+      "output/cnc/generic/0110_OP10_main_plate_drill/03_T9_drill_D5.8.nc",
+      "output/cnc/generic/0110_OP10_main_plate_drill/04_T10_ream_D6.nc"
+     ]
+    },
+    {
+     "number": 210,
+     "key": "OP10_clamp_plates_drill",
+     "title": "CLAMP PLATES (TOP + BOTTOM) - OP 10 DRILL AND REAM",
+     "plate": "clamp",
+     "stock_t": 20.0,
+     "face": "",
+     "tools": [
+      7,
+      8,
+      9,
+      10
+     ],
+     "ops": [
+      {
+       "name": "SPOT 18 BOLT HOLES (0.4 X 45 DEG CHAMFER)",
+       "tool": 7,
+       "rpm": 8000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.89,
+       "cut_m": 0.1,
+       "rapid_m": 1.25,
+       "stop": ""
+      },
+      {
+       "name": "SPOT 2 DOWEL HOLES",
+       "tool": 7,
+       "rpm": 8000,
+       "feed": 0,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.12,
+       "cut_m": 0.01,
+       "rapid_m": 0.27,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 18 X D6.6 THRU (PECK)",
+       "tool": 8,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 3.47,
+       "cut_m": 0.55,
+       "rapid_m": 7.1,
+       "stop": ""
+      },
+      {
+       "name": "DRILL 2 X D5.8 THRU (DOWEL PILOT)",
+       "tool": 9,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 240,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.41,
+       "cut_m": 0.06,
+       "rapid_m": 0.92,
+       "stop": ""
+      },
+      {
+       "name": "REAM 2 X D6 H7 THRU",
+       "tool": 10,
+       "rpm": 6000,
+       "feed": 0,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 0.35,
+       "cut_m": 0.09,
+       "rapid_m": 0.26,
+       "stop": ""
+      }
+     ],
+     "minutes": 15.2,
+     "files": [
+      "output/cnc/generic/0210_OP10_clamp_plates_drill/01_T7_spot_D10.nc",
+      "output/cnc/generic/0210_OP10_clamp_plates_drill/02_T8_drill_D6.6.nc",
+      "output/cnc/generic/0210_OP10_clamp_plates_drill/03_T9_drill_D5.8.nc",
+      "output/cnc/generic/0210_OP10_clamp_plates_drill/04_T10_ream_D6.nc"
+     ]
+    },
+    {
+     "number": 120,
+     "key": "OP20_main_plate_face_A_elongated",
+     "title": "MAIN PLATE - OP 20 FACE A (ELONGATED)",
+     "plate": "main",
+     "stock_t": 30.0,
+     "face": "elongated",
+     "tools": [
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "ops": [
+      {
+       "name": "ROUGH ELONGATED CAVITY TO Z-9.8, TEETH +0.3",
+       "tool": 2,
+       "rpm": 18000,
+       "feed": 1100,
+       "plunge": 300,
+       "ap": 1.0,
+       "ae": 3.0,
+       "minutes": 120.63,
+       "cut_m": 127.65,
+       "rapid_m": 12.47,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY FLOOR Z-10",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 900,
+       "plunge": 250,
+       "ap": 0.2,
+       "ae": 3.0,
+       "minutes": 13.55,
+       "cut_m": 11.79,
+       "rapid_m": 1.36,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY WALL (FULL DEPTH, CLIMB)",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 800,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 1.31,
+       "cut_m": 1.03,
+       "rapid_m": 0.08,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 800,
+       "plunge": 250,
+       "ap": 1.25,
+       "ae": 2.5,
+       "minutes": 0.94,
+       "cut_m": 0.59,
+       "rapid_m": 0.35,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 18000,
+       "feed": 450,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 8.3,
+       "cut_m": 3.68,
+       "rapid_m": 0.38,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1200,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.5,
+       "cut_m": 0.54,
+       "rapid_m": 0.18,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1000,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 1.81,
+       "cut_m": 1.76,
+       "rapid_m": 0.19,
+       "stop": ""
+      },
+      {
+       "name": "OVERFLOW GROOVE 2 X 1.5",
+       "tool": 6,
+       "rpm": 24000,
+       "feed": 400,
+       "plunge": 100,
+       "ap": 0.25,
+       "ae": 0.0,
+       "minutes": 16.32,
+       "cut_m": 6.5,
+       "rapid_m": 0.06,
+       "stop": ""
+      },
+      {
+       "name": "VENTS 2 X 0.8",
+       "tool": 6,
+       "rpm": 24000,
+       "feed": 400,
+       "plunge": 100,
+       "ap": 0.2,
+       "ae": 0.0,
+       "minutes": 2.41,
+       "cut_m": 0.83,
+       "rapid_m": 0.62,
+       "stop": ""
+      }
+     ],
+     "minutes": 178.3,
+     "files": [
+      "output/cnc/generic/0120_OP20_main_plate_face_A_elongated/01_T2_flat_D8.nc",
+      "output/cnc/generic/0120_OP20_main_plate_face_A_elongated/02_T3_flat_D6.nc",
+      "output/cnc/generic/0120_OP20_main_plate_face_A_elongated/03_T4_taper_D3.nc",
+      "output/cnc/generic/0120_OP20_main_plate_face_A_elongated/04_T5_ball_D6.nc",
+      "output/cnc/generic/0120_OP20_main_plate_face_A_elongated/05_T6_flat_D2.nc"
+     ]
+    },
+    {
+     "number": 130,
+     "key": "OP30_main_plate_face_B_hybrid",
+     "title": "MAIN PLATE - OP 30 FACE B (HYBRID) + PROFILE",
+     "plate": "main",
+     "stock_t": 30.0,
+     "face": "hybrid",
+     "tools": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      1
+     ],
+     "ops": [
+      {
+       "name": "ROUGH HYBRID CAVITY TO Z-9.8, TEETH +0.3",
+       "tool": 2,
+       "rpm": 18000,
+       "feed": 1100,
+       "plunge": 300,
+       "ap": 1.0,
+       "ae": 3.0,
+       "minutes": 112.67,
+       "cut_m": 119.43,
+       "rapid_m": 10.65,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY FLOOR Z-10",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 900,
+       "plunge": 250,
+       "ap": 0.2,
+       "ae": 3.0,
+       "minutes": 12.31,
+       "cut_m": 10.69,
+       "rapid_m": 1.45,
+       "stop": ""
+      },
+      {
+       "name": "FINISH CAVITY WALL (FULL DEPTH, CLIMB)",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 800,
+       "plunge": 250,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 1.27,
+       "cut_m": 1.0,
+       "rapid_m": 0.08,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 800,
+       "plunge": 250,
+       "ap": 1.25,
+       "ae": 2.5,
+       "minutes": 0.94,
+       "cut_m": 0.59,
+       "rapid_m": 0.35,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 18000,
+       "feed": 450,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 8.05,
+       "cut_m": 3.56,
+       "rapid_m": 0.38,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1200,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.5,
+       "cut_m": 0.54,
+       "rapid_m": 0.18,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1000,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 1.81,
+       "cut_m": 1.76,
+       "rapid_m": 0.19,
+       "stop": ""
+      },
+      {
+       "name": "OVERFLOW GROOVE 2 X 1.5",
+       "tool": 6,
+       "rpm": 24000,
+       "feed": 400,
+       "plunge": 100,
+       "ap": 0.25,
+       "ae": 0.0,
+       "minutes": 15.86,
+       "cut_m": 6.31,
+       "rapid_m": 0.06,
+       "stop": ""
+      },
+      {
+       "name": "VENTS 2 X 0.8",
+       "tool": 6,
+       "rpm": 24000,
+       "feed": 400,
+       "plunge": 100,
+       "ap": 0.2,
+       "ae": 0.0,
+       "minutes": 2.46,
+       "cut_m": 0.85,
+       "rapid_m": 0.62,
+       "stop": ""
+      },
+      {
+       "name": "OUTER PROFILE THROUGH 30 (+0.5 INTO THE FIXTURE RELIEF)",
+       "tool": 1,
+       "rpm": 16000,
+       "feed": 600,
+       "plunge": 300,
+       "ap": 1.0,
+       "ae": 0.0,
+       "minutes": 66.98,
+       "cut_m": 40.17,
+       "rapid_m": 0.15,
+       "stop": ""
+      }
+     ],
+     "minutes": 237.9,
+     "files": [
+      "output/cnc/generic/0130_OP30_main_plate_face_B_hybrid/01_T2_flat_D8.nc",
+      "output/cnc/generic/0130_OP30_main_plate_face_B_hybrid/02_T3_flat_D6.nc",
+      "output/cnc/generic/0130_OP30_main_plate_face_B_hybrid/03_T4_taper_D3.nc",
+      "output/cnc/generic/0130_OP30_main_plate_face_B_hybrid/04_T5_ball_D6.nc",
+      "output/cnc/generic/0130_OP30_main_plate_face_B_hybrid/05_T6_flat_D2.nc",
+      "output/cnc/generic/0130_OP30_main_plate_face_B_hybrid/06_T1_flat_D10.nc"
+     ]
+    },
+    {
+     "number": 220,
+     "key": "OP20_top_clamp_plate",
+     "title": "TOP CLAMP PLATE - OP 20 TEETH + PROFILE",
+     "plate": "clamp",
+     "stock_t": 20.0,
+     "face": "elongated",
+     "tools": [
+      1,
+      3,
+      4,
+      5,
+      1
+     ],
+     "ops": [
+      {
+       "name": "FACE TOOTH TIPS Z-1.6, CLEAR TO SEAT Z-9.8",
+       "tool": 1,
+       "rpm": 16000,
+       "feed": 1000,
+       "plunge": 300,
+       "ap": 1.0,
+       "ae": 4.0,
+       "minutes": 175.47,
+       "cut_m": 169.48,
+       "rapid_m": 14.57,
+       "stop": ""
+      },
+      {
+       "name": "FINISH SEAT FACE Z-10",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 900,
+       "plunge": 250,
+       "ap": 0.2,
+       "ae": 3.0,
+       "minutes": 23.23,
+       "cut_m": 20.33,
+       "rapid_m": 2.05,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP IN THE SEAT",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 800,
+       "plunge": 250,
+       "ap": 1.25,
+       "ae": 2.5,
+       "minutes": 0.96,
+       "cut_m": 0.59,
+       "rapid_m": 0.51,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 18000,
+       "feed": 450,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 9.12,
+       "cut_m": 4.04,
+       "rapid_m": 0.43,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1200,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.56,
+       "cut_m": 0.62,
+       "rapid_m": 0.14,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1000,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 2.1,
+       "cut_m": 2.06,
+       "rapid_m": 0.15,
+       "stop": ""
+      },
+      {
+       "name": "OUTER PROFILE THROUGH 20 (+0.5 INTO THE FIXTURE RELIEF)",
+       "tool": 1,
+       "rpm": 16000,
+       "feed": 600,
+       "plunge": 300,
+       "ap": 1.0,
+       "ae": 0.0,
+       "minutes": 46.69,
+       "cut_m": 28.0,
+       "rapid_m": 0.12,
+       "stop": "FIT THE 18 BOLTS M6 X 25 THROUGH THE FLANGE INTO THE FIXTURE (HEADS ON THE SEAT FACE), KEEP THE TOE CLAMPS ON THE WASTE, CYCLE START"
+      }
+     ],
+     "minutes": 270.6,
+     "files": [
+      "output/cnc/generic/0220_OP20_top_clamp_plate/01_T1_flat_D10.nc",
+      "output/cnc/generic/0220_OP20_top_clamp_plate/02_T3_flat_D6.nc",
+      "output/cnc/generic/0220_OP20_top_clamp_plate/03_T4_taper_D3.nc",
+      "output/cnc/generic/0220_OP20_top_clamp_plate/04_T5_ball_D6.nc",
+      "output/cnc/generic/0220_OP20_top_clamp_plate/05_T1_flat_D10.nc"
+     ]
+    },
+    {
+     "number": 320,
+     "key": "OP20_bottom_clamp_plate",
+     "title": "BOTTOM CLAMP PLATE - OP 20 TEETH + PROFILE",
+     "plate": "clamp",
+     "stock_t": 20.0,
+     "face": "hybrid",
+     "tools": [
+      1,
+      3,
+      4,
+      5,
+      1
+     ],
+     "ops": [
+      {
+       "name": "FACE TOOTH TIPS Z-1.6, CLEAR TO SEAT Z-9.8",
+       "tool": 1,
+       "rpm": 16000,
+       "feed": 1000,
+       "plunge": 300,
+       "ap": 1.0,
+       "ae": 4.0,
+       "minutes": 180.0,
+       "cut_m": 173.98,
+       "rapid_m": 14.59,
+       "stop": ""
+      },
+      {
+       "name": "FINISH SEAT FACE Z-10",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 900,
+       "plunge": 250,
+       "ap": 0.2,
+       "ae": 3.0,
+       "minutes": 23.85,
+       "cut_m": 20.85,
+       "rapid_m": 2.29,
+       "stop": ""
+      },
+      {
+       "name": "PRY NOTCHES 14 X 6 X 2.5 DEEP IN THE SEAT",
+       "tool": 3,
+       "rpm": 18000,
+       "feed": 800,
+       "plunge": 250,
+       "ap": 1.25,
+       "ae": 2.5,
+       "minutes": 0.96,
+       "cut_m": 0.59,
+       "rapid_m": 0.51,
+       "stop": ""
+      },
+      {
+       "name": "FINISH TOOTH SIDES 1.5 DEG (TAPERED TOOL, CLIMB)",
+       "tool": 4,
+       "rpm": 18000,
+       "feed": 450,
+       "plunge": 150,
+       "ap": 0.0,
+       "ae": 0.0,
+       "minutes": 8.79,
+       "cut_m": 3.89,
+       "rapid_m": 0.42,
+       "stop": ""
+      },
+      {
+       "name": "SEMI-FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1200,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 1.0,
+       "minutes": 0.56,
+       "cut_m": 0.62,
+       "rapid_m": 0.14,
+       "stop": ""
+      },
+      {
+       "name": "FINISH 45 DEG TOOTH RAMPS (BALL)",
+       "tool": 5,
+       "rpm": 18000,
+       "feed": 1000,
+       "plunge": 300,
+       "ap": 0.0,
+       "ae": 0.25,
+       "minutes": 2.1,
+       "cut_m": 2.06,
+       "rapid_m": 0.15,
+       "stop": ""
+      },
+      {
+       "name": "OUTER PROFILE THROUGH 20 (+0.5 INTO THE FIXTURE RELIEF)",
+       "tool": 1,
+       "rpm": 16000,
+       "feed": 600,
+       "plunge": 300,
+       "ap": 1.0,
+       "ae": 0.0,
+       "minutes": 46.69,
+       "cut_m": 28.0,
+       "rapid_m": 0.12,
+       "stop": "FIT THE 18 BOLTS M6 X 25 THROUGH THE FLANGE INTO THE FIXTURE (HEADS ON THE SEAT FACE), KEEP THE TOE CLAMPS ON THE WASTE, CYCLE START"
+      }
+     ],
+     "minutes": 275.5,
+     "files": [
+      "output/cnc/generic/0320_OP20_bottom_clamp_plate/01_T1_flat_D10.nc",
+      "output/cnc/generic/0320_OP20_bottom_clamp_plate/02_T3_flat_D6.nc",
+      "output/cnc/generic/0320_OP20_bottom_clamp_plate/03_T4_taper_D3.nc",
+      "output/cnc/generic/0320_OP20_bottom_clamp_plate/04_T5_ball_D6.nc",
+      "output/cnc/generic/0320_OP20_bottom_clamp_plate/05_T1_flat_D10.nc"
+     ]
+    }
+   ],
+   "total_hours": 17.1
+  }
+ }
+}

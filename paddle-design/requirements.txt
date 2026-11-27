@@ -15,3 +15,4 @@ Pillow>=10.0
 # stress analysis  (tools/run_fea_case.py + CalculiX ccx, tools/fea_report.py)
 gmsh>=4.12
 matplotlib>=3.8
+scipy>=1.10           # CNC stock-removal simulation (tools/verify_cnc.py)

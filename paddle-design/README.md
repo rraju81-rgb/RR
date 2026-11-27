@@ -1,4 +1,4 @@
-# Pickleball paddle designs – Elongated & Hybrid (REV K)
+# Pickleball paddle designs – Elongated & Hybrid (REV L)
 
 Two 39 cm paddles traced from your hand-made templates and sketches. Each is a carbon-fibre /
 wave-rib sandwich: two 0.3 mm carbon skins bonded to a 10 mm rib support, with a 10 mm frame and
@@ -11,6 +11,8 @@ screw in the butt. The repo holds:
 
 - the engineering drawings, full-size templates and DXF cut profiles;
 - the rib-support mould (STL + STEP) and a trial-print rib support;
+- the CNC machining of that mould in aluminium: a machining blueprint (PB-MO-004), a CNC machining
+  diagram (PB-MO-005) and the G-code for a VMC and for a router, checked by simulation;
 - the 3-D model (STEP / STL / 3MF) and photoreal renders;
 - the strength checks.
 
@@ -92,7 +94,9 @@ One mould makes both rib supports. `python tools/export_mould.py` writes its pla
 - `mould_main_upper_half.stl` and `mould_main_lower_half.stl`, the same plate split for printing;
 - `mould_top_plate` and `mould_bottom_plate` (`.stl` + `.step`), the two clamp plates.
 
-The STL files are in print orientation and the STEP files are for machining.
+The STL files are in print orientation and the STEP files are for machining. Two Ø6 H7 dowel holes
+through all three plates (on the bolt line near the head, mirror images) take 2 ground Ø6 × 50 pins
+that align the closed stack; they also locate the plates on the CNC fixture (next section).
 
 - **How it works.** The stack is three plates, 50 mm in all when closed (10 + 30 + 10):
 
@@ -153,8 +157,10 @@ The STL files are in print orientation and the STEP files are for machining.
      chopped carbon tow (10–25 mm) and half epoxy by mass, which is about 40 % fibre by volume.
      That is the part plus 10 %.
   4. Fill the Hybrid side first. Lay the main plate Hybrid face up and pack its cavity: the wall
-     gaps and the frame first, then the solid handle zone. Put the bottom plate on and fit 4 bolts.
-  5. Turn the pair over and pack the Elongated cavity the same way. Put the top plate on.
+     gaps and the frame first, then the solid handle zone. Push the 2 dowel pins through the main
+     plate, put the bottom plate on over them and fit 4 bolts.
+  5. Turn the pair over and pack the Elongated cavity the same way. Put the top plate on over the
+     pins.
   6. Fit all bolts finger-tight. Press the stack between two flat, stiff platens, or in a press,
      until both clamp plates seat. Then tighten the bolts. Excess resin leaves through the grooves
      and the vents.
@@ -168,7 +174,67 @@ The STL files are in print orientation and the STEP files are for machining.
   clamp plate press it into the wave; the frame and handle zone still take chopped fill. The tooth
   gap is `rib_t`: 1.6 mm takes about 6–7 plies of 200 g/m² fabric.
 - **Temperature.** PLA softens near 55 °C, so use a room-temperature-cure epoxy. For a warm cure,
-  print the mould in PETG, ASA or PA-CF.
+  print the mould in PETG, ASA or PA-CF, or machine it in aluminium (next section).
+
+## CNC-machined mould (aluminium)
+
+| | |
+|---|---|
+| ![Machining blueprint PB-MO-004](output/cnc/PB-MO-004_machining_blueprint.png) | ![CNC machining diagram PB-MO-005](output/cnc/PB-MO-005_cnc_machining_diagram.png) |
+
+The same stack mould, machined from aluminium plate (6061-T651, or cast tooling plate such as
+ALCA 5 / MIC-6) instead of printed. It is stiffer, keeps its size and takes a warm cure (up to
+120 °C), and its polished cavities release better.
+
+- **Drawings.** [`PB-MO-004`](output/cnc/PB-MO-004_machining_blueprint.pdf) is the machining
+  blueprint: the four machined faces in machine orientation with the G54 datum, sections across
+  the teeth and along a tooth ramp, the hole table, the tooth table, tolerances, finish and
+  material. [`PB-MO-005`](output/cnc/PB-MO-005_cnc_machining_diagram.pdf) is the CNC machining
+  diagram: the order of the set-ups, the fixture set-up (pins, bolts, toe clamps, G54), the
+  toolpaths of each face program coloured by tool, the tool list with cutting data, the program
+  list and the simulation check.
+- **Set-ups.** One 20 mm fixture plate carries the mould's own bolt pattern (tapped M6) and the 2
+  dowel pins, so it locates all three plates and both faces of the main plate:
+
+  | Program | Set-up | VMC | Router |
+  |---|---|---|---|
+  | O0100 | OP 00 fixture plate: tapped bolt pattern with drill reliefs, dowel holes, clamp studs, relief groove under the profile | 8 min | 0.5 h |
+  | O0110 | OP 10 main plate blank (30 mm): spot, 18 bolt holes, 2 dowel holes reamed H7 | 4 min | 0.3 h |
+  | O0210 | OP 10 clamp plate blanks (20 mm), run twice | 3 min | 0.3 h |
+  | – | press the 2 dowel pins into the fixture | | |
+  | O0120 | OP 20 main plate face A on the pins, 18 bolts: Elongated cavity, teeth, ramps, groove, vents, notches | 79 min | 3.0 h |
+  | O0130 | OP 30 main plate turned over about X: Hybrid cavity, then the outer profile | 94 min | 4.0 h |
+  | O0220 / O0320 | OP 20 top / bottom clamp plate, teeth up, toe clamps on the waste: seat face, teeth, ramps, notches; M0 to fit the bolts, then the profile | 93 / 94 min | 4.5 / 4.6 h |
+
+  That is about 6.3 h on a VMC and 17 h on a router.
+- **How the teeth are cut.** The cavity floor (and the clamp plates' seat face) sits at Z−10 and
+  the teeth stand 8.4 mm tall on it. Their sides lean 1.5° (the web draft), so a 1.5°/side tapered
+  end mill finishes each side in one pass at the floor. The 45° ramps at the handle ends are
+  finished with a Ø6 ball nose whose path comes from a drop cutter on the exact tooth surface.
+  Everything else is 2.5-D: zig-zag roughing with ramped entries, then climb-milled finishing
+  passes.
+- **Programs** in [`output/cnc/`](output/cnc):
+  - `iso/O*.nc`: Fanuc / Haas style, one program per set-up, with tool changes, G43 tool lengths,
+    canned drilling cycles and coolant.
+  - `generic/<program>/NN_Tn_*.nc`: GRBL / LinuxCNC / Mach3 style, one file per tool, plain G0/G1
+    with the drilling written out. Touch off each tool at Z0 before its file.
+
+  G54 is X0 at the paddle butt reference (X runs along the plate, with the handle towards −X), Y0
+  on the centre line and Z0 on the top of the stock. Probe the two dowel pins: X0 Y0 lies 332.17 mm
+  in −X from their mid-point. The tool list (12 tools, T1–T12 = H1–H12) is on PB-MO-005. All
+  feeds and speeds are starting values, so prove them on scrap first.
+- **Checked by simulation.** `python tools/verify_cnc.py` runs every program on a 0.25 mm stock
+  model. It sweeps each real tool shape and checks for rapids into stock, cutting beyond the
+  flutes, plunges and hits on the bolt heads and clamps. It then compares the finished faces with
+  the mould STLs (`verify_report.json`, `verify_*.png`).
+  - All programs pass these checks. The only exception is the fixture's relief bores, which plunge
+    by design.
+  - The finished faces match the CAD within ±0.03 mm, except where the design cannot be met
+    exactly by a rotating tool:
+    - R3 tool radius in the two cavity corners at the butt and in the notch corners;
+    - the 0.4 × 45° chamfers on the bolt holes;
+    - the 1.5° that the tapered tool also puts on tooth sides cut off by the frame line (at most
+      0.22 mm, which makes the part's frame slightly thicker and helps release).
 
 ## Trial rib support STL
 
@@ -312,7 +378,7 @@ To run the FEA on thin skins, the model's skins need shell or single-layer wedge
 
 | File | What it is |
 |---|---|
-| [`output/paddle_drawing_set.pdf`](output/paddle_drawing_set.pdf) | All 8 drawing sheets in one PDF |
+| [`output/paddle_drawing_set.pdf`](output/paddle_drawing_set.pdf) | All 10 drawing sheets in one PDF |
 | `output/<design>/*_sheet1_general_arrangement.(pdf/svg/png)` | **General arrangement**, A3, 1:2, first angle: front view with the grip, side view with the 0.3/10/0.3 lay-up, section A–A through the wave core, section B–B through the grip, isometric view, notes |
 | `output/<design>/*_sheet2_template_1to1.(pdf/svg/png)` | **Full-size body template**, A3 portrait, 1:1: tangent points, arc centres, coordinate table, core-frame and solid-zone reference lines, scale-check bars |
 | `output/<design>/*_sheet3_rib_core.(pdf/svg/png)` | **Rib support**: plan view 1:2 with lands and flute ramps, section C–C across the wave 2:1, section D–D through the ramp 2:1, material and moulding notes |
@@ -320,6 +386,9 @@ To run the FEA on thin skins, the model's skins need shell or single-layer wedge
 | `output/<design>/*_profile.dxf` | 1:1 cut profile of the skins (mm) for CNC / laser: closed polyline with true arcs |
 | `output/mould/PB-MO-003_rib_support_stack_mould.(pdf/svg/png)` | **Rib support stack mould** (both paddles): main plate top and bottom faces 1:3, section X–X through the closed stack 1:2, detail Y 2:1, hardware, moulding steps |
 | `output/mould/mould_main_plate.stl` (+ `.step`), `mould_main_upper_half.stl`, `mould_main_lower_half.stl`, `mould_top_plate.stl` / `mould_bottom_plate.stl` (+ `.step`) | **Stack mould plates**, in print orientation, plus `mould_report.json` (sizes, charges, cavity checks) |
+| `output/cnc/PB-MO-004_machining_blueprint.(pdf/svg/png)` | **Machining blueprint** (A2, blueprint colours): the four machined faces 1:3 with G54, sections A–A, B–B, C–C 2:1, hole table, tooth table, tolerances, finish |
+| `output/cnc/PB-MO-005_cnc_machining_diagram.(pdf/svg/png)` | **CNC machining diagram** (A2): process, fixture set-up, toolpaths by tool, tool list, programs, simulation check |
+| `output/cnc/iso/*.nc`, `output/cnc/generic/*/*.nc` | **G-code**: ISO programs (VMC) and generic per-tool files (router), plus `cnc_report.json` (operations, times), `toolpaths.json`, `verify_report.json` and `verify_*.png` (simulation) |
 | `output/rib_support/<design>_rib_support.stl` | **Trial rib support**, one piece, plus `rib_support_report.json` |
 | `output/cad/<design>_assembly.step` | 3-D assembly: skins, rib support, screw and insert (named solids) |
 | `output/cad/<design>_assembly.3mf` | The same assembly with the printed grip (a mesh, so it is not in the STEP) |
@@ -366,7 +435,9 @@ python tools/export_cad.py                # STEP / STL / 3MF + analysis/mass_pro
 python tools/export_rib_support.py        # trial rib support, one piece
 python tools/export_mould.py              # rib support stack mould: 3 plates (STL + STEP)
 python tools/hand_check.py                # strength hand check -> analysis/hand_check.json
-python build.py                           # drawings (incl. the mould PB-MO-003), templates, DXF, 2-D render
+python tools/export_cnc.py                # G-code for the aluminium mould (output/cnc, VMC + router)
+python tools/verify_cnc.py --generic      # stock-removal simulation of all the programs vs the mould STLs
+python build.py                           # drawings (incl. PB-MO-003/004/005), templates, DXF, 2-D render
 python tools/render_3d.py                 # photoreal renders (Blender 4.x with Cycles on PATH)
 python tools/export_cad.py --grip 03_tessel_block   # the 3-D files with another of the ten grips
 ```
@@ -382,7 +453,8 @@ The inputs live in `paddle/geometry.py` and `paddle/mould.py`:
   phase, wall, draft (square) and amplitude (sine), solid zone, ramp length and the insert bore.
 - **`GripInterface`**: the printed grip's length, base, slot, slits, counterbore and screw.
 - **`MouldSpec`**: main plate and clamp plate thickness (the plate, not counting its teeth), flange,
-  land, groove, vents, bolts and notches. The pocket depth and the teeth follow the core height and
+  land, groove, vents, bolts, dowels and notches. Machining (blanks, fixture, clamps, tools, cutting
+  data) is in `paddle/cam_mould.py`. The pocket depth and the teeth follow the core height and
   the wave; the web is what the main plate leaves between its two pockets.
 
 Every drawing, the 3-D model, the print files, the mould and the renders are recomputed from those
@@ -424,3 +496,7 @@ and exactly the specified size, and the specified thickness matches the lay-up.
   faces (1.5° draft), pitch 21.2 mm (8 waves, no sliver teeth beside the frame). The mould teeth
   become square, 8.4 mm deep. The unsupported skin drops from 17 to 9.3 mm, so the blade passes
   on 0.3 mm skins. 442 / 423 g.
+- **L.** CNC machining of the stack mould in aluminium. Machining blueprint PB-MO-004, CNC machining
+  diagram PB-MO-005, and G-code for a VMC (ISO) and for a router (generic), all checked by a
+  stock-removal simulation against the mould. The mould gains 2 dowel holes for the fixture and the
+  stack alignment.

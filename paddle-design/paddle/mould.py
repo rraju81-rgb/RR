@@ -45,6 +45,8 @@ class MouldSpec:
     vent_w: float = 2.0          # vents from a groove to the outside
     vent_d: float = 0.8
     bolt_d: float = 6.6          # M6 clearance, through all three plates
+    dowel_d: float = 6.0         # 2 dowel holes (H7) through all three plates: they register the plates on
+                                 # the CNC fixture and, with 2 ground pins, align the closed stack
     bolt_off: float = 12.0       # bolt line, measured from the larger pocket's edge
     bolt_pitch: float = 60.0     # target spacing along the bolt line
     notch_w: float = 14.0        # pry notches either side of each parting face, at the plate edge
@@ -90,6 +92,7 @@ MOULD = MouldSpec()
 class Layout:
     """Plan positions (x, y) on the shared bolt line; notches and vents carry their outward normal."""
     bolts: list[tuple[float, float]] = field(default_factory=list)
+    dowels: list[tuple[float, float]] = field(default_factory=list)                   # on the bolt line
     notches: list[tuple[float, float, float, float]] = field(default_factory=list)   # on the plate edge
     vents: list[tuple[float, float, float, float]] = field(default_factory=list)     # on the bolt line
 
@@ -108,11 +111,13 @@ def union_ring(outlines, off: float):
 
 
 def layout(outlines, m: MouldSpec = MOULD) -> Layout:
-    """Bolt, notch and vent positions around both pockets, mirrored about x = 0.
+    """Bolt, dowel, notch and vent positions around both pockets, mirrored about x = 0.
 
     Bolts are spaced evenly along the bolt line (offset from the outline of both paddles) from the tip
     centre to the handle-end centre on the right, and mirrored.  The other flange features sit halfway
-    between two bolts: notches on the straight sides, vents at the tip, taper and handle."""
+    between two bolts: notches on the straight sides, vents at the tip, taper and handle, and a pair of
+    dowel holes on the straight sides near the head (mirror images, so a plate turned over about its long
+    axis still sits on the same two pins)."""
     from shapely.geometry import Point
     body = union_ring(outlines, 0.0)
     path = union_ring(outlines, m.bolt_off)
@@ -149,6 +154,8 @@ def layout(outlines, m: MouldSpec = MOULD) -> Layout:
     for frac in (0.0, 0.80, 0.97):
         x, y, nx, ny = pick(frac, used)
         out.vents += [(x, y, nx, ny), (-x, y, -nx, ny)]
+    x, y, _, _ = pick(0.25, used)
+    out.dowels += [(x, y), (-x, y)]
     return out
 
 
@@ -216,8 +223,8 @@ def mould_stack(top: Outline, bottom: Outline, m: MouldSpec = MOULD):
             else:
                 bottom_plate = bottom_plate - clamp_notch
     z_lo, z_hi = -f - c - 1.0, f + c + 1.0
-    for x, y in lay.bolts:
-        hole = _cyl(x, y, m.bolt_d, z_lo, z_hi)
+    for (x, y), d in [(b, m.bolt_d) for b in lay.bolts] + [(p, m.dowel_d) for p in lay.dowels]:
+        hole = _cyl(x, y, d, z_lo, z_hi)
         top_plate, main, bottom_plate = top_plate - hole, main - hole, bottom_plate - hole
     return top_plate, main, bottom_plate
 

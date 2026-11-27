@@ -113,19 +113,20 @@ def mould_notes(outlines: dict, rep: dict | None) -> list[str]:
         f"FACE, {fmt(M.web)} WEB BETWEEN.",
         f"EACH CAVITY IS THAT PADDLE'S RIB SUPPORT (SHEET 3): THE MAIN PLATE CARRIES THE BOTTOM-FLUTE TEETH, EACH "
         f"CLAMP PLATE ({fmt(M.clamp)} + {M.teeth:.1f} TEETH)\nTHE TOP-FLUTE TEETH. THE CLAMP PLATES SEAT FLAT ON THE "
-        f"MAIN PLATE: CLOSED STACK {fmt(M.height)}, CORE HEIGHT {fmt(C.core_t)}, WALLS {fmt(C.rib_t)}, FRAME "
+        f"MAIN PLATE: CLOSED STACK {fmt(M.height)}, CORE HEIGHT {fmt(C.core_t)}, "
+        f"{'WEBS' if wave.is_square() else 'WALLS'} {fmt(C.rib_t)}, FRAME "
         f"{fmt(C.frame_w)}.",
         f"PRINT THE CLAMP PLATES BACK DOWN, TEETH UP, AND THE MAIN PLATE AS TWO {fmt(M.face)} HALVES SPLIT THROUGH THE "
         f"WEB\n(mould_main_upper_half / _lower_half.stl), EACH CAVITY UP; THE STACK BOLTS CLAMP THEM. ≥ 5 WALLS, ≥ 40 % "
         f"INFILL.{mass}",
-        "PLA SOFTENS NEAR 55 °C: ROOM-TEMPERATURE-CURE EPOXY ONLY. FOR A WARM CURE PRINT IN PETG, ASA OR PA-CF. "
-        "BED ≥ 440 mm, OR MACHINE THE STEP.",
+        "PLA SOFTENS NEAR 55 °C: ROOM-TEMPERATURE-CURE EPOXY ONLY. WARM CURE: PETG / ASA / PA-CF, OR THE "
+        "ALUMINIUM PLATES OF PB-MO-004.",
         "DRY FIT FIRST WITH BOTH TRIAL RIB SUPPORT STLs PRINTED IN PLA: THE STACK MUST CLOSE FULLY. THEN SAND THE "
         "CAVITIES (P400 → P800),\nSEAL (EPOXY COAT), WAX ×3 + PVA.",
         f"FILL (FORGED CARBON){charge} HALF CHOPPED CARBON TOW (10–25 mm), HALF EPOXY BY MASS. MAIN PLATE {nb} "
         f"FACE UP:\nPACK THAT CAVITY, BOTTOM PLATE ON, 4 BOLTS; TURN THE PAIR OVER, PACK THE {nt} CAVITY, TOP PLATE ON.",
-        "CLOSE: ALL BOLTS (4) FINGER-TIGHT, PRESS THE STACK BETWEEN 2 FLAT, STIFF PLATENS OR IN A PRESS UNTIL BOTH "
-        "CLAMP PLATES SEAT;\nTIGHTEN THE BOLTS. EXCESS RESIN LEAVES BY THE OVERFLOW GROOVES AND THE VENTS.",
+        "CLOSE: THE 2 DOWEL PINS (5) THROUGH THE STACK, ALL BOLTS (4) FINGER-TIGHT, PRESS THE STACK BETWEEN 2 FLAT, "
+        "STIFF PLATENS\nOR IN A PRESS UNTIL BOTH CLAMP PLATES SEAT; TIGHTEN THE BOLTS. EXCESS RESIN LEAVES BY THE OVERFLOW GROOVES AND THE VENTS.",
         "CURE 24 h AT ROOM TEMPERATURE, SPLIT AT THE PRY NOTCHES, EASE THE PARTS OUT FROM THE BUTT END WITH A "
         "PLASTIC WEDGE.\nTRIM THE FLASH, DRILL AND FIT THE M3 INSERTS (SHEET 3).",
     ]
@@ -159,6 +160,9 @@ def _plan(d: Doc, o: Outline, plate: Polygon, cx: float, top_y: float, S: float,
             pv.line((qx + s * ox, qy + s * oy), (rx + s * ox, ry + s * oy), "thin")
     for x, y in lay.bolts:
         d.circle(P((x, y)), M.bolt_d / 2 * S, "vis")
+    for x, y in lay.dowels:                       # dowel holes: circle + centre cross
+        d.circle(P((x, y)), M.dowel_d / 2 * S, "vis")
+        pv.centre_mark((x, y), 2.2)
     for x, y, nx, ny in lay.notches:
         tx, ty = -ny, nx
         w2, dd = M.notch_w / 2, M.notch_depth
@@ -261,22 +265,24 @@ def mould_sheet(outlines: dict, report: dict | None = None) -> Doc:
                f"SCALE 2:1 · {o_t.spec.name} ABOVE THE WEB, {o_b.spec.name} BELOW · THE GAPS ARE THE WALLS AND FRAMES")
 
     # ---- hardware list
-    tx, ty = 228.0, 201.0
+    tx, ty = 228.0, 200.0
     widths = (9.0, 74.0, 10.0)
     rows = [("ITEM", "PART", "QTY"),
             ("1", "Main plate, mould_main_plate (or the 2 halves)", "1"),
             ("2", "Top plate, mould_top_plate.stl", "1"),
             ("3", "Bottom plate, mould_bottom_plate.stl", "1"),
             ("4", f"Hex bolt M6 × {BOLT['length']:.0f}, 2 washers, nut", str(len(lay.bolts))),
-            ("5", "Release wax + PVA; flat platens + clamps or a press", "a/r")]
+            ("5", f"Dowel pin Ø{fmt(M.dowel_d)} h6 × {fmt(M.height)}, ground (holes Ø{fmt(M.dowel_d)} H7)",
+             str(len(lay.dowels))),
+            ("6", "Release wax + PVA; flat platens + clamps or a press", "a/r")]
     yy = ty
     for i, row in enumerate(rows):
         xx = tx
         for w, val in zip(widths, row):
-            cell(d, xx, yy, w, 5.5, "", val, size=2.2, weight="bold" if i == 0 else "normal",
+            cell(d, xx, yy, w, 5.0, "", val, size=2.2, weight="bold" if i == 0 else "normal",
                  anchor="middle" if w < 12 else "start")
             xx += w
-        yy += 5.5
+        yy += 5.0
     d.text((tx, ty - 2.5), "MOULD HARDWARE", 3.0, anchor="start", weight="bold")
 
     # ---- notes + title block
